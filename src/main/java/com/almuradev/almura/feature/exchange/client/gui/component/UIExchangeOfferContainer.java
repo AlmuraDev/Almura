@@ -108,7 +108,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
     }
 
     @Override
-    public void drawBackground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
+    public void drawBackground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
         super.drawBackground(renderer, mouseX, mouseY, partialTick);
 
         // Draw: bottom-left -> bottom-right (title line)
@@ -117,7 +117,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
     }
 
     @Override
-    protected UIContainer<?> createMiddleContainer(MalisisGui gui) {
+    protected UIContainer<?> createMiddleContainer(final MalisisGui gui) {
         if (this.targetSide == null) {
             this.targetSide = SideType.RIGHT;
         }
@@ -357,7 +357,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
             }
         }
 
-        public static boolean isStackEqualIgnoreSize(@Nullable VirtualStack a, @Nullable VirtualStack b) {
+        public static boolean isStackEqualIgnoreSize(@Nullable final VirtualStack a, @Nullable final VirtualStack b) {
             if (a == null || b == null) {
                 return false;
             }
@@ -386,8 +386,14 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
         private String itemLabelText;
         private String itemQuantityText;
 
-        public OfferItemComponent(MalisisGui gui, UIDynamicList<VanillaStack> parent, VanillaStack item) {
+        public OfferItemComponent(final MalisisGui gui, final UIDynamicList<VanillaStack> parent, final VanillaStack item) {
             super(gui, parent, item);
+            this.setOnDoubleClickConsumer(i -> {
+                // This should always be present
+                final UIExchangeOfferContainer offerContainer = (UIExchangeOfferContainer) this.parent.getParent().getParent();
+
+                TransferType.STACK.transfer(offerContainer, offerContainer.targetSide, this.item);
+            });
         }
 
         @SuppressWarnings("deprecation")
@@ -414,7 +420,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
             String displayName = fakeStack.getDisplayName();
             if (fontRenderer.getStringWidth(displayName) > maxItemTextWidth) {
                 final StringBuilder displayNameBuilder = new StringBuilder();
-                for (char c : fakeStack.getDisplayName().toCharArray()) {
+                for (final char c : fakeStack.getDisplayName().toCharArray()) {
                     final int textWidth = fontRenderer.getStringWidth(displayNameBuilder.toString() + c);
                     if (textWidth > maxItemTextWidth) {
                         displayNameBuilder.replace(displayNameBuilder.length() - 3, displayNameBuilder.length(), "...");
@@ -440,26 +446,6 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
             this.lastKnownQuantity = this.item.getQuantity();
 
             this.add(this.image, this.itemLabel);
-        }
-
-        @Override
-        public boolean onDoubleClick(int x, int y, MouseButton button) {
-            if (button != MouseButton.LEFT) {
-                return super.onDoubleClick(x, y, button);
-            }
-
-            final UIComponent<?> componentAt = this.getComponentAt(x, y);
-            final UIComponent<?> parentComponentAt = componentAt == null ? null : componentAt.getParent();
-            if (!(componentAt instanceof UIDynamicList.ItemComponent) && !(parentComponentAt instanceof UIDynamicList.ItemComponent)) {
-                return super.onDoubleClick(x, y, button);
-            }
-
-            // This should always be present
-            final UIExchangeOfferContainer offerContainer = (UIExchangeOfferContainer) this.parent.getParent().getParent();
-
-            TransferType.STACK.transfer(offerContainer, offerContainer.targetSide, this.item);
-
-            return true;
         }
 
         @Override

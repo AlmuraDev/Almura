@@ -411,6 +411,7 @@ public class IngameFeatureManagementScreen extends SimpleScreen {
 
         IngameFeatureItemComponent(final MalisisGui gui, final UIDynamicList<IngameFeature> parent, final IngameFeature item) {
             super(gui, parent, item);
+            this.setOnDoubleClickConsumer(i -> ((IngameFeatureManagementScreen) gui).open());
         }
 
         @Override
@@ -421,23 +422,6 @@ public class IngameFeatureManagementScreen extends SimpleScreen {
         @Override
         public void drawForeground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
             renderer.drawText(TextFormatting.WHITE + item.getName(), 4, (this.height - Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT) / 2f, 0);
-        }
-
-        @Override
-        public boolean onDoubleClick(final int x, final int y, final MouseButton button) {
-            if (button != MouseButton.LEFT) {
-                return super.onDoubleClick(x, y, button);
-            }
-
-            final UIComponent<?> componentAt = this.getComponentAt(x, y);
-            final UIComponent<?> parentComponentAt = componentAt == null ? null : componentAt.getParent();
-            if (!(componentAt instanceof UIDynamicList.ItemComponent) && !(parentComponentAt instanceof UIDynamicList.ItemComponent)) {
-                return super.onDoubleClick(x, y, button);
-            }
-
-            ((IngameFeatureManagementScreen) this.getGui()).open();
-
-            return true;
         }
     }
 }

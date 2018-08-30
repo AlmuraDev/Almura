@@ -8,6 +8,7 @@
 package com.almuradev.almura.shared.client.ui.component;
 
 import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
+import com.almuradev.almura.shared.client.ui.screen.IngameFeatureManagementScreen;
 import com.almuradev.almura.shared.util.TriFunction;
 import net.malisis.core.client.gui.ClipArea;
 import net.malisis.core.client.gui.GuiRenderer;
@@ -16,6 +17,7 @@ import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.control.UIScrollBar;
 import net.malisis.core.client.gui.component.control.UISlimScrollbar;
 import net.malisis.core.client.gui.event.ComponentEvent;
+import net.malisis.core.util.MouseButton;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -383,9 +385,14 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
         private static final int INNER_HOVER_COLOR = org.spongepowered.api.util.Color.ofRgb(40, 40, 40).getRgb();
         private static final int INNER_SELECTED_COLOR = org.spongepowered.api.util.Color.ofRgb(65, 65, 65).getRgb();
 
+        @Nullable private Consumer<T> onDoubleClick;
         protected T item;
 
         public ItemComponent(final MalisisGui gui, final UIDynamicList<T> parent, final T item) {
+            this(gui, parent, item, null);
+        }
+
+        public ItemComponent(final MalisisGui gui, final UIDynamicList<T> parent, final T item, @Nullable Consumer<T> onDoubleClick) {
             super(gui);
 
             // Set the parent
@@ -393,6 +400,9 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
 
             // Set the item
             this.item = item;
+
+            // Set the consumer
+            this.onDoubleClick = onDoubleClick;
 
             // Set padding
             this.setPadding(3, 3);
@@ -456,6 +466,29 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
             }
         }
 
+        @Override
+        public boolean onDoubleClick(final int x, final int y, final MouseButton button) {
+            if (button != MouseButton.LEFT) {
+                return super.onDoubleClick(x, y, button);
+            }
+
+            final UIComponent<?> componentAt = this.getComponentAt(x, y);
+            final UIComponent<?> parentComponentAt = componentAt == null ? null : componentAt.getParent();
+            if (!(componentAt instanceof UIDynamicList.ItemComponent) && !(parentComponentAt instanceof UIDynamicList.ItemComponent)) {
+                return super.onDoubleClick(x, y, button);
+            }
+
+            if (this.onDoubleClick != null) {
+                this.onDoubleClick.accept(item);
+            }
+
+            return true;
+        }
+
+        public void setOnDoubleClickConsumer(@Nullable final Consumer<T> onDoubleClick) {
+            this.onDoubleClick = onDoubleClick;
+        }
+
         private static boolean hasParent(final UIComponent parent, final UIComponent component) {
             final UIComponent componentParent = component.getParent();
             if (componentParent == null) {
@@ -476,7 +509,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
 
     public static class DefaultItemComponent<T> extends ItemComponent<T> {
 
-        public DefaultItemComponent(final MalisisGui gui, final UIDynamicList<T> parent, final T item) {
+        DefaultItemComponent(final MalisisGui gui, final UIDynamicList<T> parent, final T item) {
             super(gui, parent, item);
         }
 

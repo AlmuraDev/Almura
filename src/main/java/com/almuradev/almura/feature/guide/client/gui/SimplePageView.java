@@ -283,8 +283,13 @@ public class SimplePageView extends SimpleScreen {
 
         PageListEntryItemComponent(final MalisisGui gui, final UIDynamicList<PageListEntry> parent, final PageListEntry item) {
             super(gui, parent, item);
-
             this.setHeight(25);
+            this.setOnDoubleClickConsumer(i -> {
+                final SimplePageView parentScreen = (SimplePageView) this.getGui();
+                if (parentScreen.canModify) {
+                    parentScreen.runScheduledTask("details");
+                }
+            });
         }
 
         @Override
@@ -314,26 +319,6 @@ public class SimplePageView extends SimpleScreen {
                 nameLabel.setFontOptions(FontColors.GRAY_FO);
                 this.add(nameLabel);
             }
-        }
-
-        @Override
-        public boolean onDoubleClick(final int x, final int y, final MouseButton button) {
-            if (button != MouseButton.LEFT) {
-                return super.onDoubleClick(x, y, button);
-            }
-
-            final UIComponent<?> componentAt = this.getComponentAt(x, y);
-            final UIComponent<?> parentComponentAt = componentAt == null ? null : componentAt.getParent();
-            if (!(componentAt instanceof UIDynamicList.ItemComponent) && !(parentComponentAt instanceof UIDynamicList.ItemComponent)) {
-                return super.onDoubleClick(x, y, button);
-            }
-
-            final SimplePageView parent = (SimplePageView) this.getGui();
-            if (parent.canModify) {
-                parent.runScheduledTask("details");
-            }
-
-            return true;
         }
     }
 }

@@ -375,7 +375,7 @@ public final class ExchangeScreen extends SimpleScreen {
         sortQueryMap.put(this.comboBoxSortType.getSelectedValue().id, this.comboBoxSortType.getSelectedValue().direction);
 
         final StringBuilder filterQueryBuilder = new StringBuilder();
-        for (Map.Entry<String, Object> entry : filterQueryMap.entrySet()) {
+        for (final Map.Entry<String, Object> entry : filterQueryMap.entrySet()) {
             if (entry.getValue().toString().isEmpty()) {
                 continue;
             }
@@ -384,7 +384,7 @@ public final class ExchangeScreen extends SimpleScreen {
 
         // Not needed to be done this way in current form but adds native support if we allow multiple sorting patterns
         final StringBuilder sortQueryBuilder = new StringBuilder();
-        for (Map.Entry<String, String> entry : sortQueryMap.entrySet()) {
+        for (final Map.Entry<String, String> entry : sortQueryMap.entrySet()) {
             if (entry.getValue().isEmpty()) {
                 continue;
             }
@@ -526,7 +526,7 @@ public final class ExchangeScreen extends SimpleScreen {
         protected UIExpandingLabel itemLabel;
         protected int itemNameSpaceAvailable;
 
-        public ExchangeItemComponent(MalisisGui gui, UIDynamicList<T> parent, T item) {
+        public ExchangeItemComponent(final MalisisGui gui, final UIDynamicList<T> parent, final T item) {
             super(gui, parent, item);
         }
 
@@ -586,8 +586,9 @@ public final class ExchangeScreen extends SimpleScreen {
         private UIContainer<?> listedIndicatorContainer;
         private UIExpandingLabel priceLabel;
 
-        public ListItemComponent(MalisisGui gui, UIDynamicList<ListItem> parent, ListItem item) {
+        public ListItemComponent(final MalisisGui gui, final UIDynamicList<ListItem> parent, final ListItem item) {
             super(gui, parent, item);
+            this.setOnDoubleClickConsumer(i -> ((ExchangeScreen) getGui()).list());
         }
 
         @Override
@@ -638,23 +639,6 @@ public final class ExchangeScreen extends SimpleScreen {
 
             this.refreshDisplayName();
         }
-
-        @Override
-        public boolean onDoubleClick(int x, int y, MouseButton button) {
-            if (button != MouseButton.LEFT) {
-                return super.onDoubleClick(x, y, button);
-            }
-
-            final UIComponent<?> componentAt = this.getComponentAt(x, y);
-            final UIComponent<?> parentComponentAt = componentAt == null ? null : componentAt.getParent();
-            if (!(componentAt instanceof UIDynamicList.ItemComponent) && !(parentComponentAt instanceof UIDynamicList.ItemComponent)) {
-                return super.onDoubleClick(x, y, button);
-            }
-
-            ((ExchangeScreen) getGui()).list();
-
-            return true;
-        }
     }
 
     public static final class ForSaleItemComponent extends ExchangeItemComponent<ForSaleItem> {
@@ -662,8 +646,9 @@ public final class ExchangeScreen extends SimpleScreen {
         private UILabel sellerLabel;
         private UIExpandingLabel priceLabel;
 
-        public ForSaleItemComponent(MalisisGui gui, UIDynamicList<ForSaleItem> parent, ForSaleItem item) {
+        public ForSaleItemComponent(final MalisisGui gui, final UIDynamicList<ForSaleItem> parent, final ForSaleItem item) {
             super(gui, parent, item);
+            this.setOnDoubleClickConsumer(i -> ((ExchangeScreen) getGui()).buy(1));
         }
 
         @SuppressWarnings("deprecation")
@@ -697,23 +682,6 @@ public final class ExchangeScreen extends SimpleScreen {
             this.add(this.sellerLabel, this.priceLabel);
 
             this.refreshDisplayName();
-        }
-
-        @Override
-        public boolean onDoubleClick(int x, int y, MouseButton button) {
-            if (button != MouseButton.LEFT) {
-                return super.onDoubleClick(x, y, button);
-            }
-
-            final UIComponent<?> componentAt = this.getComponentAt(x, y);
-            final UIComponent<?> parentComponentAt = componentAt == null ? null : componentAt.getParent();
-            if (!(componentAt instanceof UIDynamicList.ItemComponent) && !(parentComponentAt instanceof UIDynamicList.ItemComponent)) {
-                return super.onDoubleClick(x, y, button);
-            }
-
-            ((ExchangeScreen) getGui()).buy(1);
-
-            return true;
         }
     }
 
