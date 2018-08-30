@@ -192,8 +192,4 @@ public class UIForm extends UIContainer<UIForm> {
         super.drawForeground(renderer, mouseX, mouseY, partialTick);
         this.closeButton.setFontOptions(this.closeButton.isInsideBounds(mouseX, mouseY) ? FontColors.WHITE_FO : FontColors.GRAY_FO);
     }
-
-    public Collection<UIComponent<?>> getComponents() {
-        return this.components;
-    }
 }
