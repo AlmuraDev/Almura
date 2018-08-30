@@ -7,7 +7,6 @@
  */
 package com.almuradev.almura.feature.store;
 
-import com.almuradev.almura.feature.menu.ingame.FeaturesGUI;
 import com.almuradev.almura.feature.store.client.ClientStoreManager;
 import com.almuradev.almura.feature.store.client.gui.StoreManagementScreen;
 import com.almuradev.almura.feature.store.network.ClientboundStoreGuiResponsePacket;
