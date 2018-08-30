@@ -39,6 +39,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -50,7 +51,7 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
     private static final String filter = "[^A-Za-z0-9_.]";
 
     private final String title, name;
-    private final BiConsumer<IngameFeatureManagementScreen<T>, T> onDelete, onOpen, onSave;
+    private final BiConsumer<IngameFeatureManagementScreen<T>, Optional<T>> onDelete, onOpen, onSave;
     private final Consumer<IngameFeatureManagementScreen<T>> onRefresh;
 
     private UIButton buttonAdd, buttonDelete, buttonOpen, buttonSave;
@@ -62,9 +63,9 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
 
     public IngameFeatureManagementScreen(final String title, final String name,
             final Consumer<IngameFeatureManagementScreen<T>> onRefresh,
-            final BiConsumer<IngameFeatureManagementScreen<T>, T> onDelete,
-            final BiConsumer<IngameFeatureManagementScreen<T>, T> onOpen,
-            final BiConsumer<IngameFeatureManagementScreen<T>, T> onSave) {
+            final BiConsumer<IngameFeatureManagementScreen<T>, Optional<T>> onDelete,
+            final BiConsumer<IngameFeatureManagementScreen<T>, Optional<T>> onOpen,
+            final BiConsumer<IngameFeatureManagementScreen<T>, Optional<T>> onSave) {
         this.title = title;
         this.name = name;
         this.onRefresh = onRefresh;
@@ -73,6 +74,7 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
         this.onSave = onSave;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void construct() {
         this.guiscreenBackground = false;
@@ -81,7 +83,7 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
 
         this.featureList = new UIDynamicList<>(this, 120, requiredScreenHeight - 40);
         this.featureList.setSelectConsumer(this.onSelect());
-        this.featureList.setItemComponentFactory(IngameFeatureItemComponent::new);
+        this.featureList.setItemComponentFactory((g, l, i) -> new IngameFeatureItemComponent(this, l, i));
         this.featureList.setItemComponentSpacing(1);
         this.featureList.setCanDeselect(false);
         this.featureList.setBorder(0xFFFFFF, 1, 215);
@@ -223,7 +225,7 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
                                 MessageBoxButtons.YES_NO, (result) -> {
                                     if (result != MessageBoxResult.YES) return;
 
-                                    this.onDelete.accept(this, this.featureList.getSelectedItem());
+                                    this.onDelete.accept(this, Optional.ofNullable(this.featureList.getSelectedItem()));
                                 });
                     }
                 })
@@ -293,7 +295,7 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
             return;
         }
 
-        this.onOpen.accept(this, this.featureList.getSelectedItem());
+        this.onOpen.accept(this, Optional.ofNullable(this.featureList.getSelectedItem()));
     }
 
     private void reset(final boolean forNewFeature) {
@@ -360,7 +362,7 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
                 (result) -> {
                     if (result != MessageBoxResult.YES) return;
 
-                    this.onSave.accept(this, this.featureList.getSelectedItem());
+                    this.onSave.accept(this, Optional.ofNullable(this.featureList.getSelectedItem()));
                 });
     }
 
@@ -409,9 +411,9 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
 
     private static final class IngameFeatureItemComponent<T extends IngameFeature> extends UIDynamicList.ItemComponent<T> {
 
-        IngameFeatureItemComponent(final MalisisGui gui, final UIDynamicList<T> parent, final T item) {
-            super(gui, parent, item);
-            this.setOnDoubleClickConsumer(i -> ((IngameFeatureManagementScreen) gui).open());
+        IngameFeatureItemComponent(final IngameFeatureManagementScreen<T> screen, final UIDynamicList<T> parent, final T item) {
+            super(screen, parent, item);
+            this.setOnDoubleClickConsumer(i -> screen.open());
         }
 
         @Override

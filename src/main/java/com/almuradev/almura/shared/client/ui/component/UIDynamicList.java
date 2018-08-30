@@ -8,7 +8,6 @@
 package com.almuradev.almura.shared.client.ui.component;
 
 import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
-import com.almuradev.almura.shared.client.ui.screen.IngameFeatureManagementScreen;
 import com.almuradev.almura.shared.util.TriFunction;
 import net.malisis.core.client.gui.ClipArea;
 import net.malisis.core.client.gui.GuiRenderer;

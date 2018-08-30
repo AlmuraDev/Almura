@@ -30,15 +30,15 @@ public final class ExchangeManagementScreen extends IngameFeatureManagementScree
                 },
                 // onDelete
                 (screen, feature) -> {
-                    exchangeManager.deleteExchange(feature.getId());
+                    feature.ifPresent(f -> exchangeManager.deleteExchange(f.getId()));
                 },
                 // onOpen
                 (screen, feature) -> {
-                    exchangeManager.requestExchangeSpecificGui(feature.getId());
+                    feature.ifPresent(f -> exchangeManager.requestExchangeSpecificGui(f.getId()));
                 },
                 // onSave
                 (screen, feature) -> {
-                    if (feature == null) { // It's a new listing if true
+                    if (feature.isPresent()) { // It's a new listing if true
                         exchangeManager.addExchange(screen.getPendingId(), screen.getPendingTitle(), screen.getPendingPermission(),
                                 screen.getPendingHiddenState());
                     } else {
