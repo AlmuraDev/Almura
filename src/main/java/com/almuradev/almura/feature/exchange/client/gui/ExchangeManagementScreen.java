@@ -31,6 +31,7 @@ import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UICheckBox;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.client.gui.event.ComponentEvent;
+import net.malisis.core.util.MouseButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
@@ -180,13 +181,7 @@ public final class ExchangeManagementScreen extends SimpleScreen {
                 .position(SimpleScreen.getPaddedX(this.buttonSave, 2, Anchor.RIGHT), 0)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .enabled(false)
-                .onClick(() -> {
-                    if (this.exchangeList.getSelectedItem() == null) {
-                        return;
-                    }
-
-                    exchangeManager.requestExchangeSpecificGui(this.exchangeList.getSelectedItem().getId());
-                })
+                .onClick(this::open)
                 .build("button.open");
 
         container.add(this.tbId, idLabel,
@@ -244,7 +239,7 @@ public final class ExchangeManagementScreen extends SimpleScreen {
     }
 
     @Subscribe
-    private void onValueChange(ComponentEvent.ValueChange event) {
+    private void onValueChange(final ComponentEvent.ValueChange event) {
         if (event.getComponent() instanceof UITextField) {
             this.validate(((String) event.getNewValue()));
         } else if (event.getComponent() instanceof UICheckBox) {
@@ -267,7 +262,15 @@ public final class ExchangeManagementScreen extends SimpleScreen {
         this.exchangeList.setSelectedItem(toSelect);
     }
 
-    private void reset(boolean forNewExchange) {
+    private void open() {
+        if (this.exchangeList.getSelectedItem() == null) {
+            return;
+        }
+
+        exchangeManager.requestExchangeSpecificGui(this.exchangeList.getSelectedItem().getId());
+    }
+
+    private void reset(final boolean forNewExchange) {
 
         // ID
         this.tbId.setText("");
@@ -304,7 +307,7 @@ public final class ExchangeManagementScreen extends SimpleScreen {
         this.buttonSave.setEnabled(false);
     }
 
-    private boolean validate(String newValue) {
+    private boolean validate(final String newValue) {
         boolean isValid = !this.tbId.getText().isEmpty()
                 && !this.tbTitle.getText().isEmpty()
                 && !this.tbPermission.getText().isEmpty()
@@ -386,18 +389,35 @@ public final class ExchangeManagementScreen extends SimpleScreen {
 
     private static final class ExchangeItemComponent extends UIDynamicList.ItemComponent<Exchange> {
 
-        public ExchangeItemComponent(MalisisGui gui, UIDynamicList<Exchange> parent, Exchange item) {
+        public ExchangeItemComponent(final MalisisGui gui, final UIDynamicList<Exchange> parent, final Exchange item) {
             super(gui, parent, item);
         }
 
         @Override
-        public void construct(MalisisGui gui) {
+        public void construct(final MalisisGui gui) {
             this.setSize(UIComponent.INHERITED, 20);
         }
 
         @Override
-        public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
+        public void drawForeground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
             renderer.drawText(TextFormatting.WHITE + item.getName(), 2, (this.height - Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT) / 2f, 0);
+        }
+
+        @Override
+        public boolean onDoubleClick(final int x, final int y, final MouseButton button) {
+            if (button != MouseButton.LEFT) {
+                return super.onDoubleClick(x, y, button);
+            }
+
+            final UIComponent<?> componentAt = this.getComponentAt(x, y);
+            final UIComponent<?> parentComponentAt = componentAt == null ? null : componentAt.getParent();
+            if (!(componentAt instanceof UIDynamicList.ItemComponent) && !(parentComponentAt instanceof UIDynamicList.ItemComponent)) {
+                return super.onDoubleClick(x, y, button);
+            }
+
+            ((ExchangeManagementScreen) this.getGui()).open();
+
+            return true;
         }
     }
 }
