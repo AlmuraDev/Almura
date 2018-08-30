@@ -569,7 +569,7 @@ public final class ExchangeScreen extends SimpleScreen {
             final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
 
             StringBuilder displayName = new StringBuilder();
-            for (char c : fakeStack.getDisplayName().toCharArray()) {
+            for (final char c : fakeStack.getDisplayName().toCharArray()) {
                 if (fontRenderer.getStringWidth(displayName.toString() + c + " x " + this.item.getQuantity()) > this.itemNameSpaceAvailable) {
                     displayName = new StringBuilder(displayName.toString().substring(0, Math.max(displayName.length() - 3, 0)) + "...");
                     break;
@@ -636,7 +636,7 @@ public final class ExchangeScreen extends SimpleScreen {
                     - (this.priceLabel.isVisible() ? this.priceLabel.getWidth() : 0)
                     - (this.image.isVisible() ? this.image.getWidth() : 0)
                     - (this.listedIndicatorContainer.isVisible() ? this.listedIndicatorContainer.getWidth() : 0)
-                    - 12;
+                    - 16;
 
             this.refreshDisplayName();
         }
@@ -694,7 +694,7 @@ public final class ExchangeScreen extends SimpleScreen {
                     - (this.priceLabel.isVisible() ? this.priceLabel.getWidth() : 0)
                     - (this.image.isVisible() ? this.image.getWidth() : 0)
                     - maxPlayerTextWidth
-                    - 6;
+                    - 10;
 
             this.add(this.sellerLabel, this.priceLabel);
 
