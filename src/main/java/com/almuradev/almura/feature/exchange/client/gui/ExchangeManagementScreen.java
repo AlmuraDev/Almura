@@ -400,7 +400,7 @@ public final class ExchangeManagementScreen extends SimpleScreen {
 
         @Override
         public void drawForeground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
-            renderer.drawText(TextFormatting.WHITE + item.getName(), 2, (this.height - Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT) / 2f, 0);
+            renderer.drawText(TextFormatting.WHITE + item.getName(), 4, (this.height - Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT) / 2f, 0);
         }
 
         @Override
