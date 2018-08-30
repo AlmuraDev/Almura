@@ -358,7 +358,8 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
         final boolean isNew = this.featureList.getSelectedItem() == null;
 
         UIMessageBox.showDialog(this, I18n.format("almura.feature.common.title.are_you_sure"),
-                I18n.format(String.format("almura.text.ingame_feature.%s_ingame_feature", isNew ? "add" : "modify")), MessageBoxButtons.YES_NO,
+                I18n.format(String.format("almura.feature.common.text.%s_feature", isNew ? "add" : "modify"), this.name),
+                MessageBoxButtons.YES_NO,
                 (result) -> {
                     if (result != MessageBoxResult.YES) return;
 

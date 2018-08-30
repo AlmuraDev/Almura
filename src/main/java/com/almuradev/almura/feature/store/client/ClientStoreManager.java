@@ -19,6 +19,7 @@ import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
 import com.google.inject.Inject;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import org.spongepowered.api.network.ChannelBinding;
@@ -56,6 +57,14 @@ public final class ClientStoreManager implements Witness {
 
     public List<Store> getStores() {
         return this.stores;
+    }
+
+    private void putStores(@Nullable final Set<Store> stores) {
+        this.stores.clear();
+
+        if (stores != null) {
+            this.stores.addAll(stores);
+        }
     }
 
     public void requestStoreManage() {
@@ -97,7 +106,13 @@ public final class ClientStoreManager implements Witness {
     }
 
     public void handleStoreRegistry(@Nullable final Set<Store> stores) {
+        this.putStores(stores);
 
+        final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
+
+        if (currentScreen instanceof StoreManagementScreen) {
+            ((StoreManagementScreen) currentScreen).refresh();
+        }
     }
 
     public void handleStoreManage() {

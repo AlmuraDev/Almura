@@ -9,9 +9,7 @@ package com.almuradev.almura.feature.store;
 
 import com.almuradev.almura.feature.menu.ingame.FeaturesGUI;
 import com.almuradev.almura.feature.store.client.ClientStoreManager;
-import com.almuradev.almura.feature.store.client.gui.StoreItemsModifyScreen;
-import com.almuradev.almura.feature.store.client.gui.StoreScreen;
-import com.almuradev.almura.feature.store.client.gui.StoreListScreen;
+import com.almuradev.almura.feature.store.client.gui.StoreManagementScreen;
 import com.almuradev.almura.feature.store.network.ClientboundStoreGuiResponsePacket;
 import com.almuradev.almura.feature.store.network.ClientboundStoresRegistryPacket;
 import com.almuradev.almura.feature.store.network.ServerboundModifyStorePacket;
@@ -57,10 +55,7 @@ public final class StoreModule extends AbstractModule implements CommonBinder {
                 @Override
                 protected void configure() {
                     this.facet().add(ClientStoreManager.class);
-                    this.requestStaticInjection(StoreScreen.class);
-                    this.requestStaticInjection(StoreListScreen.class);
-                    this.requestStaticInjection(StoreItemsModifyScreen.class);
-                    this.requestStaticInjection(FeaturesGUI.class);
+                    this.requestStaticInjection(StoreManagementScreen.class);
                 }
             }
             this.install(new ClientModule());
