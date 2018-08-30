@@ -113,7 +113,7 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
         this.tbId.register(this);
         this.tbId.setFilter(s -> s.replaceAll(filter, "").toLowerCase());
 
-        final UILabel idLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.text.ingame_feature.id") + ":")
+        final UILabel idLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.id") + ":")
                 .setPosition(0, this.tbId.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         // Title
@@ -126,7 +126,7 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
         this.tbTitle.setPosition(0, SimpleScreen.getPaddedY(this.tbId, 2), Anchor.RIGHT | Anchor.TOP);
         this.tbTitle.register(this);
 
-        final UILabel titleLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.text.ingame_feature.title") + ":")
+        final UILabel titleLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.title") + ":")
                 .setPosition(0, this.tbTitle.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         // Permission
@@ -140,7 +140,7 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
         this.tbPermission.register(this);
         this.tbPermission.setFilter(s -> s.replaceAll(filter, "").toLowerCase());
 
-        final UILabel permissionLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.text.ingame_feature.permission") + ":")
+        final UILabel permissionLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.permission") + ":")
                 .setPosition(0, this.tbPermission.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         // Created by (name)
@@ -149,7 +149,7 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
         this.tbCreatorName.setPosition(0, SimpleScreen.getPaddedY(this.tbPermission, 2), Anchor.RIGHT | Anchor.TOP);
         this.tbCreatorName.setEditable(false);
 
-        this.creatorNameLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.text.ingame_feature.creator_name") + ":")
+        this.creatorNameLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.creator_name") + ":")
                 .setPosition(0, this.tbCreatorName.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         // Created by (Unique ID)
@@ -158,7 +158,7 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
         this.tbCreatorUniqueId.setPosition(0, SimpleScreen.getPaddedY(this.tbCreatorName, 2), Anchor.RIGHT | Anchor.TOP);
         this.tbCreatorUniqueId.setEditable(false);
 
-        this.creatorUniqueIdLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.text.ingame_feature.creator_uuid") + ":")
+        this.creatorUniqueIdLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.creator_uuid") + ":")
                 .setPosition(0, this.tbCreatorUniqueId.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         // Created on
@@ -167,11 +167,11 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
         this.tbCreated.setPosition(0, SimpleScreen.getPaddedY(this.tbCreatorUniqueId, 2), Anchor.RIGHT | Anchor.TOP);
         this.tbCreated.setEditable(false);
 
-        this.createdLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.text.ingame_feature.created") + ":")
+        this.createdLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.created") + ":")
                 .setPosition(0, this.tbCreated.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         this.hiddenCheckbox = new UICheckBox(this);
-        this.hiddenCheckbox.setText(TextFormatting.WHITE + I18n.format("almura.text.ingame_feature.hidden"));
+        this.hiddenCheckbox.setText(TextFormatting.WHITE + I18n.format("almura.feature.common.text.hidden"));
         this.hiddenCheckbox.setPosition(0, 0, Anchor.LEFT | Anchor.BOTTOM);
         this.hiddenCheckbox.setChecked(false);
         this.hiddenCheckbox.setName("checkbox.hidden");
@@ -220,8 +220,8 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
                 .onClick(() -> {
                     final IngameFeature selectedFeature = this.featureList.getSelectedItem();
                     if (selectedFeature != null) {
-                        UIMessageBox.showDialog(this, I18n.format("almura.title.ingame_feature.are_you_sure"),
-                                I18n.format("almura.text.ingame_feature.delete_ingame_feature", selectedFeature.getId(), name),
+                        UIMessageBox.showDialog(this, I18n.format("almura.feature.common.title.are_you_sure"),
+                                I18n.format("almura.feature.common.text.delete_feature", selectedFeature.getId(), name),
                                 MessageBoxButtons.YES_NO, (result) -> {
                                     if (result != MessageBoxResult.YES) return;
 
@@ -357,7 +357,7 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
 
         final boolean isNew = this.featureList.getSelectedItem() == null;
 
-        UIMessageBox.showDialog(this, I18n.format("almura.title.ingame_feature.are_you_sure"),
+        UIMessageBox.showDialog(this, I18n.format("almura.feature.common.title.are_you_sure"),
                 I18n.format(String.format("almura.text.ingame_feature.%s_ingame_feature", isNew ? "add" : "modify")), MessageBoxButtons.YES_NO,
                 (result) -> {
                     if (result != MessageBoxResult.YES) return;
@@ -388,8 +388,8 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
             // Creator by (Name)
             // This nonsense is brought to you by [sponge].
             final String name = FeatureConstants.UNKNOWN_OWNER.equals(feature.getCreator())
-                    ? I18n.format("almura.text.ingame_feature.unknown")
-                    : feature.getCreatorName().orElse(I18n.format("almura.text.ingame_feature.unknown"));
+                    ? I18n.format("almura.feature.common.text.unknown")
+                    : feature.getCreatorName().orElse(I18n.format("almura.feature.common.text.unknown"));
             this.tbCreatorName.setText(name);
 
             // Creator by (Unique ID)

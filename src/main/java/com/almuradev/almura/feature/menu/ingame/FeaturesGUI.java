@@ -11,6 +11,7 @@ import com.almuradev.almura.feature.claim.ClientClaimManager;
 import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.feature.guide.ClientPageManager;
 import com.almuradev.almura.feature.nick.ClientNickManager;
+import com.almuradev.almura.feature.store.client.ClientStoreManager;
 import com.almuradev.almura.feature.store.client.gui.StoreListScreen;
 import com.almuradev.almura.feature.title.ClientTitleManager;
 import com.almuradev.almura.shared.client.ui.FontColors;
@@ -49,6 +50,7 @@ public final class FeaturesGUI extends SimpleScreen {
   @Inject private static ClientNickManager nickManager;
   @Inject private static ClientTitleManager titleManager;
   @Inject private static ClientClaimManager claimManager;
+  @Inject private static ClientStoreManager storeManager;
 
   public FeaturesGUI(EntityPlayerSP player, World worldIn, boolean isAdmin) {
     this.player = player;
@@ -74,7 +76,7 @@ public final class FeaturesGUI extends SimpleScreen {
         .anchor(Anchor.TOP | Anchor.CENTER)
         .text("Guide")
         .position(0, 4)
-        .listener(this)
+        .onClick(() -> guideManager.requestGuideGUI())
         .build("button.guide");
 
     // Claims button
@@ -83,7 +85,7 @@ public final class FeaturesGUI extends SimpleScreen {
         .anchor(Anchor.TOP | Anchor.CENTER)
         .position(0, guideButton.getY() + 18)
         .text("Claim Management")
-        .listener(this)
+        .onClick(() -> claimManager.requestClaimGUI())
         .build("button.claim");
 
     // Nickname button
@@ -92,7 +94,7 @@ public final class FeaturesGUI extends SimpleScreen {
         .anchor(Anchor.TOP | Anchor.CENTER)
         .text("Nicknames")
         .position(0, claimButton.getY() + 18)
-        .listener(this)
+        .onClick(() -> nickManager.requestNicknameGUI())
         .build("button.nickname");
 
     // Manage Titles button
@@ -101,7 +103,7 @@ public final class FeaturesGUI extends SimpleScreen {
         .anchor(Anchor.TOP | Anchor.CENTER)
         .text("Titles")
         .position(0, nicknameButton.getY() + 18)
-        .listener(this)
+        .onClick(() -> titleManager.requestManageTitlesGui())
         .build("button.title.manage");
 
     // Accessories button
@@ -111,7 +113,7 @@ public final class FeaturesGUI extends SimpleScreen {
         .position(0, titleButton.getY() + 18)
         .text("Accessories")
         .enabled(isAdmin)
-        .listener(this)
+        //.onClick(() -> action)
         .build("button.accessories");
 
     final UISeparator functionsSeparator = new UISeparator(this);
@@ -136,7 +138,7 @@ public final class FeaturesGUI extends SimpleScreen {
         .position(0, functionsSeparator2.getY() + 10)
         .visible(isAdmin)
         .text("Manage Exchanges")
-        .listener(this)
+        .onClick(() -> exchangeManager.requestExchangeManageGui())
         .build("button.exchange.manage");
 
     // Server Shop Configuration GUI button
@@ -145,56 +147,21 @@ public final class FeaturesGUI extends SimpleScreen {
         .anchor(Anchor.TOP | Anchor.CENTER)
         .position(0, manageExchangeButton.getY() + 18)
         .visible(isAdmin)
-        .text("Manage Shops")
-        .listener(this)
-        .build("button.shop.manage");
+        .text("Manage Stores")
+        .onClick(() -> storeManager.requestStoreManage())
+        .build("button.stores.manage");
 
     // Close button
     final UIButton buttonClose = new UIButtonBuilder(this)
         .width(40)
         .anchor(Anchor.BOTTOM | Anchor.RIGHT)
         .text(Text.of("almura.button.close"))
-        .listener(this)
+        .onClick(this::close)
         .build("button.close");
 
     form.add(guideButton, manageExchangeButton, titleButton, nicknameButton, functionsSeparator, adminLabel, functionsSeparator2, accessoriesButton, manageStoreButton, claimButton, buttonClose);
 
     addToScreen(form);
-  }
-
-  @Subscribe
-  public void onUIButtonClickEvent(UIButton.ClickEvent event) {
-    switch (event.getComponent().getName().toLowerCase()) {
-      case "button.exchange.manage":
-        exchangeManager.requestExchangeManageGui();
-        break;
-      case "button.exchange.specific":
-        //exchangeManager.requestExchangeSpecificGui("almura.exchange.global");
-        break;
-      case "button.shop.specific":
-        // Todo: need packet based request here.
-        //new StoreScreen(true).display(); //isAdmin TRUE
-        break;
-      case "button.shop.manage":
-        // Todo: need packet based request here.
-        new StoreListScreen().display();
-        break;
-      case "button.title.manage":
-        titleManager.requestManageTitlesGui();
-        break;
-      case "button.guide":
-        guideManager.requestGuideGUI();
-        break;
-      case "button.nickname":
-        nickManager.requestNicknameGUI();
-        break;
-      case "button.claim":
-        claimManager.requestClaimGUI();
-        break;
-      case "button.close":
-        this.close();
-        break;
-    }
   }
 
   @Override

@@ -23,7 +23,8 @@ public final class ExchangeManagementScreen extends IngameFeatureManagementScree
     @Inject private static ClientExchangeManager exchangeManager;
 
     public ExchangeManagementScreen() {
-        super(I18n.format("almura.title.exchange.management"), "Exchange",
+        super(I18n.format("almura.feature.common.title.management", I18n.format("almura.feature.exchange.name")),
+                I18n.format("almura.feature.exchange.name"),
                 // onRefresh
                 screen -> {
                     screen.setItems(Collections.unmodifiableList(exchangeManager.getExchanges()));

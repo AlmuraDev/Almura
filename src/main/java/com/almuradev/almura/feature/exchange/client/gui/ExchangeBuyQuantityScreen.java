@@ -49,7 +49,7 @@ public class ExchangeBuyQuantityScreen extends SimpleScreen {
     public void construct() {
         this.guiscreenBackground = false;
 
-        this.form = new UIForm(this, 130, 90, I18n.format("almura.title.exchange.enter_a_quantity"));
+        this.form = new UIForm(this, 130, 90, I18n.format("almura.feature.exchange.title.enter_a_quantity"));
         this.form.setZIndex(10); // Fixes issue overlapping draws from parent
         this.form.setBackgroundAlpha(255);
 
@@ -84,7 +84,7 @@ public class ExchangeBuyQuantityScreen extends SimpleScreen {
         this.totalValueLabel.setFontOptions(FontColors.WHITE_FO);
 
         this.buttonBuy = new UIButtonBuilder(this)
-                .text(I18n.format("almura.button.exchange.buy"))
+                .text(I18n.format("almura.feature.exchange.button.buy"))
                 .width(40)
                 .position(-2, -2)
                 .anchor(Anchor.RIGHT | Anchor.BOTTOM)

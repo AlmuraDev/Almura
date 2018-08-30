@@ -95,52 +95,65 @@ almura.button.save=Save
 almura.button.search=Search
 almura.button.open=Open
 
+# --------------------
+# -- feature.common --
+# --------------------
+
+almura.feature.common.button.search=Search
+almura.feature.common.text.add_feature=Are you sure you want to add this %s?
+almura.feature.common.text.created=Created
+almura.feature.common.text.creator_name=Creator (name)
+almura.feature.common.text.creator_uuid=Creator (uuid)
+almura.feature.common.text.delete_feature=Are you sure you want to delete the '%s' %s?
+almura.feature.common.text.hidden=Hidden
+almura.feature.common.text.id=ID
+almura.feature.common.text.modify_feature=Are you sure you want to modify this %s?
+almura.feature.common.text.permission=Permission
+almura.feature.common.text.title=Title
+almura.feature.common.text.unknown=Unknown
+almura.feature.common.title.are_you_sure=Are you sure?
+almura.feature.common.title.management=%s - Management
+
+# ---------------
+# ---- store ----
+# ---------------
+
+almura.feature.store.name=Store
+
 # ---------------
 # -- exchange ---
 # ---------------
-almura.button.exchange.buy.all=Buy All
-almura.button.exchange.buy.quantity=Buy Quantity
-almura.button.exchange.buy.one=Buy 1
-almura.button.exchange.buy.stack=Buy %d
-almura.button.exchange.buy=Buy
-almura.button.exchange.list=List
-almura.button.exchange.search=Search
-almura.button.exchange.unlist=Unlist
-almura.text.ingame_feature.add_ingame_feature=Are you sure you want to add this %s?
-almura.text.ingame_feature.created=Created
-almura.text.ingame_feature.creator_name=Creator (name)
-almura.text.ingame_feature.creator_uuid=Creator (uuid)
-almura.text.ingame_feature.delete_ingame_feature=Are you sure you want to delete the '%s' %s?
-almura.text.ingame_feature.hidden=Hidden
-almura.text.ingame_feature.id=ID
-almura.text.exchange.inventory=Inventory
-almura.text.exchange.item_name=Item Name
-almura.text.ingame_feature.modify_ingame_feature=Are you sure you want to modify this %s?
-almura.text.ingame_feature.permission=Permission
-almura.text.exchange.searching_for_criteria=Searching for criteria
-almura.text.exchange.seller=Seller
-almura.text.exchange.sort.item_ascending=Item (Asc.)
-almura.text.exchange.sort.item_descending=Item (Desc.)
-almura.text.exchange.sort.newest=Newest
-almura.text.exchange.sort.oldest=Oldest
-almura.text.exchange.sort.player_ascending=Player (Asc.)
-almura.text.exchange.sort.player_descending=Player (Desc.)
-almura.text.exchange.sort.price_ascending=Price (Asc.)
-almura.text.exchange.sort.price_descending=Price (Desc.)
-almura.text.ingame_feature.title=Title
-almura.text.ingame_feature.unknown=Unknown
-almura.text.exchange.unlisted_items=Unlisted Items
-almura.title.ingame_feature.are_you_sure=Are you sure?
-almura.title.exchange.enter_a_price=Enter a price
-almura.title.exchange.enter_a_quantity=Enter a Quantity
-almura.title.exchange.listable_items=Listable Items
-almura.title.exchange.management=Exchange - Management
-almura.title.exchange.offer=Offer
-almura.tooltip.exchange.move_all=Moves all items of the selected type to the %s
-almura.tooltip.exchange.move_single=Move one of the selected item to the %s
-almura.tooltip.exchange.move_stack=Move the selected stack of items to the %s
-almura.tooltip.exchange.move_type=Moves all items of the selected type to the %s
-almura.tooltip.exchange.total=Total
+
+almura.feature.exchange.button.buy.all=Buy All
+almura.feature.exchange.button.buy.one=Buy 1
+almura.feature.exchange.button.buy.quantity=Buy Quantity
+almura.feature.exchange.button.buy.stack=Buy %d
+almura.feature.exchange.button.buy=Buy
+almura.feature.exchange.button.list=List
+almura.feature.exchange.button.unlist=Unlist
+almura.feature.exchange.name=Exchange
+almura.feature.exchange.text.inventory=Inventory
+almura.feature.exchange.text.item_name=Item Name
+almura.feature.exchange.text.searching_for_criteria=Searching for criteria
+almura.feature.exchange.text.seller=Seller
+almura.feature.exchange.text.sort.item_ascending=Item (Asc.)
+almura.feature.exchange.text.sort.item_descending=Item (Desc.)
+almura.feature.exchange.text.sort.newest=Newest
+almura.feature.exchange.text.sort.oldest=Oldest
+almura.feature.exchange.text.sort.player_ascending=Player (Asc.)
+almura.feature.exchange.text.sort.player_descending=Player (Desc.)
+almura.feature.exchange.text.sort.price_ascending=Price (Asc.)
+almura.feature.exchange.text.sort.price_descending=Price (Desc.)
+almura.feature.exchange.text.unlisted_items=Unlisted Items
+almura.feature.exchange.title.enter_a_price=Enter a price
+almura.feature.exchange.title.enter_a_quantity=Enter a Quantity
+almura.feature.exchange.title.listable_items=Listable Items
+almura.feature.exchange.title.offer=Offer
+almura.feature.exchange.tooltip.move_all=Moves all items to the %s
+almura.feature.exchange.tooltip.move_single=Move one of the selected item to the %s
+almura.feature.exchange.tooltip.move_stack=Move the selected stack of items to the %s
+almura.feature.exchange.tooltip.move_type=Moves all items of the selected type to the %s
+almura.feature.exchange.tooltip.total=Total
 
 # ---------------
 # ---- guide ----

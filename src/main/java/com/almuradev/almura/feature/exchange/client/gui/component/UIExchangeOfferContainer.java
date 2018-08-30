@@ -131,7 +131,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
                 .position(0, 3)
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .text("1")
-                .tooltip(I18n.format("almura.tooltip.exchange.move_single", this.targetSide.toString().toLowerCase()))
+                .tooltip(I18n.format("almura.feature.exchange.tooltip.move_single", this.targetSide.toString().toLowerCase()))
                 .onClick(() -> TransferType.SINGLE.transfer(this, this.targetSide, this.getOpposingListFromSide(this.targetSide).getSelectedItem()))
                 .enabled(false)
                 .build("button.one");
@@ -141,7 +141,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
                 .position(0, SimpleScreen.getPaddedY(this.buttonSingle, 2))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .text("S")
-                .tooltip(I18n.format("almura.tooltip.exchange.move_stack", this.targetSide.toString().toLowerCase()))
+                .tooltip(I18n.format("almura.feature.exchange.tooltip.move_stack", this.targetSide.toString().toLowerCase()))
                 .onClick(() -> TransferType.STACK.transfer(this, this.targetSide, this.getOpposingListFromSide(this.targetSide).getSelectedItem()))
                 .enabled(false)
                 .build("button.stack");
@@ -155,7 +155,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
                 .position(0, SimpleScreen.getPaddedY(this.labelDirection, 6))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .text("T")
-                .tooltip(I18n.format("almura.tooltip.exchange.move_type", this.targetSide.toString().toLowerCase()))
+                .tooltip(I18n.format("almura.feature.exchange.tooltip.move_type", this.targetSide.toString().toLowerCase()))
                 .onClick(() -> TransferType.TYPE.transfer(this, this.targetSide, this.getOpposingListFromSide(this.targetSide).getSelectedItem()))
                 .enabled(false)
                 .build("button.type");
@@ -165,7 +165,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
                 .position(0, SimpleScreen.getPaddedY(this.buttonType, 2))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .text("A")
-                .tooltip(I18n.format("almura.tooltip.exchange.move_all", this.targetSide.toString().toLowerCase()))
+                .tooltip(I18n.format("almura.feature.exchange.tooltip.move_all", this.targetSide.toString().toLowerCase()))
                 .onClick(() -> TransferType.ALL.transfer(this, this.targetSide, null))
                 .enabled(false)
                 .build("button.all");
@@ -207,13 +207,13 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
         }
 
         buttonSingle.setEnabled(isSelectionValid);
-        buttonSingle.setTooltip(I18n.format("almura.tooltip.exchange.move_single", this.targetSide.toString().toLowerCase()));
+        buttonSingle.setTooltip(I18n.format("almura.feature.exchange.tooltip.move_single", this.targetSide.toString().toLowerCase()));
         buttonStack.setEnabled(isSelectionValid);
-        buttonStack.setTooltip(I18n.format("almura.tooltip.exchange.move_stack", this.targetSide.toString().toLowerCase()));
+        buttonStack.setTooltip(I18n.format("almura.feature.exchange.tooltip.move_stack", this.targetSide.toString().toLowerCase()));
         buttonType.setEnabled(isSelectionValid);
-        buttonType.setTooltip(I18n.format("almura.tooltip.exchange.move_type", this.targetSide.toString().toLowerCase()));
+        buttonType.setTooltip(I18n.format("almura.feature.exchange.tooltip.move_type", this.targetSide.toString().toLowerCase()));
         buttonAll.setEnabled(isSelectionValid);
-        buttonAll.setTooltip(I18n.format("almura.tooltip.exchange.move_all", this.targetSide.toString().toLowerCase()));
+        buttonAll.setTooltip(I18n.format("almura.feature.exchange.tooltip.move_all", this.targetSide.toString().toLowerCase()));
     }
 
     @Subscribe

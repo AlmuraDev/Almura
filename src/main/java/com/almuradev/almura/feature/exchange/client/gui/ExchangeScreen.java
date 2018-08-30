@@ -35,7 +35,6 @@ import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UISelect;
 import net.malisis.core.renderer.font.FontOptions;
-import net.malisis.core.util.MouseButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
@@ -114,7 +113,7 @@ public final class ExchangeScreen extends SimpleScreen {
         searchContainer.setBackgroundAlpha(215);
         searchContainer.setPadding(3, 3);
 
-        final UILabel itemSearchLabel = new UILabel(this, I18n.format("almura.text.exchange.item_name") + ":");
+        final UILabel itemSearchLabel = new UILabel(this, I18n.format("almura.feature.exchange.text.item_name") + ":");
         itemSearchLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).scale(1.1F).build());
         itemSearchLabel.setPosition(0, 4, Anchor.LEFT | Anchor.TOP);
 
@@ -127,7 +126,7 @@ public final class ExchangeScreen extends SimpleScreen {
         this.displayNameSearchTextBox.setPosition(itemSearchLabel.getWidth() + innerPadding, 2, Anchor.LEFT | Anchor.TOP);
         this.displayNameSearchTextBox.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
-        final UILabel sellerSearchLabel = new UILabel(this, I18n.format("almura.text.exchange.seller") + ":");
+        final UILabel sellerSearchLabel = new UILabel(this, I18n.format("almura.feature.exchange.text.seller") + ":");
         sellerSearchLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).scale(1.1F).build());
         sellerSearchLabel.setPosition(displayNameSearchTextBox.getX() - sellerSearchLabel.getWidth() - 1,
             getPaddedY(itemSearchLabel, 7), Anchor.LEFT | Anchor.TOP);
@@ -152,7 +151,7 @@ public final class ExchangeScreen extends SimpleScreen {
                 .width(80)
                 .anchor(Anchor.RIGHT | Anchor.TOP)
                 .position(-innerPadding, this.sellerSearchTextBox.getY() - 1)
-                .text(I18n.format("almura.button.exchange.search"))
+                .text(I18n.format("almura.feature.common.button.search"))
                 .onClick(this::search)
                 .build("button.search");
 
@@ -239,7 +238,7 @@ public final class ExchangeScreen extends SimpleScreen {
                 .width(60)
                 .anchor(Anchor.LEFT | Anchor.MIDDLE)
                 .position(0, 0)
-                .text(I18n.format("almura.button.exchange.buy.one"))
+                .text(I18n.format("almura.feature.exchange.button.buy.one"))
                 .enabled(false)
                 .onClick(() -> this.buy(1))
                 .build("button.buy.single");
@@ -248,7 +247,7 @@ public final class ExchangeScreen extends SimpleScreen {
                 .width(60)
                 .anchor(Anchor.LEFT | Anchor.MIDDLE)
                 .position(SimpleScreen.getPaddedX(this.buttonBuyOne, 10), 0)
-                .text(I18n.format("almura.button.exchange.buy.stack", 0))
+                .text(I18n.format("almura.feature.exchange.button.buy.stack", 0))
                 .enabled(false)
                 .onClick(() -> {
                     final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
@@ -262,7 +261,7 @@ public final class ExchangeScreen extends SimpleScreen {
                 .width(50)
                 .anchor(Anchor.RIGHT | Anchor.MIDDLE)
                 .position(0, 0)
-                .text(I18n.format("almura.button.exchange.buy.all"))
+                .text(I18n.format("almura.feature.exchange.button.buy.all"))
                 .enabled(false)
                 .onClick(() -> {
                     final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
@@ -276,7 +275,7 @@ public final class ExchangeScreen extends SimpleScreen {
                 .width(60)
                 .anchor(Anchor.RIGHT | Anchor.MIDDLE)
                 .position(SimpleScreen.getPaddedX(this.buttonBuyAll, 10, Anchor.RIGHT), 0)
-                .text(I18n.format("almura.button.exchange.buy.quantity"))
+                .text(I18n.format("almura.feature.exchange.button.buy.quantity"))
                 .enabled(false)
                 .onClick(() -> {
                     final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
@@ -296,7 +295,7 @@ public final class ExchangeScreen extends SimpleScreen {
         listableItemsContainer.setBackgroundAlpha(215);
         listableItemsContainer.setPadding(3, 3);
 
-        final UILabel listableItemsLabel = new UILabel(this, I18n.format("almura.title.exchange.listable_items"));
+        final UILabel listableItemsLabel = new UILabel(this, I18n.format("almura.feature.exchange.title.listable_items"));
         listableItemsLabel.setPosition(0, 2, Anchor.CENTER | Anchor.TOP);
         listableItemsLabel.setFontOptions(FontColors.WHITE_FO);
 
@@ -313,7 +312,7 @@ public final class ExchangeScreen extends SimpleScreen {
             .width(40)
             .anchor(Anchor.LEFT | Anchor.BOTTOM)
             .position(0, 0)
-            .text(I18n.format("almura.button.exchange.list"))
+            .text(I18n.format("almura.feature.exchange.button.list"))
             .enabled(false)
             .onClick(this::list)
             .build("button.list");
@@ -430,14 +429,14 @@ public final class ExchangeScreen extends SimpleScreen {
         this.buttonBuyStack.setEnabled(isResultSelected
                 && currentForSaleItem.getQuantity() > 1
                 && currentForSaleItem.getQuantity() >= maxStackSize);
-        this.buttonBuyStack.setText(I18n.format("almura.button.exchange.buy.stack", maxStackSize));
+        this.buttonBuyStack.setText(I18n.format("almura.feature.exchange.button.buy.stack", maxStackSize));
         this.buttonBuyAll.setEnabled(isResultSelected && currentForSaleItem.getQuantity() > 1);
 
         // Selling list
         final boolean isSellingItemSelected = this.listItemList.getSelectedItem() != null;
         final boolean isListed = isSellingItemSelected && this.listItemList.getSelectedItem().getForSaleItem().isPresent();
         this.buttonList.setEnabled(isSellingItemSelected);
-        this.buttonList.setText(I18n.format("almura.button.exchange." + (isListed ? "unlist" : "list")));
+        this.buttonList.setText(I18n.format("almura.feature.exchange.button." + (isListed ? "unlist" : "list")));
 
         // Update page buttons/labels
         this.buttonFirstPage.setEnabled(this.currentPage != 1);
@@ -627,7 +626,7 @@ public final class ExchangeScreen extends SimpleScreen {
                 this.priceLabel.setPosition(-(this.listedIndicatorContainer.getWidth() + 6), 0, Anchor.RIGHT | Anchor.MIDDLE);
 
                 // Exact value
-                this.priceLabel.setTooltip(I18n.format("almura.tooltip.exchange.total")
+                this.priceLabel.setTooltip(I18n.format("almura.feature.exchange.tooltip.total")
                         + ": " + FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getQuantity() * forSaleDoublePrice));
             }
 
@@ -660,7 +659,7 @@ public final class ExchangeScreen extends SimpleScreen {
 
             this.sellerLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
                 Text.of(TextColors.GRAY, TextStyles.ITALIC,
-                        this.item.getListItem().getSellerName().orElse(I18n.format("almura.text.exchange.unknown")))));
+                        this.item.getListItem().getSellerName().orElse(I18n.format("almura.feature.common.text.unknown")))));
             this.sellerLabel.setPosition(-innerPadding, 0, Anchor.RIGHT | Anchor.MIDDLE);
 
             final double price = this.item.getPrice().doubleValue();
@@ -670,7 +669,7 @@ public final class ExchangeScreen extends SimpleScreen {
             this.priceLabel.setPosition(-maxPlayerTextWidth + 6, 0, Anchor.RIGHT | Anchor.MIDDLE);
 
             // Exact value
-            this.priceLabel.setTooltip(I18n.format("almura.tooltip.exchange.total")
+            this.priceLabel.setTooltip(I18n.format("almura.feature.exchange.tooltip.total")
                     + ": " + FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getListItem().getQuantity() * price));
 
             this.itemNameSpaceAvailable = this.getWidth()
@@ -686,14 +685,14 @@ public final class ExchangeScreen extends SimpleScreen {
     }
 
     public enum SortType {
-        OLDEST(I18n.format("almura.text.exchange.sort.oldest"), "created", "asc"),
-        NEWEST(I18n.format("almura.text.exchange.sort.newest"), "created", "desc"),
-        PRICE_ASC(I18n.format("almura.text.exchange.sort.price_ascending"), "price", "asc"),
-        PRICE_DESC(I18n.format("almura.text.exchange.sort.price_descending"), "price", "desc"),
-        DISPLAY_NAME_ASC(I18n.format("almura.text.exchange.sort.item_ascending"), "display_name", "asc"),
-        DISPLAY_NAME_DESC(I18n.format("almura.text.exchange.sort.item_descending"), "display_name", "desc"),
-        SELLER_NAME_ASC(I18n.format("almura.text.exchange.sort.player_ascending"), "seller_name", "asc"),
-        SELLER_NAME_DESC(I18n.format("almura.text.exchange.sort.player_descending"), "seller_name", "desc");
+        OLDEST(I18n.format("almura.feature.exchange.text.sort.oldest"), "created", "asc"),
+        NEWEST(I18n.format("almura.feature.exchange.text.sort.newest"), "created", "desc"),
+        PRICE_ASC(I18n.format("almura.feature.exchange.text.sort.price_ascending"), "price", "asc"),
+        PRICE_DESC(I18n.format("almura.feature.exchange.text.sort.price_descending"), "price", "desc"),
+        DISPLAY_NAME_ASC(I18n.format("almura.feature.exchange.text.sort.item_ascending"), "display_name", "asc"),
+        DISPLAY_NAME_DESC(I18n.format("almura.feature.exchange.text.sort.item_descending"), "display_name", "desc"),
+        SELLER_NAME_ASC(I18n.format("almura.feature.exchange.text.sort.player_ascending"), "seller_name", "asc"),
+        SELLER_NAME_DESC(I18n.format("almura.feature.exchange.text.sort.player_descending"), "seller_name", "desc");
 
         public final String displayName, id, direction;
         SortType(final String displayName, final String id, final String direction) {

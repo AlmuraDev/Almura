@@ -58,7 +58,7 @@ public class ExchangeOfferScreen extends SimpleScreen {
         this.guiscreenBackground = false;
 
         // Form
-        final UIForm form = new UIForm(this, 400, 325, I18n.format("almura.title.exchange.offer"));
+        final UIForm form = new UIForm(this, 400, 325, I18n.format("almura.feature.exchange.title.offer"));
         form.setZIndex(10); // Fixes issue overlapping draws from parent
         form.setBackgroundAlpha(255);
 
@@ -82,8 +82,8 @@ public class ExchangeOfferScreen extends SimpleScreen {
         final NonNullList<ItemStack> mainInventory = Minecraft.getMinecraft().player.inventory.mainInventory;
         final int totalItemsForSale = this.exchange.getForSaleItemsFor(Minecraft.getMinecraft().player.getUniqueID()).map(List::size).orElse(0);
         this.offerContainer = new UIExchangeOfferContainer(this, getPaddedWidth(form), getPaddedHeight(form) - 20,
-                Text.of(TextColors.WHITE, I18n.format("almura.text.exchange.inventory")),
-                Text.of(TextColors.WHITE, I18n.format("almura.text.exchange.unlisted_items")),
+                Text.of(TextColors.WHITE, I18n.format("almura.feature.exchange.text.inventory")),
+                Text.of(TextColors.WHITE, I18n.format("almura.feature.exchange.text.unlisted_items")),
                 mainInventory.size(),
                 this.limit,
                 totalItemsForSale);

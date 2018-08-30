@@ -57,7 +57,7 @@ public class ExchangeListPriceScreen extends SimpleScreen {
     public void construct() {
         this.guiscreenBackground = false;
 
-        this.form = new UIForm(this, 120, 65, I18n.format("almura.title.exchange.enter_a_price"));
+        this.form = new UIForm(this, 120, 65, I18n.format("almura.feature.exchange.title.enter_a_price"));
         this.form.setZIndex(10); // Fixes issue overlapping draws from parent
         this.form.setBackgroundAlpha(255);
 
@@ -103,7 +103,7 @@ public class ExchangeListPriceScreen extends SimpleScreen {
         this.eaLabel.setPosition(SimpleScreen.getPaddedX(this.pricePerTextBox, 2), 1, Anchor.MIDDLE | Anchor.LEFT);
 
         this.buttonList = new UIButtonBuilder(this)
-                .text(I18n.format("almura.button.exchange.list"))
+                .text(I18n.format("almura.feature.exchange.button.list"))
                 .width(40)
                 .position(-2, -2)
                 .anchor(Anchor.RIGHT | Anchor.BOTTOM)

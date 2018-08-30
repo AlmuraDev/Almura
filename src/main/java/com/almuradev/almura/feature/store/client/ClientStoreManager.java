@@ -12,6 +12,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.store.Store;
 import com.almuradev.almura.feature.store.StoreModifyType;
+import com.almuradev.almura.feature.store.client.gui.StoreManagementScreen;
 import com.almuradev.almura.feature.store.network.ServerboundModifyStorePacket;
 import com.almuradev.almura.feature.store.network.ServerboundStoreSpecificOfferRequestPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
@@ -44,6 +45,17 @@ public final class ClientStoreManager implements Witness {
     @SubscribeEvent
     public void onClientConnectedToServerEvent(final FMLNetworkEvent.ClientConnectedToServerEvent event) {
         this.stores.clear();
+    }
+
+    @Nullable
+    private Store getStore(final String id) {
+        checkNotNull(id);
+
+        return this.stores.stream().filter(axs -> axs.getId().equalsIgnoreCase(id)).findAny().orElse(null);
+    }
+
+    public List<Store> getStores() {
+        return this.stores;
     }
 
     public void requestStoreManage() {
@@ -89,7 +101,7 @@ public final class ClientStoreManager implements Witness {
     }
 
     public void handleStoreManage() {
-
+        new StoreManagementScreen().display();
     }
 
     public void handleStoreSpecific(final String id) {
