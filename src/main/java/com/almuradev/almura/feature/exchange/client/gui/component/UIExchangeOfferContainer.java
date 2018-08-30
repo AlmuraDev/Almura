@@ -12,7 +12,6 @@ import static com.almuradev.almura.feature.exchange.ExchangeConstants.MILLION;
 import com.almuradev.almura.feature.exchange.ExchangeConstants;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIPropertyBar;
 import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UIComplexImage;
 import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
 import com.almuradev.almura.shared.client.ui.component.UIExpandingLabel;
 import com.almuradev.almura.shared.client.ui.component.UISaneTooltip;
@@ -28,6 +27,7 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
+import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.event.ComponentEvent;
@@ -380,7 +380,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
 
     private static class OfferItemComponent extends UIDynamicList.ItemComponent<VanillaStack> {
 
-        private UIComplexImage image;
+        private UIImage image;
         private UIExpandingLabel itemLabel;
         private int lastKnownQuantity;
         private String itemLabelText;
@@ -401,7 +401,7 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
             final EntityPlayer player = Minecraft.getMinecraft().player;
             final boolean useAdvancedTooltips = Minecraft.getMinecraft().gameSettings.advancedItemTooltips;
 
-            this.image = new UIComplexImage(gui, fakeStack);
+            this.image = new UIImage(gui, fakeStack);
             this.image.setPosition(0, 0, Anchor.LEFT | Anchor.MIDDLE);
             this.image.setTooltip(new UISaneTooltip(gui, String.join("\n", fakeStack.getTooltip(player, useAdvancedTooltips
                     ? ITooltipFlag.TooltipFlags.ADVANCED
