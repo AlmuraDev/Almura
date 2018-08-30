@@ -63,12 +63,10 @@ public class SimplePageView extends SimpleScreen {
         final UIForm form = new UIForm(this, 582, 315, TextFormatting.WHITE + I18n.format("almura.guide.view.form.title"));
 
         // Page list
-        final UIContainer<?> pagesListContainer = new UIContainer<>(this, 156, SimpleScreen.getPaddedHeight(form));
-        pagesListContainer.setBorder(FontColors.WHITE, 1, 185);
-        pagesListContainer.setPadding(3);
-        pagesListContainer.setBackgroundAlpha(0);
-
-        this.pagesList = new UIDynamicList<>(this, UIComponent.INHERITED, UIComponent.INHERITED);
+        this.pagesList = new UIDynamicList<>(this, 156, SimpleScreen.getPaddedHeight(form));
+        this.pagesList.setBorder(0xFFFFFF, 1, 215);
+        this.pagesList.setPadding(2, 2);
+        this.pagesList.setPosition(1, 0);
         this.pagesList.setItemComponentSpacing(1);
         this.pagesList.setItemComponentFactory(PageListEntryItemComponent::new);
         this.pagesList.setItems(manager.getPageEntries());
@@ -84,10 +82,8 @@ public class SimplePageView extends SimpleScreen {
             }
         });
 
-        pagesListContainer.add(this.pagesList);
-
         if (this.canModify) {
-            pagesListContainer.setHeight(pagesListContainer.getHeight() - 17);
+            this.pagesList.setHeight(this.pagesList.getHeight() - 17);
 
             this.buttonAdd = new UIButtonBuilder(this)
                     .text(TextFormatting.GREEN + "+")
@@ -114,11 +110,11 @@ public class SimplePageView extends SimpleScreen {
                     .visible(this.canModify)
                     .tooltip(I18n.format("almura.guide.view.button.details.tooltip"))
                     .build("button.details");
-            this.buttonDetails.setPosition(SimpleScreen.getPaddedX(pagesListContainer, -this.buttonDetails.getWidth()) + 1, 0);
+            this.buttonDetails.setPosition(SimpleScreen.getPaddedX(this.pagesList, -this.buttonDetails.getWidth()) + 1, 0);
         }
 
         this.tbContent = new WYSIWYGTextBox(this, SimpleScreen.getPaddedHeight(form), "");
-        this.tbContent.setPosition(SimpleScreen.getPaddedX(pagesListContainer, 2), 0);
+        this.tbContent.setPosition(SimpleScreen.getPaddedX(this.pagesList, 2), 0);
         this.tbContent.getTextBox().setEditable(this.canModify);
         this.tbContent.getTextBox().setOptions(0x555555, 0xc8c8c8, 0x00000);
         if (!this.canModify) {
@@ -154,7 +150,7 @@ public class SimplePageView extends SimpleScreen {
             form.add(buttonSave, buttonCancel);
         }
 
-        form.add(pagesListContainer, this.tbContent, this.buttonAdd, buttonRemove, buttonDetails);
+        form.add(this.pagesList, this.tbContent, this.buttonAdd, buttonRemove, buttonDetails);
 
         this.addToScreen(form);
     }

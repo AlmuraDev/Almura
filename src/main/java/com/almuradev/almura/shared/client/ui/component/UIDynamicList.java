@@ -356,7 +356,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
 
     @Override
     public ClipArea getClipArea() {
-        return new ClipArea(this);
+        return new ClipArea(this, this, true);
     }
 
     @Override

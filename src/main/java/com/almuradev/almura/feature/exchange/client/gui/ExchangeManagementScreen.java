@@ -9,7 +9,6 @@ package com.almuradev.almura.feature.exchange.client.gui;
 
 import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.feature.exchange.Exchange;
-import com.almuradev.almura.shared.client.ui.UIConstants;
 import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
 import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.UITextBox;
@@ -43,7 +42,6 @@ import org.spongepowered.api.text.format.TextColors;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.Locale;
 import java.util.function.Consumer;
 
 @SideOnly(Side.CLIENT)
@@ -195,7 +193,6 @@ public final class ExchangeManagementScreen extends SimpleScreen {
         // Add button
         this.buttonAdd = new UIButtonBuilder(this)
                 .text(Text.of(TextColors.GREEN, "+"))
-                .width(15)
                 .anchor(Anchor.BOTTOM | Anchor.LEFT)
                 .onClick(() -> {
                     this.exchangeList.setSelectedItem(null);
@@ -205,7 +202,6 @@ public final class ExchangeManagementScreen extends SimpleScreen {
 
         // Remove button
         this.buttonDelete = new UIButtonBuilder(this)
-                .width(15)
                 .x(SimpleScreen.getPaddedX(this.buttonAdd, 2))
                 .text(Text.of(TextColors.RED, "-"))
                 .anchor(Anchor.BOTTOM | Anchor.LEFT)
