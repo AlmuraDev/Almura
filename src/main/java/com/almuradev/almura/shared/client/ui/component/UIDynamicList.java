@@ -445,7 +445,8 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
                 final UIComponent<?> componentAt = this.getComponentAt(mouseX, mouseY);
                 if (parent.getSelectedItem() == this.item) {
                     this.setColor(INNER_SELECTED_COLOR);
-                } else if (componentAt != null && (this.equals(componentAt) || this.equals(componentAt.getParent()))) {
+                } else if (componentAt != null && componentAt.getGui() == MalisisGui.currentGui()
+                        && (this.equals(componentAt) || this.equals(componentAt.getParent()))) {
                     this.setColor(INNER_HOVER_COLOR);
                 } else {
                     this.setColor(INNER_COLOR);
