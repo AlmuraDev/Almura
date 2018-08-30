@@ -328,6 +328,6 @@ public final class ClientExchangeManager implements Witness {
 
     public void handleTransactionComplete() {
         final EntityPlayerSP player = Minecraft.getMinecraft().player;
-        player.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1, 1);
+        player.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1, 1);
     }
 }
