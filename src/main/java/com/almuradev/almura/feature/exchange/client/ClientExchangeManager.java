@@ -35,7 +35,9 @@ import com.almuradev.almura.shared.item.BasicVanillaStack;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.init.SoundEvents;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -322,5 +324,10 @@ public final class ClientExchangeManager implements Witness {
         this.currentSort = defaultSort;
         this.currentSkip = defaultSkip;
         this.currentLimit = defaultLimit;
+    }
+
+    public void handleTransactionComplete() {
+        final EntityPlayerSP player = Minecraft.getMinecraft().player;
+        player.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1, 1);
     }
 }

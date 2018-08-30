@@ -18,6 +18,7 @@ import com.almuradev.almura.feature.exchange.network.ClientboundForSaleFilterReq
 import com.almuradev.almura.feature.exchange.network.ClientboundForSaleItemsResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundListItemsResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundListItemsSaleStatusPacket;
+import com.almuradev.almura.feature.exchange.network.ClientboundTransactionCompletePacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.database.DatabaseManager;
 import com.almuradev.almura.shared.database.DatabaseQueue;
@@ -56,6 +57,7 @@ import org.jooq.Results;
 import org.slf4j.Logger;
 import org.spongepowered.api.GameState;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.effect.sound.SoundTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.CauseStackManager;
 import org.spongepowered.api.event.Listener;
@@ -1416,6 +1418,9 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                             }
 
                             this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(axs.getId()));
+
+                            Sponge.getServer().getPlayer(buyer)
+                                .ifPresent(buyerPlayer -> this.network.sendTo(buyerPlayer, new ClientboundTransactionCompletePacket()));
                         })
                         .submit(this.container);
                 } catch (SQLException e) {

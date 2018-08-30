@@ -19,6 +19,7 @@ import com.almuradev.almura.feature.exchange.network.ClientboundForSaleFilterReq
 import com.almuradev.almura.feature.exchange.network.ClientboundForSaleItemsResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundListItemsResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundListItemsSaleStatusPacket;
+import com.almuradev.almura.feature.exchange.network.ClientboundTransactionCompletePacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundExchangeSpecificOfferRequestPacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundForSaleFilterResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ServerboundTransactionRequestPacket;
@@ -31,6 +32,7 @@ import com.almuradev.almura.feature.exchange.network.handler.ClientboundForSaleF
 import com.almuradev.almura.feature.exchange.network.handler.ClientboundForSaleItemsResponsePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ClientboundListItemsResponsePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ClientboundListItemsSaleStatusPacketHandler;
+import com.almuradev.almura.feature.exchange.network.handler.ClientboundTransactionCompletePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundExchangeSpecificOfferPacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundForSaleFilterResponsePacketHandler;
 import com.almuradev.almura.feature.exchange.network.handler.ServerboundTransactionRequestPacketHandler;
@@ -92,7 +94,10 @@ public final class ExchangeModule extends AbstractModule implements CommonBinder
                 binder -> binder.handler(ServerboundModifyForSaleItemListStatusRequestPacketHandler.class, Platform.Type.SERVER))
 
             .bind(ServerboundTransactionRequestPacket.class,
-                binder -> binder.handler(ServerboundTransactionRequestPacketHandler.class, Platform.Type.SERVER));
+                binder -> binder.handler(ServerboundTransactionRequestPacketHandler.class, Platform.Type.SERVER))
+
+            .bind(ClientboundTransactionCompletePacket.class,
+                binder -> binder.handler(ClientboundTransactionCompletePacketHandler.class, Platform.Type.CLIENT));
 
         this.facet().add(ServerExchangeManager.class);
 
