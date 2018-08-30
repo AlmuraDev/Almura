@@ -39,7 +39,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
     @Nullable private T selectedItem;
     @Nullable private Consumer<T> onSelectConsumer;
 
-    public UIDynamicList(MalisisGui gui, int width, int height) {
+    public UIDynamicList(final MalisisGui gui, final int width, final int height) {
         super(gui, width, height);
 
         this.scrollbar = new UISlimScrollbar(gui, this, UIScrollBar.Type.VERTICAL);
@@ -66,7 +66,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
      * @return The item located at the specified index
      */
     @Nullable
-    public T getItem(int index) {
+    public T getItem(final int index) {
         return this.items.get(index);
     }
 
@@ -75,7 +75,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
      * @param item The item to add
      * @return True if the item was added, otherwise false
      */
-    public boolean addItem(T item) {
+    public boolean addItem(final T item) {
         final boolean result = this.items.add(item);
 
         if (result) {
@@ -91,7 +91,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
      * @param items The items to add
      * @return True if all items were added, otherwise false
      */
-    public boolean addItems(List<T> items) {
+    public boolean addItems(final List<T> items) {
         final boolean result = this.items.addAll(items);
 
         if (result) {
@@ -102,7 +102,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
         return result;
     }
 
-    public void addItem(final int index, T item) {
+    public void addItem(final int index, final T item) {
         this.items.add(index, item);
 
         this.isDirty = true;
@@ -114,7 +114,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
      * @param items The items to set
      * @return The {@link UIDynamicList<T>}
      */
-    public UIDynamicList<T> setItems(List<T> items) {
+    public UIDynamicList<T> setItems(final List<T> items) {
         this.items.clear();
         this.items.addAll(items);
         this.isDirty = true;
@@ -128,7 +128,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
      * @param item The item to remove
      * @return True if the item was removed, otherwise false
      */
-    public boolean removeItem(T item) {
+    public boolean removeItem(final T item) {
         final boolean result = this.items.remove(item);
         this.isDirty = true;
         this.fireEvent(new ItemsChangedEvent<>(this));
@@ -141,7 +141,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
      * @param index The index
      * @return The {@link UIDynamicList<T>}
      */
-    public UIDynamicList<T> removeItem(int index) {
+    public UIDynamicList<T> removeItem(final int index) {
         this.items.remove(index);
         this.isDirty = true;
         this.fireEvent(new ItemsChangedEvent<>(this));
@@ -153,7 +153,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
      * @param items The items to remove
      * @return True if all items were removed, otherwise false
      */
-    public boolean removeItems(List<T> items) {
+    public boolean removeItems(final List<T> items) {
         final boolean result = this.items.removeAll(items);
         this.isDirty = true;
         this.fireEvent(new ItemsChangedEvent<>(this));
@@ -189,7 +189,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
      * @param markDirty Mark the list as dirty
      * @return The {@link UIDynamicList<T>}
      */
-    public UIDynamicList<T> setSelectedItem(@Nullable T item, boolean markDirty) {
+    public UIDynamicList<T> setSelectedItem(@Nullable final T item, final boolean markDirty) {
         if (!this.readOnly) {
             if (this.fireEvent(new SelectEvent<>(this, this.selectedItem, item))) {
                 this.selectedItem = item;
@@ -208,7 +208,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
      * @param item The item to select
      * @return The {@link UIDynamicList<T>}
      */
-    public UIDynamicList<T> setSelectedItem(@Nullable T item) {
+    public UIDynamicList<T> setSelectedItem(@Nullable final T item) {
         return this.setSelectedItem(item, true);
     }
 
@@ -225,7 +225,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
      * @param spacing The space to use between components
      * @return The {@link UIDynamicList<T>}
      */
-    public UIDynamicList<T> setItemComponentSpacing(int spacing) {
+    public UIDynamicList<T> setItemComponentSpacing(final int spacing) {
         this.itemSpacing = spacing;
         return this;
     }
@@ -243,7 +243,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
      * @param readOnly The value to set the status as
      * @return The {@link UIDynamicList<T>}
      */
-    public UIDynamicList<T> setReadOnly(boolean readOnly) {
+    public UIDynamicList<T> setReadOnly(final boolean readOnly) {
         this.readOnly = readOnly;
         return this;
     }
@@ -261,7 +261,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
      * @param canDeselect The value to set the status as
      * @return The {@link UIDynamicList<T>}
      */
-    public UIDynamicList<T> setCanDeselect(boolean canDeselect) {
+    public UIDynamicList<T> setCanDeselect(final boolean canDeselect) {
         this.canDeselect = canDeselect;
         return this;
     }
@@ -280,7 +280,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
      * the item component.
      * @return The {@link UIDynamicList<T>}
      */
-    public UIDynamicList<T> setCanInternalClick(boolean canInternalClick) {
+    public UIDynamicList<T> setCanInternalClick(final boolean canInternalClick) {
         this.canInternalClick = canInternalClick;
         return this;
     }
@@ -298,7 +298,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
      * @param factory The component factory
      * @return The {@link UIDynamicList<T>}
      */
-    public UIDynamicList<T> setItemComponentFactory(TriFunction<MalisisGui, UIDynamicList<T>, T, ? extends ItemComponent<?>> factory) {
+    public UIDynamicList<T> setItemComponentFactory(final TriFunction<MalisisGui, UIDynamicList<T>, T, ? extends ItemComponent<?>> factory) {
         this.itemComponentFactory = factory;
         return this;
     }
@@ -308,7 +308,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
         return this.onSelectConsumer;
     }
 
-    public UIDynamicList<T> setSelectConsumer(Consumer<T> onSelectConsumer) {
+    public UIDynamicList<T> setSelectConsumer(final Consumer<T> onSelectConsumer) {
         this.onSelectConsumer = onSelectConsumer;
         return this;
     }
@@ -335,7 +335,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
         this.removeAll();
 
         int startY = 0;
-        for (T item : this.items) {
+        for (final T item : this.items) {
             final ItemComponent<?> component = this.itemComponentFactory.apply(this.getGui(), this, item);
             component.attachData(item);
             component.setPosition(0, startY);
@@ -360,7 +360,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
     }
 
     @Override
-    public void setClipContent(boolean clipContent) {}
+    public void setClipContent(final boolean clipContent) {}
 
     @Override
     public boolean shouldClipContent() {
@@ -368,7 +368,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
     }
 
     @Override
-    public void draw(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
+    public void draw(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
         if (this.isDirty) {
             this.createItemComponents();
         }
@@ -385,7 +385,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
 
         protected T item;
 
-        public ItemComponent(MalisisGui gui, UIDynamicList<T> parent, T item) {
+        public ItemComponent(final MalisisGui gui, final UIDynamicList<T> parent, final T item) {
             super(gui);
 
             // Set the parent
@@ -411,7 +411,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
 
         @SuppressWarnings("unchecked")
         @Override
-        public boolean onClick(int x, int y) {
+        public boolean onClick(final int x, final int y) {
             final UIComponent component = getComponentAt(x, y);
 
             final UIDynamicList parent = (UIDynamicList) this.parent;
@@ -433,7 +433,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
         }
 
         @Override
-        public void drawBackground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
+        public void drawBackground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
             if (this.parent instanceof UIDynamicList) {
                 final UIDynamicList parent = (UIDynamicList) this.parent;
 
@@ -445,7 +445,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
                 final UIComponent<?> componentAt = this.getComponentAt(mouseX, mouseY);
                 if (parent.getSelectedItem() == this.item) {
                     this.setColor(INNER_SELECTED_COLOR);
-                } else if (this.equals(componentAt)) {
+                } else if (componentAt != null && (this.equals(componentAt) || this.equals(componentAt.getParent()))) {
                     this.setColor(INNER_HOVER_COLOR);
                 } else {
                     this.setColor(INNER_COLOR);
@@ -455,7 +455,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
             }
         }
 
-        private static boolean hasParent(UIComponent parent, UIComponent component) {
+        private static boolean hasParent(final UIComponent parent, final UIComponent component) {
             final UIComponent componentParent = component.getParent();
             if (componentParent == null) {
                 return false;
@@ -475,24 +475,24 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
 
     public static class DefaultItemComponent<T> extends ItemComponent<T> {
 
-        public DefaultItemComponent(MalisisGui gui, UIDynamicList<T> parent, T item) {
+        public DefaultItemComponent(final MalisisGui gui, final UIDynamicList<T> parent, final T item) {
             super(gui, parent, item);
         }
 
         @Override
-        public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
+        public void drawForeground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
             renderer.drawText(TextFormatting.WHITE + item.toString(), 2, 3, 0);
         }
     }
 
     public static class ItemsChangedEvent<T> extends ComponentEvent<UIDynamicList<T>> {
-        public ItemsChangedEvent(UIDynamicList<T> component) {
+        public ItemsChangedEvent(final UIDynamicList<T> component) {
             super(component);
         }
     }
 
     public static class SelectEvent<T> extends ComponentEvent.ValueChange<UIDynamicList<T>, T> {
-        public SelectEvent(UIDynamicList<T> component, @Nullable T oldValue, @Nullable T newValue) {
+        public SelectEvent(final UIDynamicList<T> component, @Nullable final T oldValue, @Nullable final T newValue) {
             super(component, oldValue, newValue);
         }
     }
