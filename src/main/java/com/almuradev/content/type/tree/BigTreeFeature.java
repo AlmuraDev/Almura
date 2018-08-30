@@ -29,6 +29,8 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
+import static java.util.Objects.requireNonNull;
+
 public final class BigTreeFeature extends WorldGenAbstractTree implements AbstractTreeFeature, Tree {
     private final List<MinimumIntWithVarianceFunctionPredicatePair<Biome>> heights;
     private final LazyBlockState log;
@@ -36,10 +38,7 @@ public final class BigTreeFeature extends WorldGenAbstractTree implements Abstra
     @Nullable private final Map.Entry<LazyBlockState, List<DoubleRangeFunctionPredicatePair<Biome>>> fruit;
     @Nullable private final Map.Entry<LazyBlockState, List<DoubleRangeFunctionPredicatePair<Biome>>> hanging;
     private Random random;
-    private World world;
-    private Biome biome;
     private BlockPos origin = BlockPos.ORIGIN;
-    private List<LazyBlockState> requires;
     private int height;
     private int trunkHeight;
     private double trunkHeightScale = 0.618d;
@@ -66,33 +65,27 @@ public final class BigTreeFeature extends WorldGenAbstractTree implements Abstra
 
     @Override
     public boolean generate(final World world, final Random random, final BlockPos origin, final List<LazyBlockState> requires) {
-        this.world = world;
-        this.biome = world.getBiome(origin);
+        final Context context = new Context(
+          world,
+          world.getBiome(origin),
+          requires
+        );
         this.origin = origin;
-        this.requires = requires;
         this.random = new Random(random.nextLong());
-        this.height = AbstractTreeFeature.height(this.heights, this.biome, this.random);
+        this.height = AbstractTreeFeature.height(this.heights, context.biome, this.random);
 
-        if (!this.checkLocation()) {
-            this.clean();
+        if (!this.checkLocation(context)) {
             return false;
         }
 
-        this.prepare();
-        this.makeFoliage();
-        this.makeTrunk();
-        this.makeBranches();
-        this.clean();
+        this.prepare(context);
+        this.makeFoliage(context);
+        this.makeTrunk(context);
+        this.makeBranches(context);
         return true;
     }
 
-    private void clean() {
-        this.world = null;
-        this.biome = null;
-        this.requires = null;
-    }
-
-    private void prepare() {
+    private void prepare(final Context context) {
         this.trunkHeight = (int) ((double) this.height * this.trunkHeightScale);
 
         if (this.trunkHeight >= this.height) {
@@ -126,14 +119,14 @@ public final class BigTreeFeature extends WorldGenAbstractTree implements Abstra
                 final BlockPos checkStart = this.origin.add(x, (double) (relativeY - 1), z);
                 final BlockPos checkEnd = checkStart.up(this.foliageHeight);
 
-                if (this.checkLine(checkStart, checkEnd) == -1) {
+                if (this.checkLine(context, checkStart, checkEnd) == -1) {
                     final int xd = this.origin.getX() - checkStart.getX();
                     final int zd = this.origin.getZ() - checkStart.getZ();
                     final double branchHeight = (double) checkStart.getY() - Math.sqrt((double) (xd * xd + zd * zd)) * this.branchSlope;
                     final int y = branchHeight > (double) trunkTop ? trunkTop : (int) branchHeight;
                     final BlockPos checkBranchBase = new BlockPos(this.origin.getX(), y, this.origin.getZ());
 
-                    if (this.checkLine(checkBranchBase, checkStart) == -1) {
+                    if (this.checkLine(context, checkBranchBase, checkStart) == -1) {
                         this.foliageCoords.add(new FoliagePos(checkStart, checkBranchBase.getY()));
                     }
                 }
@@ -143,54 +136,31 @@ public final class BigTreeFeature extends WorldGenAbstractTree implements Abstra
         }
     }
 
-    private void crossection(final BlockPos origin, final float radius, final IBlockState targetState) {
+    private void crossection(final Context context, final BlockPos origin, final float radius, final IBlockState targetState) {
+        final World world = context.world;
         final int rad = (int) ((double) radius + 0.618d);
         for (int x = -rad; x <= rad; x++) {
             for (int z = -rad; z <= rad; z++) {
                 if (Math.pow((double) Math.abs(x) + 0.5d, 2d) + Math.pow((double) Math.abs(z) + 0.5d, 2d) <= (double) (radius * radius)) {
                     BlockPos pos = origin.add(x, 0, z);
-                    if (pos == null) {
-                        System.out.println("POS was null in Almura-BigTreeFeature");
-                        continue;
-                    }
 
-                    if (this.world == null) {
-                        System.out.println("WORLD is null in Almura-BigTreeFeature");
-                        continue;
+                    final IBlockState state = world.getBlockState(pos);
 
-                    }
-                    final IBlockState state = this.world.getBlockState(pos);
-
-                    if (state.getBlock().isAir(state, this.world, pos) || state.getBlock().isLeaves(state, this.world, pos)) {
-                        this.setBlockAndNotifyAdequately(this.world, pos, targetState);
+                    if (state.getBlock().isAir(state, world, pos) || state.getBlock().isLeaves(state, world, pos)) {
+                        this.setBlockAndNotifyAdequately(world, pos, targetState);
 
                         // Enforce hanging only hanging from a leaves or fruit
-                        if (this.biome == null) {
-                            System.out.println("ERROR: biome is null in Almura-BigTreeFeature");
-                            continue;
-                        }
-
-                        if (this.random == null) {
-                            System.out.println(" Error: random is null in Almura-BigTreeFeature");
-                            continue;
-                        }
-
-                        if (targetState == null) {
-                            System.out.println(" Error targetState is null in Almura-BigTreeFeature");
-                            continue;
-                        }
-
-                        if (this.world.getBlockState(pos).equals(targetState) && AbstractTreeFeature.shouldPlaceHanging(this.hanging, this.biome, this.random)) {
+                        if (world.getBlockState(pos).equals(targetState) && AbstractTreeFeature.shouldPlaceHanging(this.hanging, context.biome, this.random)) {
                             pos = pos.down();
 
-                            final IBlockState underLeafOrFruitState = this.world.getBlockState(pos);
-                            if (underLeafOrFruitState.getBlock().isAir(underLeafOrFruitState, this.world, pos)) {
-                                this.setBlockAndNotifyAdequately(this.world, pos, AbstractTreeFeature.hangingBlock(this.hanging));
+                            final IBlockState underLeafOrFruitState = world.getBlockState(pos);
+                            if (underLeafOrFruitState.getBlock().isAir(underLeafOrFruitState, world, pos)) {
+                                this.setBlockAndNotifyAdequately(world, pos, AbstractTreeFeature.hangingBlock(this.hanging));
                             }
                         }
 
 
-                        this.setBlockAndNotifyAdequately(this.world, pos, targetState);
+                        this.setBlockAndNotifyAdequately(world, pos, targetState);
                     }
                 }
             }
@@ -225,13 +195,13 @@ public final class BigTreeFeature extends WorldGenAbstractTree implements Abstra
         }
     }
 
-    private void foliageCluster(final BlockPos pos) {
+    private void foliageCluster(final Context context, final BlockPos pos) {
         for (int i = 0; i < this.foliageHeight; i++) {
-            this.crossection(pos.up(i), this.foliageShape(i), AbstractTreeFeature.leavesOrFruitBlock(this.leaves, this.fruit, this.biome, this.random));
+            this.crossection(context, pos.up(i), this.foliageShape(i), AbstractTreeFeature.leavesOrFruitBlock(this.leaves, this.fruit, context.biome, this.random));
         }
     }
 
-    private void limb(final BlockPos start, final BlockPos end, final IBlockState state) {
+    private void limb(final Context context, final BlockPos start, final BlockPos end, final IBlockState state) {
         final BlockPos delta = end.add(-start.getX(), -start.getY(), -start.getZ());
         final int largestDistance = this.getLargestDistance(delta);
         final float xf = (float) delta.getX() / (float) largestDistance;
@@ -241,7 +211,7 @@ public final class BigTreeFeature extends WorldGenAbstractTree implements Abstra
         for (int i = 0; i <= largestDistance; i++) {
             final BlockPos pos = start.add((double) (0.5f + (float) i * xf), (double) (0.5f + (float) i * yf), (double) (0.5f + (float) i * zf));
             final BlockLog.EnumAxis axis = this.getLogAxis(start, pos);
-            this.setBlockAndNotifyAdequately(this.world, pos, AbstractTreeFeature.log(state, axis));
+            this.setBlockAndNotifyAdequately(context.world, pos, AbstractTreeFeature.log(state, axis));
         }
     }
 
@@ -275,9 +245,9 @@ public final class BigTreeFeature extends WorldGenAbstractTree implements Abstra
         return axis;
     }
 
-    private void makeFoliage() {
+    private void makeFoliage(final Context context) {
         for (final FoliagePos pos : this.foliageCoords) {
-            this.foliageCluster(pos);
+            this.foliageCluster(context, pos);
         }
     }
 
@@ -285,31 +255,31 @@ public final class BigTreeFeature extends WorldGenAbstractTree implements Abstra
         return (double) y >= (double) this.height * 0.2D;
     }
 
-    private void makeTrunk() {
+    private void makeTrunk(final Context context) {
         final BlockPos start = this.origin;
         final BlockPos end = this.origin.up(this.trunkHeight);
         final IBlockState state = this.log.get();
-        this.limb(start, end, state);
+        this.limb(context, start, end, state);
 
         if (this.trunkWidth == 2) {
-            this.limb(start.east(), end.east(), state);
-            this.limb(start.east().south(), end.east().south(), state);
-            this.limb(start.south(), end.south(), state);
+            this.limb(context, start.east(), end.east(), state);
+            this.limb(context, start.east().south(), end.east().south(), state);
+            this.limb(context, start.south(), end.south(), state);
         }
     }
 
-    private void makeBranches() {
+    private void makeBranches(final Context context) {
         for (final FoliagePos fPos : this.foliageCoords) {
             final int yBase = fPos.getBranchBase();
 
             final BlockPos bPos = new BlockPos(this.origin.getX(), yBase, this.origin.getZ());
             if (!bPos.equals(fPos) && this.trimBranches(yBase - this.origin.getY())) {
-                this.limb(bPos, fPos, this.log.get());
+                this.limb(context, bPos, fPos, this.log.get());
             }
         }
     }
 
-    private int checkLine(final BlockPos start, final BlockPos end) {
+    private int checkLine(final Context context, final BlockPos start, final BlockPos end) {
         final BlockPos delta = end.add(-start.getX(), -start.getY(), -start.getZ());
         final int largestDistance = this.getLargestDistance(delta);
         final float xf = (float) delta.getX() / (float) largestDistance;
@@ -322,7 +292,7 @@ public final class BigTreeFeature extends WorldGenAbstractTree implements Abstra
 
         for (int i = 0; i <= largestDistance; i++) {
             final BlockPos pos = start.add((double) (0.5f + (float) i * xf), (double) (0.5f + (float) i * yf), (double) (0.5f + (float) i * zf));
-            if (!this.isReplaceable(this.world, pos)) {
+            if (!this.isReplaceable(context.world, pos)) {
                 return i;
             }
         }
@@ -335,16 +305,17 @@ public final class BigTreeFeature extends WorldGenAbstractTree implements Abstra
         this.foliageHeight = 5;
     }
 
-    private boolean checkLocation() {
+    private boolean checkLocation(final Context context) {
+        final World world = context.world;
         final BlockPos belowOrigin = this.origin.down();
-        final IBlockState state = this.world.getBlockState(belowOrigin);
+        final IBlockState state = world.getBlockState(belowOrigin);
 
-        final boolean isSoil = AbstractTreeFeature.canSustainPlant(state, this.world, belowOrigin, EnumFacing.UP, (BlockSapling) Blocks.SAPLING, this.requires);
+        final boolean isSoil = AbstractTreeFeature.canSustainPlant(state, world, belowOrigin, EnumFacing.UP, (BlockSapling) Blocks.SAPLING, context.requires);
         if (!isSoil) {
             return false;
         }
 
-        final int allowedHeight = this.checkLine(this.origin, this.origin.up(this.height - 1));
+        final int allowedHeight = this.checkLine(context, this.origin, this.origin.up(this.height - 1));
         if (allowedHeight == -1) {
             return true;
         } else if (allowedHeight < 6) {
@@ -352,6 +323,18 @@ public final class BigTreeFeature extends WorldGenAbstractTree implements Abstra
         } else {
             this.height = allowedHeight;
             return true;
+        }
+    }
+
+    private static class Context {
+        final World world;
+        final Biome biome;
+        final List<LazyBlockState> requires;
+
+        Context(final World world, final Biome biome, final List<LazyBlockState> requires) {
+            this.world = requireNonNull(world, "world");
+            this.biome = requireNonNull(biome, "biome");
+            this.requires = requireNonNull(requires, "requires");
         }
     }
 
