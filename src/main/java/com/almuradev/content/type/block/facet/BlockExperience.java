@@ -18,8 +18,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.common.item.inventory.util.ItemStackUtil;
 
 import java.util.Random;
 
@@ -51,11 +51,11 @@ public final class BlockExperience implements Witness {
             return;
         }
 
-        int experience = this.calculate((ItemType) event.getPlayer().getActiveItemStack().getItem(), destroyAction, world.rand);
+        int experience = this.calculate(event.getPlayer().getActiveItemStack(), destroyAction, world.rand);
 
         if (experience == NO_EXPERIENCE) {
             // if no exp for this itemstack, fallback to empty hand and check again
-            experience = this.calculate(ItemStack.empty().getType(), destroyAction, world.rand);
+            experience = this.calculate(ItemStackUtil.toNative(ItemStack.empty()), destroyAction, world.rand);
         }
 
         if (experience != NO_EXPERIENCE) {
@@ -63,7 +63,7 @@ public final class BlockExperience implements Witness {
         }
     }
 
-    private int calculate(final ItemType with, final BlockDestroyAction destroyAction, final Random random) {
+    private int calculate(final net.minecraft.item.ItemStack with, final BlockDestroyAction destroyAction, final Random random) {
         int experience = NO_EXPERIENCE;
         for (final BlockDestroyAction.Entry entry : destroyAction.entries()) {
             if (entry.test(with)) {
