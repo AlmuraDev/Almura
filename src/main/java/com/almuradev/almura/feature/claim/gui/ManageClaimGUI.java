@@ -25,6 +25,9 @@ import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
+import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
+import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxResult;
+import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.google.common.eventbus.Subscribe;
@@ -36,6 +39,7 @@ import net.malisis.core.client.gui.component.interaction.UICheckBox;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.client.gui.event.ComponentEvent;
 import net.malisis.core.renderer.font.FontOptions;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -68,7 +72,7 @@ public final class ManageClaimGUI extends SimpleScreen {
     private UICheckBox showWarningsCheckbox;
     private UIButton buttonVisuals, buttonHideVisuals;
 
-    private boolean isOwner, isTrusted, isAdmin, toggleVisuals;
+    private boolean isOwner, isTrusted, isAdmin, toggleVisuals, closeOnAbandon;
 
     public ManageClaimGUI(boolean isOwner, boolean isTrusted, boolean isAdmin) {
         this.isOwner = isOwner;
@@ -206,10 +210,10 @@ public final class ManageClaimGUI extends SimpleScreen {
         this.claimForSaleLabel.setPosition(0, 0, Anchor.CENTER | Anchor.BOTTOM);
         this.claimForSaleLabel.setVisible(true);
         this.claimForSaleLabel.setFontOptions(FontOptions.builder()
-                .from(FontColors.GREEN_FO)
-                .shadow(false)
-                .scale(1.2F)
-                .build());
+            .from(FontColors.GREEN_FO)
+            .shadow(false)
+            .scale(1.2F)
+            .build());
 
         this.econArea.add(econSeparator, econSeparator, econTitleLabel, claimValueLabel, this.claimValueField, this.claimTaxLabel, this.claimTaxField, this.claimForSaleLabel);
 
@@ -243,33 +247,43 @@ public final class ManageClaimGUI extends SimpleScreen {
         this.buttonVisuals.register(this);
 
         final UIButton buttonAbandon = new UIButtonBuilder(this)
-                .width(40)
-                .y(buttonVisuals.getY() + 20)
-                .anchor(Anchor.CENTER | Anchor.TOP)
-                .text("Abandon Claim")
-                .listener(this)
-                .enabled(this.isOwner || this.isAdmin)
-                .build("button.abandon");
+            .width(40)
+            .y(buttonVisuals.getY() + 20)
+            .anchor(Anchor.CENTER | Anchor.TOP)
+            .text("Abandon Claim")
+            .listener(this)
+            .enabled(this.isOwner || this.isAdmin)
+            .onClick(() -> {
+                UIMessageBox.showDialog(this, "Abandon Claim",
+                    "Do you wish to abandon this claim?",
+                    MessageBoxButtons.YES_NO, (result) -> {
+                        if (result != MessageBoxResult.YES) return;
+                        this.network.sendToServer(new ServerboundClaimGuiAbandonRequestPacket(this.mc.player.posX, this.mc.player.posY, this.mc.player.posZ, hudData.worldName));
+                        this.closeOnAbandon = true;
+                    }); 
+
+            })
+            .build("button.abandon");
 
         final UIButton buttonSetForSale = new UIButtonBuilder(this)
-                .width(40)
-                .y(buttonAbandon.getY() + 20)
-                .anchor(Anchor.CENTER | Anchor.TOP)
-                .text("List For Sale")
-                .listener(this)
-                .enabled(this.isOwner || this.isAdmin)
-                .visible(false)
-                .build("button.setForSale");
+            .width(40)
+            .y(buttonAbandon.getY() + 20)
+            .anchor(Anchor.CENTER | Anchor.TOP)
+            .text("List For Sale")
+            .listener(this)
+            .enabled(this.isOwner || this.isAdmin)
+            .visible(false)
+            .build("button.setForSale");
 
         final UIButton buttonSetSpawnLocation = new UIButtonBuilder(this)
-                .width(40)
-                .y(buttonSetForSale.getY() + 20)
-                .anchor(Anchor.CENTER | Anchor.TOP)
-                .text("Set Spawn")
-                .listener(this)
-                .enabled(this.isOwner || this.isAdmin)
-                .visible(false)
-                .build("button.setSpawnLocation");
+            .width(40)
+            .y(buttonSetForSale.getY() + 20)
+            .anchor(Anchor.CENTER | Anchor.TOP)
+            .text("Set Spawn")
+            .listener(this)
+            .enabled(this.isOwner || this.isAdmin)
+            .visible(false)
+            .build("button.setSpawnLocation");
 
         this.functionsArea.add(claimFunctionsLabel, functionsSeparator, buttonAbandon, buttonSetForSale, buttonSetSpawnLocation, buttonVisuals);
 
@@ -290,24 +304,24 @@ public final class ManageClaimGUI extends SimpleScreen {
         this.buttonHideVisuals.register(this);
 
         final UIButton buttonSave = new UIButtonBuilder(this)
-                .width(40)
-                .x(-45)
-                .anchor(Anchor.RIGHT | Anchor.BOTTOM)
-                .text("Save")
-                .listener(this)
-                .enabled(this.isOwner || this.isAdmin)
-                .build("button.save");
+            .width(40)
+            .x(-45)
+            .anchor(Anchor.RIGHT | Anchor.BOTTOM)
+            .text("Save")
+            .listener(this)
+            .enabled(this.isOwner || this.isAdmin)
+            .build("button.save");
 
         // Close button
         final UIButton buttonClose = new UIButtonBuilder(this)
-                .width(40)
-                .anchor(Anchor.RIGHT | Anchor.BOTTOM)
-                .text("almura.button.close")
-                .listener(this)
-                .build("button.close");
+            .width(40)
+            .anchor(Anchor.RIGHT | Anchor.BOTTOM)
+            .text("almura.button.close")
+            .listener(this)
+            .build("button.close");
 
         this.form.add(titleLabel, separator, claimNameLabel, this.claimNameField, this.claimSizeLabel, this.claimSizeField, claimGreetingLabel, this.claimGreetingField, claimFarewellLabel, this.claimFarewellField, this.econArea, this
-                        .functionsArea, this.showWarningsCheckbox, buttonHideVisuals, buttonSave, buttonClose);
+            .functionsArea, this.showWarningsCheckbox, buttonHideVisuals, buttonSave, buttonClose);
 
         updateValues();
 
@@ -338,14 +352,13 @@ public final class ManageClaimGUI extends SimpleScreen {
                 break;
 
             case "button.abandon":
-                this.network.sendToServer(new ServerboundClaimGuiAbandonRequestPacket(this.mc.player.posX, this.mc.player.posY, this.mc.player.posZ, hudData.worldName));
+                // Handled in the onClick lamda setup.
 
-                this.close();
                 break;
 
             case "button.save":
                 this.network.sendToServer(new ServerboundClaimGuiSaveRequestPacket(this.claimNameField.getText().trim(), this.claimGreetingField.getText().trim(), this.claimFarewellField.getText().trim(), this.mc.player.posX, this.mc.player.posY,
-                        this.mc.player.posZ, hudData.worldName));
+                    this.mc.player.posZ, hudData.worldName));
                 this.close();
                 break;
 
@@ -370,6 +383,9 @@ public final class ManageClaimGUI extends SimpleScreen {
     }
 
     public void updateValues() {
+        if (closeOnAbandon) {
+            this.close();
+        }
         final DecimalFormat dFormat = new DecimalFormat("###,###,##0.00");
         this.claimForSaleLabel.setVisible(this.clientClaimManager.isForSale);
         this.showWarningsCheckbox.setChecked(this.clientClaimManager.showWarnings);
