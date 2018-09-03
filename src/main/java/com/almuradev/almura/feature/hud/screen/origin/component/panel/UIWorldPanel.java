@@ -83,7 +83,7 @@ public class UIWorldPanel extends AbstractPanel {
             if (!clientClaimManager.claimName.equalsIgnoreCase("Server Protected Area")) {
                 this.claimLabel.setText(TextFormatting.GREEN + "Wilderness");
             } else {
-                this.claimLabel.setText(TextFormatting.RED + clientClaimManager.claimName);
+                this.claimLabel.setText(TextFormatting.GRAY + clientClaimManager.claimName);
             }
         } else {
             if (clientClaimManager.claimName.isEmpty()){
