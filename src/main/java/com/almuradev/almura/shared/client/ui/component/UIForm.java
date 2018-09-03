@@ -28,6 +28,7 @@ import java.util.Collection;
 @SideOnly(Side.CLIENT)
 public class UIForm extends UIContainer<UIForm> {
     private UIContainer<?> titleContainer;
+    private UILine line;
     private UISimpleButton closeButton;
     private boolean closable, movable, dragging;
 
@@ -61,10 +62,10 @@ public class UIForm extends UIContainer<UIForm> {
 
         this.add(this.titleContainer);
 
-        final UILine line = new UILine(gui, this.getWidth() + this.getLeftBorderedPadding() + this.getRightBorderedPadding());
-        line.setPosition(-(this.getLeftBorderedPadding()), -4);
+        this.line = new UILine(gui, this.getWidth() + this.getLeftBorderedPadding() + this.getRightBorderedPadding());
+        this.line.setPosition(-(this.getLeftBorderedPadding()), -4);
 
-        this.add(line);
+        this.add(this.line);
 
         this.closeButton = new UISimpleButton(getGui(), "x");
         this.closeButton.setName("button.form.close");
@@ -165,6 +166,21 @@ public class UIForm extends UIContainer<UIForm> {
         final int targetY = Math.min(parentContainer.getHeight() - this.height, Math.max(yPos, 0));
         setPosition(targetX, targetY, Anchor.NONE);
         return true;
+    }
+
+    @Override
+    public UIForm setSize(final int width, final int height) {
+        super.setSize(width, height);
+
+        if (this.line != null) {
+            this.line.setWidth(this.getWidth() + this.getLeftBorderedPadding() + this.getRightBorderedPadding());
+        }
+
+        if (this.titleContainer != null) {
+            this.titleContainer.setSize(this.getWidth() - this.getRightBorderedPadding(), 15);
+        }
+
+        return this;
     }
 
     @SuppressWarnings("unchecked")

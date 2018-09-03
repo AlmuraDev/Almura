@@ -12,6 +12,7 @@ import com.almuradev.almura.feature.complex.item.almanac.network.ClientboundWorl
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
+import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.util.MathUtil;
 import com.almuradev.content.type.block.state.value.RangeStateValue;
@@ -22,12 +23,10 @@ import com.almuradev.content.type.block.type.crop.state.CropBlockStateDefinition
 import com.almuradev.toolbox.util.math.DoubleRange;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.component.UIComponent;
-import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.control.UIScrollBar;
 import net.malisis.core.client.gui.component.control.UISlimScrollbar;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
-import net.malisis.core.client.gui.component.decoration.UISeparator;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
@@ -62,11 +61,10 @@ public class IngameFarmersAlmanac extends SimpleScreen {
     private static final int formWidth = 145;
     private static final int formHeight = 60;
     private static final int propertyContainerMaxHeight = 120;
-    private static final int formAlpha = 185;
     private static final int leftPad = 8;
     private final Minecraft client = Minecraft.getMinecraft();
     private final ClientboundWorldPositionInformationPacket message;
-    private UIBackgroundContainer propertyContainer;
+    private UIContainer propertyContainer;
     private UILabel cropStatusLabel;
     private int lastPropertyY = 4;
 
@@ -82,30 +80,19 @@ public class IngameFarmersAlmanac extends SimpleScreen {
     }
 
     // TODO: Translation support
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("deprecation, unchecked")
     @Override
     public void construct() {
         guiscreenBackground = false;
 
         final UIForm form = new UIForm(this, formWidth, formHeight, formTitle);
-
-        form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
-        form.setMovable(true);
         form.setClosable(false);
-        form.setBorder(FontColors.WHITE, 1, formAlpha);
-        form.setBackgroundAlpha(formAlpha);
 
         final WorldClient world = this.client.world;
         final RayTraceResult omo = this.client.objectMouseOver;
         final BlockPos blockPos = omo.getBlockPos();
         final IBlockState blockState = getState(world, blockPos);
         final Block block = blockState.getBlock();
-
-        // Line separator
-        final UISeparator separator = new UISeparator(this);
-        separator.setSize(form.getWidth(), 1);
-        separator.setPosition(0, -5, Anchor.TOP | Anchor.CENTER);
-        form.add(separator);
 
         // Block image
         final ItemStack pickStack = blockState.getBlock().getPickBlock(blockState, omo, this.client.world, omo.getBlockPos(), this.client.player);
@@ -126,17 +113,12 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         labelRegistryName.setPosition(labelLocalizedName.getX(), SimpleScreen.getPaddedY(labelLocalizedName, 2));
         form.add(labelRegistryName);
 
-        // Line separator
-        final UISeparator separator2 = new UISeparator(this);
-        separator2.setSize(form.getWidth(), 1);
-        separator2.setPosition(0, SimpleScreen.getPaddedY(labelRegistryName, 3), Anchor.TOP | Anchor.CENTER);
-        form.add(separator2);
-
         // Property container
-        this.propertyContainer = new UIBackgroundContainer(this);
+        this.propertyContainer = new UIContainer<>(this);
         new UISlimScrollbar(this, this.propertyContainer, UIScrollBar.Type.VERTICAL).setAutoHide(true);
-        this.propertyContainer.setBackgroundAlpha(50);
-        this.propertyContainer.setPosition(0, SimpleScreen.getPaddedY(separator2, 5));
+        this.propertyContainer.setBackgroundAlpha(35);
+        this.propertyContainer.setPosition(0, SimpleScreen.getPaddedY(labelRegistryName, 5), Anchor.TOP | Anchor.CENTER);
+        this.propertyContainer.setBorder(FontColors.WHITE, 1, 185);
 
         form.add(this.propertyContainer);
 
@@ -146,24 +128,15 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         loadProperties(world, blockState, blockPos);
 
         // Adjust the size of the container to reach at most the specified max height
-        this.propertyContainer.setSize(UIComponent.INHERITED, Math.min(propertyContainerMaxHeight, propertyContainer.getContentHeight()));
-
-        // Line separator
-        final UISeparator separator3 = new UISeparator(this);
-        separator3.setSize(form.getWidth(), 1);
-        separator3.setPosition(0,-22, Anchor.BOTTOM | Anchor.CENTER);
-        form.add(separator3);
+        this.propertyContainer.setSize(UIComponent.INHERITED, Math.min(propertyContainerMaxHeight, propertyContainer.getContentHeight() + 2));
 
         // Localized name
-
         if (this.growing) {
             this.cropStatusLabel.setText(TextFormatting.DARK_GREEN + "Growing...");
+        } else if (this.canDie) {
+            this.cropStatusLabel.setText(TextFormatting.RED + "Dying!");
         } else {
-            if (canDie) {
-                this.cropStatusLabel.setText(TextFormatting.RED + "Dying!");
-            } else {
-                this.cropStatusLabel.setText(TextFormatting.YELLOW + "Not Growing...");
-            }
+            this.cropStatusLabel.setText(TextFormatting.YELLOW + "Not Growing...");
         }
 
         if (this.readyForHarvest) {
@@ -171,13 +144,12 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         }
 
         this.cropStatusLabel.setFontOptions(FontColors.WHITE_FO);
-        this.cropStatusLabel.setPosition(5,-5, Anchor.BOTTOM | Anchor.LEFT);
+        this.cropStatusLabel.setPosition(1, -3, Anchor.BOTTOM | Anchor.LEFT);
         form.add(cropStatusLabel);
 
         final UIButton closeButton = new UIButtonBuilder(this)
                 .text("Close")
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
-                .position(-4, -4)
                 .onClick(this::close)
                 .build("button.close");
         form.add(closeButton);
@@ -186,7 +158,7 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         form.setSize(form.getContentWidth() + leftPad, form.getContentHeight() + closeButton.getHeight() + 10);
 
         // Readjust size for width because MalisisCore doesn't account for the scrollbar with UIComponent.INHERITED
-        this.propertyContainer.setSize(propertyContainer.getWidth() - 1, propertyContainer.getHeight());
+        this.propertyContainer.setSize(propertyContainer.getWidth(), propertyContainer.getHeight());
 
         addToScreen(form);
 
