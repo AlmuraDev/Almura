@@ -130,6 +130,11 @@ public final class ServerClaimManager implements Witness {
                         claimSize = claim.getArea();
                     }
 
+                    // Set custom Claim Name for Protected Area's
+                    if (claim.isWilderness() && (claim.getWorld().getName().equalsIgnoreCase("orilla") || claim.getWorld().getName().equalsIgnoreCase("asgard"))) {
+                        claimName = "Server Protected Area";
+                    }
+
 
                     if (player != null) {
                         this.network.sendTo(player, new ClientboundClaimDataPacket(isClaim, claimName, claimOwner, isWilderness, isTownClaim, isAdminClaim, isBasicClaim, isSubdivision, claimEconBalance, claimGreeting, claimFarewell, claimSize,

@@ -80,10 +80,14 @@ public class UIWorldPanel extends AbstractPanel {
     private void updateClaim() {
         //System.out.println("ClaimName: " + hudData.claimName);
         if (!clientClaimManager.isClaim || clientClaimManager.isWilderness) {
-            this.claimLabel.setText(TextFormatting.GREEN + "Wilderness");
-        } else {
-            if (clientClaimManager.claimName.equalsIgnoreCase("claim name not set")){
+            if (!clientClaimManager.claimName.equalsIgnoreCase("Server Protected Area")) {
+                this.claimLabel.setText(TextFormatting.GREEN + "Wilderness");
+            } else {
                 this.claimLabel.setText(TextFormatting.RED + clientClaimManager.claimName);
+            }
+        } else {
+            if (clientClaimManager.claimName.isEmpty()){
+                this.claimLabel.setText(TextFormatting.LIGHT_PURPLE + "claim name not set");
             } else {
                 if (clientClaimManager.isTownClaim)
                     this.claimLabel.setText(TextFormatting.YELLOW + clientClaimManager.claimName);
