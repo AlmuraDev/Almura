@@ -58,9 +58,11 @@ public abstract class MixinPlayerChunkMap implements IMixinPlayerChunkMap {
                             return chunk;
                         }
 
-                        if (!playerchunkmapentry.hasPlayerMatchingInRange(128.0D, PlayerChunkMap.NOT_SPECTATOR)) {
-                            continue;
-                        }
+
+                        //Todo: make this a configurable / toggleable option (in-realtime)
+                        //if (!playerchunkmapentry.hasPlayerMatchingInRange(128.0D, PlayerChunkMap.NOT_SPECTATOR)) {
+                        //    continue;
+                        //}
 
                         return chunk;
                     }
