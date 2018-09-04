@@ -260,7 +260,7 @@ public final class ManageClaimGUI extends SimpleScreen {
                         if (result != MessageBoxResult.YES) return;
                         this.network.sendToServer(new ServerboundClaimGuiAbandonRequestPacket(this.mc.player.posX, this.mc.player.posY, this.mc.player.posZ, hudData.worldName));
                         this.closeOnAbandon = true;
-                    }); 
+                    });
 
             })
             .build("button.abandon");
