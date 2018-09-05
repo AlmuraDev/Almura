@@ -38,7 +38,7 @@ public class ExchangeBuyQuantityScreen extends SimpleScreen {
     private UITextBox quantityTextBox;
     private UIForm form;
 
-    public ExchangeBuyQuantityScreen(ExchangeScreen parent, Exchange axs, ForSaleItem toBuyItem) {
+    public ExchangeBuyQuantityScreen(final ExchangeScreen parent, final Exchange axs, final ForSaleItem toBuyItem) {
         super(parent, true);
 
         this.axs = axs;
@@ -53,7 +53,7 @@ public class ExchangeBuyQuantityScreen extends SimpleScreen {
         this.form.setZIndex(10); // Fixes issue overlapping draws from parent
         this.form.setBackgroundAlpha(255);
 
-        this.quantityLabel = new UILabel(this, "Quantity:");
+        this.quantityLabel = new UILabel(this, I18n.format("almura.feature.common.text.quantity") + ":");
         this.quantityLabel.setFontOptions(FontColors.WHITE_FO);
         this.quantityLabel.setPosition(0, 2);
 
@@ -75,7 +75,7 @@ public class ExchangeBuyQuantityScreen extends SimpleScreen {
         this.perItemValueLabel.setPosition(0, this.perItemLabel.getY(), Anchor.TOP | Anchor.RIGHT);
         this.perItemValueLabel.setFontOptions(FontColors.WHITE_FO);
 
-        this.totalLabel = new UILabel(this, "Total:");
+        this.totalLabel = new UILabel(this, I18n.format("almura.feature.common.text.total") + ":");
         this.totalLabel.setPosition(0, SimpleScreen.getPaddedY(this.perItemLabel, 4));
         this.totalLabel.setFontOptions(FontColors.WHITE_FO);
 
@@ -113,11 +113,11 @@ public class ExchangeBuyQuantityScreen extends SimpleScreen {
     }
 
     @Subscribe
-    private void onTextChange(ComponentEvent.ValueChange<UITextField, String> event) {
+    private void onTextChange(final ComponentEvent.ValueChange<UITextField, String> event) {
         this.updateControls(event.getNewValue());
     }
 
-    private boolean validate(String rawValue) {
+    private boolean validate(final String rawValue) {
         try {
             final int value = Integer.parseInt(rawValue);
 
@@ -126,12 +126,12 @@ public class ExchangeBuyQuantityScreen extends SimpleScreen {
                     this.toBuyItem.getPrice().doubleValue() * value));
 
             return value > 0 && value <= this.toBuyItem.getQuantity();
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             return false;
         }
     }
 
-    private void updateControls(String rawValue) {
+    private void updateControls(final String rawValue) {
         this.buttonBuy.setEnabled(this.validate(rawValue));
     }
 

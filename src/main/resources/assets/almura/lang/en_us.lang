@@ -124,6 +124,7 @@ almura.feature.common.text.modify_feature=Are you sure you want to modify this %
 almura.feature.common.text.permission=Permission
 almura.feature.common.text.quantity=Quantity
 almura.feature.common.text.title=Title
+almura.feature.common.text.total=Total
 almura.feature.common.text.unknown=Unknown
 almura.feature.common.title.are_you_sure=Are you sure?
 almura.feature.common.title.management=%s - Management
