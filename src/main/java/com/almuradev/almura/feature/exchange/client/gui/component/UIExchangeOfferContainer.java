@@ -111,8 +111,8 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
         super.drawBackground(renderer, mouseX, mouseY, partialTick);
 
         // Draw: bottom-left -> bottom-right (title line)
-        renderer.drawRectangle(this.borderSize, this.leftContainer.getHeight() - this.leftPropertyBar.getHeight() - 6, 1,
-                this.getRawWidth() - (this.borderSize * 2), 1, FontColors.WHITE, 185);
+        renderer.drawRectangle(this.getLeftBorderSize(), this.leftContainer.getHeight() - this.leftPropertyBar.getHeight() - 6, 1,
+                this.getRawWidth() - (this.getLeftBorderSize() + this.getRightBorderSize()), 1, FontColors.WHITE, 185);
     }
 
     @Override
@@ -181,12 +181,12 @@ public class UIExchangeOfferContainer extends UIDualListContainer<VanillaStack> 
 
         // Left property bar
         final int leftSize = this.leftDynamicList.getSize();
-        this.leftPropertyBar.setAmount(MathUtil.convertToRange(leftSize, 0, this.leftLimit, 0f, 1f));
+        this.leftPropertyBar.setAmount(MathUtil.scalef(leftSize, 0, this.leftLimit, 0f, 1f));
         this.leftPropertyBar.setText(Text.of(leftSize, "/", this.leftLimit));
 
         // Right progress bar
         final int rightSize = this.rightDynamicList.getSize() + this.listedItems;
-        this.rightPropertyBar.setAmount(MathUtil.convertToRange(rightSize, 0, this.rightLimit, 0f, 1f));
+        this.rightPropertyBar.setAmount(MathUtil.scalef(rightSize, 0, this.rightLimit, 0f, 1f));
         this.rightPropertyBar.setText(Text.of(rightSize, "/", this.rightLimit));
 
         super.updateControls(selectedValue, targetSide);

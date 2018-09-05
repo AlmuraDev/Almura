@@ -84,7 +84,7 @@ public class ExchangeBuyQuantityScreen extends SimpleScreen {
         this.totalValueLabel.setFontOptions(FontColors.WHITE_FO);
 
         this.buttonBuy = new UIButtonBuilder(this)
-                .text(I18n.format("almura.feature.exchange.button.buy"))
+                .text(I18n.format("almura.feature.common.button.buy"))
                 .width(40)
                 .position(-2, -2)
                 .anchor(Anchor.RIGHT | Anchor.BOTTOM)

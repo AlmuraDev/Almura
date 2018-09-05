@@ -8,6 +8,7 @@
 package com.almuradev.almura.shared.client.ui.component;
 
 import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
+import com.almuradev.almura.shared.util.MathUtil;
 import com.almuradev.almura.shared.util.TriFunction;
 import net.malisis.core.client.gui.ClipArea;
 import net.malisis.core.client.gui.GuiRenderer;
@@ -17,14 +18,15 @@ import net.malisis.core.client.gui.component.control.UIScrollBar;
 import net.malisis.core.client.gui.component.control.UISlimScrollbar;
 import net.malisis.core.client.gui.event.ComponentEvent;
 import net.malisis.core.util.MouseButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
@@ -33,9 +35,10 @@ import javax.annotation.Nullable;
 public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
 
     private final UIScrollBar scrollbar;
-    private List<T> items = new ArrayList<>();
     private boolean canDeselect, canInternalClick, isDirty, readOnly;
+    private float scrollStep = 0.25F, extraScrollStep = 0.125F;
     private int itemSpacing = 0;
+    private List<T> items = new ArrayList<>();
     private TriFunction<MalisisGui, UIDynamicList<T>, T, ? extends ItemComponent<?>> itemComponentFactory = DefaultItemComponent::new;
     @Nullable private T selectedItem;
     @Nullable private Consumer<T> onSelectConsumer;
@@ -92,7 +95,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
      * @param items The items to add
      * @return True if all items were added, otherwise false
      */
-    public boolean addItems(final List<T> items) {
+    public boolean addItems(final Collection<T> items) {
         final boolean result = this.items.addAll(items);
 
         if (result) {
@@ -111,13 +114,15 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
     }
 
     /**
-     * Clears current items and adds provided items, restricted by max limit if previously set
+     * Clears current items and adds provided items, if null items collection provided then only a clear will occur
      * @param items The items to set
      * @return The {@link UIDynamicList<T>}
      */
-    public UIDynamicList<T> setItems(final List<T> items) {
+    public UIDynamicList<T> setItems(@Nullable final Collection<T> items) {
         this.items.clear();
-        this.items.addAll(items);
+        if (items != null) {
+            this.items.addAll(items);
+        }
         this.isDirty = true;
         this.fireEvent(new ItemsChangedEvent<>(this));
 
@@ -154,7 +159,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
      * @param items The items to remove
      * @return True if all items were removed, otherwise false
      */
-    public boolean removeItems(final List<T> items) {
+    public boolean removeItems(final Collection<T> items) {
         final boolean result = this.items.removeAll(items);
         this.isDirty = true;
         this.fireEvent(new ItemsChangedEvent<>(this));
@@ -318,10 +323,6 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
         return this.scrollbar;
     }
 
-    public Set<UIComponent<?>> getComponents() {
-        return Collections.unmodifiableSet(this.components);
-    }
-
     public void markDirty() {
         this.isDirty = true;
     }
@@ -353,6 +354,11 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
         this.getScrollBar().scrollTo(scrollPoint);
 
         this.isDirty = false;
+
+        // Update scroll step
+        final float step = MathUtil.scalef(1, 0, this.items.size(), 0f, 1f);
+        this.scrollStep = step;
+        this.extraScrollStep = step * 10;
     }
 
     @Override
@@ -366,6 +372,11 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
     @Override
     public boolean shouldClipContent() {
         return true;
+    }
+
+    @Override
+    public float getScrollStep() {
+        return GuiScreen.isCtrlKeyDown() ? this.extraScrollStep : this.scrollStep;
     }
 
     @Override
@@ -446,7 +457,7 @@ public class UIDynamicList<T> extends UIContainer<UIDynamicList<T>> {
             if (this.parent instanceof UIDynamicList) {
                 final UIDynamicList parent = (UIDynamicList) this.parent;
 
-                final int width = parent.getRawWidth() - parent.getLeftPadding() - parent.getRightPadding()
+                final int width = parent.getWidth() - parent.getLeftPadding() - parent.getRightPadding()
                         - (parent.getScrollBar().isEnabled() ? parent.getScrollBar().getRawWidth() + 5 : 0);
 
                 this.setSize(width, getHeight());

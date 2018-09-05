@@ -283,7 +283,7 @@ public class UIUserPanel extends AbstractPanel {
         propertyBar.setText(text);
 
         // Update amount value
-        propertyBar.setAmount(MathUtil.convertToRange(value, 0, maxValue, 0f, 1f));
+        propertyBar.setAmount(MathUtil.scalef(value, 0, maxValue, 0f, 1f));
 
         // Pad against last visible component
         if (updatePosition) {

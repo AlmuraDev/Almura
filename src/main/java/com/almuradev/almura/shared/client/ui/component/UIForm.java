@@ -127,11 +127,11 @@ public class UIForm extends UIContainer<UIForm> {
     }
 
     private int getLeftBorderedPadding() {
-        return this.getLeftPadding() - this.borderSize;
+        return this.getLeftPadding() - this.getLeftBorderSize();
     }
 
     private int getRightBorderedPadding() {
-        return this.getRightPadding() - this.borderSize;
+        return this.getRightPadding() - this.getRightBorderSize();
     }
 
     @Override

@@ -98,7 +98,7 @@ public class UIDualListContainer<T> extends UIContainer<UIDualListContainer<T>> 
 
         this.rightContainer.add(rightContainerLabel, this.rightDynamicList);
 
-        final UILine titleLine = new UILine(gui, this.getRawWidth() - (this.borderSize * 2));
+        final UILine titleLine = new UILine(gui, this.getRawWidth() - (this.getLeftBorderSize() + this.getRightBorderSize()));
         titleLine.setPosition(0, SimpleScreen.getPaddedY(leftContainerLabel, 2));
 
         this.add(this.leftContainer, this.middleContainer, this.rightContainer, titleLine);
@@ -110,11 +110,12 @@ public class UIDualListContainer<T> extends UIContainer<UIDualListContainer<T>> 
 
         final int startX = this.width / 2;
         final int middleContainerHeight = this.middleContainer == null ? 0 : this.middleContainer.getHeight();
-        final int halfHeight = (this.height - middleContainerHeight - this.borderSize) / 2;
+        final int halfHeight = (this.height - middleContainerHeight - this.getTopBorderSize()) / 2;
         int startY = 1;
 
         // Draw: top-left -> top-right (title line)
-        renderer.drawRectangle(this.borderSize, this.leftContainer.getTopPadding() - 4, 1, this.getRawWidth() - (this.borderSize * 2), 1,
+        renderer.drawRectangle(this.getLeftBorderSize(), this.leftContainer.getTopPadding() - 4, 1,
+                this.getRawWidth() - (this.getLeftBorderSize() + this.getRightBorderSize()), 1,
                 FontColors.WHITE, 185);
 
         // Draw: top -> middle_section

@@ -13,12 +13,20 @@ import net.malisis.core.client.gui.MalisisGui;
 
 public class UILine extends UIContainer<UILine> {
 
-    public UILine(MalisisGui gui, int width) {
-        this(gui, width, 1);
+    public UILine(final MalisisGui gui, final int width) {
+        this(gui, width, 1, false);
     }
 
-    public UILine(MalisisGui gui, int width, int thickness) {
-        super(gui, width, thickness);
+    public UILine(final MalisisGui gui, final int size, final boolean vertical) {
+        this(gui, size, 1, vertical);
+    }
+
+    public UILine(final MalisisGui gui, final int width, final int thickness) {
+        this(gui, width, thickness, false);
+    }
+
+    public UILine(final MalisisGui gui, final int size, final int thickness, final boolean vertical) {
+        super(gui, vertical ? thickness : size, vertical ? size : thickness);
         this.setColor(FontColors.WHITE);
         this.setBackgroundAlpha(185);
     }

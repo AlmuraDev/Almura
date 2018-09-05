@@ -7,8 +7,6 @@
  */
 package com.almuradev.almura.feature.store.basic.listing;
 
-import static com.google.common.base.Preconditions.checkState;
-
 import com.almuradev.almura.feature.store.listing.BuyingItem;
 import net.minecraft.item.Item;
 
@@ -20,8 +18,6 @@ public final class BasicBuyingItem extends AbstractStoreItem implements BuyingIt
     public BasicBuyingItem(final int record, final Instant created, final Item item, final int metadata, final int quantity, final BigDecimal price,
         final int index) {
         super(record, created, item, metadata, quantity, price, index);
-
-        checkState(quantity >= 1);
     }
 
     @Override

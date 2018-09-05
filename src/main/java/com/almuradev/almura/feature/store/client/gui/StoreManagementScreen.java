@@ -1,3 +1,10 @@
+/*
+ * This file is part of Almura.
+ *
+ * Copyright (c) AlmuraDev <https://github.com/AlmuraDev/>
+ *
+ * All Rights Reserved.
+ */
 package com.almuradev.almura.feature.store.client.gui;
 
 import com.almuradev.almura.feature.store.Store;
@@ -17,17 +24,11 @@ public class StoreManagementScreen extends IngameFeatureManagementScreen<Store> 
         super(I18n.format("almura.feature.common.title.management", I18n.format("almura.feature.store.name")),
                 I18n.format("almura.feature.store.name"),
                 // onRefresh
-                screen -> {
-                    screen.setItems(Collections.unmodifiableList(storeManager.getStores()));
-                },
+                screen -> screen.setItems(Collections.unmodifiableList(storeManager.getStores())),
                 // onDelete
-                (screen, feature) -> {
-                    feature.ifPresent(f -> storeManager.deleteStore(f.getId()));
-                },
+                (screen, feature) -> feature.ifPresent(f -> storeManager.deleteStore(f.getId())),
                 // onOpen
-                (screen, feature) -> {
-                    feature.ifPresent(f -> storeManager.requestStoreSpecificGui(f.getId()));
-                },
+                (screen, feature) -> feature.ifPresent(f -> storeManager.requestStoreSpecificGui(f.getId())),
                 // onSave
                 (screen, feature) -> {
                     if (feature.isPresent()) { // It's a new listing if true

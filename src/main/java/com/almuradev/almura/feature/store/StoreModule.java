@@ -9,6 +9,7 @@ package com.almuradev.almura.feature.store;
 
 import com.almuradev.almura.feature.store.client.ClientStoreManager;
 import com.almuradev.almura.feature.store.client.gui.StoreManagementScreen;
+import com.almuradev.almura.feature.store.client.gui.StoreScreen;
 import com.almuradev.almura.feature.store.network.ClientboundStoreGuiResponsePacket;
 import com.almuradev.almura.feature.store.network.ClientboundStoresRegistryPacket;
 import com.almuradev.almura.feature.store.network.ServerboundModifyStorePacket;
@@ -54,6 +55,7 @@ public final class StoreModule extends AbstractModule implements CommonBinder {
                 @Override
                 protected void configure() {
                     this.facet().add(ClientStoreManager.class);
+                    this.requestStaticInjection(StoreScreen.class);
                     this.requestStaticInjection(StoreManagementScreen.class);
                 }
             }

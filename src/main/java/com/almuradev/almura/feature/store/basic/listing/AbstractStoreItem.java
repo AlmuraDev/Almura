@@ -40,6 +40,7 @@ public abstract class AbstractStoreItem implements StoreItem {
         checkNotNull(created);
         checkNotNull(item);
         checkState(metadata >= 0);
+        checkState(quantity >= FeatureConstants.UNLIMITED);
         checkNotNull(price);
         checkState(index >= 0);
 
@@ -117,7 +118,7 @@ public abstract class AbstractStoreItem implements StoreItem {
     @Override
     public ItemStack asRealStack() {
         if (this.cacheStack == null) {
-            this.cacheStack = new ItemStack(this.item, this.quantity, this.metadata);
+            this.cacheStack = new ItemStack(this.item, Math.max(1, this.quantity), this.metadata);
             if (this.compound != null) {
                 this.cacheStack.setTagCompound(this.compound.copy());
             }

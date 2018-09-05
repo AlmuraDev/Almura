@@ -13,6 +13,7 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.store.Store;
 import com.almuradev.almura.feature.store.StoreModifyType;
 import com.almuradev.almura.feature.store.client.gui.StoreManagementScreen;
+import com.almuradev.almura.feature.store.client.gui.StoreScreen;
 import com.almuradev.almura.feature.store.network.ServerboundModifyStorePacket;
 import com.almuradev.almura.feature.store.network.ServerboundStoreSpecificOfferRequestPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
@@ -120,7 +121,11 @@ public final class ClientStoreManager implements Witness {
     }
 
     public void handleStoreSpecific(final String id) {
+        final Store store = this.getStore(id);
 
+        if (store != null) {
+            new StoreScreen(store, true).display();
+        }
     }
 
     public void handleStoreSpecificOffer(final String id) {

@@ -99,8 +99,21 @@ almura.button.open=Open
 # -- feature.common --
 # --------------------
 
+almura.feature.common.button.buy.all=Buy All
+almura.feature.common.button.buy.one=Buy 1
+almura.feature.common.button.buy.quantity=Buy Qty
+almura.feature.common.button.buy.stack=Buy %d
+almura.feature.common.button.buy=Buy
+almura.feature.common.button.list=List
 almura.feature.common.button.search=Search
+almura.feature.common.button.sell.all=Sell All
+almura.feature.common.button.sell.one=Sell 1
+almura.feature.common.button.sell.quantity=Sell Qty
+almura.feature.common.button.sell.stack=Sell %d
+almura.feature.common.button.sell=Sell
+almura.feature.common.button.unlist=Unlist
 almura.feature.common.text.add_feature=Are you sure you want to add this %s?
+almura.feature.common.text.admin=Admin
 almura.feature.common.text.created=Created
 almura.feature.common.text.creator_name=Creator (name)
 almura.feature.common.text.creator_uuid=Creator (uuid)
@@ -109,6 +122,7 @@ almura.feature.common.text.hidden=Hidden
 almura.feature.common.text.id=ID
 almura.feature.common.text.modify_feature=Are you sure you want to modify this %s?
 almura.feature.common.text.permission=Permission
+almura.feature.common.text.quantity=Quantity
 almura.feature.common.text.title=Title
 almura.feature.common.text.unknown=Unknown
 almura.feature.common.title.are_you_sure=Are you sure?
@@ -124,13 +138,6 @@ almura.feature.store.name=Store
 # -- exchange ---
 # ---------------
 
-almura.feature.exchange.button.buy.all=Buy All
-almura.feature.exchange.button.buy.one=Buy 1
-almura.feature.exchange.button.buy.quantity=Buy Quantity
-almura.feature.exchange.button.buy.stack=Buy %d
-almura.feature.exchange.button.buy=Buy
-almura.feature.exchange.button.list=List
-almura.feature.exchange.button.unlist=Unlist
 almura.feature.exchange.name=Exchange
 almura.feature.exchange.text.inventory=Inventory
 almura.feature.exchange.text.item_name=Item Name

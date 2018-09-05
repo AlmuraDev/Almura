@@ -103,7 +103,7 @@ public class ExchangeListPriceScreen extends SimpleScreen {
         this.eaLabel.setPosition(SimpleScreen.getPaddedX(this.pricePerTextBox, 2), 1, Anchor.MIDDLE | Anchor.LEFT);
 
         this.buttonList = new UIButtonBuilder(this)
-                .text(I18n.format("almura.feature.exchange.button.list"))
+                .text(I18n.format("almura.feature.common.button.list"))
                 .width(40)
                 .position(-2, -2)
                 .anchor(Anchor.RIGHT | Anchor.BOTTOM)

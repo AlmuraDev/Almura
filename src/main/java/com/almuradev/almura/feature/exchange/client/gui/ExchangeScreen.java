@@ -43,7 +43,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Keyboard;
 import org.slf4j.Logger;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
@@ -92,7 +91,6 @@ public final class ExchangeScreen extends SimpleScreen {
     @Override
     public void construct() {
         guiscreenBackground = false;
-        Keyboard.enableRepeatEvents(true);
 
         // Detect if screen area is large enough to display.
         if (minScreenWidth > this.resolution.getScaledWidth() || minScreenHeight > this.resolution.getScaledHeight()) {
@@ -238,7 +236,7 @@ public final class ExchangeScreen extends SimpleScreen {
                 .width(60)
                 .anchor(Anchor.LEFT | Anchor.MIDDLE)
                 .position(0, 0)
-                .text(I18n.format("almura.feature.exchange.button.buy.one"))
+                .text(I18n.format("almura.feature.common.button.buy.one"))
                 .enabled(false)
                 .onClick(() -> this.buy(1))
                 .build("button.buy.single");
@@ -247,7 +245,7 @@ public final class ExchangeScreen extends SimpleScreen {
                 .width(60)
                 .anchor(Anchor.LEFT | Anchor.MIDDLE)
                 .position(SimpleScreen.getPaddedX(this.buttonBuyOne, 10), 0)
-                .text(I18n.format("almura.feature.exchange.button.buy.stack", 0))
+                .text(I18n.format("almura.feature.common.button.buy.stack", 0))
                 .enabled(false)
                 .onClick(() -> {
                     final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
@@ -261,7 +259,7 @@ public final class ExchangeScreen extends SimpleScreen {
                 .width(50)
                 .anchor(Anchor.RIGHT | Anchor.MIDDLE)
                 .position(0, 0)
-                .text(I18n.format("almura.feature.exchange.button.buy.all"))
+                .text(I18n.format("almura.feature.common.button.buy.all"))
                 .enabled(false)
                 .onClick(() -> {
                     final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
@@ -275,7 +273,7 @@ public final class ExchangeScreen extends SimpleScreen {
                 .width(60)
                 .anchor(Anchor.RIGHT | Anchor.MIDDLE)
                 .position(SimpleScreen.getPaddedX(this.buttonBuyAll, 10, Anchor.RIGHT), 0)
-                .text(I18n.format("almura.feature.exchange.button.buy.quantity"))
+                .text(I18n.format("almura.feature.common.button.buy.quantity"))
                 .enabled(false)
                 .onClick(() -> {
                     final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
@@ -312,7 +310,7 @@ public final class ExchangeScreen extends SimpleScreen {
             .width(40)
             .anchor(Anchor.LEFT | Anchor.BOTTOM)
             .position(0, 0)
-            .text(I18n.format("almura.feature.exchange.button.list"))
+            .text(I18n.format("almura.feature.common.button.list"))
             .enabled(false)
             .onClick(this::list)
             .build("button.list");
@@ -429,14 +427,14 @@ public final class ExchangeScreen extends SimpleScreen {
         this.buttonBuyStack.setEnabled(isResultSelected
                 && currentForSaleItem.getQuantity() > 1
                 && currentForSaleItem.getQuantity() >= maxStackSize);
-        this.buttonBuyStack.setText(I18n.format("almura.feature.exchange.button.buy.stack", maxStackSize));
+        this.buttonBuyStack.setText(I18n.format("almura.feature.common.button.buy.stack", maxStackSize));
         this.buttonBuyAll.setEnabled(isResultSelected && currentForSaleItem.getQuantity() > 1);
 
         // Selling list
         final boolean isSellingItemSelected = this.listItemList.getSelectedItem() != null;
         final boolean isListed = isSellingItemSelected && this.listItemList.getSelectedItem().getForSaleItem().isPresent();
         this.buttonList.setEnabled(isSellingItemSelected);
-        this.buttonList.setText(I18n.format("almura.feature.exchange.button." + (isListed ? "unlist" : "list")));
+        this.buttonList.setText(I18n.format("almura.feature.common.button." + (isListed ? "unlist" : "list")));
 
         // Update page buttons/labels
         this.buttonFirstPage.setEnabled(this.currentPage != 1);
@@ -594,7 +592,7 @@ public final class ExchangeScreen extends SimpleScreen {
         protected void construct(final MalisisGui gui) {
             super.construct(gui);
 
-            this.listedIndicatorContainer = new UIContainer<>(gui, 5, this.height - (this.borderSize * 2));
+            this.listedIndicatorContainer = new UIContainer<>(gui, 5, this.height - (this.getLeftBorderSize() + this.getRightBorderSize()));
             this.listedIndicatorContainer.setVisible(false);
             this.listedIndicatorContainer.setPosition(2, -2, Anchor.TOP | Anchor.RIGHT);
             this.listedIndicatorContainer.setColor(FontColors.DARK_GREEN);

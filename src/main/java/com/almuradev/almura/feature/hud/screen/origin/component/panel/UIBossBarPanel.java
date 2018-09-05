@@ -52,7 +52,7 @@ public class UIBossBarPanel extends AbstractPanel {
     @SuppressWarnings("deprecation")
     private void drawBossSegment(final BossBar bar, int startY) {
         // Get the width of the bar we will fill with color
-        final int contentWidth = (int) MathUtil.convertToRange(bar.getPercent(), 0f, 1f, 0, this.width - 14);
+        final int contentWidth = (int) MathUtil.scalef(bar.getPercent(), 0f, 1f, 0, this.width - 14);
 
         // Draw the text
         final String text = TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextColors.WHITE, bar.getName()));
