@@ -268,7 +268,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
         final CropBlockStateDefinition definition = this.state(age);
 
         if (fertilizer) {
-            world.setBlockState(pos, this.withAge(age + 1), BlockUpdateFlag.UPDATE_NEIGHBORS | BlockUpdateFlag.UPDATE_CLIENTS);
+            world.setBlockState(pos, this.withAge(age + 1), BlockUpdateFlag.UPDATE_CLIENTS);
             return;
         }
 
@@ -342,11 +342,11 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
                 // Can we grow? Yes? Awesome!
                 if (RANDOM.nextDouble() <= (change.random(RANDOM) / 100) && this.isGrowthEven(world, pos, age)) {
                     // If growth will be even, grow
-                    world.setBlockState(pos, this.withAge(age + 1), BlockUpdateFlag.UPDATE_NEIGHBORS | BlockUpdateFlag.UPDATE_CLIENTS);
+                    world.setBlockState(pos, this.withAge(age + 1), BlockUpdateFlag.UPDATE_CLIENTS);
 
                     if (ForgeHooks.onCropsGrowPre(world, pos, state, true)) {
                         // If growth will be even, grow
-                        world.setBlockState(pos, this.withAge(age + 1), BlockUpdateFlag.UPDATE_NEIGHBORS | BlockUpdateFlag.UPDATE_CLIENTS);
+                        world.setBlockState(pos, this.withAge(age + 1), BlockUpdateFlag.UPDATE_CLIENTS);
 
                         if (!world.isRemote) {
                             world.playEvent(2005, pos, 0);
@@ -363,11 +363,11 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
                 world.playEvent(2000, pos, 10);  // Smoke
             }
             if (age > 0) {
-                world.setBlockState(pos, this.withAge(age - 1), BlockUpdateFlag.UPDATE_NEIGHBORS | BlockUpdateFlag.UPDATE_CLIENTS);
+                world.setBlockState(pos, this.withAge(age - 1), BlockUpdateFlag.UPDATE_CLIENTS);
             } else {
                 // They let the crop continue to roll back? Tough, they just lost it
                 // TODO Dockter, do you want to show a generic "dead crop block"
-                world.setBlockState(pos, Blocks.AIR.getDefaultState(), BlockUpdateFlag.UPDATE_NEIGHBORS | BlockUpdateFlag.UPDATE_CLIENTS);
+                world.setBlockState(pos, Blocks.AIR.getDefaultState(), BlockUpdateFlag.UPDATE_CLIENTS);
             }
         }
     }
