@@ -15,12 +15,10 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-import java.util.List;
-
 public final class FlowerBlockImpl extends BlockBush implements FlowerBlock {
   private final FlowerBlockStateDefinition definition;
 
-  FlowerBlockImpl(final FlowerBlockBuilder builder, final List<FlowerBlockStateDefinition> states) {
+  FlowerBlockImpl(final FlowerBlockBuilder builder) {
     super((Material) builder.material.get());
     builder.fill(this);
     this.definition = builder.singleState();

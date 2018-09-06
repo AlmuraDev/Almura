@@ -9,6 +9,7 @@ package com.almuradev.content.type.block.mixin.impl;
 
 import com.almuradev.content.type.block.SpecialBlockStateBlock;
 import com.almuradev.content.type.block.type.crop.CropBlockImpl;
+import com.almuradev.content.type.block.type.flower.FlowerBlockImpl;
 import com.almuradev.content.type.block.type.horizontal.HorizontalBlockImpl;
 import com.almuradev.content.type.block.type.normal.NormalBlockImpl;
 import com.almuradev.content.type.block.type.slab.SlabBlockImpl;
@@ -18,6 +19,7 @@ import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin({
     CropBlockImpl.class,
+    FlowerBlockImpl.class,
     HorizontalBlockImpl.class,
     NormalBlockImpl.class,
     SlabBlockImpl.class,

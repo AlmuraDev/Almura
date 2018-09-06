@@ -13,9 +13,6 @@ import com.almuradev.content.type.block.type.flower.state.FlowerBlockStateDefini
 import com.almuradev.content.type.block.type.flower.state.FlowerBlockStateDefinitionBuilder;
 import com.almuradev.content.type.block.type.flower.state.FlowerBlockStateDefinitionBuilderImpl;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 public final class FlowerBlockBuilder extends AbstractBlockBuilder<FlowerBlock, FlowerBlockStateDefinition, FlowerBlockStateDefinitionBuilder> implements FlowerBlock.Builder {
     public FlowerBlockBuilder() {
         super(BlockGenre.FLOWER);
@@ -28,9 +25,6 @@ public final class FlowerBlockBuilder extends AbstractBlockBuilder<FlowerBlock, 
 
     @Override
     public FlowerBlock build() {
-        final List<FlowerBlockStateDefinition> states = this.stateBuilders().values().stream()
-                .map(FlowerBlockStateDefinitionBuilder::build)
-                .collect(Collectors.toList());
-        return new FlowerBlockImpl(this, states);
+        return new FlowerBlockImpl(this);
     }
 }

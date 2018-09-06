@@ -19,7 +19,7 @@ import java.util.List;
 
 public final class TreeGeneratorBuilder extends ContentGenerator.Builder.Impl<TreeGenerator> implements TreeGenerator.Builder {
     private List<String> worlds = Collections.emptyList();
-    private List<DoubleRangeFunctionPredicatePair<Biome>> biomes;
+    private List<DoubleRangeFunctionPredicatePair<Biome>> biomes = Collections.emptyList();
     private List<LazyBlockState> requires = Collections.emptyList();
     private Delegate<Tree> tree;
     private Delegate<Tree> bigTree;
