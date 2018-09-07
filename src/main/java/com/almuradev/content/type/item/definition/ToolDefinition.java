@@ -21,31 +21,31 @@ public final class ToolDefinition implements ItemAcceptable {
             return Optional.empty();
         }
 
-        // tool_class:
+        // tool_type:
         //   level: <value>
         if (node.getValue() instanceof Map) {
             final Map.Entry<Object, ? extends ConfigurationNode> entry = node.getChildrenMap().entrySet().iterator().next();
-            final String toolClass = String.valueOf(entry.getKey());
+            final String toolType = String.valueOf(entry.getKey());
             final int level = entry.getValue().getNode(ToolDefinitionConfig.LEVEL).getInt(0);
-            return Optional.of(new ToolDefinition(toolClass, level));
+            return Optional.of(new ToolDefinition(toolType, level));
         }
 
-        final String toolClass = node.getNode(ToolDefinitionConfig.TOOL_CLASS).getString("");
+        final String toolType = node.getNode(ToolDefinitionConfig.TOOL_TYPE).getString("");
         final int level = node.getNode(ToolDefinitionConfig.LEVEL).getInt(0);
 
-        return Optional.of(new ToolDefinition(toolClass, level));
+        return Optional.of(new ToolDefinition(toolType, level));
     };
 
-    private final String toolClass;
+    private final String toolType;
     private final int level;
 
-    ToolDefinition(final String toolClass, final int level) {
+    ToolDefinition(final String toolType, final int level) {
         this.level = level;
-        this.toolClass = toolClass;
+        this.toolType = toolType;
     }
 
     @Override
     public boolean test(final ItemStack stack) {
-        return stack.getItem().getHarvestLevel(stack, this.toolClass, null, null) >= this.level;
+        return stack.getItem().getHarvestLevel(stack, this.toolType, null, null) >= this.level;
     }
 }

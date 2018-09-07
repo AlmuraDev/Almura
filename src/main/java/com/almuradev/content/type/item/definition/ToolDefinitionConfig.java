@@ -8,6 +8,10 @@
 package com.almuradev.content.type.item.definition;
 
 public interface ToolDefinitionConfig {
-    String TOOL_CLASS = "tool_class";
+    /**
+     * Forge refers to this as "tool class". E.g.
+     * {@link net.minecraft.item.Item#getToolClasses(net.minecraft.item.ItemStack)}
+     */
+    String TOOL_TYPE = "tool_type";
     String LEVEL = "level";
 }

@@ -16,10 +16,10 @@ import java.util.function.Predicate;
 public interface ItemAcceptable extends Predicate<ItemStack> {
 
     @Override
-    boolean test(ItemStack stack);
+    boolean test(final ItemStack stack);
 
     @Deprecated
-    default boolean test(ItemType item) {
-        return test(new ItemStack((Item) item));
+    default boolean test(final ItemType item) {
+        return this.test(new ItemStack((Item) item));
     }
 }

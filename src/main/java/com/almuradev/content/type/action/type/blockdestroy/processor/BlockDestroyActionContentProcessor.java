@@ -42,7 +42,7 @@ public final class BlockDestroyActionContentProcessor implements ArrayConfigProc
         entry.apply(this.action.parse(config.getNode(BlockDestroyActionConfig.APPLY)));
         entry.drop(this.drop.parse(config.getNode(BlockDestroyActionConfig.DROP)));
         final List<ItemAcceptable> with = new ArrayList<>(this.with(config.getNode(BlockDestroyActionConfig.WITH)));
-        with.addAll(tool(config.getNode(BlockDestroyActionConfig.TOOL)));
+        with.addAll(this.tool(config.getNode(BlockDestroyActionConfig.TOOL)));
         entry.with(with);
     }
 
