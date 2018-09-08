@@ -10,11 +10,11 @@ package com.almuradev.almura.feature.menu.game;
 import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
+import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
-import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.renderer.font.FontOptions;
@@ -26,11 +26,9 @@ import net.minecraft.client.gui.advancements.GuiScreenAdvancements;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.Color;
 
-import java.awt.AWTException;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
@@ -46,7 +44,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
     public void construct() {
         this.guiscreenBackground = true;
 
-        final UIBackgroundContainer contentContainer = new UIBackgroundContainer(this);
+        final UIContainer<?> contentContainer = new UIContainer<>(this);
         contentContainer.setBackgroundAlpha(0);
         contentContainer.setSize(220, 202);
         contentContainer.setAnchor(Anchor.MIDDLE | Anchor.CENTER);
@@ -58,22 +56,21 @@ public final class SimpleIngameMenu extends SimpleScreen {
 
         final UIButton backButton = new UIButtonBuilder(this)
                 .text(I18n.format("menu.returnToGame"))
-                .size(220, 20)
+                .size(192, 20)
                 .position(0, SimpleScreen.getPaddedY(almuraHeader, 10))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
                 .container(contentContainer)
                 .build("button.back");
 
-        final UIBackgroundContainer shortcutContainer = new UIBackgroundContainer(this);
+        final UIContainer<?> shortcutContainer = new UIContainer<>(this);
         shortcutContainer.setBackgroundAlpha(0);
-        shortcutContainer.setSize(220, 24);
+        shortcutContainer.setSize(192, 24);
         shortcutContainer.setPosition(backButton.getX(), SimpleScreen.getPaddedY(backButton, PADDING));
         shortcutContainer.setAnchor(Anchor.TOP | Anchor.CENTER);
 
         final boolean lanAvaiable = Minecraft.getMinecraft().isSingleplayer() && !Minecraft.getMinecraft()
                 .getIntegratedServer().getPublic();
-        final boolean guideAvailable = Sponge.getPluginManager().getPlugin("guide").isPresent();
 
         final UIButton shopButton = new UIButtonBuilder(this)
                 .container(shortcutContainer)
@@ -84,22 +81,11 @@ public final class SimpleIngameMenu extends SimpleScreen {
                 .tooltip(Text.of(I18n.format("almura.menu_button.shop")))
                 .build("button.shop");
 
-        final UIButton guideButton = new UIButtonBuilder(this)
-                .container(shortcutContainer)
-                .icon(GuiConfig.Icon.FA_BOOK)
-                .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
-                .position(SimpleScreen.getPaddedX(shopButton, PADDING), shopButton.getY())
-                .anchor(Anchor.MIDDLE | Anchor.LEFT)
-                .listener(this)
-                .tooltip(Text.of(I18n.format("almura.menu_button.guide")))
-                .enabled(guideAvailable)
-                .build("button.guide");
-
         final UIButton mapButton = new UIButtonBuilder(this)
                 .container(shortcutContainer)
                 .icon(GuiConfig.Icon.FA_MAP)
                 .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
-                .position(SimpleScreen.getPaddedX(guideButton, PADDING), guideButton.getY())
+                .position(SimpleScreen.getPaddedX(shopButton, PADDING), shopButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
                 .tooltip(Text.of(I18n.format("item.map.name")))
@@ -173,7 +159,7 @@ public final class SimpleIngameMenu extends SimpleScreen {
     }
 
     @Subscribe
-    public void onButtonClick(UIButton.ClickEvent event) throws IOException, URISyntaxException, AWTException {
+    public void onButtonClick(UIButton.ClickEvent event) throws IOException, URISyntaxException {
         switch (event.getComponent().getName().toLowerCase(Locale.ENGLISH)) {
             case "button.back":
                 this.close();
