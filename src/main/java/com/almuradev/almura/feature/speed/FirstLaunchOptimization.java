@@ -12,6 +12,8 @@ import com.almuradev.almura.core.client.config.category.GeneralCategory;
 import com.almuradev.almura.shared.config.ConfigLoadEvent;
 import com.almuradev.core.event.Witness;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.resources.ResourcePackRepository;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -22,17 +24,6 @@ import java.util.Iterator;
 
 @SideOnly(Side.CLIENT)
 public final class FirstLaunchOptimization implements Witness {
-
-    @SubscribeEvent
-    public void onConfigLoad(final ConfigLoadEvent<ClientConfiguration> event) {
-        final GeneralCategory general = event.configAdapter().general;
-        if (general.firstLaunch) {
-            general.firstLaunch = false;
-            optimizeGame();
-            event.adapter().save();
-        }
-    }
-
     /**
      * Called on first launch to optimize the client's GUI settings. Addresses many users lack of knowledge of
      * the various settings that can lead to better FPS. Improves overall experience with Almura.
@@ -52,14 +43,15 @@ public final class FirstLaunchOptimization implements Witness {
         settings.renderDistanceChunks = 12;
         settings.viewBobbing = false;
 
-        if (!settings.resourcePacks.contains("Almura Font.zip")) {
-            settings.resourcePacks.add("Almura Font.zip");
-        }
+        //if (!settings.resourcePacks.contains("Almura Font.zip")) {
+        //    settings.resourcePacks.add("Almura Font.zip");
+        //}
 
         // Reminder: this saveOptions() doesn't work when the game is still loading...
         settings.saveOptions();
         // We force save every time PanoramicMainmenu is loaded and here because someone can specifically call this method within our config menu.
 
+        /*
         final ResourcePackRepository resourcepackrepository = Minecraft.getMinecraft().getResourcePackRepository();
         final Iterator<String> iterator = settings.resourcePacks.iterator();
 
@@ -79,6 +71,7 @@ public final class FirstLaunchOptimization implements Witness {
         }
         // Reminder: we have to do this even though we are before the texture pack stitch, the initial refreshResources() is called prior to this being called during FirstLaunch Event.
         Minecraft.getMinecraft().refreshResources();
+        */
         // Note: it does not cause double texture pack stitch.
     }
 }

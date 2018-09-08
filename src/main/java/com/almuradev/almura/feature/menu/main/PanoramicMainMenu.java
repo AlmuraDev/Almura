@@ -7,13 +7,18 @@
  */
 package com.almuradev.almura.feature.menu.main;
 
+import com.almuradev.almura.core.client.config.ClientConfiguration;
+import com.almuradev.almura.core.client.config.category.GeneralCategory;
 import com.almuradev.almura.feature.menu.multiplayer.ServerMenu;
+import com.almuradev.almura.feature.speed.FirstLaunchOptimization;
 import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.screen.PanoramicScreen;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
+import com.almuradev.toolbox.config.map.MappedConfiguration;
 import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
@@ -24,6 +29,7 @@ import net.malisis.core.renderer.font.FontOptions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiWorldSelection;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
@@ -53,6 +59,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
     private static final int PADDING = 4;
 
     private UIBackgroundContainer buttonContainer;
+    @Inject private static MappedConfiguration<ClientConfiguration> configAdapter;
 
     public PanoramicMainMenu(@Nullable SimpleScreen parent) {
         super(parent);
@@ -61,6 +68,13 @@ public class PanoramicMainMenu extends PanoramicScreen {
     @SuppressWarnings("deprecation")
     @Override
     public void construct() {
+        final GeneralCategory general = configAdapter.get().general;
+        if (general.firstLaunch) {
+            setupFirstLaunchEnvironment();
+            general.firstLaunch = false;
+            configAdapter.save();
+        }
+
         final UIBackgroundContainer container = new UIBackgroundContainer(this);
         container.setBackgroundAlpha(0);
         container.setPosition(0, -10, Anchor.MIDDLE | Anchor.CENTER);
@@ -240,5 +254,13 @@ public class PanoramicMainMenu extends PanoramicScreen {
                 Desktop.getDesktop().browse(new URI(GuiConfig.Url.ISSUES));
                 break;
         }
+    }
+
+    public void setupFirstLaunchEnvironment() {
+        FirstLaunchOptimization.optimizeGame();
+        ScaledResolution scaledresolution = new ScaledResolution(this.mc);
+        int j = scaledresolution.getScaledWidth();
+        int k = scaledresolution.getScaledHeight();
+        this.setWorldAndResolution(this.mc, j, k);
     }
 }
