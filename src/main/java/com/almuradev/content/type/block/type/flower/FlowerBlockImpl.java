@@ -8,6 +8,7 @@
 package com.almuradev.content.type.block.type.flower;
 
 import com.almuradev.content.type.block.type.flower.state.FlowerBlockStateDefinition;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -23,6 +24,7 @@ public final class FlowerBlockImpl extends BlockBush implements FlowerBlock {
     builder.fill(this);
     this.definition = builder.singleState();
     this.definition.fill(this);
+    this.displayOnCreativeTab = null;
   }
 
   @Override
@@ -37,6 +39,6 @@ public final class FlowerBlockImpl extends BlockBush implements FlowerBlock {
 
   @Override
   public EnumOffsetType getOffsetType() {
-    return EnumOffsetType.XZ;
+    return Block.EnumOffsetType.NONE;
   }
 }
