@@ -35,7 +35,7 @@ public abstract class AbstractStoreItem implements StoreItem {
     @Nullable protected NBTTagCompound compound;
 
     public AbstractStoreItem(final int record, final Instant created, final Item item, final int metadata, final int quantity, final BigDecimal price,
-        final int index) {
+        final int index, @Nullable final NBTTagCompound compound) {
         checkState(record >= 0);
         checkNotNull(created);
         checkNotNull(item);
@@ -51,6 +51,7 @@ public abstract class AbstractStoreItem implements StoreItem {
         this.quantity = quantity;
         this.price = price;
         this.index = index;
+        this.compound = compound;
     }
 
     @Override

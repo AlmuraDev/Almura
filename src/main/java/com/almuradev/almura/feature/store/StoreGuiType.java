@@ -9,6 +9,5 @@ package com.almuradev.almura.feature.store;
 
 public enum StoreGuiType {
     MANAGE,
-    SPECIFIC,
-    SPECIFIC_OFFER
+    SPECIFIC
 }

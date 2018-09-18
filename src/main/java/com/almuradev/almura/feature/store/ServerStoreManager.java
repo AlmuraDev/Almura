@@ -12,7 +12,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.feature.store.basic.BasicStore;
+import com.almuradev.almura.feature.store.basic.listing.BasicBuyingItem;
+import com.almuradev.almura.feature.store.basic.listing.BasicSellingItem;
 import com.almuradev.almura.feature.store.database.StoreQueries;
+import com.almuradev.almura.feature.store.listing.BuyingItem;
+import com.almuradev.almura.feature.store.listing.SellingItem;
+import com.almuradev.almura.feature.store.listing.StoreItem;
+import com.almuradev.almura.feature.store.network.ClientboundStoreItemsResponsePacket;
 import com.almuradev.almura.feature.store.network.ClientboundStoreGuiResponsePacket;
 import com.almuradev.almura.feature.store.network.ClientboundStoresRegistryPacket;
 import com.almuradev.almura.shared.database.DatabaseManager;
@@ -22,9 +28,18 @@ import com.almuradev.almura.shared.feature.IngameFeature;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.SerializationUtil;
 import com.almuradev.core.event.Witness;
+import com.almuradev.generated.store.tables.StoreBuyingItem;
+import com.almuradev.generated.store.tables.StoreBuyingItemData;
+import com.almuradev.generated.store.tables.StoreSellingItem;
+import com.almuradev.generated.store.tables.StoreSellingItemData;
 import com.google.inject.Inject;
+import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.jooq.DSLContext;
 import org.jooq.Record;
+import org.jooq.Result;
 import org.jooq.Results;
 import org.slf4j.Logger;
 import org.spongepowered.api.GameState;
@@ -42,11 +57,15 @@ import org.spongepowered.api.service.ServiceManager;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -213,26 +232,39 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
             this.playerSpecificInitiatorIds.add(player.getUniqueId());
 
             this.databaseManager.getQueue().queue(DatabaseQueue.ActionType.FETCH_IGNORE_DUPLICATES, store.getId(), () -> {
-                // TODO
+                this.loadSellingItems(store);
+
+                this.loadBuyingItems(store);
+
+                this.scheduler
+                    .createTaskBuilder()
+                    .execute(() -> {
+                        store.setLoaded(true);
+
+                        final Iterator<UUID> iter = this.playerSpecificInitiatorIds.iterator();
+                        while (iter.hasNext()) {
+                            final UUID uniqueId = iter.next();
+                            iter.remove();
+
+                            final Player p = Sponge.getServer().getPlayer(uniqueId).orElse(null);
+                            if (p != null && p.isOnline() && !p.isRemoved()) {
+                                final List<SellingItem> sellingItems = store.getSellingItems();
+                                this.network.sendTo(p, new ClientboundStoreItemsResponsePacket(store.getId(), StoreItemSegmentType.SELLING, sellingItems));
+
+                                final List<BuyingItem> buyingItems = store.getBuyingItems();
+                                this.network.sendTo(player, new ClientboundStoreItemsResponsePacket(store.getId(), StoreItemSegmentType.BUYING, buyingItems));
+                            }
+                        }
+                    })
+                    .submit(this.container);
             });
         } else {
-            // TODO
+            final List<SellingItem> sellingItems = store.getSellingItems();
+            this.network.sendTo(player, new ClientboundStoreItemsResponsePacket(store.getId(), StoreItemSegmentType.SELLING, sellingItems));
+
+            final List<BuyingItem> buyingItems = store.getBuyingItems();
+            this.network.sendTo(player, new ClientboundStoreItemsResponsePacket(store.getId(), StoreItemSegmentType.BUYING, buyingItems));
         }
-    }
-
-    public void handleStoreSpecificOffer(final Player player, final String id) {
-        checkNotNull(player);
-        checkNotNull(id);
-
-        final Store store = this.getStore(id).orElse(null);
-        if (store == null) {
-            this.logger.error("Player '{}' attempted to open an offer screen for store '{}' but the server has no knowledge of it. Syncing "
-                + "store registry...", player.getName(), id);
-            this.syncStoreRegistryTo(player);
-            return;
-        }
-
-        this.network.sendTo(player, new ClientboundStoreGuiResponsePacket(StoreGuiType.SPECIFIC_OFFER, id));
     }
 
     public void handleStoreAdd(final Player player, final String id, final String name, final String permission, final boolean isHidden) {
@@ -379,5 +411,160 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
                 }
             })
             .submit(this.container);
+    }
+
+    /**
+     * Selling Items
+     */
+    private void loadSellingItems(final Store store) {
+        checkNotNull(store);
+
+        this.logger.info("Querying selling items for store '{}' ({}), please wait...", store.getName(), store.getId());
+
+        final List<SellingItem> items = new ArrayList<>();
+
+        try (final DSLContext context = this.databaseManager.createContext(true)) {
+            final Results results = StoreQueries
+                .createFetchSellingItemsAndDataFor(store.getId(), false)
+                .build(context)
+                .keepStatement(false)
+                .fetchMany();
+
+            results.forEach(result -> items.addAll(this.parseSellingItemsFrom(result)));
+
+            store.clearSellingItems();
+
+            items.sort(Comparator.comparingInt(SellingItem::getIndex));
+
+            store.putSellingItems(items.isEmpty() ? null : items);
+
+            this.logger.info("Loaded [{}] selling item(s) for store '{}' ({}).", items.size(), store.getName(), store.getId());
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private List<SellingItem> parseSellingItemsFrom(final Result<Record> result) {
+        final List<SellingItem> items = new ArrayList<>();
+
+        for (final Record record : result) {
+            final Integer recNo = record.getValue(StoreSellingItem.STORE_SELLING_ITEM.REC_NO);
+
+            final String domain = record.getValue(StoreSellingItem.STORE_SELLING_ITEM.DOMAIN);
+            final String path = record.getValue(StoreSellingItem.STORE_SELLING_ITEM.PATH);
+
+            final ResourceLocation location = new ResourceLocation(domain, path);
+
+            final Item item = ForgeRegistries.ITEMS.getValue(location);
+
+            if (item == null) {
+                this.logger.error("Unknown item for domain '{}' and path '{}' found at record number '{}'. Skipping... (Did you remove a mod?)",
+                    domain, path, recNo);
+                continue;
+            }
+
+            final Timestamp created = record.getValue(StoreSellingItem.STORE_SELLING_ITEM.CREATED);
+            final Integer quantity = record.getValue(StoreSellingItem.STORE_SELLING_ITEM.QUANTITY);
+            final Integer metadata = record.getValue(StoreSellingItem.STORE_SELLING_ITEM.METADATA);
+            final BigDecimal price = record.getValue(StoreSellingItem.STORE_SELLING_ITEM.PRICE);
+            final Integer index = record.getValue(StoreSellingItem.STORE_SELLING_ITEM.INDEX);
+            final byte[] compoundData = record.getValue(StoreSellingItemData.STORE_SELLING_ITEM_DATA.DATA);
+
+            NBTTagCompound compound = null;
+            if (compoundData != null) {
+                try {
+                    compound = SerializationUtil.compoundFromBytes(compoundData);
+                } catch (IOException e) {
+                    this.logger.error("Malformed item data found at record number '{}'. Skipping...", recNo);
+                    continue;
+                }
+            }
+
+            final BasicSellingItem basicSellingItem = new BasicSellingItem(recNo, created.toInstant(), item, quantity, metadata, price, index,
+                compound);
+
+            items.add(basicSellingItem);
+        }
+
+        return items;
+    }
+
+    /**
+     * BuyingItems
+     */
+
+    private void loadBuyingItems(final Store store) {
+        checkNotNull(store);
+
+        this.logger.info("Querying buying items for store '{}' ({}), please wait...", store.getName(), store.getId());
+
+        final List<BuyingItem> items = new ArrayList<>();
+
+        try (final DSLContext context = this.databaseManager.createContext(true)) {
+            final Results results = StoreQueries
+                .createFetchBuyingItemsAndDataFor(store.getId(), false)
+                .build(context)
+                .keepStatement(false)
+                .fetchMany();
+
+            results.forEach(result -> items.addAll(this.parseBuyingItemsFor(result)));
+
+            store.clearBuyingItems();
+
+            items.sort(Comparator.comparingInt(BuyingItem::getIndex));
+
+            store.putBuyingItems(items.isEmpty() ? null : items);
+
+            this.logger.info("Loaded [{}] buying item(s) for store '{}' ({}).", items.size(), store.getName(), store.getId());
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private List<BuyingItem> parseBuyingItemsFor(final Result<Record> result) {
+        final List<BuyingItem> items = new ArrayList<>();
+
+        for (final Record record : result) {
+            final Integer recNo = record.getValue(StoreBuyingItem.STORE_BUYING_ITEM.REC_NO);
+
+            final String domain = record.getValue(StoreBuyingItem.STORE_BUYING_ITEM.DOMAIN);
+            final String path = record.getValue(StoreBuyingItem.STORE_BUYING_ITEM.PATH);
+
+            final ResourceLocation location = new ResourceLocation(domain, path);
+
+            final Item item = ForgeRegistries.ITEMS.getValue(location);
+
+            if (item == null) {
+                this.logger.error("Unknown item for domain '{}' and path '{}' found at record number '{}'. Skipping... (Did you remove a mod?)",
+                    domain, path, recNo);
+                continue;
+            }
+
+            final Timestamp created = record.getValue(StoreBuyingItem.STORE_BUYING_ITEM.CREATED);
+            final Integer quantity = record.getValue(StoreBuyingItem.STORE_BUYING_ITEM.QUANTITY);
+            final Integer metadata = record.getValue(StoreBuyingItem.STORE_BUYING_ITEM.METADATA);
+            final BigDecimal price = record.getValue(StoreBuyingItem.STORE_BUYING_ITEM.PRICE);
+            final Integer index = record.getValue(StoreBuyingItem.STORE_BUYING_ITEM.INDEX);
+            final byte[] compoundData = record.getValue(StoreBuyingItemData.STORE_BUYING_ITEM_DATA.DATA);
+
+            NBTTagCompound compound = null;
+            if (compoundData != null) {
+                try {
+                    compound = SerializationUtil.compoundFromBytes(compoundData);
+                } catch (IOException e) {
+                    this.logger.error("Malformed item data found at record number '{}'. Skipping...", recNo);
+                    continue;
+                }
+            }
+
+            final BasicBuyingItem basicBuyingItem = new BasicBuyingItem(recNo, created.toInstant(), item, quantity, metadata, price, index,
+                compound);
+
+            items.add(basicBuyingItem);
+        }
+
+        return items;
     }
 }

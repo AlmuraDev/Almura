@@ -450,7 +450,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
     private void loadListItems(final Exchange axs) {
         checkNotNull(axs);
 
-        this.logger.info("Querying items for exchange '{}' ({}), please wait...", axs.getName(), axs.getId());
+        this.logger.info("Querying list items for exchange '{}' ({}), please wait...", axs.getName(), axs.getId());
 
         final List<ListItem> items = new ArrayList<>();
 

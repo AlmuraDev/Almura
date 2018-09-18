@@ -11,11 +11,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.store.Store;
+import com.almuradev.almura.feature.store.StoreItemSegmentType;
 import com.almuradev.almura.feature.store.StoreModifyType;
 import com.almuradev.almura.feature.store.client.gui.StoreManagementScreen;
 import com.almuradev.almura.feature.store.client.gui.StoreScreen;
+import com.almuradev.almura.feature.store.listing.StoreItem;
 import com.almuradev.almura.feature.store.network.ServerboundModifyStorePacket;
-import com.almuradev.almura.feature.store.network.ServerboundStoreSpecificOfferRequestPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
 import com.google.inject.Inject;
@@ -78,12 +79,6 @@ public final class ClientStoreManager implements Witness {
         Minecraft.getMinecraft().player.sendChatMessage("/" + Almura.ID + " store open " + id);
     }
 
-    public void requestStoreSpecificOfferGui(final String id) {
-        checkNotNull(id);
-
-        this.network.sendToServer(new ServerboundStoreSpecificOfferRequestPacket(id));
-    }
-
     public void addStore(final String id, final String name, final String permission, final boolean isHidden) {
         checkNotNull(id);
         checkNotNull(name);
@@ -129,6 +124,10 @@ public final class ClientStoreManager implements Witness {
     }
 
     public void handleStoreSpecificOffer(final String id) {
+
+    }
+
+    public void handleStoreItems(final String id, final StoreItemSegmentType type, final List<? extends StoreItem> storeItems) {
 
     }
 }

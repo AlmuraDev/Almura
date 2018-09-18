@@ -8,6 +8,10 @@
 package com.almuradev.almura.feature.store.database;
 
 import static com.almuradev.generated.store.Tables.STORE;
+import static com.almuradev.generated.store.Tables.STORE_BUYING_ITEM;
+import static com.almuradev.generated.store.Tables.STORE_BUYING_ITEM_DATA;
+import static com.almuradev.generated.store.Tables.STORE_SELLING_ITEM;
+import static com.almuradev.generated.store.Tables.STORE_SELLING_ITEM_DATA;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.shared.database.DatabaseQuery;
@@ -15,6 +19,8 @@ import com.almuradev.almura.shared.util.SerializationUtil;
 import com.almuradev.generated.store.tables.records.StoreRecord;
 import org.jooq.DeleteConditionStep;
 import org.jooq.InsertValuesStep6;
+import org.jooq.Record;
+import org.jooq.SelectConditionStep;
 import org.jooq.SelectWhereStep;
 import org.jooq.UpdateConditionStep;
 
@@ -67,5 +73,34 @@ public final class StoreQueries {
         checkNotNull(id);
 
         return context -> context.deleteFrom(STORE).where(STORE.ID.eq(id));
+    }
+
+    /**
+     * SellingItem
+     */
+
+    public static DatabaseQuery<SelectConditionStep<Record>> createFetchSellingItemsAndDataFor(final String id, final boolean isHidden) {
+        checkNotNull(id);
+
+        return context -> context
+            .select()
+            .from(STORE_SELLING_ITEM)
+            .leftJoin(STORE_SELLING_ITEM_DATA)
+            .on(STORE_SELLING_ITEM_DATA.SELLING_ITEM.eq(STORE_SELLING_ITEM.REC_NO))
+            .where(STORE_SELLING_ITEM.STORE.eq(id).and(STORE_SELLING_ITEM.IS_HIDDEN.eq(isHidden)));
+    }
+
+    /**
+     * BuyingItem
+     */
+    public static DatabaseQuery<SelectConditionStep<Record>> createFetchBuyingItemsAndDataFor(final String id, final boolean isHidden) {
+        checkNotNull(id);
+
+        return context -> context
+            .select()
+            .from(STORE_BUYING_ITEM)
+            .leftJoin(STORE_BUYING_ITEM_DATA)
+            .on(STORE_BUYING_ITEM_DATA.BUYING_ITEM.eq(STORE_BUYING_ITEM.REC_NO))
+            .where(STORE_BUYING_ITEM.STORE.eq(id).and(STORE_BUYING_ITEM.IS_HIDDEN.eq(isHidden)));
     }
 }

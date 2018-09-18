@@ -13,11 +13,9 @@ import com.almuradev.almura.feature.store.client.gui.StoreScreen;
 import com.almuradev.almura.feature.store.network.ClientboundStoreGuiResponsePacket;
 import com.almuradev.almura.feature.store.network.ClientboundStoresRegistryPacket;
 import com.almuradev.almura.feature.store.network.ServerboundModifyStorePacket;
-import com.almuradev.almura.feature.store.network.ServerboundStoreSpecificOfferRequestPacket;
 import com.almuradev.almura.feature.store.network.handler.ClientboundStoreGuiResponsePacketHandler;
 import com.almuradev.almura.feature.store.network.handler.ClientboundStoresRegistryPacketHandler;
 import com.almuradev.almura.feature.store.network.handler.ServerboundModifyStorePacketHandler;
-import com.almuradev.almura.feature.store.network.handler.ServerboundStoreSpecificOfferPacketHandler;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
@@ -38,9 +36,6 @@ public final class StoreModule extends AbstractModule implements CommonBinder {
         this.packet()
             .bind(ClientboundStoresRegistryPacket.class,
                 binder -> binder.handler(ClientboundStoresRegistryPacketHandler.class, Platform.Type.CLIENT))
-
-            .bind(ServerboundStoreSpecificOfferRequestPacket.class,
-                binder -> binder.handler(ServerboundStoreSpecificOfferPacketHandler.class, Platform.Type.SERVER))
 
             .bind(ClientboundStoreGuiResponsePacket.class,
                 binder -> binder.handler(ClientboundStoreGuiResponsePacketHandler.class, Platform.Type.CLIENT))

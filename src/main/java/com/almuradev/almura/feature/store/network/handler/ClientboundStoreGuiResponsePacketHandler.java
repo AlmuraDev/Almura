@@ -48,9 +48,6 @@ public final class ClientboundStoreGuiResponsePacketHandler implements MessageHa
                 case SPECIFIC:
                     this.storeManager.handleStoreSpecific(message.id);
                     break;
-                case SPECIFIC_OFFER:
-                    this.storeManager.handleStoreSpecificOffer(message.id);
-                    break;
                 default:
                     throw new UnsupportedOperationException(message.type + " is not supported yet!");
             }
