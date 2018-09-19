@@ -13,17 +13,32 @@ import static com.almuradev.generated.store.Tables.STORE_BUYING_ITEM_DATA;
 import static com.almuradev.generated.store.Tables.STORE_SELLING_ITEM;
 import static com.almuradev.generated.store.Tables.STORE_SELLING_ITEM_DATA;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.shared.database.DatabaseQuery;
+import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.almuradev.almura.shared.util.SerializationUtil;
+import com.almuradev.generated.store.tables.StoreSellingItem;
+import com.almuradev.generated.store.tables.StoreSellingItemData;
+import com.almuradev.generated.store.tables.records.StoreBuyingItemDataRecord;
+import com.almuradev.generated.store.tables.records.StoreBuyingItemRecord;
 import com.almuradev.generated.store.tables.records.StoreRecord;
+import com.almuradev.generated.store.tables.records.StoreSellingItemDataRecord;
+import com.almuradev.generated.store.tables.records.StoreSellingItemRecord;
+import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
 import org.jooq.DeleteConditionStep;
+import org.jooq.InsertResultStep;
+import org.jooq.InsertValuesStep2;
 import org.jooq.InsertValuesStep6;
+import org.jooq.InsertValuesStep8;
 import org.jooq.Record;
 import org.jooq.SelectConditionStep;
 import org.jooq.SelectWhereStep;
 import org.jooq.UpdateConditionStep;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.UUID;
@@ -90,6 +105,80 @@ public final class StoreQueries {
             .where(STORE_SELLING_ITEM.STORE.eq(id).and(STORE_SELLING_ITEM.IS_HIDDEN.eq(isHidden)));
     }
 
+    public static DatabaseQuery<InsertResultStep<StoreSellingItemRecord>> createInsertSellingItem(final String id, final Instant created,
+        final Item item, final int quantity, final int metadata, final int index, final BigDecimal price) {
+        checkNotNull(id);
+        checkNotNull(created);
+        checkNotNull(item);
+        checkNotNull(item.getRegistryName());
+        checkState(quantity >= FeatureConstants.UNLIMITED);
+        checkState(metadata >= 0);
+        checkState(index >= 0);
+        checkNotNull(price);
+        checkState(price.doubleValue() >= 0);
+
+        return context -> {
+            final InsertValuesStep8<StoreSellingItemRecord, String, Timestamp, String, String, Integer, Integer, Integer, BigDecimal> insertionStep =
+                context
+                .insertInto(STORE_SELLING_ITEM)
+                .columns(STORE_SELLING_ITEM.STORE, STORE_SELLING_ITEM.CREATED, STORE_SELLING_ITEM.DOMAIN, STORE_SELLING_ITEM.PATH, STORE_SELLING_ITEM
+                    .QUANTITY, STORE_SELLING_ITEM.METADATA, STORE_SELLING_ITEM.INDEX, STORE_SELLING_ITEM.PRICE);
+
+            insertionStep.values(id, Timestamp.from(created), item.getRegistryName().getResourceDomain(), item.getRegistryName()
+                .getResourcePath(), quantity, metadata, index, price);
+
+            return insertionStep.returning();
+        };
+    }
+
+    public static DatabaseQuery<UpdateConditionStep<StoreSellingItemRecord>> createUpdateSellingItem(final int sellingItemRecNo, final int quantity,
+        final int index, final BigDecimal price) {
+        checkState(sellingItemRecNo >= 0);
+        checkState(quantity >= FeatureConstants.UNLIMITED);
+        checkState(index >= 0);
+        checkNotNull(price);
+        checkState(price.doubleValue() >= 0);
+
+        return context -> context
+            .update(STORE_SELLING_ITEM)
+            .set(STORE_SELLING_ITEM.QUANTITY, quantity)
+            .set(STORE_SELLING_ITEM.INDEX, index)
+            .set(STORE_SELLING_ITEM.PRICE, price)
+            .where(STORE_SELLING_ITEM.REC_NO.eq(sellingItemRecNo));
+    }
+
+    public static DatabaseQuery<UpdateConditionStep<StoreSellingItemRecord>> createUpdateSellingItemIsHidden(final int sellingItemRecNo,
+        final boolean isHidden) {
+        checkState(sellingItemRecNo >= 0);
+
+        return context -> context
+            .update(STORE_SELLING_ITEM)
+            .set(STORE_SELLING_ITEM.IS_HIDDEN, isHidden)
+            .where(STORE_SELLING_ITEM.REC_NO.eq(sellingItemRecNo));
+    }
+
+    /**
+     * SellingItemData
+     */
+
+    public static DatabaseQuery<InsertResultStep<StoreSellingItemDataRecord>> createInsertSellingItemData(final int sellingItemRecNo,
+        final NBTTagCompound compound) throws IOException {
+        checkState(sellingItemRecNo >= 0);
+        checkNotNull(compound);
+
+        final byte[] compoundData = SerializationUtil.toBytes(compound);
+
+        return context -> {
+            final InsertValuesStep2<StoreSellingItemDataRecord, Integer, byte[]> insertionStep = context
+                .insertInto(STORE_SELLING_ITEM_DATA)
+                .columns(STORE_SELLING_ITEM_DATA.SELLING_ITEM, STORE_SELLING_ITEM_DATA.DATA);
+
+            insertionStep.values(sellingItemRecNo, compoundData);
+
+            return insertionStep.returning();
+        };
+    }
+
     /**
      * BuyingItem
      */
@@ -102,5 +191,79 @@ public final class StoreQueries {
             .leftJoin(STORE_BUYING_ITEM_DATA)
             .on(STORE_BUYING_ITEM_DATA.BUYING_ITEM.eq(STORE_BUYING_ITEM.REC_NO))
             .where(STORE_BUYING_ITEM.STORE.eq(id).and(STORE_BUYING_ITEM.IS_HIDDEN.eq(isHidden)));
+    }
+
+    public static DatabaseQuery<InsertResultStep<StoreBuyingItemRecord>> createInsertBuyingItem(final String id, final Instant created,
+        final Item item, final int quantity, final int metadata, final int index, final BigDecimal price) {
+        checkNotNull(id);
+        checkNotNull(created);
+        checkNotNull(item);
+        checkNotNull(item.getRegistryName());
+        checkState(quantity >= FeatureConstants.UNLIMITED);
+        checkState(metadata >= 0);
+        checkState(index >= 0);
+        checkNotNull(price);
+        checkState(price.doubleValue() >= 0);
+
+        return context -> {
+            final InsertValuesStep8<StoreBuyingItemRecord, String, Timestamp, String, String, Integer, Integer, Integer, BigDecimal> insertionStep =
+                context
+                    .insertInto(STORE_BUYING_ITEM)
+                    .columns(STORE_BUYING_ITEM.STORE, STORE_BUYING_ITEM.CREATED, STORE_BUYING_ITEM.DOMAIN, STORE_BUYING_ITEM.PATH, STORE_BUYING_ITEM
+                        .QUANTITY, STORE_BUYING_ITEM.METADATA, STORE_BUYING_ITEM.INDEX, STORE_BUYING_ITEM.PRICE);
+
+            insertionStep.values(id, Timestamp.from(created), item.getRegistryName().getResourceDomain(), item.getRegistryName()
+                .getResourcePath(), quantity, metadata, index, price);
+
+            return insertionStep.returning();
+        };
+    }
+
+    public static DatabaseQuery<UpdateConditionStep<StoreBuyingItemRecord>> createUpdateBuyingItem(final int buyingItemRecNo, final int quantity,
+        final int index, final BigDecimal price) {
+        checkState(buyingItemRecNo >= 0);
+        checkState(quantity >= FeatureConstants.UNLIMITED);
+        checkState(index >= 0);
+        checkNotNull(price);
+        checkState(price.doubleValue() >= 0);
+
+        return context -> context
+            .update(STORE_BUYING_ITEM)
+            .set(STORE_BUYING_ITEM.QUANTITY, quantity)
+            .set(STORE_BUYING_ITEM.INDEX, index)
+            .set(STORE_BUYING_ITEM.PRICE, price)
+            .where(STORE_BUYING_ITEM.REC_NO.eq(buyingItemRecNo));
+    }
+
+    public static DatabaseQuery<UpdateConditionStep<StoreBuyingItemRecord>> createUpdateBuyingItemIsHidden(final int buyingItemRecNo, final boolean
+        isHidden) {
+        checkState(buyingItemRecNo >= 0);
+
+        return context -> context
+            .update(STORE_BUYING_ITEM)
+            .set(STORE_BUYING_ITEM.IS_HIDDEN, isHidden)
+            .where(STORE_BUYING_ITEM.REC_NO.eq(buyingItemRecNo));
+    }
+
+    /**
+     * BuyingItemData
+     */
+
+    public static DatabaseQuery<InsertResultStep<StoreBuyingItemDataRecord>> createInsertBuyingItemData(final int buyingItemRecNo,
+        final NBTTagCompound compound) throws IOException {
+        checkState(buyingItemRecNo >= 0);
+        checkNotNull(compound);
+
+        final byte[] compoundData = SerializationUtil.toBytes(compound);
+
+        return context -> {
+            final InsertValuesStep2<StoreBuyingItemDataRecord, Integer, byte[]> insertionStep = context
+                .insertInto(STORE_BUYING_ITEM_DATA)
+                .columns(STORE_BUYING_ITEM_DATA.BUYING_ITEM, STORE_BUYING_ITEM_DATA.DATA);
+
+            insertionStep.values(buyingItemRecNo, compoundData);
+
+            return insertionStep.returning();
+        };
     }
 }

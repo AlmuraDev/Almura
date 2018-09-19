@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.store;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
@@ -25,6 +26,7 @@ import com.almuradev.almura.shared.database.DatabaseManager;
 import com.almuradev.almura.shared.database.DatabaseQueue;
 import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.almuradev.almura.shared.feature.IngameFeature;
+import com.almuradev.almura.shared.item.VanillaStack;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.SerializationUtil;
 import com.almuradev.core.event.Witness;
@@ -158,7 +160,7 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
                     stores.put(id, new BasicStore(id, created.toInstant(), creator, name, permission, isHidden));
                 }
             });
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         }
 
@@ -185,7 +187,7 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
                             .execute();
 
                         this.logger.info("Loaded store '{}' ({})", store.getName(), store.getId());
-                    } catch (SQLException e) {
+                    } catch (final SQLException e) {
                         e.printStackTrace();
                     }
                 }
@@ -241,29 +243,28 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
                     .execute(() -> {
                         store.setLoaded(true);
 
-                        final Iterator<UUID> iter = this.playerSpecificInitiatorIds.iterator();
-                        while (iter.hasNext()) {
-                            final UUID uniqueId = iter.next();
-                            iter.remove();
+                        final Iterator<UUID> iterator = this.playerSpecificInitiatorIds.iterator();
+                        while (iterator.hasNext()) {
+                            final UUID uniqueId = iterator.next();
+                            iterator.remove();
 
                             final Player p = Sponge.getServer().getPlayer(uniqueId).orElse(null);
                             if (p != null && p.isOnline() && !p.isRemoved()) {
-                                final List<SellingItem> sellingItems = store.getSellingItems();
-                                this.network.sendTo(p, new ClientboundStoreItemsResponsePacket(store.getId(), StoreItemSegmentType.SELLING, sellingItems));
+                                this.network.sendTo(p, new ClientboundStoreItemsResponsePacket(store.getId(), StoreItemSegmentType.SELLING,
+                                    store.getSellingItems()));
 
-                                final List<BuyingItem> buyingItems = store.getBuyingItems();
-                                this.network.sendTo(player, new ClientboundStoreItemsResponsePacket(store.getId(), StoreItemSegmentType.BUYING, buyingItems));
+                                this.network.sendTo(player, new ClientboundStoreItemsResponsePacket(store.getId(), StoreItemSegmentType.BUYING,
+                                    store.getBuyingItems()));
                             }
                         }
                     })
                     .submit(this.container);
             });
         } else {
-            final List<SellingItem> sellingItems = store.getSellingItems();
-            this.network.sendTo(player, new ClientboundStoreItemsResponsePacket(store.getId(), StoreItemSegmentType.SELLING, sellingItems));
+            this.network.sendTo(player, new ClientboundStoreItemsResponsePacket(store.getId(), StoreItemSegmentType.SELLING,
+                store.getSellingItems()));
 
-            final List<BuyingItem> buyingItems = store.getBuyingItems();
-            this.network.sendTo(player, new ClientboundStoreItemsResponsePacket(store.getId(), StoreItemSegmentType.BUYING, buyingItems));
+            this.network.sendTo(player, new ClientboundStoreItemsResponsePacket(store.getId(), StoreItemSegmentType.BUYING, store.getBuyingItems()));
         }
     }
 
@@ -318,7 +319,7 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
                             Sponge.getServer().getOnlinePlayers().forEach(this::syncStoreRegistryTo);
                         })
                         .submit(this.container);
-                } catch (SQLException e) {
+                } catch (final SQLException e) {
                     e.printStackTrace();
                 }
             })
@@ -364,7 +365,7 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
                     }
 
                     this.loadStores();
-                } catch (SQLException e) {
+                } catch (final SQLException e) {
                     e.printStackTrace();
                 }
             })
@@ -406,7 +407,7 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
                     }
 
                     this.loadStores();
-                } catch (SQLException e) {
+                } catch (final SQLException e) {
                     e.printStackTrace();
                 }
             })
@@ -440,9 +441,31 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
 
             this.logger.info("Loaded [{}] selling item(s) for store '{}' ({}).", items.size(), store.getName(), store.getId());
 
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void handleListSellingItem(final Player player, final String id, final VanillaStack stack, final int index, final BigDecimal price) {
+        checkNotNull(player);
+        checkNotNull(id);
+        checkNotNull(stack);
+        checkState(index >= 0);
+        checkNotNull(price);
+        checkState(price.doubleValue() >= 0);
+
+    }
+
+    public void handleModifySellingItem(final Player player, final String id, final int recNo, final int quantity,
+        final int index, final BigDecimal price) {
+        checkNotNull(player);
+        checkNotNull(id);
+        checkState(recNo >= 0);
+        checkState(quantity >= FeatureConstants.UNLIMITED);
+        checkState(index >= 0);
+        checkNotNull(price);
+        checkState(price.doubleValue() >= 0);
+
     }
 
     private List<SellingItem> parseSellingItemsFrom(final Result<Record> result) {
@@ -459,7 +482,8 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
             final Item item = ForgeRegistries.ITEMS.getValue(location);
 
             if (item == null) {
-                this.logger.error("Unknown item for domain '{}' and path '{}' found at record number '{}'. Skipping... (Did you remove a mod?)",
+                this.logger.error("Unknown selling item for domain '{}' and path '{}' found at record number '{}'. Skipping... (Did you remove a "
+                        + "mod?)",
                     domain, path, recNo);
                 continue;
             }
@@ -475,8 +499,8 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
             if (compoundData != null) {
                 try {
                     compound = SerializationUtil.compoundFromBytes(compoundData);
-                } catch (IOException e) {
-                    this.logger.error("Malformed item data found at record number '{}'. Skipping...", recNo);
+                } catch (final IOException e) {
+                    this.logger.error("Malformed selling item data found at record number '{}'. Skipping...", recNo);
                     continue;
                 }
             }
@@ -491,7 +515,7 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
     }
 
     /**
-     * BuyingItems
+     * Buying Items
      */
 
     private void loadBuyingItems(final Store store) {
@@ -518,9 +542,31 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
 
             this.logger.info("Loaded [{}] buying item(s) for store '{}' ({}).", items.size(), store.getName(), store.getId());
 
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void handleListBuyingItem(final Player player, final String id, final VanillaStack stack, final int index, final BigDecimal price) {
+        checkNotNull(player);
+        checkNotNull(id);
+        checkNotNull(stack);
+        checkState(index >= 0);
+        checkNotNull(price);
+        checkState(price.doubleValue() >= 0);
+
+    }
+
+    public void handleModifyBuyingItem(final Player player, final String id, final int recNo, final int quantity,
+        final int index, final BigDecimal price) {
+        checkNotNull(player);
+        checkNotNull(id);
+        checkState(recNo >= 0);
+        checkState(quantity >= FeatureConstants.UNLIMITED);
+        checkNotNull(price);
+        checkState(index >= 0);
+        checkState(price.doubleValue() >= 0);
+
     }
 
     private List<BuyingItem> parseBuyingItemsFor(final Result<Record> result) {
@@ -537,7 +583,8 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
             final Item item = ForgeRegistries.ITEMS.getValue(location);
 
             if (item == null) {
-                this.logger.error("Unknown item for domain '{}' and path '{}' found at record number '{}'. Skipping... (Did you remove a mod?)",
+                this.logger.error("Unknown buying item for domain '{}' and path '{}' found at record number '{}'. Skipping... (Did you remove a "
+                        + "mod?)",
                     domain, path, recNo);
                 continue;
             }
@@ -553,8 +600,8 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
             if (compoundData != null) {
                 try {
                     compound = SerializationUtil.compoundFromBytes(compoundData);
-                } catch (IOException e) {
-                    this.logger.error("Malformed item data found at record number '{}'. Skipping...", recNo);
+                } catch (final IOException e) {
+                    this.logger.error("Malformed buying item data found at record number '{}'. Skipping...", recNo);
                     continue;
                 }
             }
