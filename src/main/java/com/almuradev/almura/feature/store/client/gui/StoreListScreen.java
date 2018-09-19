@@ -227,12 +227,14 @@ public class StoreListScreen extends SimpleScreen {
             return;
         }
 
+        // TODO TEST CODE
         if (!this.buyPricePerTextBox.getText().isEmpty() && !this.quantityTextBox.getText().isEmpty()) {
             // Add buying item
             final int quantity = Integer.valueOf(this.quantityTextBox.getText());
             final BigDecimal buyingPrice = new BigDecimal(this.buyPricePerTextBox.getText());
             if (buyingPrice.doubleValue() > 0) {
-                final BuyingItem buyingItem = new BasicBuyingItem(0, Instant.now(), toList.getItem(), toList.getMetadata(), quantity, buyingPrice, 0);
+                final BuyingItem buyingItem = new BasicBuyingItem(0, Instant.now(), toList.getItem(), toList.getMetadata(), quantity, buyingPrice,
+                    0, null);
                 buyingItem.setCompound(toList.getTagCompound() == null ? null : toList.getTagCompound().copy());
                 this.store.getBuyingItems().add(buyingItem);
             }
@@ -242,7 +244,8 @@ public class StoreListScreen extends SimpleScreen {
             // Add selling item
             final BigDecimal sellingPrice = new BigDecimal(this.sellPricePerTextBox.getText());
             if (sellingPrice.doubleValue() > 0) {
-                final SellingItem sellingItem = new BasicSellingItem(0, Instant.now(), toList.getItem(), toList.getMetadata(), -1, sellingPrice, 0);
+                final SellingItem sellingItem = new BasicSellingItem(0, Instant.now(), toList.getItem(), toList.getMetadata(), -1, sellingPrice, 0,
+                    null);
                 sellingItem.setCompound(toList.getTagCompound() == null ? null : toList.getTagCompound().copy());
                 this.store.getSellingItems().add(sellingItem);
             }

@@ -18,8 +18,8 @@ import com.almuradev.almura.feature.store.basic.listing.BasicSellingItem;
 import com.almuradev.almura.feature.store.database.StoreQueries;
 import com.almuradev.almura.feature.store.listing.BuyingItem;
 import com.almuradev.almura.feature.store.listing.SellingItem;
-import com.almuradev.almura.feature.store.listing.StoreItem;
 import com.almuradev.almura.feature.store.network.ClientboundStoreItemsResponsePacket;
+import com.almuradev.almura.feature.store.network.ServerboundStoreItemsListRequestPacket;
 import com.almuradev.almura.feature.store.network.ClientboundStoreGuiResponsePacket;
 import com.almuradev.almura.feature.store.network.ClientboundStoresRegistryPacket;
 import com.almuradev.almura.shared.database.DatabaseManager;
@@ -34,6 +34,11 @@ import com.almuradev.generated.store.tables.StoreBuyingItem;
 import com.almuradev.generated.store.tables.StoreBuyingItemData;
 import com.almuradev.generated.store.tables.StoreSellingItem;
 import com.almuradev.generated.store.tables.StoreSellingItemData;
+import com.almuradev.generated.store.tables.records.StoreBuyingItemDataRecord;
+import com.almuradev.generated.store.tables.records.StoreBuyingItemRecord;
+import com.almuradev.generated.store.tables.records.StoreSellingItemDataRecord;
+import com.almuradev.generated.store.tables.records.StoreSellingItemRecord;
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
@@ -446,14 +451,103 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
         }
     }
 
-    public void handleListSellingItem(final Player player, final String id, final VanillaStack stack, final int index, final BigDecimal price) {
+    public void handleListSellingItems(final Player player, final String id,
+        final List<ServerboundStoreItemsListRequestPacket.StoreItemCandidate> candidates) {
         checkNotNull(player);
         checkNotNull(id);
-        checkNotNull(stack);
-        checkState(index >= 0);
-        checkNotNull(price);
-        checkState(price.doubleValue() >= 0);
 
+        final Store store = this.getStore(id).orElse(null);
+
+        if (store == null) {
+            this.logger.error("Player '{}' attempted to list selling items for store '{}' but the server has no knowledge of it. Syncing "
+                + "store registry...", player.getName(), id);
+            this.syncStoreRegistryTo(player);
+            return;
+        }
+
+        this.scheduler
+            .createTaskBuilder()
+            .async()
+            .execute(() -> {
+                try (final DSLContext context = this.databaseManager.createContext(true)) {
+
+                    final Map<StoreSellingItemRecord, VanillaStack> inserted = new HashMap<>();
+
+                    for (final ServerboundStoreItemsListRequestPacket.StoreItemCandidate candidate : candidates) {
+
+                        final VanillaStack stack = candidate.stack;
+                        final int index = candidate.index;
+                        final BigDecimal price = candidate.price;
+
+                        final StoreSellingItemRecord itemRecord = StoreQueries
+                            .createInsertSellingItem(store.getId(), Instant.now(), stack.getItem(), stack.getQuantity(), stack.getMetadata(), index,
+                                price)
+                            .build(context)
+                            .fetchOne();
+
+                        if (itemRecord == null) {
+                            this.notificationManager.sendWindowMessage(player, Text.of("Store"),
+                                Text.of("Critical error encountered, check the server console for more details!"));
+                            this.logger.error("Player '{}' submitted a new selling item for store '{}' to the database but it failed. "
+                                + "Discarding changes and printing stack...", player.getName(), id);
+                            this.printStacksToConsole(Lists.newArrayList(stack));
+                            continue;
+                        }
+
+                        final NBTTagCompound compound = stack.getCompound();
+                        if (compound != null) {
+
+                            StoreSellingItemDataRecord dataRecord = null;
+
+                            try {
+                                dataRecord = StoreQueries
+                                    .createInsertSellingItemData(itemRecord.getRecNo(), compound)
+                                    .build(context)
+                                    .fetchOne();
+                            } catch (final IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            if (dataRecord == null) {
+                                this.notificationManager.sendWindowMessage(player, Text.of("Store"),
+                                    Text.of("Critical error encountered, check the server console for more details!"));
+                                this.logger.error("Player '{}' submitted data for selling item record '{}' for store '{}' but it failed. "
+                                    + "Discarding changes...", player.getName(), itemRecord.getRecNo(), id);
+
+                                StoreQueries
+                                    .createDeleteSellingItem(itemRecord.getRecNo())
+                                    .build(context)
+                                    .execute();
+                            }
+                        }
+
+                        inserted.put(itemRecord, stack);
+                    }
+
+                    this.scheduler
+                        .createTaskBuilder()
+                        .execute(() -> {
+
+                            for (final Map.Entry<StoreSellingItemRecord, VanillaStack> entry : inserted.entrySet()) {
+                                final StoreSellingItemRecord record = entry.getKey();
+                                final VanillaStack stack = entry.getValue();
+
+                                final BasicSellingItem item = new BasicSellingItem(record.getIndex(), record.getCreated().toInstant(),
+                                    stack.getItem(), stack.getMetadata(), stack.getQuantity(), record.getPrice(), record.getIndex(),
+                                    stack.getCompound());
+
+                                store.getSellingItems().add(item);
+                            }
+
+                            this.network.sendToAll(new ClientboundStoreItemsResponsePacket(store.getId(), StoreItemSegmentType.SELLING,
+                                store.getSellingItems()));
+                        })
+                        .submit(this.container);
+                } catch (final SQLException e) {
+                    e.printStackTrace();
+                }
+            })
+            .submit(this.container);
     }
 
     public void handleModifySellingItem(final Player player, final String id, final int recNo, final int quantity,
@@ -547,14 +641,103 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
         }
     }
 
-    public void handleListBuyingItem(final Player player, final String id, final VanillaStack stack, final int index, final BigDecimal price) {
+    public void handleListBuyingItems(final Player player, final String id, final List<ServerboundStoreItemsListRequestPacket.StoreItemCandidate>
+        candidates) {
         checkNotNull(player);
         checkNotNull(id);
-        checkNotNull(stack);
-        checkState(index >= 0);
-        checkNotNull(price);
-        checkState(price.doubleValue() >= 0);
 
+        final Store store = this.getStore(id).orElse(null);
+
+        if (store == null) {
+            this.logger.error("Player '{}' attempted to list buying items for store '{}' but the server has no knowledge of it. Syncing "
+                + "store registry...", player.getName(), id);
+            this.syncStoreRegistryTo(player);
+            return;
+        }
+
+        this.scheduler
+            .createTaskBuilder()
+            .async()
+            .execute(() -> {
+                try (final DSLContext context = this.databaseManager.createContext(true)) {
+
+                    final Map<StoreBuyingItemRecord, VanillaStack> inserted = new HashMap<>();
+
+                    for (final ServerboundStoreItemsListRequestPacket.StoreItemCandidate candidate : candidates) {
+
+                        final VanillaStack stack = candidate.stack;
+                        final int index = candidate.index;
+                        final BigDecimal price = candidate.price;
+
+                        final StoreBuyingItemRecord itemRecord = StoreQueries
+                            .createInsertBuyingItem(store.getId(), Instant.now(), stack.getItem(), stack.getQuantity(), stack.getMetadata(), index,
+                                price)
+                            .build(context)
+                            .fetchOne();
+
+                        if (itemRecord == null) {
+                            this.notificationManager.sendWindowMessage(player, Text.of("Store"),
+                                Text.of("Critical error encountered, check the server console for more details!"));
+                            this.logger.error("Player '{}' submitted a new buying item for store '{}' to the database but it failed. "
+                                + "Discarding changes and printing stack...", player.getName(), id);
+                            this.printStacksToConsole(Lists.newArrayList(stack));
+                            continue;
+                        }
+
+                        final NBTTagCompound compound = stack.getCompound();
+                        if (compound != null) {
+
+                            StoreBuyingItemDataRecord dataRecord = null;
+
+                            try {
+                                dataRecord = StoreQueries
+                                    .createInsertBuyingItemData(itemRecord.getRecNo(), compound)
+                                    .build(context)
+                                    .fetchOne();
+                            } catch (final IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            if (dataRecord == null) {
+                                this.notificationManager.sendWindowMessage(player, Text.of("Store"),
+                                    Text.of("Critical error encountered, check the server console for more details!"));
+                                this.logger.error("Player '{}' submitted data for buying item record '{}' for store '{}' but it failed. "
+                                    + "Discarding changes...", player.getName(), itemRecord.getRecNo(), id);
+
+                                StoreQueries
+                                    .createDeleteBuyingItem(itemRecord.getRecNo())
+                                    .build(context)
+                                    .execute();
+                            }
+                        }
+
+                        inserted.put(itemRecord, stack);
+                    }
+
+                    this.scheduler
+                        .createTaskBuilder()
+                        .execute(() -> {
+
+                            for (final Map.Entry<StoreBuyingItemRecord, VanillaStack> entry : inserted.entrySet()) {
+                                final StoreBuyingItemRecord record = entry.getKey();
+                                final VanillaStack stack = entry.getValue();
+
+                                final BasicBuyingItem item = new BasicBuyingItem(record.getIndex(), record.getCreated().toInstant(),
+                                    stack.getItem(), stack.getMetadata(), stack.getQuantity(), record.getPrice(), record.getIndex(),
+                                    stack.getCompound());
+
+                                store.getBuyingItems().add(item);
+                            }
+
+                            this.network.sendToAll(new ClientboundStoreItemsResponsePacket(store.getId(), StoreItemSegmentType.BUYING,
+                                store.getSellingItems()));
+                        })
+                        .submit(this.container);
+                } catch (final SQLException e) {
+                    e.printStackTrace();
+                }
+            })
+            .submit(this.container);
     }
 
     public void handleModifyBuyingItem(final Player player, final String id, final int recNo, final int quantity,
@@ -613,5 +796,9 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
         }
 
         return items;
+    }
+
+    private void printStacksToConsole(final List<VanillaStack> stacks) {
+        // TODO
     }
 }

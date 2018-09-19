@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.store.client;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.store.Store;
@@ -15,10 +16,14 @@ import com.almuradev.almura.feature.store.StoreItemSegmentType;
 import com.almuradev.almura.feature.store.StoreModifyType;
 import com.almuradev.almura.feature.store.client.gui.StoreManagementScreen;
 import com.almuradev.almura.feature.store.client.gui.StoreScreen;
-import com.almuradev.almura.feature.store.listing.StoreItem;
+import com.almuradev.almura.feature.store.listing.BuyingItem;
+import com.almuradev.almura.feature.store.listing.SellingItem;
+import com.almuradev.almura.feature.store.network.ServerboundStoreItemsListRequestPacket;
 import com.almuradev.almura.feature.store.network.ServerboundModifyStorePacket;
+import com.almuradev.almura.shared.item.VanillaStack;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -27,6 +32,7 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -101,6 +107,28 @@ public final class ClientStoreManager implements Witness {
         this.network.sendToServer(new ServerboundModifyStorePacket(id));
     }
 
+    public void requestListSellingItem(final String id, final VanillaStack stack, final int index, final BigDecimal price) {
+        checkNotNull(id);
+        checkNotNull(stack);
+        checkState(index >= 0);
+        checkNotNull(price);
+        checkState(price.doubleValue() >= 0);
+
+        this.network.sendToServer(new ServerboundStoreItemsListRequestPacket(id, StoreItemSegmentType.SELLING, Lists.newArrayList(
+            new ServerboundStoreItemsListRequestPacket.StoreItemCandidate(stack, index, price))));
+    }
+
+    public void requestListBuyingItem(final String id, final VanillaStack stack, final int index, final BigDecimal price) {
+        checkNotNull(id);
+        checkNotNull(stack);
+        checkState(index >= 0);
+        checkNotNull(price);
+        checkState(price.doubleValue() >= 0);
+
+        this.network.sendToServer(new ServerboundStoreItemsListRequestPacket(id, StoreItemSegmentType.BUYING, Lists.newArrayList(
+            new ServerboundStoreItemsListRequestPacket.StoreItemCandidate(stack, index, price))));
+    }
+
     public void handleStoreRegistry(@Nullable final Set<Store> stores) {
         this.putStores(stores);
 
@@ -123,11 +151,11 @@ public final class ClientStoreManager implements Witness {
         }
     }
 
-    public void handleStoreSpecificOffer(final String id) {
-
+    public void handleSellingItems(final String id, final List<SellingItem> items) {
+        checkNotNull(id);
     }
 
-    public void handleStoreItems(final String id, final StoreItemSegmentType type, final List<? extends StoreItem> storeItems) {
-
+    public void handleBuyingItems(final String id, final List<BuyingItem> items) {
+        checkNotNull(id);
     }
 }

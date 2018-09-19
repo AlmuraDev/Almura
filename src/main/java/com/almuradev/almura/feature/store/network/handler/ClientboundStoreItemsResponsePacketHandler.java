@@ -7,7 +7,11 @@
  */
 package com.almuradev.almura.feature.store.network.handler;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.almuradev.almura.feature.store.client.ClientStoreManager;
+import com.almuradev.almura.feature.store.listing.BuyingItem;
+import com.almuradev.almura.feature.store.listing.SellingItem;
 import com.almuradev.almura.feature.store.network.ClientboundStoreItemsResponsePacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
@@ -16,6 +20,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.network.MessageHandler;
 import org.spongepowered.api.network.RemoteConnection;
+
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -34,7 +40,19 @@ public final class ClientboundStoreItemsResponsePacketHandler implements Message
     @Override
     public void handleMessage(final ClientboundStoreItemsResponsePacket message, final RemoteConnection connection, final Platform.Type side) {
         if (side.isClient() && PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
-            this.storeManager.handleStoreItems(message.id, message.type, message.storeItems);
+
+            checkNotNull(message.type);
+
+            switch (message.type) {
+                case SELLING:
+                    this.storeManager.handleSellingItems(message.id, (List<SellingItem>) message.storeItems);
+                    break;
+                case BUYING:
+                    this.storeManager.handleBuyingItems(message.id, (List<BuyingItem>) message.storeItems);
+                    break;
+                default:
+                    throw new UnsupportedOperationException(message.type + " is not supported yet!");
+            }
         }
     }
 }

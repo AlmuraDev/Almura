@@ -157,6 +157,14 @@ public final class StoreQueries {
             .where(STORE_SELLING_ITEM.REC_NO.eq(sellingItemRecNo));
     }
 
+    public static DatabaseQuery<DeleteConditionStep<StoreSellingItemRecord>> createDeleteSellingItem(final int sellingItemRecNo) {
+        checkState(sellingItemRecNo >= 0);
+
+        return context -> context
+            .deleteFrom(STORE_SELLING_ITEM)
+            .where(STORE_SELLING_ITEM.REC_NO.eq(sellingItemRecNo));
+    }
+
     /**
      * SellingItemData
      */
@@ -242,6 +250,14 @@ public final class StoreQueries {
         return context -> context
             .update(STORE_BUYING_ITEM)
             .set(STORE_BUYING_ITEM.IS_HIDDEN, isHidden)
+            .where(STORE_BUYING_ITEM.REC_NO.eq(buyingItemRecNo));
+    }
+
+    public static DatabaseQuery<DeleteConditionStep<StoreBuyingItemRecord>> createDeleteBuyingItem(final int buyingItemRecNo) {
+        checkState(buyingItemRecNo >= 0);
+
+        return context -> context
+            .deleteFrom(STORE_BUYING_ITEM)
             .where(STORE_BUYING_ITEM.REC_NO.eq(buyingItemRecNo));
     }
 
