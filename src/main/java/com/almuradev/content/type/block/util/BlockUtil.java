@@ -31,7 +31,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import org.spongepowered.api.item.ItemType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +53,7 @@ public class BlockUtil {
             return;
         }
 
-        final Block mcBlock = (Block) (Object) block;
+        final Block mcBlock = (Block) block;
 
         player.addStat(StatList.getBlockStats(mcBlock));
 
@@ -77,17 +76,17 @@ public class BlockUtil {
             block.getHarvesters().set(player);
 
             // Almura Start - Run through the kitkats and break!
-            if (!fireBreakActions((ItemType) stack.getItem(), state, player, pos, world.rand, stack, blockDestroyAction)) {
+            if (!fireBreakActions(stack, state, player, pos, world.rand, stack, blockDestroyAction)) {
                 // Fallback to empty action block if nothing overrides it
-                fireBreakActions(org.spongepowered.api.item.inventory.ItemStack.empty().getType(), state, player, pos, world.rand, stack,
+                fireBreakActions(ItemStack.EMPTY, state, player, pos, world.rand, stack,
                         blockDestroyAction);
             }
 
             // TODO Expose fortune to config and see if admin wants to let it use it
             final int fortune = EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, stack);
-            if (!fireHarvestAndDrop(block, (ItemType) stack.getItem(), world, pos, state, 1f, fortune, blockDestroyAction)) {
+            if (!fireHarvestAndDrop(block, stack, world, pos, state, 1f, fortune, blockDestroyAction)) {
                 // Fallback to empty drop block if nothing overrides it
-                fireHarvestAndDrop(block, org.spongepowered.api.item.inventory.ItemStack.empty().getType(), world, pos, state, 1f, fortune,
+                fireHarvestAndDrop(block, ItemStack.EMPTY, world, pos, state, 1f, fortune,
                         blockDestroyAction);
             }
 
@@ -126,7 +125,7 @@ public class BlockUtil {
                     return;
                 }
 
-                fireHarvestAndDrop(block, org.spongepowered.api.item.inventory.ItemStack.empty().getType(), world, pos, state, chance, fortune,
+                fireHarvestAndDrop(block, ItemStack.EMPTY, world, pos, state, chance, fortune,
                         blockDestroyAction);
             } else {
                 final IMixinDecayBlock decayBlock = (IMixinDecayBlock) block;
@@ -164,7 +163,7 @@ public class BlockUtil {
         }
     }
 
-    private static boolean fireBreakActions(final ItemType usedType, final IBlockState state, final EntityPlayer player, final BlockPos pos, final
+    private static boolean fireBreakActions(final ItemStack test, final IBlockState state, final EntityPlayer player, final BlockPos pos, final
     Random random, final ItemStack stack, @Nullable final BlockDestroyAction destroyAction) {
         if (destroyAction == null) {
             return true;
@@ -174,7 +173,7 @@ public class BlockUtil {
 
         final ApplyContext context = new EverythingApplyContext(random, pos, state, stack);
         for (final BlockDestroyAction.Entry entry : destroyAction.entries()) {
-            if (entry.test(usedType)) {
+            if (entry.test(test)) {
                 for (final Apply action : entry.apply()) {
                     if (action.accepts(player)) {
                         hasActions = true;
@@ -187,7 +186,7 @@ public class BlockUtil {
         return hasActions;
     }
 
-    private static boolean fireHarvestAndDrop(final IMixinContentBlock block, final ItemType type, final World world, final BlockPos pos,
+    private static boolean fireHarvestAndDrop(final IMixinContentBlock block, final ItemStack stack, final World world, final BlockPos pos,
             final IBlockState state, float chance, final int fortune, @Nullable final BlockDestroyAction destroyAction) {
 
         if (destroyAction == null) {
@@ -197,7 +196,7 @@ public class BlockUtil {
         final List<ItemStack> drops = new ArrayList<>();
 
         for (final BlockDestroyAction.Entry entry : destroyAction.entries()) {
-            if (entry.test(type)) {
+            if (entry.test(stack)) {
                 for (final Drop drop : entry.drops()) {
                     if (drop instanceof ItemDrop) {
                         ((ItemDrop) drop).fill(drops, world.rand);
