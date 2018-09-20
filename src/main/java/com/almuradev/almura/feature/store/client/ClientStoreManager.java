@@ -18,8 +18,12 @@ import com.almuradev.almura.feature.store.client.gui.StoreManagementScreen;
 import com.almuradev.almura.feature.store.client.gui.StoreScreen;
 import com.almuradev.almura.feature.store.listing.BuyingItem;
 import com.almuradev.almura.feature.store.listing.SellingItem;
-import com.almuradev.almura.feature.store.network.ServerboundStoreItemsListRequestPacket;
+import com.almuradev.almura.feature.store.network.ServerboundDelistItemsPacket;
+import com.almuradev.almura.feature.store.network.ServerboundItemTransactionPacket;
+import com.almuradev.almura.feature.store.network.ServerboundListItemsRequestPacket;
+import com.almuradev.almura.feature.store.network.ServerboundModifyItemsPacket;
 import com.almuradev.almura.feature.store.network.ServerboundModifyStorePacket;
+import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.almuradev.almura.shared.item.VanillaStack;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
@@ -107,6 +111,10 @@ public final class ClientStoreManager implements Witness {
         this.network.sendToServer(new ServerboundModifyStorePacket(id));
     }
 
+    /**
+     * SellingItem
+     */
+
     public void requestListSellingItem(final String id, final VanillaStack stack, final int index, final BigDecimal price) {
         checkNotNull(id);
         checkNotNull(stack);
@@ -114,9 +122,40 @@ public final class ClientStoreManager implements Witness {
         checkNotNull(price);
         checkState(price.doubleValue() >= 0);
 
-        this.network.sendToServer(new ServerboundStoreItemsListRequestPacket(id, StoreItemSegmentType.SELLING, Lists.newArrayList(
-            new ServerboundStoreItemsListRequestPacket.StoreItemCandidate(stack, index, price))));
+        this.network.sendToServer(new ServerboundListItemsRequestPacket(id, StoreItemSegmentType.SELLING, Lists.newArrayList(
+            new ServerboundListItemsRequestPacket.ListCandidate(stack, index, price))));
     }
+
+    public void requestModifySellingItem(final String id, final int recNo, final int quantity, final int index, final BigDecimal price) {
+        checkNotNull(id);
+        checkState(recNo >= 0);
+        checkState(quantity >= FeatureConstants.UNLIMITED);
+        checkState(index >= 0);
+        checkNotNull(price);
+        checkState(price.doubleValue() >= 0);
+
+        this.network.sendToServer(new ServerboundModifyItemsPacket(id, StoreItemSegmentType.SELLING, Lists.newArrayList(
+            new ServerboundModifyItemsPacket.ModifyCandidate(recNo, quantity, index, price))));
+    }
+
+    public void requestDelistSellingItem(final String id, final int recNo) {
+        checkNotNull(id);
+        checkState(recNo >= 0);
+
+        this.network.sendToServer(new ServerboundDelistItemsPacket(id, StoreItemSegmentType.SELLING, Lists.newArrayList(recNo)));
+    }
+
+    public void buy(final String id, final int recNo, final int quantity) {
+        checkNotNull(id);
+        checkState(recNo >= 0);
+        checkState(quantity >= 0);
+
+        this.network.sendToServer(new ServerboundItemTransactionPacket(id, StoreItemSegmentType.SELLING, recNo, quantity));
+    }
+
+    /**
+     * BuyingItem
+     */
 
     public void requestListBuyingItem(final String id, final VanillaStack stack, final int index, final BigDecimal price) {
         checkNotNull(id);
@@ -125,8 +164,35 @@ public final class ClientStoreManager implements Witness {
         checkNotNull(price);
         checkState(price.doubleValue() >= 0);
 
-        this.network.sendToServer(new ServerboundStoreItemsListRequestPacket(id, StoreItemSegmentType.BUYING, Lists.newArrayList(
-            new ServerboundStoreItemsListRequestPacket.StoreItemCandidate(stack, index, price))));
+        this.network.sendToServer(new ServerboundListItemsRequestPacket(id, StoreItemSegmentType.BUYING, Lists.newArrayList(
+            new ServerboundListItemsRequestPacket.ListCandidate(stack, index, price))));
+    }
+
+    public void requestModifyBuyingItem(final String id, final int recNo, final int quantity, final int index, final BigDecimal price) {
+        checkNotNull(id);
+        checkState(recNo >= 0);
+        checkState(quantity >= FeatureConstants.UNLIMITED);
+        checkState(index >= 0);
+        checkNotNull(price);
+        checkState(price.doubleValue() >= 0);
+
+        this.network.sendToServer(new ServerboundModifyItemsPacket(id, StoreItemSegmentType.BUYING, Lists.newArrayList(
+            new ServerboundModifyItemsPacket.ModifyCandidate(recNo, quantity, index, price))));
+    }
+
+    public void requestDelistBuyingItem(final String id, final int recNo) {
+        checkNotNull(id);
+        checkState(recNo >= 0);
+
+        this.network.sendToServer(new ServerboundDelistItemsPacket(id, StoreItemSegmentType.BUYING, Lists.newArrayList(recNo)));
+    }
+
+    public void sell(final String id, final int recNo, final int quantity) {
+        checkNotNull(id);
+        checkState(recNo >= 0);
+        checkState(quantity >= 0);
+
+        this.network.sendToServer(new ServerboundItemTransactionPacket(id, StoreItemSegmentType.BUYING, recNo, quantity));
     }
 
     public void handleStoreRegistry(@Nullable final Set<Store> stores) {

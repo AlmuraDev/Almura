@@ -1290,7 +1290,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             final String formattedBalance = FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(balance.doubleValue());
             final String formattedDifference = FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(total - balance.doubleValue());
             this.notificationManager.sendWindowMessage(player, Text.of("Exchange"),
-                    Text.of("You attempted to purchase items totalling to ", TextColors.RED, formattedTotal, TextColors.RESET, " while you only have ",
+                    Text.of("You attempted to purchase items totaling to ", TextColors.RED, formattedTotal, TextColors.RESET, " while you only have ",
                             TextColors.GREEN, formattedBalance, TextColors.RESET, ".", Text.NEW_LINE, Text.NEW_LINE, "You need ",
                         TextColors.LIGHT_PURPLE, formattedDifference, TextColors.RESET, " more!"));
             return;
@@ -1404,7 +1404,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                             axs.putForSaleItemsFor(seller, forSaleItems);
 
                             final ItemStack resultStack = ItemHandlerHelper.insertItemStacked(inventory, copyStack.asRealStack(), false);
-                            if (resultStack.isEmpty()) {
+                            if (!resultStack.isEmpty()) {
                                 // TODO Inventory changed awaiting DB and now we're full...could drop it on the ground? It is an off-case
                             }
 

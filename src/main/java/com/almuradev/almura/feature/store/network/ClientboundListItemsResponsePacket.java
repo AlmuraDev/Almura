@@ -35,17 +35,17 @@ import java.util.Locale;
 
 import javax.annotation.Nullable;
 
-public final class ClientboundStoreItemsResponsePacket implements Message {
+public final class ClientboundListItemsResponsePacket implements Message {
 
     @Nullable public String id;
     @Nullable public StoreItemSegmentType type;
     @Nullable public List<? extends StoreItem> storeItems;
 
-    public ClientboundStoreItemsResponsePacket() {
+    public ClientboundListItemsResponsePacket() {
 
     }
 
-    public ClientboundStoreItemsResponsePacket(final String id, final StoreItemSegmentType type, @Nullable final List<? extends StoreItem> storeItems) {
+    public ClientboundListItemsResponsePacket(final String id, final StoreItemSegmentType type, @Nullable final List<? extends StoreItem> storeItems) {
         this.id = checkNotNull(id);
         this.type = checkNotNull(type);
         this.storeItems = storeItems;

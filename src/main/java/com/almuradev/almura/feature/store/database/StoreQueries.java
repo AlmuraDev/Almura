@@ -10,8 +10,10 @@ package com.almuradev.almura.feature.store.database;
 import static com.almuradev.generated.store.Tables.STORE;
 import static com.almuradev.generated.store.Tables.STORE_BUYING_ITEM;
 import static com.almuradev.generated.store.Tables.STORE_BUYING_ITEM_DATA;
+import static com.almuradev.generated.store.Tables.STORE_BUYING_TRANSACTION;
 import static com.almuradev.generated.store.Tables.STORE_SELLING_ITEM;
 import static com.almuradev.generated.store.Tables.STORE_SELLING_ITEM_DATA;
+import static com.almuradev.generated.store.Tables.STORE_SELLING_TRANSACTION;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
@@ -22,14 +24,17 @@ import com.almuradev.generated.store.tables.StoreSellingItem;
 import com.almuradev.generated.store.tables.StoreSellingItemData;
 import com.almuradev.generated.store.tables.records.StoreBuyingItemDataRecord;
 import com.almuradev.generated.store.tables.records.StoreBuyingItemRecord;
+import com.almuradev.generated.store.tables.records.StoreBuyingTransactionRecord;
 import com.almuradev.generated.store.tables.records.StoreRecord;
 import com.almuradev.generated.store.tables.records.StoreSellingItemDataRecord;
 import com.almuradev.generated.store.tables.records.StoreSellingItemRecord;
+import com.almuradev.generated.store.tables.records.StoreSellingTransactionRecord;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import org.jooq.DeleteConditionStep;
 import org.jooq.InsertResultStep;
 import org.jooq.InsertValuesStep2;
+import org.jooq.InsertValuesStep5;
 import org.jooq.InsertValuesStep6;
 import org.jooq.InsertValuesStep8;
 import org.jooq.Record;
@@ -281,5 +286,49 @@ public final class StoreQueries {
 
             return insertionStep.returning();
         };
+    }
+
+    /**
+     * SellingTransaction
+     */
+
+    public static DatabaseQuery<InsertValuesStep5<StoreSellingTransactionRecord, Timestamp, Integer, byte[], BigDecimal, Integer>> createInsertSellingTransaction(
+        final Instant created, final int sellingItemRecNo, final UUID buyer, final BigDecimal price, final int quantity) {
+        checkNotNull(created);
+        checkState(sellingItemRecNo >= 0);
+        checkNotNull(buyer);
+        checkNotNull(price);
+        checkState(price.doubleValue() >= 0);
+        checkState(price.doubleValue() <= FeatureConstants.TRILLION);
+        checkState(quantity > 0);
+
+        final byte[] buyerData = SerializationUtil.toBytes(buyer);
+
+        return context -> context
+            .insertInto(STORE_SELLING_TRANSACTION, STORE_SELLING_TRANSACTION.CREATED, STORE_SELLING_TRANSACTION.SELLING_ITEM, STORE_SELLING_TRANSACTION.BUYER,
+                STORE_SELLING_TRANSACTION.PRICE, STORE_SELLING_TRANSACTION.QUANTITY)
+            .values(Timestamp.from(created), sellingItemRecNo, buyerData, price, quantity);
+    }
+
+    /**
+     * BuyingTransaction
+     */
+
+    public static DatabaseQuery<InsertValuesStep5<StoreBuyingTransactionRecord, Timestamp, Integer, byte[], BigDecimal, Integer>> createInsertBuyingTransaction(
+        final Instant created, final int buyingItemRecNo, final UUID buyer, final BigDecimal price, final int quantity) {
+        checkNotNull(created);
+        checkState(buyingItemRecNo >= 0);
+        checkNotNull(buyer);
+        checkNotNull(price);
+        checkState(price.doubleValue() >= 0);
+        checkState(price.doubleValue() <= FeatureConstants.TRILLION);
+        checkState(quantity > 0);
+
+        final byte[] buyerData = SerializationUtil.toBytes(buyer);
+
+        return context -> context
+            .insertInto(STORE_BUYING_TRANSACTION, STORE_BUYING_TRANSACTION.CREATED, STORE_BUYING_TRANSACTION.BUYING_ITEM, STORE_BUYING_TRANSACTION.BUYER,
+                STORE_BUYING_TRANSACTION.PRICE, STORE_BUYING_TRANSACTION.QUANTITY)
+            .values(Timestamp.from(created), buyingItemRecNo, buyerData, price, quantity);
     }
 }

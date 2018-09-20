@@ -62,6 +62,7 @@ create table if not exists "store_selling_transaction"
   "selling_item" int          not null,
   "buyer"        binary(16)   not null,
   "quantity"     int          default 1 not null,
+  "price"        decimal      default 0 not null,
   foreign key ("selling_item") references "store_selling_item"("rec_no") on update cascade on delete cascade
 );
 
@@ -72,6 +73,7 @@ create table if not exists "store_buying_transaction"
   "buying_item"  int          not null,
   "buyer"        binary(16)   not null,
   "quantity"     int          default 1 not null,
+  "price"        decimal      default 0 not null,
   foreign key ("buying_item") references "store_buying_item"("rec_no") on update cascade on delete cascade
 );
 

@@ -10,16 +10,20 @@ package com.almuradev.almura.feature.store;
 import com.almuradev.almura.feature.store.client.ClientStoreManager;
 import com.almuradev.almura.feature.store.client.gui.StoreManagementScreen;
 import com.almuradev.almura.feature.store.client.gui.StoreScreen;
-import com.almuradev.almura.feature.store.network.ClientboundStoreItemsResponsePacket;
-import com.almuradev.almura.feature.store.network.ServerboundStoreItemsListRequestPacket;
+import com.almuradev.almura.feature.store.network.ClientboundListItemsResponsePacket;
+import com.almuradev.almura.feature.store.network.ServerboundItemTransactionPacket;
+import com.almuradev.almura.feature.store.network.ServerboundListItemsRequestPacket;
 import com.almuradev.almura.feature.store.network.ClientboundStoreGuiResponsePacket;
 import com.almuradev.almura.feature.store.network.ClientboundStoresRegistryPacket;
+import com.almuradev.almura.feature.store.network.ServerboundModifyItemsPacket;
 import com.almuradev.almura.feature.store.network.ServerboundModifyStorePacket;
 import com.almuradev.almura.feature.store.network.handler.ClientboundStoreGuiResponsePacketHandler;
-import com.almuradev.almura.feature.store.network.handler.ClientboundStoreItemsResponsePacketHandler;
+import com.almuradev.almura.feature.store.network.handler.ClientboundListItemsResponsePacketHandler;
 import com.almuradev.almura.feature.store.network.handler.ClientboundStoresRegistryPacketHandler;
+import com.almuradev.almura.feature.store.network.handler.ServerboundItemTransactionPacketHandler;
+import com.almuradev.almura.feature.store.network.handler.ServerboundModifyItemsPacketHandler;
 import com.almuradev.almura.feature.store.network.handler.ServerboundModifyStorePacketHandler;
-import com.almuradev.almura.feature.store.network.handler.ServerboundStoreItemsRequestPacketHandler;
+import com.almuradev.almura.feature.store.network.handler.ServerboundListItemsRequestPacketHandler;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
@@ -47,12 +51,18 @@ public final class StoreModule extends AbstractModule implements CommonBinder {
             .bind(ServerboundModifyStorePacket.class,
                 binder -> binder.handler(ServerboundModifyStorePacketHandler.class, Platform.Type.SERVER))
 
-            .bind(ClientboundStoreItemsResponsePacket.class,
-                binder -> binder.handler(ClientboundStoreItemsResponsePacketHandler.class, Platform.Type.CLIENT))
+            .bind(ClientboundListItemsResponsePacket.class,
+                binder -> binder.handler(ClientboundListItemsResponsePacketHandler.class, Platform.Type.CLIENT))
 
-            .bind(ServerboundStoreItemsListRequestPacket.class,
-                binder -> binder.handler(ServerboundStoreItemsRequestPacketHandler.class, Platform.Type.SERVER));
-            
+            .bind(ServerboundListItemsRequestPacket.class,
+                binder -> binder.handler(ServerboundListItemsRequestPacketHandler.class, Platform.Type.SERVER))
+
+            .bind(ServerboundModifyItemsPacket.class,
+                binder -> binder.handler(ServerboundModifyItemsPacketHandler.class, Platform.Type.SERVER))
+
+            .bind(ServerboundItemTransactionPacket.class,
+                binder -> binder.handler(ServerboundItemTransactionPacketHandler.class, Platform.Type.SERVER));
+
         this.on(Platform.Type.CLIENT, () -> {
             final class ClientModule extends AbstractModule implements ClientBinder {
 

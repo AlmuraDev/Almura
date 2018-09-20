@@ -12,7 +12,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.almuradev.almura.feature.store.client.ClientStoreManager;
 import com.almuradev.almura.feature.store.listing.BuyingItem;
 import com.almuradev.almura.feature.store.listing.SellingItem;
-import com.almuradev.almura.feature.store.network.ClientboundStoreItemsResponsePacket;
+import com.almuradev.almura.feature.store.network.ClientboundListItemsResponsePacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
@@ -27,18 +27,18 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public final class ClientboundStoreItemsResponsePacketHandler implements MessageHandler<ClientboundStoreItemsResponsePacket> {
+public final class ClientboundListItemsResponsePacketHandler implements MessageHandler<ClientboundListItemsResponsePacket> {
 
     private final ClientStoreManager storeManager;
 
     @Inject
-    public ClientboundStoreItemsResponsePacketHandler(final ClientStoreManager storeManager) {
+    public ClientboundListItemsResponsePacketHandler(final ClientStoreManager storeManager) {
         this.storeManager = storeManager;
     }
 
     @SideOnly(Side.CLIENT)
     @Override
-    public void handleMessage(final ClientboundStoreItemsResponsePacket message, final RemoteConnection connection, final Platform.Type side) {
+    public void handleMessage(final ClientboundListItemsResponsePacket message, final RemoteConnection connection, final Platform.Type side) {
         if (side.isClient() && PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
 
             checkNotNull(message.type);

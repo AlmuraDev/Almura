@@ -11,6 +11,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.feature.exchange.listing.ListItem;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.feature.store.basic.BasicStore;
 import com.almuradev.almura.feature.store.basic.listing.BasicBuyingItem;
@@ -18,10 +19,11 @@ import com.almuradev.almura.feature.store.basic.listing.BasicSellingItem;
 import com.almuradev.almura.feature.store.database.StoreQueries;
 import com.almuradev.almura.feature.store.listing.BuyingItem;
 import com.almuradev.almura.feature.store.listing.SellingItem;
-import com.almuradev.almura.feature.store.network.ClientboundStoreItemsResponsePacket;
-import com.almuradev.almura.feature.store.network.ServerboundStoreItemsListRequestPacket;
+import com.almuradev.almura.feature.store.network.ClientboundListItemsResponsePacket;
+import com.almuradev.almura.feature.store.network.ServerboundListItemsRequestPacket;
 import com.almuradev.almura.feature.store.network.ClientboundStoreGuiResponsePacket;
 import com.almuradev.almura.feature.store.network.ClientboundStoresRegistryPacket;
+import com.almuradev.almura.feature.store.network.ServerboundModifyItemsPacket;
 import com.almuradev.almura.shared.database.DatabaseManager;
 import com.almuradev.almura.shared.database.DatabaseQueue;
 import com.almuradev.almura.shared.feature.FeatureConstants;
@@ -40,11 +42,18 @@ import com.almuradev.generated.store.tables.records.StoreSellingItemDataRecord;
 import com.almuradev.generated.store.tables.records.StoreSellingItemRecord;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import org.jooq.DSLContext;
+import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.Results;
@@ -52,6 +61,7 @@ import org.slf4j.Logger;
 import org.spongepowered.api.GameState;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.CauseStackManager;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
@@ -61,6 +71,8 @@ import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Scheduler;
 import org.spongepowered.api.service.ServiceManager;
+import org.spongepowered.api.service.economy.EconomyService;
+import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
@@ -255,10 +267,10 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
 
                             final Player p = Sponge.getServer().getPlayer(uniqueId).orElse(null);
                             if (p != null && p.isOnline() && !p.isRemoved()) {
-                                this.network.sendTo(p, new ClientboundStoreItemsResponsePacket(store.getId(), StoreItemSegmentType.SELLING,
+                                this.network.sendTo(p, new ClientboundListItemsResponsePacket(store.getId(), StoreItemSegmentType.SELLING,
                                     store.getSellingItems()));
 
-                                this.network.sendTo(player, new ClientboundStoreItemsResponsePacket(store.getId(), StoreItemSegmentType.BUYING,
+                                this.network.sendTo(player, new ClientboundListItemsResponsePacket(store.getId(), StoreItemSegmentType.BUYING,
                                     store.getBuyingItems()));
                             }
                         }
@@ -266,10 +278,10 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
                     .submit(this.container);
             });
         } else {
-            this.network.sendTo(player, new ClientboundStoreItemsResponsePacket(store.getId(), StoreItemSegmentType.SELLING,
+            this.network.sendTo(player, new ClientboundListItemsResponsePacket(store.getId(), StoreItemSegmentType.SELLING,
                 store.getSellingItems()));
 
-            this.network.sendTo(player, new ClientboundStoreItemsResponsePacket(store.getId(), StoreItemSegmentType.BUYING, store.getBuyingItems()));
+            this.network.sendTo(player, new ClientboundListItemsResponsePacket(store.getId(), StoreItemSegmentType.BUYING, store.getBuyingItems()));
         }
     }
 
@@ -452,7 +464,7 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
     }
 
     public void handleListSellingItems(final Player player, final String id,
-        final List<ServerboundStoreItemsListRequestPacket.StoreItemCandidate> candidates) {
+        final List<ServerboundListItemsRequestPacket.ListCandidate> candidates) {
         checkNotNull(player);
         checkNotNull(id);
 
@@ -473,7 +485,7 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
 
                     final Map<StoreSellingItemRecord, VanillaStack> inserted = new HashMap<>();
 
-                    for (final ServerboundStoreItemsListRequestPacket.StoreItemCandidate candidate : candidates) {
+                    for (final ServerboundListItemsRequestPacket.ListCandidate candidate : candidates) {
 
                         final VanillaStack stack = candidate.stack;
                         final int index = candidate.index;
@@ -539,7 +551,7 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
                                 store.getSellingItems().add(item);
                             }
 
-                            this.network.sendToAll(new ClientboundStoreItemsResponsePacket(store.getId(), StoreItemSegmentType.SELLING,
+                            this.network.sendToAll(new ClientboundListItemsResponsePacket(store.getId(), StoreItemSegmentType.SELLING,
                                 store.getSellingItems()));
                         })
                         .submit(this.container);
@@ -550,16 +562,165 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
             .submit(this.container);
     }
 
-    public void handleModifySellingItem(final Player player, final String id, final int recNo, final int quantity,
-        final int index, final BigDecimal price) {
+    public void handleModifySellingItems(final Player player, final String id, final List<ServerboundModifyItemsPacket.ModifyCandidate> candidates) {
         checkNotNull(player);
         checkNotNull(id);
-        checkState(recNo >= 0);
-        checkState(quantity >= FeatureConstants.UNLIMITED);
-        checkState(index >= 0);
-        checkNotNull(price);
-        checkState(price.doubleValue() >= 0);
+        checkNotNull(candidates);
 
+        final Store store = this.getStore(id).orElse(null);
+
+        if (store == null) {
+            this.logger.error("Player '{}' attempted to modify selling items for store '{}' but the server has no knowledge of it. Syncing "
+                + "store registry...", player.getName(), id);
+            this.syncStoreRegistryTo(player);
+            return;
+        }
+
+        final List<SellingItem> sellingItems = store.getSellingItems();
+        if (sellingItems.isEmpty()) {
+            this.logger.error("Player '{}' attempted to modify selling items for store '{}' but the server knows of no "
+                + " selling items for it. This could be a de-sync or an exploit.", player.getName(), store.getId());
+            this.network.sendTo(player, new ClientboundListItemsResponsePacket(store.getId(), StoreItemSegmentType.SELLING, sellingItems));
+            return;
+        }
+
+        final List<ServerboundModifyItemsPacket.ModifyCandidate> copyCandidates = Lists.newArrayList(candidates);
+        final Iterator<ServerboundModifyItemsPacket.ModifyCandidate> iter = copyCandidates.iterator();
+
+        while (iter.hasNext()) {
+            final ServerboundModifyItemsPacket.ModifyCandidate candidate = iter.next();
+
+            final SellingItem found = sellingItems
+                .stream()
+                .filter(v -> v.getRecord() == candidate.recNo)
+                .findAny()
+                .orElse(null);
+
+            if (found == null) {
+                this.logger.error("Player '{}' attempted to modify selling item '{}' for store '{}' but the server knows of no knowledge of it. "
+                    + "This could be a de-sync or an exploit. Discarding...", player.getName(), candidate.recNo, store.getId());
+                iter.remove();
+            }
+        }
+
+        this.scheduler
+            .createTaskBuilder()
+            .async()
+            .execute(() -> {
+                try (final DSLContext context = this.databaseManager.createContext(true)) {
+                    final List<Query> toUpdate = new ArrayList<>();
+
+                    for (final ServerboundModifyItemsPacket.ModifyCandidate candidate : copyCandidates) {
+                        toUpdate.add(StoreQueries
+                            .createUpdateSellingItem(candidate.recNo, candidate.quantity, candidate.index, candidate.price)
+                            .build(context));
+                    }
+
+                    context.batch(toUpdate);
+
+                    final Results results = StoreQueries
+                        .createFetchSellingItemsAndDataFor(store.getId(), false)
+                        .build(context)
+                        .fetchMany();
+
+                    final List<SellingItem> finalSellingItems = new ArrayList<>();
+                    results.forEach(result -> finalSellingItems.addAll(this.parseSellingItemsFrom(result)));
+
+                    this.scheduler
+                        .createTaskBuilder()
+                        .execute(() -> {
+                            store.putSellingItems(finalSellingItems);
+
+                            this.network.sendToAll(new ClientboundListItemsResponsePacket(store.getId(), StoreItemSegmentType.SELLING,
+                                finalSellingItems));
+                        })
+                        .submit(this.container);
+                } catch (final SQLException e) {
+                    e.printStackTrace();
+                }
+            })
+            .submit(this.container);
+    }
+
+    public void handleDelistSellingItems(final Player player, final String id, final List<Integer> recNos) {
+        checkNotNull(player);
+        checkNotNull(id);
+        checkNotNull(recNos);
+        checkState(!recNos.isEmpty());
+
+        final Store store = this.getStore(id).orElse(null);
+
+        if (store == null) {
+            this.logger.error("Player '{}' attempted to de-list selling items for store '{}' but the server has no knowledge of it. Syncing "
+                + "store registry...", player.getName(), id);
+            this.syncStoreRegistryTo(player);
+            return;
+        }
+
+        final List<SellingItem> sellingItems = store.getSellingItems();
+        if (sellingItems.isEmpty()) {
+            this.logger.error("Player '{}' attempted to de-list selling items for store '{}' but the server knows of no "
+                + " buying items for it. This could be a de-sync or an exploit.", player.getName(), store.getId());
+            this.network.sendTo(player, new ClientboundListItemsResponsePacket(store.getId(), StoreItemSegmentType.SELLING, sellingItems));
+            return;
+        }
+
+        final List<Integer> copyRecNos = Lists.newArrayList(recNos);
+        final Iterator<Integer> iter = copyRecNos.iterator();
+
+        while (iter.hasNext()) {
+            final Integer recNo = iter.next();
+
+            final SellingItem found = sellingItems
+                .stream()
+                .filter(v -> v.getRecord() == recNo)
+                .findAny()
+                .orElse(null);
+
+            if (found == null) {
+                this.logger.error("Player '{}' attempted to de-list selling item '{}' for store '{}' but the server knows of no knowledge of it. "
+                    + "This could be a de-sync or an exploit. Discarding...", player.getName(), recNo, store.getId());
+                iter.remove();
+            }
+        }
+
+        this.scheduler
+            .createTaskBuilder()
+            .async()
+            .execute(() -> {
+                try (final DSLContext context = this.databaseManager.createContext(true)) {
+                    final List<Query> toUpdate = new ArrayList<>();
+
+                    for (final Integer recNo : recNos) {
+                        toUpdate.add(StoreQueries
+                            .createUpdateSellingItemIsHidden(recNo, true)
+                            .build(context));
+                    }
+
+                    context.batch(toUpdate);
+
+                    final Results results = StoreQueries
+                        .createFetchSellingItemsAndDataFor(store.getId(), false)
+                        .build(context)
+                        .fetchMany();
+
+                    final List<SellingItem> finalSellingItems = new ArrayList<>();
+                    results.forEach(result -> finalSellingItems.addAll(this.parseSellingItemsFrom(result)));
+
+                    this.scheduler
+                        .createTaskBuilder()
+                        .execute(() -> {
+                            store.putSellingItems(finalSellingItems);
+
+                            this.network.sendToAll(new ClientboundListItemsResponsePacket(store.getId(), StoreItemSegmentType.SELLING,
+                                finalSellingItems));
+                        })
+                        .submit(this.container);
+                } catch (final SQLException e) {
+                    e.printStackTrace();
+                }
+            })
+            .submit(this.container);
     }
 
     private List<SellingItem> parseSellingItemsFrom(final Result<Record> result) {
@@ -641,7 +802,7 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
         }
     }
 
-    public void handleListBuyingItems(final Player player, final String id, final List<ServerboundStoreItemsListRequestPacket.StoreItemCandidate>
+    public void handleListBuyingItems(final Player player, final String id, final List<ServerboundListItemsRequestPacket.ListCandidate>
         candidates) {
         checkNotNull(player);
         checkNotNull(id);
@@ -663,7 +824,7 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
 
                     final Map<StoreBuyingItemRecord, VanillaStack> inserted = new HashMap<>();
 
-                    for (final ServerboundStoreItemsListRequestPacket.StoreItemCandidate candidate : candidates) {
+                    for (final ServerboundListItemsRequestPacket.ListCandidate candidate : candidates) {
 
                         final VanillaStack stack = candidate.stack;
                         final int index = candidate.index;
@@ -729,7 +890,7 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
                                 store.getBuyingItems().add(item);
                             }
 
-                            this.network.sendToAll(new ClientboundStoreItemsResponsePacket(store.getId(), StoreItemSegmentType.BUYING,
+                            this.network.sendToAll(new ClientboundListItemsResponsePacket(store.getId(), StoreItemSegmentType.BUYING,
                                 store.getSellingItems()));
                         })
                         .submit(this.container);
@@ -740,16 +901,84 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
             .submit(this.container);
     }
 
-    public void handleModifyBuyingItem(final Player player, final String id, final int recNo, final int quantity,
-        final int index, final BigDecimal price) {
+    public void handleModifyBuyingItems(final Player player, final String id, final List<ServerboundModifyItemsPacket.ModifyCandidate> candidates) {
         checkNotNull(player);
         checkNotNull(id);
-        checkState(recNo >= 0);
-        checkState(quantity >= FeatureConstants.UNLIMITED);
-        checkNotNull(price);
-        checkState(index >= 0);
-        checkState(price.doubleValue() >= 0);
+        checkNotNull(candidates);
 
+        final Store store = this.getStore(id).orElse(null);
+
+        if (store == null) {
+            this.logger.error("Player '{}' attempted to modify buying items for store '{}' but the server has no knowledge of it. Syncing "
+                + "store registry...", player.getName(), id);
+            this.syncStoreRegistryTo(player);
+            return;
+        }
+
+        final List<BuyingItem> buyingItems = store.getBuyingItems();
+        if (buyingItems.isEmpty()) {
+            this.logger.error("Player '{}' attempted to modify buying items for store '{}' but the server knows of no "
+                + " buying items for it. This could be a de-sync or an exploit.", player.getName(), store.getId());
+            this.network.sendTo(player, new ClientboundListItemsResponsePacket(store.getId(), StoreItemSegmentType.SELLING, buyingItems));
+            return;
+        }
+
+        final List<ServerboundModifyItemsPacket.ModifyCandidate> copyCandidates = Lists.newArrayList(candidates);
+        final Iterator<ServerboundModifyItemsPacket.ModifyCandidate> iter = copyCandidates.iterator();
+
+        while (iter.hasNext()) {
+            final ServerboundModifyItemsPacket.ModifyCandidate candidate = iter.next();
+
+            final BuyingItem found = buyingItems
+                .stream()
+                .filter(v -> v.getRecord() == candidate.recNo)
+                .findAny()
+                .orElse(null);
+
+            if (found == null) {
+                this.logger.error("Player '{}' attempted to modify buying item '{}' for store '{}' but the server knows of no knowledge of it. "
+                    + "This could be a de-sync or an exploit. Discarding...", player.getName(), candidate.recNo, store.getId());
+                iter.remove();
+            }
+        }
+
+        this.scheduler
+            .createTaskBuilder()
+            .async()
+            .execute(() -> {
+                try (final DSLContext context = this.databaseManager.createContext(true)) {
+                    final List<Query> toUpdate = new ArrayList<>();
+
+                    for (final ServerboundModifyItemsPacket.ModifyCandidate candidate : copyCandidates) {
+                        toUpdate.add(StoreQueries
+                            .createUpdateBuyingItem(candidate.recNo, candidate.quantity, candidate.index, candidate.price)
+                            .build(context));
+                    }
+
+                    context.batch(toUpdate);
+
+                    final Results results = StoreQueries
+                        .createFetchBuyingItemsAndDataFor(store.getId(), false)
+                        .build(context)
+                        .fetchMany();
+
+                    final List<BuyingItem> finalBuyingItems = new ArrayList<>();
+                    results.forEach(result -> finalBuyingItems.addAll(this.parseBuyingItemsFor(result)));
+
+                    this.scheduler
+                        .createTaskBuilder()
+                        .execute(() -> {
+                            store.putBuyingItems(finalBuyingItems);
+
+                            this.network.sendToAll(new ClientboundListItemsResponsePacket(store.getId(), StoreItemSegmentType.BUYING,
+                                finalBuyingItems));
+                        })
+                        .submit(this.container);
+                } catch (final SQLException e) {
+                    e.printStackTrace();
+                }
+            })
+            .submit(this.container);
     }
 
     private List<BuyingItem> parseBuyingItemsFor(final Result<Record> result) {
@@ -796,6 +1025,423 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
         }
 
         return items;
+    }
+
+    public void handleDelistBuyingItems(final Player player, final String id, final List<Integer> recNos) {
+        checkNotNull(player);
+        checkNotNull(id);
+        checkNotNull(recNos);
+        checkState(!recNos.isEmpty());
+
+        final Store store = this.getStore(id).orElse(null);
+
+        if (store == null) {
+            this.logger.error("Player '{}' attempted to de-list buying items for store '{}' but the server has no knowledge of it. Syncing "
+                + "store registry...", player.getName(), id);
+            this.syncStoreRegistryTo(player);
+            return;
+        }
+
+        final List<BuyingItem> buyingItems = store.getBuyingItems();
+        if (buyingItems.isEmpty()) {
+            this.logger.error("Player '{}' attempted to de-list buying items for store '{}' but the server knows of no "
+                + " buying items for it. This could be a de-sync or an exploit.", player.getName(), store.getId());
+            this.network.sendTo(player, new ClientboundListItemsResponsePacket(store.getId(), StoreItemSegmentType.SELLING, buyingItems));
+            return;
+        }
+
+        final List<Integer> copyRecNos = Lists.newArrayList(recNos);
+        final Iterator<Integer> iter = copyRecNos.iterator();
+
+        while (iter.hasNext()) {
+            final Integer recNo = iter.next();
+
+            final BuyingItem found = buyingItems
+                .stream()
+                .filter(v -> v.getRecord() == recNo)
+                .findAny()
+                .orElse(null);
+
+            if (found == null) {
+                this.logger.error("Player '{}' attempted to de-list buying item '{}' for store '{}' but the server knows of no knowledge of it. "
+                    + "This could be a de-sync or an exploit. Discarding...", player.getName(), recNo, store.getId());
+                iter.remove();
+            }
+        }
+
+        this.scheduler
+            .createTaskBuilder()
+            .async()
+            .execute(() -> {
+                try (final DSLContext context = this.databaseManager.createContext(true)) {
+                    final List<Query> toUpdate = new ArrayList<>();
+
+                    for (final Integer recNo : recNos) {
+                        toUpdate.add(StoreQueries
+                            .createUpdateBuyingItemIsHidden(recNo, true)
+                            .build(context));
+                    }
+
+                    context.batch(toUpdate);
+
+                    final Results results = StoreQueries
+                        .createFetchBuyingItemsAndDataFor(store.getId(), false)
+                        .build(context)
+                        .fetchMany();
+
+                    final List<BuyingItem> finalBuyingItems = new ArrayList<>();
+                    results.forEach(result -> finalBuyingItems.addAll(this.parseBuyingItemsFor(result)));
+
+                    this.scheduler
+                        .createTaskBuilder()
+                        .execute(() -> {
+                            store.putBuyingItems(finalBuyingItems);
+
+                            this.network.sendToAll(new ClientboundListItemsResponsePacket(store.getId(), StoreItemSegmentType.BUYING,
+                                finalBuyingItems));
+                        })
+                        .submit(this.container);
+                } catch (final SQLException e) {
+                    e.printStackTrace();
+                }
+            })
+            .submit(this.container);
+    }
+
+    /**
+     * Transaction (Selling/Buying)
+     */
+
+    public void handleSellingItemTransaction(final Player player, final String id, final int recNo, final int quantity) {
+        checkNotNull(player);
+        checkNotNull(id);
+        checkState(recNo >= 0);
+        checkState(quantity >= 0);
+
+        final Store store = this.getStore(id).orElse(null);
+
+        if (store == null) {
+            this.logger.error("Player '{}' attempted to buy an item from store '{}' but the server has no knowledge of it. Syncing "
+                + "store registry...", player.getName(), id);
+            this.syncStoreRegistryTo(player);
+            return;
+        }
+
+        final EconomyService economyService = this.serviceManager.provide(EconomyService.class).orElse(null);
+        if (economyService == null) {
+            this.notificationManager.sendWindowMessage(player, Text.of("Store"), Text.of("Critical error encountered, check the "
+                + "server console for more details!"));
+            this.logger.error("Player '{}' attempted to buy an item from store '{}' but the economy service no longer exists. This is a "
+                + "critical error that should be reported to your economy plugin ASAP.", player.getName(), id);
+            return;
+        }
+
+        final UniqueAccount account = economyService.getOrCreateAccount(player.getUniqueId()).orElse(null);
+        if (account == null) {
+            this.notificationManager.sendWindowMessage(player, Text.of("Store"), Text.of("Critical error encountered, check the "
+                + "server console for more details!"));
+            this.logger.error("Player '{}' attempted to buy an item from store '{}' but the economy service returned no account for them. "
+                + "This is a critical error that should be reported to your economy plugin ASAP.", player.getName(), id);
+            return;
+        }
+
+        final List<SellingItem> sellingItems = store.getSellingItems();
+        if (sellingItems.isEmpty()) {
+            this.logger.error("Player '{}' attempted to buy an item from store '{}' but the server knows of no "
+                + " buying items for it. This could be a de-sync or an exploit.", player.getName(), store.getId());
+            this.network.sendTo(player, new ClientboundListItemsResponsePacket(store.getId(), StoreItemSegmentType.SELLING, sellingItems));
+            return;
+        }
+
+        final SellingItem found = sellingItems
+            .stream()
+            .filter(v -> v.getRecord() == recNo)
+            .findAny()
+            .orElse(null);
+
+        if (found == null) {
+            this.logger.error("Player '{}' attempted to buy item '{}' from store '{}' but the server knows of no knowledge of it. "
+                + "This could be a de-sync or an exploit. Discarding...", player.getName(), recNo, store.getId());
+            this.network.sendTo(player, new ClientboundListItemsResponsePacket(store.getId(), StoreItemSegmentType.SELLING, sellingItems));
+            return;
+        }
+
+        final boolean infinite = found.getQuantity() == FeatureConstants.UNLIMITED;
+
+        if (!infinite && found.getQuantity() < quantity) {
+            this.notificationManager.sendWindowMessage(player, Text.of("Store"),
+                Text.of("There is not enough quantity left to fulfill your order!"));
+            return;
+        }
+
+        final BigDecimal balance = account.getBalance(economyService.getDefaultCurrency());
+        final BigDecimal price = found.getPrice();
+        final double total = price.doubleValue() * quantity;
+
+        if (total > balance.doubleValue()) {
+            final String formattedTotal = FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(total);
+            final String formattedBalance = FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(balance.doubleValue());
+            final String formattedDifference = FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(total - balance.doubleValue());
+            this.notificationManager.sendWindowMessage(player, Text.of("Store"),
+                Text.of("You attempted to purchase items totaling to ", TextColors.RED, formattedTotal, TextColors.RESET, " while you only have ",
+                    TextColors.GREEN, formattedBalance, TextColors.RESET, ".", Text.NEW_LINE, Text.NEW_LINE, "You need ",
+                    TextColors.LIGHT_PURPLE, formattedDifference, TextColors.RESET, " more!"));
+            return;
+        }
+
+        EntityPlayerMP serverPlayer = (EntityPlayerMP) player;
+        final IItemHandler inventory = serverPlayer.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP);
+
+        final SellingItem copyStack = found.copy();
+        copyStack.setQuantity(quantity);
+
+        final ItemStack simulatedResultStack = ItemHandlerHelper.insertItemStacked(inventory, copyStack.asRealStack(), true);
+        if (!simulatedResultStack.isEmpty()) {
+            this.notificationManager.sendWindowMessage(player, Text.of("Store"), Text.of("You lack sufficient inventory space to "
+                + "purchase these item(s)!"));
+            return;
+        }
+
+        // Charge the buyer
+        try (final CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
+            frame.pushCause(store);
+
+            account.withdraw(economyService.getDefaultCurrency(), price, frame.getCurrentCause());
+        }
+
+        this.scheduler
+            .createTaskBuilder()
+            .async()
+            .execute(() -> {
+                try (final DSLContext context = this.databaseManager.createContext(true)) {
+                    int result;
+
+                    if (!infinite) {
+                        result = StoreQueries
+                            .createUpdateSellingItem(found.getRecord(), found.getQuantity() - quantity, found.getIndex(), found.getPrice())
+                            .build(context)
+                            .execute();
+
+                        if (result == 0) {
+                            // TODO It failed, message
+                            return;
+                        }
+                    }
+
+                    result = StoreQueries
+                        .createInsertSellingTransaction(Instant.now(), found.getRecord(), player.getUniqueId(), found.getPrice(), quantity)
+                        .build(context)
+                        .execute();
+
+                    if (result == 0) {
+                        // TODO It failed, message
+
+                        StoreQueries
+                            .createUpdateSellingItem(found.getRecord(), found.getQuantity(), found.getIndex(), found.getPrice())
+                            .build(context)
+                            .execute();
+                        return;
+                    }
+
+                    final List<SellingItem> finalSellingItems = new ArrayList<>();
+
+                    if (!infinite) {
+                        final Results results = StoreQueries
+                            .createFetchSellingItemsAndDataFor(store.getId(), false)
+                            .build(context)
+                            .fetchMany();
+                        results.forEach(r -> finalSellingItems.addAll(this.parseSellingItemsFrom(r)));
+                    }
+
+                    this.scheduler
+                        .createTaskBuilder()
+                        .execute(() -> {
+                            if (!infinite) {
+                                store.putSellingItems(finalSellingItems);
+                            }
+
+                            final ItemStack resultStack = ItemHandlerHelper.insertItemStacked(inventory, copyStack.asRealStack(), false);
+                            if (!resultStack.isEmpty()) {
+                                // TODO Inventory changed awaiting DB and now we're full...could drop it on the ground? It is an off-case
+                            }
+
+                            if (!infinite) {
+                                this.network.sendToAll(new ClientboundListItemsResponsePacket(store.getId(), StoreItemSegmentType.SELLING,
+                                    store.getSellingItems()));
+                            }
+                        })
+                        .submit(this.container);
+                } catch (final SQLException e) {
+                    e.printStackTrace();
+                }
+            })
+            .submit(this.container);
+    }
+
+    public void handleBuyingItemTransaction(final Player player, final String id, final int recNo, final int quantity) {
+        checkNotNull(player);
+        checkNotNull(id);
+        checkState(recNo >= 0);
+        checkState(quantity >= 0);
+
+        final Store store = this.getStore(id).orElse(null);
+
+        if (store == null) {
+            this.logger.error("Player '{}' attempted to sell an item to store '{}' but the server has no knowledge of it. Syncing "
+                + "store registry...", player.getName(), id);
+            this.syncStoreRegistryTo(player);
+            return;
+        }
+
+        final EconomyService economyService = this.serviceManager.provide(EconomyService.class).orElse(null);
+        if (economyService == null) {
+            this.notificationManager.sendWindowMessage(player, Text.of("Store"), Text.of("Critical error encountered, check the "
+                + "server console for more details!"));
+            this.logger.error("Player '{}' attempted to sell an to from store '{}' but the economy service no longer exists. This is a "
+                + "critical error that should be reported to your economy plugin ASAP.", player.getName(), id);
+            return;
+        }
+
+        final UniqueAccount account = economyService.getOrCreateAccount(player.getUniqueId()).orElse(null);
+        if (account == null) {
+            this.notificationManager.sendWindowMessage(player, Text.of("Store"), Text.of("Critical error encountered, check the "
+                + "server console for more details!"));
+            this.logger.error("Player '{}' attempted to sell an item to store '{}' but the economy service returned no account for them. "
+                + "This is a critical error that should be reported to your economy plugin ASAP.", player.getName(), id);
+            return;
+        }
+
+        final List<BuyingItem> buyingItems = store.getBuyingItems();
+        if (buyingItems.isEmpty()) {
+            this.logger.error("Player '{}' attempted to sell an item to store '{}' but the server knows of no "
+                + " selling items for it. This could be a de-sync or an exploit.", player.getName(), store.getId());
+            this.network.sendTo(player, new ClientboundListItemsResponsePacket(store.getId(), StoreItemSegmentType.BUYING, buyingItems));
+            return;
+        }
+
+        final BuyingItem found = buyingItems
+            .stream()
+            .filter(v -> v.getRecord() == recNo)
+            .findAny()
+            .orElse(null);
+
+        if (found == null) {
+            this.notificationManager.sendWindowMessage(player, Text.of("Store"), Text.of("Critical error encountered, check the "
+                + "server console for more details!"));
+            this.logger.error("Player '{}' attempted to sell item '{}' to store '{}' but the server knows of no knowledge of it. This could be a "
+                + "de-sync or an exploit. Discarding...", player.getName(), recNo, store.getId());
+            this.network.sendTo(player, new ClientboundListItemsResponsePacket(store.getId(), StoreItemSegmentType.BUYING, buyingItems));
+            return;
+        }
+
+        final boolean infinite = found.getQuantity() == FeatureConstants.UNLIMITED;
+
+        if (!infinite && found.getQuantity() < quantity) {
+            this.notificationManager.sendWindowMessage(player, Text.of("Store"), Text.of("There is not enough quantity left to buy "
+                + "your product!"));
+            return;
+        }
+
+        final BigDecimal price = found.getPrice();
+        final double total = price.doubleValue() * quantity;
+
+        final EntityPlayerMP serverPlayer = (EntityPlayerMP) player;
+        final IItemHandler inventory = serverPlayer.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP);
+
+        final BuyingItem copyStack = found.copy();
+        copyStack.setQuantity(quantity);
+
+        int amountLeft = copyStack.getQuantity();
+
+        for (int j = 0; j < inventory.getSlots(); j++) {
+            final ItemStack slotStack = inventory.getStackInSlot(j);
+
+            if (ItemHandlerHelper.canItemStacksStack(slotStack, copyStack.asRealStack())) {
+                amountLeft -= inventory.extractItem(j, amountLeft, false).getCount();
+            }
+
+            if (amountLeft <= 0) {
+                break;
+            }
+        }
+
+        if (amountLeft != 0) {
+            this.notificationManager.sendWindowMessage(player, Text.of("Store"), Text.of("Critical error encountered, check the "
+                + "server console for more details!"));
+            this.logger.error("Player '{}' attempted to sell item '{}' to store '{}' but they do not have enough inventory quantity. "
+                + "This could be a de-sync or an exploit. Discarding...", player.getName(), recNo, store.getId());
+            return;
+        }
+
+        this.scheduler
+            .createTaskBuilder()
+            .async()
+            .execute(() -> {
+                try (final DSLContext context = this.databaseManager.createContext(true)) {
+                    int result;
+
+                    if (!infinite) {
+                        result = StoreQueries
+                            .createUpdateBuyingItem(found.getRecord(), found.getQuantity() - quantity, found.getIndex(), found.getPrice())
+                            .build(context)
+                            .execute();
+
+                        if (result == 0) {
+                            // TODO It failed, message
+                            return;
+                        }
+                    }
+
+                    result = StoreQueries
+                        .createInsertBuyingTransaction(Instant.now(), found.getRecord(), player.getUniqueId(), found.getPrice(), quantity)
+                        .build(context)
+                        .execute();
+
+                    if (result == 0) {
+                        // TODO It failed, message
+
+                        StoreQueries
+                            .createUpdateBuyingItem(found.getRecord(), found.getQuantity(), found.getIndex(), found.getPrice())
+                            .build(context)
+                            .execute();
+                        return;
+                    }
+
+                    final List<BuyingItem> finalBuyingItems = new ArrayList<>();
+
+                    if (!infinite) {
+                        final Results results = StoreQueries
+                            .createFetchBuyingItemsAndDataFor(store.getId(), false)
+                            .build(context)
+                            .fetchMany();
+                        results.forEach(r -> finalBuyingItems.addAll(this.parseBuyingItemsFor(r)));
+                    }
+
+                    this.scheduler
+                        .createTaskBuilder()
+                        .execute(() -> {
+                            if (!infinite) {
+                                store.putBuyingItems(finalBuyingItems);
+                            }
+
+                            // Pay the seller
+                            try (final CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
+                                frame.pushCause(store);
+
+                                account.deposit(economyService.getDefaultCurrency(), BigDecimal.valueOf(total), frame.getCurrentCause());
+                            }
+
+                            if (!infinite) {
+                                this.network.sendToAll(new ClientboundListItemsResponsePacket(store.getId(), StoreItemSegmentType.BUYING, store
+                                    .getSellingItems()));
+                            }
+                        })
+                        .submit(this.container);
+                } catch (final SQLException e) {
+                    e.printStackTrace();
+                }
+            })
+            .submit(this.container);
     }
 
     private void printStacksToConsole(final List<VanillaStack> stacks) {

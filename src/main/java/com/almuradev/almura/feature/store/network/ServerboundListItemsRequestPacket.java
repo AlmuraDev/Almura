@@ -8,8 +8,10 @@
 package com.almuradev.almura.feature.store.network;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.feature.store.StoreItemSegmentType;
+import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.almuradev.almura.shared.item.BasicVanillaStack;
 import com.almuradev.almura.shared.item.VanillaStack;
 import com.almuradev.almura.shared.util.ByteBufUtil;
@@ -30,17 +32,17 @@ import java.util.Locale;
 
 import javax.annotation.Nullable;
 
-public final class ServerboundStoreItemsListRequestPacket implements Message {
+public final class ServerboundListItemsRequestPacket implements Message {
 
     @Nullable public String id;
     @Nullable public StoreItemSegmentType type;
-    @Nullable public List<StoreItemCandidate> candidates;
+    @Nullable public List<ListCandidate> candidates;
 
-    public ServerboundStoreItemsListRequestPacket() {
+    public ServerboundListItemsRequestPacket() {
 
     }
 
-    public ServerboundStoreItemsListRequestPacket(final String id, final StoreItemSegmentType type, @Nullable final List<StoreItemCandidate>
+    public ServerboundListItemsRequestPacket(final String id, final StoreItemSegmentType type, @Nullable final List<ListCandidate>
         candidates) {
         this.id = checkNotNull(id);
         this.type = checkNotNull(type);
@@ -85,7 +87,7 @@ public final class ServerboundStoreItemsListRequestPacket implements Message {
                     }
                 }
 
-                this.candidates.add(new StoreItemCandidate(new BasicVanillaStack(item, quantity, metadata, compound), index, price));
+                this.candidates.add(new ListCandidate(new BasicVanillaStack(item, quantity, metadata, compound), index, price));
             }
         }
     }
@@ -101,7 +103,7 @@ public final class ServerboundStoreItemsListRequestPacket implements Message {
         buf.writeInteger(this.candidates == null ? 0 : this.candidates.size());
 
         if (this.candidates != null) {
-            for (final StoreItemCandidate candidate : this.candidates) {
+            for (final ListCandidate candidate : this.candidates) {
 
                 final ResourceLocation location = candidate.stack.getItem().getRegistryName();
                 if (location == null) {
@@ -142,12 +144,18 @@ public final class ServerboundStoreItemsListRequestPacket implements Message {
         }
     }
 
-    public static class StoreItemCandidate {
+    public static class ListCandidate {
         public final VanillaStack stack;
         public final int index;
         public BigDecimal price;
 
-        public StoreItemCandidate(final VanillaStack stack, final int index, final BigDecimal price) {
+        public ListCandidate(final VanillaStack stack, final int index, final BigDecimal price) {
+            checkNotNull(stack);
+            checkState(stack.getQuantity() >= FeatureConstants.UNLIMITED);
+            checkState(index >= 0);
+            checkNotNull(price);
+            checkState(price.doubleValue() >= 0);
+
             this.stack = stack;
             this.index = index;
             this.price = price;
