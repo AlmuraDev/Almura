@@ -11,4 +11,5 @@ public interface BlockDestroyActionConfig {
     String APPLY = "apply";
     String DROP = "drop";
     String WITH = "with";
+    String TOOL = "tool";
 }

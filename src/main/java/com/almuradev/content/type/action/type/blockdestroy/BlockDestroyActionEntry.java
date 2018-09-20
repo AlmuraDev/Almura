@@ -9,7 +9,7 @@ package com.almuradev.content.type.action.type.blockdestroy;
 
 import com.almuradev.content.component.apply.Apply;
 import com.almuradev.content.type.action.component.drop.Drop;
-import com.almuradev.content.type.item.definition.ItemDefinition;
+import com.almuradev.content.type.item.definition.ItemAcceptable;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.api.item.ItemType;
 
@@ -18,7 +18,7 @@ import java.util.List;
 public final class BlockDestroyActionEntry implements BlockDestroyAction.Entry {
     private final List<Apply> apply;
     private final List<? extends Drop> drop;
-    private final List<ItemDefinition> with;
+    private final List<ItemAcceptable> with;
     private final boolean emptyWith;
 
     private BlockDestroyActionEntry(final Builder builder) {
@@ -34,6 +34,7 @@ public final class BlockDestroyActionEntry implements BlockDestroyAction.Entry {
     }
 
     @Override
+    @Deprecated
     public boolean test(final ItemType type) {
         final boolean match = this.with.stream().anyMatch(item -> item.test(type));
 
@@ -61,7 +62,7 @@ public final class BlockDestroyActionEntry implements BlockDestroyAction.Entry {
     public static class Builder implements BlockDestroyAction.Entry.Builder {
         private List<Apply> apply;
         private List<? extends Drop> drop;
-        private List<ItemDefinition> with;
+        private List<ItemAcceptable> with;
 
         @Override
         public void apply(final List<Apply> apply) {
@@ -74,7 +75,7 @@ public final class BlockDestroyActionEntry implements BlockDestroyAction.Entry {
         }
 
         @Override
-        public void with(final List<ItemDefinition> with) {
+        public void with(final List<ItemAcceptable> with) {
             this.with = with;
         }
 

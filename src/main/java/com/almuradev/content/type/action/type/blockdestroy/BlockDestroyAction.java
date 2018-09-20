@@ -10,7 +10,7 @@ package com.almuradev.content.type.action.type.blockdestroy;
 import com.almuradev.content.component.apply.Apply;
 import com.almuradev.content.type.action.ActionContentType;
 import com.almuradev.content.type.action.component.drop.Drop;
-import com.almuradev.content.type.item.definition.ItemDefinition;
+import com.almuradev.content.type.item.definition.ItemAcceptable;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.api.item.ItemType;
 
@@ -26,6 +26,7 @@ public interface BlockDestroyAction extends ActionContentType {
     interface Entry {
         boolean test(final ItemStack stack);
 
+        @Deprecated
         boolean test(final ItemType type);
 
         List<? extends Apply> apply();
@@ -37,7 +38,7 @@ public interface BlockDestroyAction extends ActionContentType {
 
             void drop(final List<? extends Drop> drop);
 
-            void with(final List<ItemDefinition> with);
+            void with(final List<ItemAcceptable> with);
 
             Entry build();
         }

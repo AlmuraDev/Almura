@@ -18,6 +18,8 @@ import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.Message;
 import org.spongepowered.api.network.MessageHandler;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
@@ -99,6 +101,7 @@ public class PacketBinder {
 
     public static final class EntryImpl<M extends Message> implements Entry<M> {
 
+        private static final Set<Class<?>> REGISTERED_PACKETS = new HashSet<>();
         // State-of-the-art proprietary sequential numbering system
         private static int nextChannel;
         private final int channel = nextChannel++;
@@ -117,7 +120,9 @@ public class PacketBinder {
                 checkState(this.side != null, "side not provided");
             }
 
-            channel.registerMessage(this.packet, this.channel);
+            if(REGISTERED_PACKETS.add(this.packet)) {
+                channel.registerMessage(this.packet, this.channel);
+            }
             
             if (this.handler == null) {
                 return;

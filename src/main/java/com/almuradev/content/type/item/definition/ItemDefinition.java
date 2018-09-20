@@ -26,7 +26,7 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
-public final class ItemDefinition implements Droppable {
+public final class ItemDefinition implements Droppable, ItemAcceptable {
     @Deprecated private static final int DEFAULT_META = 0;
     private static final int DEFAULT_QUANTITY = 1;
     public static final ConfigurationNodeDeserializer<ItemDefinition> PARSER = config -> {
@@ -78,10 +78,13 @@ public final class ItemDefinition implements Droppable {
         this.meta = meta;
     }
 
+    @Override
     public boolean test(final ItemStack stack) {
         return this.item.get().equals(stack.getItem()) && this.meta == stack.getItemDamage();
     }
 
+    @Deprecated
+    @Override
     public boolean test(final ItemType type) {
         return this.item.get().getType().equals(type);
     }
