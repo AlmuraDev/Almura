@@ -89,6 +89,9 @@ public class ClientHeadUpDisplayManager implements Witness {
 
     @SubscribeEvent
     public void onClientConnectedToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
+        this.hudData.worldName = "";
+        this.hudData.onlinePlayerCount = 0;
+        this.hudData.maxPlayerCount = 0;
         this.hudData.isEconomyPresent = false;
         this.hudData.economyAmount = "";
     }
