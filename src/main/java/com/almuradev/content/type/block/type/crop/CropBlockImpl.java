@@ -312,7 +312,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
 
             // Light of biome isn't in required range? Don't grow and rollback if applicable
             final DoubleRange light = growth.getOrLoadLightRangeForBiome(biome);
-
+            final boolean hasAdditionalLightSource = hasAdditionalSource(world, pos, 2);
             // Only run light checks if surrounding chunks are loaded else this will trigger chunk loads
             // Skip this section if rollback is true because a Tempoerature fail should never be overridden by light.
             if (!rollback && light != null && world.isAreaLoaded(pos, 1)) {
@@ -322,7 +322,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
                 final int lightLevel = world.getLightFromNeighbors(pos);
 
                 if (lightLevel < minLight || lightLevel > maxLight) {
-                    rollback = !hasAdditionalSource(world, pos, 2);
+                    rollback = !hasAdditionalLightSource;
                 }
 
                 if (canRollback && rollback) {
@@ -333,14 +333,21 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
             }
 
             if (!rollback && !this.isMaxAge(state)) {
-                final DoubleRange change = growth.getOrLoadChanceRangeForBiome(biome);
+                final DoubleRange biomeGrowthChance = growth.getOrLoadChanceRangeForBiome(biome);
 
-                if (change == null || change.max() == 0) {
+                if (biomeGrowthChance == null || biomeGrowthChance.max() == 0) {
                     return;
                 }
 
+                final double randomValue = RANDOM.nextDouble();
+                double growthChance = (biomeGrowthChance.random(RANDOM)/ 100);
+
+                if (hasAdditionalLightSource) {
+                    growthChance = growthChance * 2; // Double the rate of growth if the heat lamp is detected.
+                }
+
                 // Can we grow? Yes? Awesome!
-                if (RANDOM.nextDouble() <= (change.random(RANDOM) / 100) && this.isGrowthEven(world, pos, age)) {
+                if (randomValue <= growthChance && this.isGrowthEven(world, pos, age)) {
                     // If growth will be even, grow
                     world.setBlockState(pos, this.withAge(age + 1), BlockUpdateFlag.UPDATE_CLIENTS);
 
