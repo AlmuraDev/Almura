@@ -245,7 +245,6 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
 
         if (type == 1) { // Heat Lamp
             block = Block.getBlockFromName("almura:horizontal/lighting/plant_light");
-            System.out.println("Plant Light");
         }
 
         if (block != null) {
