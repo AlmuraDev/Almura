@@ -17,14 +17,14 @@ public final class ClientboundWorldPositionInformationPacket implements Message 
     public String biomeId;
     public float biomeTemperature, biomeRainfall; // TODO One day we will have the client know all of the biome's information if from TC
     public int blockLight, skyLight, combinedLight;
-    public boolean isDaytime, canSeeSky;
+    public boolean isDaytime, canSeeSky, hasAdditionalLightHeatSource;
 
     public ClientboundWorldPositionInformationPacket() {
 
     }
 
     public ClientboundWorldPositionInformationPacket(int x, int y, int z, float hitX, float hitY, float hitZ, String biomeId, float
-            biomeTemperature, float biomeRainfall, int blockLight, int skyLight, int combinedLight, boolean isDaytime, boolean canSeeSky) {
+            biomeTemperature, float biomeRainfall, int blockLight, int skyLight, int combinedLight, boolean isDaytime, boolean canSeeSky, boolean hasAdditionalLightHeatSource) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -43,6 +43,7 @@ public final class ClientboundWorldPositionInformationPacket implements Message 
         this.combinedLight = combinedLight;
         this.isDaytime = isDaytime;
         this.canSeeSky = canSeeSky;
+        this.hasAdditionalLightHeatSource = hasAdditionalLightHeatSource;
     }
 
     @Override
@@ -66,6 +67,7 @@ public final class ClientboundWorldPositionInformationPacket implements Message 
 
         this.isDaytime = buf.readBoolean();
         this.canSeeSky = buf.readBoolean();
+        this.hasAdditionalLightHeatSource = buf.readBoolean();
     }
 
     @Override
@@ -89,5 +91,6 @@ public final class ClientboundWorldPositionInformationPacket implements Message 
 
         buf.writeBoolean(this.isDaytime);
         buf.writeBoolean(this.canSeeSky);
+        buf.writeBoolean(this.hasAdditionalLightHeatSource);
     }
 }

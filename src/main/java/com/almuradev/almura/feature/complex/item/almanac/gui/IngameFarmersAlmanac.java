@@ -247,27 +247,32 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         } else {
             this.growing = false;
         }
+        // Biome rain
+        this.addLineLabel(Text.of(TextColors.WHITE, "Rain: ",
+            message.biomeRainfall > 0.5 ? TextColors.DARK_GREEN : TextColors.GOLD, numberFormat.format(message.biomeRainfall)),2);
 
         // Ground temperature
         final DoubleRange temperatureRange = getTemperatureRange(world, blockState, targetBlockPos).orElse(null);
 
         if (temperatureRange != null) {
+            TextColor temperatureColor = TextColors.DARK_GREEN;
             if (!MathUtil.withinRange(this.round(message.biomeTemperature,2), temperatureRange.min(), temperatureRange.max())) {
-                this.growing = false;
+                if (!message.hasAdditionalLightHeatSource) {
+                    this.growing = false;
+                    temperatureColor = TextColors.RED;
+                } else {
+                    temperatureColor = TextColors.YELLOW;
+                }
             }
-            final TextColor temperatureColor = MathUtil.withinRange(this.round(message.biomeTemperature,2), temperatureRange.min(), temperatureRange.max())
-                    ? TextColors.DARK_GREEN
-                    : TextColors.RED;
+
             this.addLineLabel(Text.of(TextColors.WHITE, "Ground Temperature: ", temperatureColor, numberFormat.format(message.biomeTemperature)));
+
             this.addLineLabel(this.getGenericPropertyText("Required",
                     String.format("%s-%s", numberFormat.format(temperatureRange.min()), numberFormat.format(temperatureRange.max()))), 2);
         } else { //Is a farmland block
             this.addLineLabel(Text.of(TextColors.WHITE, "Ground Temperature: ", TextColors.DARK_GREEN, numberFormat.format(message.biomeTemperature)));
         }
 
-        // Biome rain
-        this.addLineLabel(Text.of(TextColors.WHITE, "Rain: ",
-                message.biomeRainfall > 0.5 ? TextColors.DARK_GREEN : TextColors.RED, numberFormat.format(message.biomeRainfall)));
 
         // Server light values, can't trust client world. lookups.
         final int sunlight = message.skyLight;
@@ -321,6 +326,11 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         final String harvestTool = blockState.getBlock().getHarvestTool(blockState);
         if (harvestTool != null && !harvestTool.isEmpty()) {
             this.addLineLabel(this.getGenericPropertyText("Harvested by", harvestTool));
+        }
+
+        if (message.hasAdditionalLightHeatSource) {
+            this.addLineLabel(Text.of(TextColors.WHITE, "Special: "));
+            this.addLineLabel(Text.of(TextColors.YELLOW, "Heat Lamp Found!"), 4);
         }
     }
 

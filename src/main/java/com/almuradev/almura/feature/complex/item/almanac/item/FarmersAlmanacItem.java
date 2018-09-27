@@ -11,6 +11,7 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.complex.item.ComplexItem;
 import com.almuradev.almura.feature.complex.item.almanac.network.ClientboundWorldPositionInformationPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
+import com.almuradev.content.type.block.type.crop.CropBlockImpl;
 import com.almuradev.content.type.itemgroup.ItemGroup;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
@@ -80,11 +81,12 @@ public final class FarmersAlmanacItem extends ComplexItem {
                 final int combinedLight = world.getLightFromNeighbors(pos);
                 final boolean isDaytime = world.isDaytime();
                 final boolean canSeeSky = world.canSeeSky(pos);
-
+                final boolean hasAdditionalLightHeatSource = CropBlockImpl.hasAdditionalSource(world, pos, 1);
+                System.out.println(hasAdditionalLightHeatSource);
                 player.swingArm(hand);
 
                 network.sendTo(spongePlayer, new ClientboundWorldPositionInformationPacket(pos.getX(), pos.getY(), pos.getZ(), hitX, hitY, hitZ,
-                        biome.getRegistryName().toString(), biomeTemperature, biomeRainfall, blockLight, skyLight, combinedLight, isDaytime, canSeeSky));
+                        biome.getRegistryName().toString(), biomeTemperature, biomeRainfall, blockLight, skyLight, combinedLight, isDaytime, canSeeSky, hasAdditionalLightHeatSource));
             } else {
                 spongePlayer.sendMessage(Text.of("The ", TextColors.AQUA,"Farmer's Almanac", TextColors.WHITE, " can only be "
                         + "used on crops or farmland."));

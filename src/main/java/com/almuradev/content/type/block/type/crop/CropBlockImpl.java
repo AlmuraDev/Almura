@@ -239,9 +239,15 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
         return false;
     }
 
-    private boolean hasAdditionalSource(World worldIn, BlockPos pos, int type) {
+    public static boolean hasAdditionalSource(World worldIn, BlockPos pos, int type) {
         // Todo: ability to add more heat/light sources.
-        Block block = Block.getBlockFromName("almura:horizontal/lighting/plant_light");
+        Block block = null;
+
+        if (type == 1) { // Heat Lamp
+            block = Block.getBlockFromName("almura:horizontal/lighting/plant_light");
+            System.out.println("Plant Light");
+        }
+
         if (block != null) {
             for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.getAllInBoxMutable(pos.add(-2, 1, -2), pos.add(2, 3, 2))) {
                 if (worldIn.getBlockState(blockpos$mutableblockpos).getBlock() == block) {
@@ -312,7 +318,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
 
             // Light of biome isn't in required range? Don't grow and rollback if applicable
             final DoubleRange light = growth.getOrLoadLightRangeForBiome(biome);
-            final boolean hasAdditionalLightSource = hasAdditionalSource(world, pos, 2);
+            final boolean hasAdditionalLightSource = hasAdditionalSource(world, pos, 1);
             // Only run light checks if surrounding chunks are loaded else this will trigger chunk loads
             // Skip this section if rollback is true because a Tempoerature fail should never be overridden by light.
             if (!rollback && light != null && world.isAreaLoaded(pos, 1)) {
