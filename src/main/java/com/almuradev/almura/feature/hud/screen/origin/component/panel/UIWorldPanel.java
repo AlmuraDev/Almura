@@ -23,10 +23,14 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+import java.util.Comparator;
+
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
 public class UIWorldPanel extends AbstractPanel {
+
+  private static final int minWidth = 50;
 
   @Inject private static HeadUpDisplay hudData;
   @Inject private static ClientClaimManager clientClaimManager;
@@ -34,19 +38,19 @@ public class UIWorldPanel extends AbstractPanel {
   private final UILabel compassLabel, worldLabel, claimLabel;
 
   public UIWorldPanel(final MalisisGui gui) {
-    super(gui, 60, 35);
+    super(gui, minWidth, 35);
 
     this.worldLabel = new UILabel(gui, "");
     this.worldLabel.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
-    this.worldLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).scale(0.9f).shadow(false).build());
+    this.worldLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
     this.claimLabel = new UILabel(gui, "");
     this.claimLabel.setPosition(0, 0, Anchor.MIDDLE | Anchor.CENTER);
-    this.claimLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).scale(0.9f).shadow(false).build());
+    this.claimLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
     this.compassLabel = new UILabel(gui, "");
     this.compassLabel.setPosition(0, 1, Anchor.BOTTOM | Anchor.CENTER);
-    this.compassLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).scale(0.9f).shadow(false).build());
+    this.compassLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
     this.add(this.claimLabel, this.compassLabel);
   }
@@ -64,14 +68,16 @@ public class UIWorldPanel extends AbstractPanel {
   }
 
   private void updateSize() {
-    final int maxWidth = this.components.stream().filter(c -> c instanceof UILabel)
-      .mapToInt(c -> Minecraft.getMinecraft().fontRenderer.getStringWidth(((UILabel) c).getText())).max().orElse(0);
-    if (this.width < Math.max(maxWidth + 10, 60)) {
-      this.width = Math.max(maxWidth + 10, 60);
+    final int maxWidth = this.components
+      .stream()
+      .filter(c -> c instanceof UILabel)
+      .mapToInt(c -> Minecraft.getMinecraft().fontRenderer.getStringWidth(((UILabel) c).getText()))
+      .max().orElse(0);
+    if (this.width < Math.max(maxWidth + 10, minWidth)) {
+      this.width = Math.max(maxWidth + 10, minWidth);
     }
 
-    final int totalHeight = this.components.stream().mapToInt(UIComponent::getHeight).sum();
-    this.height = totalHeight + 10;
+    this.height = this.getContentHeight();
   }
 
   private void updateWorld() {
@@ -87,6 +93,9 @@ public class UIWorldPanel extends AbstractPanel {
   }
 
   private void updateClaim() {
+    if (!this.components.contains(this.claimLabel)) {
+      this.add(this.claimLabel);
+    }
     if (!clientClaimManager.isClaim || clientClaimManager.isWilderness) {
       if (!clientClaimManager.claimName.equalsIgnoreCase("Server Protected Area")) {
         this.claimLabel.setText(TextFormatting.GREEN + "Wilderness");
@@ -119,6 +128,11 @@ public class UIWorldPanel extends AbstractPanel {
   @SuppressWarnings("deprecation")
   private void updateCompass() {
     this.compassLabel.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(hudData.getCompass()));
-    this.compassLabel.setPosition(0, SimpleScreen.getPaddedY(this.claimLabel, 2), Anchor.TOP | Anchor.CENTER);
+
+    final UIComponent lowestComponent = this.components
+      .stream()
+      .filter(c -> this.compassLabel != c)
+      .max(Comparator.comparingInt(UIComponent::getY)).orElse(null);
+    this.compassLabel.setPosition(0, lowestComponent != null ? SimpleScreen.getPaddedY(lowestComponent, 2) : 2, Anchor.TOP | Anchor.CENTER);
   }
 }
