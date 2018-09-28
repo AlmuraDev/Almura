@@ -82,7 +82,7 @@ public final class FarmersAlmanacItem extends ComplexItem {
                 final boolean isDaytime = world.isDaytime();
                 final boolean canSeeSky = world.canSeeSky(pos);
                 final boolean hasAdditionalLightHeatSource = CropBlockImpl.hasAdditionalSource(world, pos, 1);
-                System.out.println(hasAdditionalLightHeatSource);
+
                 player.swingArm(hand);
 
                 network.sendTo(spongePlayer, new ClientboundWorldPositionInformationPacket(pos.getX(), pos.getY(), pos.getZ(), hitX, hitY, hitZ,
