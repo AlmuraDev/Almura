@@ -68,15 +68,7 @@ public class UIWorldPanel extends AbstractPanel {
   }
 
   private void updateSize() {
-    final int maxWidth = this.components
-      .stream()
-      .filter(c -> c instanceof UILabel)
-      .mapToInt(c -> Minecraft.getMinecraft().fontRenderer.getStringWidth(((UILabel) c).getText()))
-      .max().orElse(0);
-    if (this.width < Math.max(maxWidth + 10, minWidth)) {
-      this.width = Math.max(maxWidth + 10, minWidth);
-    }
-
+    this.width = Math.max(minWidth, this.getContentWidth());
     this.height = this.getContentHeight();
   }
 
@@ -88,7 +80,7 @@ public class UIWorldPanel extends AbstractPanel {
         this.add(this.worldLabel);
       }
       this.worldLabel.setText(hudData.worldName);
-      this.worldLabel.setPosition(0, 2, Anchor.TOP | Anchor.CENTER);
+      this.worldLabel.setPosition(1, 2, Anchor.TOP | Anchor.CENTER);
     }
   }
 
@@ -122,7 +114,7 @@ public class UIWorldPanel extends AbstractPanel {
     }
 
     final int y = this.components.contains(this.worldLabel) ? SimpleScreen.getPaddedY(this.worldLabel, 2) : 2;
-    this.claimLabel.setPosition(0, y, Anchor.TOP | Anchor.CENTER);
+    this.claimLabel.setPosition(1, y, Anchor.TOP | Anchor.CENTER);
   }
 
   @SuppressWarnings("deprecation")
@@ -133,6 +125,6 @@ public class UIWorldPanel extends AbstractPanel {
       .stream()
       .filter(c -> this.compassLabel != c)
       .max(Comparator.comparingInt(UIComponent::getY)).orElse(null);
-    this.compassLabel.setPosition(0, lowestComponent != null ? SimpleScreen.getPaddedY(lowestComponent, 2) : 2, Anchor.TOP | Anchor.CENTER);
+    this.compassLabel.setPosition(1, lowestComponent != null ? SimpleScreen.getPaddedY(lowestComponent, 2) : 2, Anchor.TOP | Anchor.CENTER);
   }
 }

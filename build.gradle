@@ -108,6 +108,7 @@ dependencies {
         transitive = false
     }
     compile 'org.spongepowered:configurate-json:3.5'
+    compile 'org.inspirenxe:skills:1.0.0-SNAPSHOT:api'
     compile 'com.almuradev:toolbox:1.0.0-SNAPSHOT'
     compile 'io.github.nucleuspowered:nucleus-api:1.4.4-S7.0'
     compile 'me.lucko.luckperms:luckperms-api:4.2'
