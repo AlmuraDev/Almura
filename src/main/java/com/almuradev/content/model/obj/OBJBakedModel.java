@@ -47,7 +47,7 @@ import javax.vecmath.Vector4f;
 @SideOnly(Side.CLIENT)
 public class OBJBakedModel implements IBakedModel {
 
-    private static final Object2ObjectMap<String, OBJBakedModel> STATE_MODEL_CACHE = new Object2ObjectOpenHashMap<>(2000);
+    //private static final Object2ObjectMap<String, OBJBakedModel> STATE_MODEL_CACHE = new Object2ObjectOpenHashMap<>(5);
 
     private final OBJModel model;
     private final IModelState state;
@@ -91,13 +91,14 @@ public class OBJBakedModel implements IBakedModel {
             return this.quads;
         }
 
-        if (blockState != null) {
+        // Todo: disable caching to fix damage
+        /*if (blockState != null) {
             final OBJBakedModel model = STATE_MODEL_CACHE.get(blockState.toString());
 
             if (model != null && model.quads != null) {
                 return model.quads;
             }
-        }
+        }*/
 
         this.quads = new LinkedList<>();
 
@@ -240,9 +241,9 @@ public class OBJBakedModel implements IBakedModel {
             this.particleDiffuseSprite = this.createParticleSpriteFor(particleFace, particleAtlasSprite);
         }
 
-        if (blockState != null) {
+        /*if (blockState != null) {
             STATE_MODEL_CACHE.put(blockState.toString(), this);
-        }
+        }*/
 
         return this.quads;
     }
