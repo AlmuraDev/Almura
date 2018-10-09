@@ -156,6 +156,8 @@ public final class ServerHeadUpDisplayManager extends Witness.Impl implements Ac
 
     @Listener(order = Order.LAST)
     public void onPlayerJoin(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") final Player player) {
+        // Todo: revisit this.
+        /*
         checkNotNull(player);
         Task.builder()
             .delayTicks(20)
@@ -176,6 +178,7 @@ public final class ServerHeadUpDisplayManager extends Witness.Impl implements Ac
                 }
             })
             .submit(this.container);
+            */
     }
 
     @Listener(order = Order.PRE)
