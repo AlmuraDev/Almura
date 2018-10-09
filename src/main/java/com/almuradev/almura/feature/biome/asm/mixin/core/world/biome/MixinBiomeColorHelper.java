@@ -26,7 +26,9 @@ public abstract class MixinBiomeColorHelper {
      * @author Zidane - Chris Sanders
      * @reason Have water respect our config
      */
-    @Overwrite
+
+
+    /*@Overwrite
     private static int getColorAtPos(IBlockAccess blockAccess, BlockPos pos, BiomeColorHelper.ColorResolver colorResolver)
     {
         int i = 0;
@@ -56,5 +58,5 @@ public abstract class MixinBiomeColorHelper {
         }
 
         return (i / 9 & 255) << 16 | (j / 9 & 255) << 8 | k / 9 & 255;
-    }
+    }*/
 }

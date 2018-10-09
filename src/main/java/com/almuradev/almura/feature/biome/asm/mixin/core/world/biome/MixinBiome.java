@@ -26,6 +26,7 @@ public abstract class MixinBiome {
      * @author Zidane - Chris Sanders
      * @reason Have Grass color use temperature/rainfall.
      */
+    /*
     @Overwrite
     @SideOnly(Side.CLIENT)
     public int getGrassColorAtPos(BlockPos pos) {
@@ -52,6 +53,7 @@ public abstract class MixinBiome {
      * @author Zidane - Chris Sanders
      * @reason Have Foilage color use temperature/rainfall.
      */
+    /*
     @Overwrite
     @SideOnly(Side.CLIENT)
     public int getFoliageColorAtPos(BlockPos pos) {
@@ -72,5 +74,5 @@ public abstract class MixinBiome {
         double d0 = (double) MathHelper.clamp(temperature, 0.0F, 1.0F);
         double d1 = (double) MathHelper.clamp(rainfall, 0.0F, 1.0F);
         return ((Biome) (Object) this).getModdedBiomeFoliageColor(ColorizerFoliage.getFoliageColor(d0, d1));
-    }
+    } */
 }
