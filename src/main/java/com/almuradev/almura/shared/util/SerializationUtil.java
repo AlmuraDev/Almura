@@ -68,8 +68,8 @@ public final class SerializationUtil {
     public static String toString(final ResourceLocation location) {
         checkNotNull(location);
 
-        final String domain = location.getResourceDomain();
-        final String path = location.getResourcePath();
+        final String domain = location.getNamespace();
+        final String path = location.getPath();
 
         return domain + ":" + path;
     }

@@ -147,8 +147,8 @@ public final class ClientboundListItemsResponsePacket implements Message {
 
                 buf.writeInteger(item.getRecord());
 
-                buf.writeString(location.getResourceDomain());
-                buf.writeString(location.getResourcePath());
+                buf.writeString(location.getNamespace());
+                buf.writeString(location.getPath());
 
                 buf.writeInteger(item.getQuantity());
                 buf.writeInteger(item.getMetadata());

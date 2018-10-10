@@ -19,7 +19,7 @@ public abstract class ComplexItem extends Item {
 
     public ComplexItem(ResourceLocation registryName, String unlocalizedName) {
         this.setRegistryName(registryName);
-        this.setUnlocalizedName(unlocalizedName);
+        this.setTranslationKey(unlocalizedName);
 
         if (Sponge.getPlatform().getType().isClient()) {
             this.registerInventoryModel();

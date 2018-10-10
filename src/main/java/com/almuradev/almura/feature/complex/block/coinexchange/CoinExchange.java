@@ -54,7 +54,7 @@ public final class CoinExchange extends ComplexBlock {
     public CoinExchange(ResourceLocation registryName, float hardness, float resistance) {
         super(Material.GROUND);
         this.setRegistryName(registryName);
-        this.setUnlocalizedName(registryName.getResourcePath().replace('/', '.'));
+        this.setTranslationKey(registryName.getPath().replace('/', '.'));
         this.setHardness(hardness);
         this.setResistance(resistance);
 
@@ -90,7 +90,7 @@ public final class CoinExchange extends ComplexBlock {
     @Deprecated
     @Override
     public IBlockState getStateFromMeta(final int meta) {
-        return this.getDefaultState().withProperty(BlockHorizontal.FACING, EnumFacing.getHorizontal(meta));
+        return this.getDefaultState().withProperty(BlockHorizontal.FACING, EnumFacing.byHorizontalIndex(meta));
     }
 
     @Override

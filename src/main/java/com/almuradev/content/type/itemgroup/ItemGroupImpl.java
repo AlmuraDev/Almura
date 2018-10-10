@@ -33,12 +33,12 @@ public final class ItemGroupImpl extends CreativeTabs {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public String getTranslatedTabLabel() {
-        return this.translation != null ? "itemGroup.".concat(this.translation) : super.getTranslatedTabLabel();
+    public String getTranslationKey() {
+        return this.translation != null ? "itemGroup.".concat(this.translation) : super.getTranslationKey();
     }
 
     @Override
-    public ItemStack getTabIconItem() {
+    public ItemStack createIcon() {
         return this.icon.create();
     }
 

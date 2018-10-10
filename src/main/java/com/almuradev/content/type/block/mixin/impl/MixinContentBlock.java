@@ -84,7 +84,7 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
     }
 
     @Override
-    public CreativeTabs getCreativeTabToDisplayOn() {
+    public CreativeTabs getCreativeTab() {
         return (CreativeTabs) this.itemGroup().orElse(null);
     }
 
@@ -133,12 +133,7 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
 
     @SideOnly(Side.CLIENT)
     @Override
-    public BlockRenderLayer getBlockLayer() {
-        return this.renderLayer;
-    }
-
-    @Override
-    public BlockRenderLayer renderLayer() {
+    public BlockRenderLayer getRenderLayer() {
         return this.renderLayer;
     }
 

@@ -57,7 +57,7 @@ public final class CacheBlock extends BlockContainer {
     public CacheBlock(ResourceLocation registryName, int slotLimit) {
         super(Material.GROUND);
         this.setRegistryName(registryName);
-        this.setUnlocalizedName(registryName.getResourcePath().replace('/', '.'));
+        this.setTranslationKey(registryName.getPath().replace('/', '.'));
         this.setHardness(6.0F);
         this.setResistance(2000.0F);
         this.slotLimit = slotLimit;
@@ -143,7 +143,7 @@ public final class CacheBlock extends BlockContainer {
     @Deprecated
     @Override
     public IBlockState getStateFromMeta(final int meta) {
-        return this.getDefaultState().withProperty(BlockHorizontal.FACING, EnumFacing.getHorizontal(meta));
+        return this.getDefaultState().withProperty(BlockHorizontal.FACING, EnumFacing.byHorizontalIndex(meta));
     }
 
     @Override

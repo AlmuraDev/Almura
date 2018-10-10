@@ -71,7 +71,7 @@ public class LookingDebugPanel extends AbstractDebugPanel {
         super.drawForeground(renderer, mouseX, mouseY, partialTick);
 
         this.baseHeight = 22;
-        this.client.mcProfiler.startSection("debug");
+        this.client.profiler.startSection("debug");
 
         // Draw block we're currently looking at
         final RayTraceResult objectMouseOver = this.client.objectMouseOver;
@@ -91,7 +91,7 @@ public class LookingDebugPanel extends AbstractDebugPanel {
         this.autoHeight += 4; // Extra padding
         this.autoSize();
 
-        this.client.mcProfiler.endSection();
+        this.client.profiler.endSection();
     }
 
     private void renderItemStackFromBlock(final IBlockState state, final ItemStack pickStack) {

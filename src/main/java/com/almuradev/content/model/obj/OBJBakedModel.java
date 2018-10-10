@@ -121,8 +121,8 @@ public class OBJBakedModel implements IBakedModel {
 
                             if (diffuseLocation != null) {
 
-                                if (diffuseLocation.getResourcePath().endsWith(".png")) {
-                                    diffuseSprite = this.bakedTextureGetter.apply(new ResourceLocation(diffuseLocation.getResourceDomain(), diffuseLocation.getResourcePath().split("\\.")[0]));
+                                if (diffuseLocation.getPath().endsWith(".png")) {
+                                    diffuseSprite = this.bakedTextureGetter.apply(new ResourceLocation(diffuseLocation.getNamespace(), diffuseLocation.getPath().split("\\.")[0]));
                                 } else {
                                     diffuseSprite = this.bakedTextureGetter.apply(diffuseLocation);
                                 }

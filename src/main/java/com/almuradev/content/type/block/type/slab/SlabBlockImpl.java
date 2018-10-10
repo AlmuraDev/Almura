@@ -64,8 +64,8 @@ public final class SlabBlockImpl extends BlockSlab implements SlabBlock {
     }
 
     @Override
-    public String getUnlocalizedName(final int meta) {
-        return this.getUnlocalizedName();
+    public String getTranslationKey(final int meta) {
+        return this.getTranslationKey();
     }
 
     @Override

@@ -23,8 +23,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = CreativeTabs.class, priority = 999)
 public abstract class MixinItemGroup implements ItemGroup, IMixinSetCatalogTypeId {
     @Shadow @Final private String tabLabel;
-    @Shadow @Final private int tabIndex;
-    @Shadow public ItemStack iconItemStack;
+    @Shadow @Final private int index;
+    @Shadow public ItemStack icon;
     private String id;
 
     @Inject(method = "<init>(ILjava/lang/String;)V", at = @At("RETURN"))
@@ -51,16 +51,16 @@ public abstract class MixinItemGroup implements ItemGroup, IMixinSetCatalogTypeI
 
     @Override
     public ItemStack icon() {
-        return this.iconItemStack;
+        return this.icon;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(CreativeTabs.class)
-                .add("index", this.tabIndex)
+                .add("index", this.index)
                 .add("id", this.id)
                 .add("label", this.tabLabel)
-                .add("icon", this.iconItemStack)
+                .add("icon", this.icon)
                 .toString();
     }
 }

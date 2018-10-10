@@ -60,7 +60,7 @@ public class InformationDebugPanel extends AbstractDebugPanel {
 
         super.drawForeground(renderer, mouseX, mouseY, partialTick);
 
-        this.client.mcProfiler.startSection("debug");
+        this.client.profiler.startSection("debug");
 
         this.renderTitle();
 
@@ -81,7 +81,7 @@ public class InformationDebugPanel extends AbstractDebugPanel {
             this.drawProperty("Chunk-relative", String.format("%d %d %d", fx & 0xf, fy & 0xf, fz & 0xf), 4);
         } else {
             final BlockPos pos = new BlockPos(x, y, z);
-            final Chunk chunk = view.getEntityWorld().getChunkFromBlockCoords(pos);
+            final Chunk chunk = view.getEntityWorld().getChunk(pos);
 
             this.renderXYZ(x, y, z);
             this.renderFacing(view.getHorizontalFacing(), view.rotationYaw, view.rotationPitch);
@@ -109,7 +109,7 @@ public class InformationDebugPanel extends AbstractDebugPanel {
 
         this.autoSize();
 
-        this.client.mcProfiler.endSection();
+        this.client.profiler.endSection();
     }
 
     private String getBiomeName(Biome biome, BlockPos pos) {

@@ -32,12 +32,12 @@ public final class DirectoryResourcePack implements IResourcePack {
 
     @Override
     public boolean resourceExists(final ResourceLocation location) {
-        return Files.exists(this.entry.path.resolve(location.getResourceDomain()).resolve(location.getResourcePath()));
+        return Files.exists(this.entry.path.resolve(location.getNamespace()).resolve(location.getPath()));
     }
 
     @Override
     public InputStream getInputStream(final ResourceLocation location) throws IOException {
-        return Files.newInputStream(this.entry.path.resolve(location.getResourceDomain()).resolve(location.getResourcePath()));
+        return Files.newInputStream(this.entry.path.resolve(location.getNamespace()).resolve(location.getPath()));
     }
 
     @Override

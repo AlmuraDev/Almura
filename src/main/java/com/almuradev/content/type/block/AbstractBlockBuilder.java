@@ -85,7 +85,7 @@ public abstract class AbstractBlockBuilder<C extends ContentBlock, D extends Blo
     @Override
     public void fill(final IForgeRegistryEntry.Impl entry) {
         super.fill(entry);
-        ((Block) entry).setUnlocalizedName(this.string(StringType.TRANSLATION).replace('/', '.'));
+        ((Block) entry).setTranslationKey(this.string(StringType.TRANSLATION).replace('/', '.'));
         ((IMixinLazyItemGroup) entry).itemGroup(this.itemGroup);
         ((IMixinContentBlock) entry).setRenderLayer(this.renderLayer);
         ((EffectiveOn) entry).effectiveTools(this.effectiveTools);

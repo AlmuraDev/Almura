@@ -101,7 +101,7 @@ public final class FoodItemImpl extends ItemFood implements FoodItem {
             }
 
             // Return Re-Usable Items
-            ItemReturnHelper.returnReusableItem(entityplayer, stack.getUnlocalizedName(), stack, false);
+            ItemReturnHelper.returnReusableItem(entityplayer, stack.getTranslationKey(), stack, false);
         }
 
 

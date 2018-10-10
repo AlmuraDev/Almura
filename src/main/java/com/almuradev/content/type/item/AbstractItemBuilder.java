@@ -39,7 +39,7 @@ public abstract class AbstractItemBuilder<C extends ContentItem> extends Content
     @Override
     public void fill(final IForgeRegistryEntry.Impl entry) {
         super.fill(entry);
-        ((Item) entry).setUnlocalizedName(this.string(StringType.TRANSLATION));
+        ((Item) entry).setTranslationKey(this.string(StringType.TRANSLATION));
         ((IMixinLazyItemGroup) entry).itemGroup(this.itemGroup);
         this.durability.ifPresent(((Item) entry)::setMaxDamage);
         this.maxStackSize.ifPresent(((Item) entry)::setMaxStackSize);

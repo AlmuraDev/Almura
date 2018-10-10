@@ -36,7 +36,7 @@ import javax.annotation.Nullable;
 @Mixin(value = Block.class, priority = 998)
 public abstract class MixinBlock implements ContentBlock, IMixinBlock {
     @Nullable @Shadow public CreativeTabs displayOnCreativeTab;
-    @Shadow public abstract CreativeTabs getCreativeTabToDisplayOn();
+    @Shadow public abstract CreativeTabs getCreativeTab();
 
     @Shadow protected SoundType blockSoundType;
     @Shadow(remap = false) protected ThreadLocal<EntityPlayer> harvesters;
@@ -49,7 +49,7 @@ public abstract class MixinBlock implements ContentBlock, IMixinBlock {
     @Shadow(remap = false) public abstract int getFlammability(IBlockAccess world, BlockPos pos, EnumFacing face);
     @Shadow(remap = false) public abstract int getFireSpreadSpeed(IBlockAccess world, BlockPos pos, EnumFacing face);
     @SideOnly(Side.CLIENT)
-    @Shadow public abstract BlockRenderLayer getBlockLayer();
+    @Shadow public abstract BlockRenderLayer getRenderLayer();
 
     @Override
     public Optional<ItemGroup> itemGroup() {

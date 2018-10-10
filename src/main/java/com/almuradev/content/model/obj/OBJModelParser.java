@@ -81,7 +81,7 @@ public class OBJModelParser {
                     case OBJModelConfig.MATERIAL_LIBRARY:
                         @Nullable final ResourceLocation parent = getParent(this.source);
                         objBuilder.materialLibrary(this.parseMaterialLibrary(ResourceLocations.buildResourceLocationPath(lineContents[0],
-                                parent.getResourcePath())));
+                                parent.getPath())));
                         break;
                     case OBJModelConfig.VERTEX:
                         try {
@@ -326,11 +326,11 @@ public class OBJModelParser {
 
                         if (parentLocation != null) {
                             // Making some assumptions here...carry on now
-                            final int lastSlashIndex = parentLocation.getResourcePath().lastIndexOf("/");
+                            final int lastSlashIndex = parentLocation.getPath().lastIndexOf("/");
 
                             if (lastSlashIndex != -1) {
-                                parentPath = parentLocation.getResourcePath().substring(lastSlashIndex + 1,
-                                        parentLocation.getResourcePath().length());
+                                parentPath = parentLocation.getPath().substring(lastSlashIndex + 1,
+                                        parentLocation.getPath().length());
                             }
                         }
 
@@ -359,7 +359,7 @@ public class OBJModelParser {
      */
     @Nullable
     public static ResourceLocation getParent(final ResourceLocation location) {
-        final String path = location.getResourcePath();
+        final String path = location.getPath();
 
         final int lastSlashIndex = path.lastIndexOf('/');
 
@@ -367,7 +367,7 @@ public class OBJModelParser {
             return null;
         }
 
-        return new ResourceLocation(location.getResourceDomain(), path.substring(0, lastSlashIndex));
+        return new ResourceLocation(location.getNamespace(), path.substring(0, lastSlashIndex));
     }
 
     /**
@@ -383,7 +383,7 @@ public class OBJModelParser {
      * @return The filename
      */
     private static String getFileName(final ResourceLocation location) {
-        final String path = location.getResourcePath();
+        final String path = location.getPath();
         final int index = path.lastIndexOf('/');
         if (index == ResourceLocations.NOT_FOUND) {
             return path;

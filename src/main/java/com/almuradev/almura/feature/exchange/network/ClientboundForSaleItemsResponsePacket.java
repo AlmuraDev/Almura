@@ -178,8 +178,8 @@ public final class ClientboundForSaleItemsResponsePacket implements Message {
                 // ListItem
                 buf.writeInteger(listItem.getRecord());
 
-                buf.writeString(location.getResourceDomain());
-                buf.writeString(location.getResourcePath());
+                buf.writeString(location.getNamespace());
+                buf.writeString(location.getPath());
 
                 buf.writeInteger(listItem.getQuantity());
                 buf.writeInteger(listItem.getMetadata());

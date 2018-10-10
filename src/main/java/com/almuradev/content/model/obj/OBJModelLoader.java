@@ -45,7 +45,7 @@ public class OBJModelLoader implements ICustomModelLoader, OnDemandModelLoader {
 
     @Override
     public boolean accepts(final ResourceLocation modelLocation) {
-        return this.domains.contains(modelLocation.getResourceDomain()) && modelLocation.getResourcePath().endsWith(".obj");
+        return this.domains.contains(modelLocation.getNamespace()) && modelLocation.getPath().endsWith(".obj");
     }
 
     @Nullable

@@ -306,14 +306,14 @@ public abstract class PanoramicScreen extends SimpleScreen {
 
             this.resources[0] = new ResourceLocation(Almura.ID, PATH_ASSETS_ALMURA.relativize(path).toString());
             for (int i = 1; i < 6; i++) {
-                this.resources[i] = new ResourceLocation(this.resources[0].getResourceDomain(), this.resources[0].getResourcePath().replace("0.png", i + ".png"));
+                this.resources[i] = new ResourceLocation(this.resources[0].getNamespace(), this.resources[0].getPath().replace("0.png", i + ".png"));
             }
         }
 
         public PanoramicBundle(ResourceLocation baseLocation) {
             this.resources[0] = baseLocation;
             for (int i = 1; i < 6; i++) {
-                this.resources[i] = new ResourceLocation(this.resources[0].getResourceDomain(), this.resources[0].getResourcePath().replace("0.png", i + ".png"));
+                this.resources[i] = new ResourceLocation(this.resources[0].getNamespace(), this.resources[0].getPath().replace("0.png", i + ".png"));
             }
         }
 

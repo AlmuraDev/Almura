@@ -235,7 +235,8 @@ public class SingleSlotItemHandler implements ISingleSlotItemHandler {
 
             if (capabilities != null) {
                 NBTTagCompound cnbt = capabilities.serializeNBT();
-                if (!cnbt.hasNoTags()) nbt.setTag("ForgeCaps", cnbt);
+                // Todo: this may be wrong.
+                if (!cnbt.isEmpty()) nbt.setTag("ForgeCaps", cnbt);
             }
 
             return nbt;

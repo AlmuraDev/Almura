@@ -53,7 +53,7 @@ public abstract class MixinTileEntityFurnace extends TileEntityLockable implemen
             }
 
 
-            if (item.getUnlocalizedName().length() > 19 && item.getUnlocalizedName().substring(5,19).equalsIgnoreCase("almura.sapling")) { //tile.almura.sapling
+            if (item.getTranslationKey().length() > 19 && item.getTranslationKey().substring(5,19).equalsIgnoreCase("almura.sapling")) { //tile.almura.sapling
                 return 200;
             }
 

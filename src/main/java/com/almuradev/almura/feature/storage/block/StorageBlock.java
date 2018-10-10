@@ -46,7 +46,7 @@ public final class StorageBlock extends BlockContainer {
         super(Material.GROUND, MapColor.BROWN);
 
         this.setRegistryName(registryName);
-        this.setUnlocalizedName(registryName.getResourcePath().replace('/', '.'));
+        this.setTranslationKey(registryName.getPath().replace('/', '.'));
         this.setHardness(6.0F);
         this.setResistance(2000.0F);
 
@@ -97,7 +97,7 @@ public final class StorageBlock extends BlockContainer {
     @Deprecated
     @Override
     public IBlockState getStateFromMeta(final int meta) {
-        return this.getDefaultState().withProperty(BlockHorizontal.FACING, EnumFacing.getHorizontal(meta));
+        return this.getDefaultState().withProperty(BlockHorizontal.FACING, EnumFacing.byHorizontalIndex(meta));
     }
 
     @Override

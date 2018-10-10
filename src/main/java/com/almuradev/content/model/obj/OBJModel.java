@@ -64,9 +64,9 @@ public class OBJModel implements IModel {
                 continue;
             }
 
-            if (diffuseLocation.getResourcePath().endsWith(".png")) {
-                this.textures.add(new ResourceLocation(diffuseLocation.getResourceDomain(), diffuseLocation
-                        .getResourcePath().split("\\.")[0]));
+            if (diffuseLocation.getPath().endsWith(".png")) {
+                this.textures.add(new ResourceLocation(diffuseLocation.getNamespace(), diffuseLocation
+                        .getPath().split("\\.")[0]));
             } else {
                 this.textures.add(diffuseLocation);
             }

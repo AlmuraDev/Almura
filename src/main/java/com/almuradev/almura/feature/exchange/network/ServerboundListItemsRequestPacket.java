@@ -115,8 +115,8 @@ public final class ServerboundListItemsRequestPacket implements Message {
 
             buf.writeString(action.getDirection().name().toUpperCase());
 
-            buf.writeString(location.getResourceDomain());
-            buf.writeString(location.getResourcePath());
+            buf.writeString(location.getNamespace());
+            buf.writeString(location.getPath());
 
             buf.writeInteger(stack.getQuantity());
 

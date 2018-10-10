@@ -24,6 +24,6 @@ final class InResourceLocationPredicate<T> extends AbstractFunctionPredicate<T, 
 
     @Override
     public boolean test0(final ResourceLocation value) {
-        return this.namespaces.contains(value.getResourceDomain());
+        return this.namespaces.contains(value.getNamespace());
     }
 }

@@ -46,7 +46,7 @@ public class ItemReturnHelper implements Witness {
 
         for (int i = 0; i < 9; i++) {  // Scan the crafting matrix.
             if (event.craftMatrix.getStackInSlot(i) != null) {
-                returnReusableItem(event.player, event.craftMatrix.getStackInSlot(i).getUnlocalizedName(), event.craftMatrix.getStackInSlot(i), debug);
+                returnReusableItem(event.player, event.craftMatrix.getStackInSlot(i).getTranslationKey(), event.craftMatrix.getStackInSlot(i), debug);
             }
         }
     }

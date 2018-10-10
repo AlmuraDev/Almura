@@ -145,8 +145,8 @@ public final class ExchangeQueries {
                     AxsListItem.AXS_LIST_ITEM.DOMAIN, AxsListItem.AXS_LIST_ITEM.PATH, AxsListItem.AXS_LIST_ITEM.QUANTITY,
                     AxsListItem.AXS_LIST_ITEM.METADATA, AxsListItem.AXS_LIST_ITEM.INDEX);
 
-            insertionStep.values(id, Timestamp.from(created), sellerData, item.getRegistryName().getResourceDomain(), item.getRegistryName()
-                    .getResourcePath(), quantity, metadata, index);
+            insertionStep.values(id, Timestamp.from(created), sellerData, item.getRegistryName().getNamespace(), item.getRegistryName()
+                    .getPath(), quantity, metadata, index);
 
             return insertionStep.returning();
         };
