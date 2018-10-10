@@ -94,7 +94,7 @@ public final class ServerClaimManager implements Witness {
                         showWarnings = claim.getData().allowDenyMessages();
                     }
 
-                    if (player != null) {
+                    if (player != null && GriefPreventionPlugin.instance.worldEditProvider != null) {
                         hasWECUI = GriefPreventionPlugin.instance.worldEditProvider.hasCUISupport(player);
                     }
 

@@ -65,31 +65,29 @@ public final class ServerAnimalManager extends Witness.Impl  {
 
     @Listener
     public void onSpawnEntity(SpawnEntityEvent event) {
+        event.getEntities().stream().filter(e -> e instanceof Animal).map(e -> (Animal) e).forEach(e -> {
+            if (e instanceof EntityCow || e instanceof EntityChicken || e instanceof EntityHorse || e instanceof EntityPig || e instanceof EntitySheep) {
+                System.out.println("Ping1");
+                Sponge.getScheduler().createTaskBuilder().delayTicks(5) // Delay this because the animals age isn't set yet.
+                    .execute(() -> {
 
-        event.getEntities().stream()
-            .filter(e -> e instanceof Animal)
-            .map(e -> (Animal) e)
-            .forEach(e -> {
-                if (e instanceof EntityCow || e instanceof EntityChicken || e instanceof EntityHorse || e instanceof EntityPig || e instanceof EntitySheep) {
-                    System.out.println("Ping1");
-                    Sponge.getScheduler().createTaskBuilder()
-                        .delayTicks(5) // Delay this because the animals age isn't set yet.
-                        .execute(() -> {
+                        if (!e.isRemoved() && e.getAgeData().age().get() != 0) {
+                            e.offer(Keys.DISPLAY_NAME, Text.of(TextColors.AQUA, LegacyTexts.stripAll(((net.minecraft.entity.Entity) e).getName(), SpongeTexts.COLOR_CHAR)));
+                            // Todo: The below bugs may affect this feature.
+                            // Bug 1: bug here, using .getTranslation().get() for MoCreatures returns "unknown"
+                            // Bug 2: e.getType().getName() returns a lowerCase name of animals.
+                        }
+                    }).submit(this.container);
+                e.offer(Keys.CUSTOM_NAME_VISIBLE, true);
+            }
+        });
+    }
 
-                                if (!e.isRemoved() && e.getAgeData().age().get() != 0) {
-                                    e.offer(Keys.DISPLAY_NAME, Text.of(TextColors.AQUA, LegacyTexts.stripAll(((net.minecraft.entity.Entity) e).getName(), SpongeTexts.COLOR_CHAR)));
-                                    // Todo: The below bugs may affect this feature.
-                                    // Bug 1: bug here, using .getTranslation().get() for MoCreatures returns "unknown"
-                                    // Bug 2: e.getType().getName() returns a lowerCase name of animals.
-                                }
-                            }
-                        )
-                        .submit(this.container);
-                    e.offer(Keys.CUSTOM_NAME_VISIBLE, true);
-                }
-            });
-
+    @Listener
+    public void onBreedEntity(BreedEntityEvent.Breed event) {
         final SpawnType spawnType = event.getContext().get(EventContextKeys.SPAWN_TYPE).orElse(null);
+        // Todo: this is broken...
+        /*
         event.getEntities().stream()
             .filter(e -> e instanceof Animal)
             .map(e -> (Animal) e)
@@ -132,7 +130,7 @@ public final class ServerAnimalManager extends Witness.Impl  {
                 } else if (this.colorifyNameplate(e) && e.getAgeData().age().get() != 0) {
                     e.offer(Keys.DISPLAY_NAME, Text.of(TextColors.AQUA, e.getType().getTranslation().get()));
                 }
-            });
+            }); */
     }
 
     @Listener
