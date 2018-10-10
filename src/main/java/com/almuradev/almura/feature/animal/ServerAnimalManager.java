@@ -21,6 +21,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
+import org.spongepowered.api.entity.living.Ageable;
 import org.spongepowered.api.entity.living.animal.Animal;
 import org.spongepowered.api.entity.living.animal.Chicken;
 import org.spongepowered.api.entity.living.animal.Cow;
@@ -49,92 +50,45 @@ import java.util.UUID;
 
 public final class ServerAnimalManager extends Witness.Impl  {
 
-    @Inject
-    private PluginContainer container;
-
-    private final Map<UUID, ItemStackSnapshot> interactedBreeds = new HashMap<>();
-
     @Listener
-    public void onInteractEntitySecondaryMainHand(final InteractEntityEvent.Secondary.MainHand event) {
-        if (this.canAdditionalSpawn(event.getTargetEntity())) {
-            final ItemStackSnapshot usedItem = event.getContext().get(EventContextKeys.USED_ITEM).orElse(null);
-            System.out.println("InteractEntity");
-            this.interactedBreeds.put(event.getTargetEntity().getUniqueId(), usedItem);
+    public void onBreedEntity(final BreedEntityEvent.Breed event) {
+        final ItemStackSnapshot usedItem = event.getContext().get(EventContextKeys.USED_ITEM).orElse(null);
+        if (usedItem == null) {
+            return;
         }
-    }
 
-    @Listener
-    public void onSpawnEntity(SpawnEntityEvent event) {
-        event.getEntities().stream().filter(e -> e instanceof Animal).map(e -> (Animal) e).forEach(e -> {
-            if (e instanceof EntityCow || e instanceof EntityChicken || e instanceof EntityHorse || e instanceof EntityPig || e instanceof EntitySheep) {
-                System.out.println("Ping1");
-                Sponge.getScheduler().createTaskBuilder().delayTicks(5) // Delay this because the animals age isn't set yet.
-                    .execute(() -> {
+        final List<Animal> parents = event.getCause().allOf(Animal.class);
+        final Ageable child = event.getOffspringEntity();
 
-                        if (!e.isRemoved() && e.getAgeData().age().get() != 0) {
-                            e.offer(Keys.DISPLAY_NAME, Text.of(TextColors.AQUA, LegacyTexts.stripAll(((net.minecraft.entity.Entity) e).getName(), SpongeTexts.COLOR_CHAR)));
-                            // Todo: The below bugs may affect this feature.
-                            // Bug 1: bug here, using .getTranslation().get() for MoCreatures returns "unknown"
-                            // Bug 2: e.getType().getName() returns a lowerCase name of animals.
-                        }
-                    }).submit(this.container);
-                e.offer(Keys.CUSTOM_NAME_VISIBLE, true);
+        child.offer(Keys.CUSTOM_NAME_VISIBLE, true);
+
+        if (this.colorifyNameplate(child)) {
+            child.offer(Keys.DISPLAY_NAME, Text.of(TextColors.AQUA, child.getType().getTranslation().get()));
+        }
+
+        final int additionalSpawnCount = this.getAdditionalSpawnCount(child, usedItem);
+
+        for (int i = 0; i < additionalSpawnCount; i++) {
+            final Ageable other = (Ageable) child.getWorld().createEntity(child.getType(), child.getLocation().getPosition());
+            other.offer(Keys.CUSTOM_NAME_VISIBLE, true);
+            other.offer(Keys.AGE, -24000);
+
+            if (this.colorifyNameplate(other)) {
+                other.offer(Keys.DISPLAY_NAME, Text.of(TextColors.AQUA, child.getType().getTranslation().get()));
+            }
+        }
+
+        parents.forEach(parent -> {
+            if (this.colorifyNameplate(parent)) {
+                parent.offer(Keys.DISPLAY_NAME, Text.of(TextColors.BLUE, LegacyTexts.stripAll(((net.minecraft.entity.Entity) parent).getName(),
+                  SpongeTexts.COLOR_CHAR)));
             }
         });
     }
 
     @Listener
-    public void onBreedEntity(BreedEntityEvent.Breed event) {
-        final SpawnType spawnType = event.getContext().get(EventContextKeys.SPAWN_TYPE).orElse(null);
-        // Todo: this is broken...
-        /*
-        event.getEntities().stream()
-            .filter(e -> e instanceof Animal)
-            .map(e -> (Animal) e)
-            .forEach(e -> {
-                e.offer(Keys.CUSTOM_NAME_VISIBLE, true);
-
-                if (spawnType != null && spawnType == SpawnTypes.BREEDING) {
-
-                    System.out.println("I got here");
-                    if (this.colorifyNameplate(e)) {
-                        e.offer(Keys.DISPLAY_NAME, Text.of(TextColors.AQUA, e.getType().getTranslation().get()));
-                    }
-
-                    final ItemStackSnapshot parentA;
-                    final ItemStackSnapshot parentB;
-
-                    final List<Animal> animals = event.getCause().allOf(Animal.class);
-                    System.out.println("Size: " + animals.size());
-                    if (animals.size() == 2) {
-                        parentA = this.interactedBreeds.remove(animals.get(0).getUniqueId());
-                        parentB = this.interactedBreeds.remove(animals.get(1).getUniqueId());
-
-                        if (parentA != null && parentB != null) {
-                            if (parentA.getType() == parentB.getType()) {
-                                final int spawnCount = this.getAdditionalSpawnCount(e, parentA);
-
-                                for (int i = 0; i < spawnCount; i++) {
-                                    final Animal other = (Animal) e.getWorld().createEntity(e.getType(), e.getLocation().getPosition());
-                                    other.offer(Keys.AGE, -24000);
-
-                                    if (this.colorifyNameplate(other)) {
-                                        other.offer(Keys.DISPLAY_NAME, Text.of(TextColors.AQUA, e.getType().getTranslation().get()));
-                                    }
-
-                                    event.getEntities().add(other);
-                                }
-                            }
-                        }
-                    }
-                } else if (this.colorifyNameplate(e) && e.getAgeData().age().get() != 0) {
-                    e.offer(Keys.DISPLAY_NAME, Text.of(TextColors.AQUA, e.getType().getTranslation().get()));
-                }
-            }); */
-    }
-
-    @Listener
     public void onBreedEntityReadyToMate(final BreedEntityEvent.ReadyToMate event) {
+        // Change Name to White when we are ready to mate
         final Animal animal = event.getTargetEntity();
         if (animal instanceof EntityCow || animal instanceof EntityChicken || animal instanceof EntityHorse || animal instanceof EntityPig || animal instanceof EntitySheep) {
             animal.offer(Keys.DISPLAY_NAME, Text.of(TextColors.WHITE, LegacyTexts.stripAll(((net.minecraft.entity.Entity) animal).getName(), SpongeTexts.COLOR_CHAR)));
@@ -151,26 +105,11 @@ public final class ServerAnimalManager extends Witness.Impl  {
         });
     }
 
-    @Listener
-    public void onBreedEntityBreed(final BreedEntityEvent.Breed event) {
-        // Change Name color AFTER BRED
-        System.out.println("Fired Breed");
-        event.getCause().allOf(Animal.class).forEach(a -> {
-            if (a instanceof EntityCow || a instanceof EntityChicken || a instanceof EntityHorse || a instanceof EntityPig || a instanceof EntitySheep) {
-                a.offer(Keys.DISPLAY_NAME, Text.of(TextColors.BLUE, LegacyTexts.stripAll(((net.minecraft.entity.Entity) a).getName(), SpongeTexts.COLOR_CHAR)));
-            }
-        });
+    private boolean colorifyNameplate(final Ageable ageable) {
+        return ageable instanceof Cow || ageable instanceof Chicken || ageable instanceof Horse || ageable instanceof Pig || ageable instanceof Sheep;
     }
 
-    private boolean colorifyNameplate(final Animal animal) {
-        return animal instanceof Cow || animal instanceof Chicken || animal instanceof Horse || animal instanceof Pig || animal instanceof Sheep;
-    }
-
-    private boolean canAdditionalSpawn(final Entity entity) {
-        return entity instanceof Cow;
-    }
-
-    private int getAdditionalSpawnCount(final Animal baby, final ItemStackSnapshot usedItem) {
+    private int getAdditionalSpawnCount(final Ageable baby, final ItemStackSnapshot usedItem) {
         checkNotNull(baby);
         checkNotNull(usedItem);
         final Random random = new Random();
