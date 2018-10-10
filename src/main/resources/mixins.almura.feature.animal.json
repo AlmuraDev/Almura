@@ -1,0 +1,11 @@
+{
+    "required": true,
+    "minVersion": "0.7.10",
+    "package": "com.almuradev.almura.feature.animal.asm.mixin.entity.passive",
+    "refmap": "mixins.almura.refmap.json",
+    "target": "@env(DEFAULT)",
+    "compatibilityLevel": "JAVA_8",
+    "mixins": [
+        "MixinEntityAnimal"
+    ]
+}
