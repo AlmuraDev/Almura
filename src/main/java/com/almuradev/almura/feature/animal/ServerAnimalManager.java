@@ -35,6 +35,7 @@ import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.event.entity.BreedEntityEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
+import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
@@ -50,14 +51,35 @@ import java.util.UUID;
 
 public final class ServerAnimalManager extends Witness.Impl  {
 
+    private static final Random RANDOM = new Random();
+    private final Map<UUID, ItemStackSnapshot> usedItemCache = new HashMap<>();
+
     @Listener
-    public void onBreedEntity(final BreedEntityEvent.Breed event) {
-        final ItemStackSnapshot usedItem = event.getContext().get(EventContextKeys.USED_ITEM).orElse(null);
-        if (usedItem == null) {
+    public void onInteractEntitySecondary(final InteractEntityEvent.Secondary event) {
+        if (!this.isValidEntity(event.getTargetEntity())) {
             return;
         }
 
+        final ItemStackSnapshot snapshot = event.getContext().get(EventContextKeys.USED_ITEM).orElse(null);
+        if (snapshot == null || snapshot.getType() == ItemTypes.NONE) {
+            return;
+        }
+
+        this.usedItemCache.put(event.getTargetEntity().getUniqueId(), snapshot);
+    }
+
+    @Listener
+    public void onBreedEntity(final BreedEntityEvent.Breed event) {
         final List<Animal> parents = event.getCause().allOf(Animal.class);
+
+        // This isn't a frat house or a invitro, they have 2 parents
+        if (parents.size() != 2) {
+            return;
+        }
+
+        final ItemStackSnapshot parentASnapshot = this.usedItemCache.remove(parents.get(0).getUniqueId());
+        final ItemStackSnapshot parentBSnapshot = this.usedItemCache.remove(parents.get(1).getUniqueId());
+
         final Ageable child = event.getOffspringEntity();
 
         child.offer(Keys.CUSTOM_NAME_VISIBLE, true);
@@ -66,7 +88,7 @@ public final class ServerAnimalManager extends Witness.Impl  {
             child.offer(Keys.DISPLAY_NAME, Text.of(TextColors.AQUA, child.getType().getTranslation().get()));
         }
 
-        final int additionalSpawnCount = this.getAdditionalSpawnCount(child, usedItem);
+        final int additionalSpawnCount = this.getAdditionalSpawnCount(child, parentASnapshot); // TODO Dockter, change this to how you want to do this
 
         for (int i = 0; i < additionalSpawnCount; i++) {
             final Ageable other = (Ageable) child.getWorld().createEntity(child.getType(), child.getLocation().getPosition());
@@ -105,6 +127,10 @@ public final class ServerAnimalManager extends Witness.Impl  {
         });
     }
 
+    private boolean isValidEntity(final Entity entity) {
+        return entity instanceof Cow || entity instanceof Chicken || entity instanceof Horse || entity instanceof Pig || entity instanceof Sheep;
+    }
+
     private boolean colorifyNameplate(final Ageable ageable) {
         return ageable instanceof Cow || ageable instanceof Chicken || ageable instanceof Horse || ageable instanceof Pig || ageable instanceof Sheep;
     }
@@ -112,8 +138,7 @@ public final class ServerAnimalManager extends Witness.Impl  {
     private int getAdditionalSpawnCount(final Ageable baby, final ItemStackSnapshot usedItem) {
         checkNotNull(baby);
         checkNotNull(usedItem);
-        final Random random = new Random();
-        int randomChance = random.nextInt(100);
+        int randomChance = RANDOM.nextInt(100);
 
         int additionalSpawnCount = 0;  //Physical count of additional spawn besides the original within the event.
         int spawnChance = 0;  // Percentage
