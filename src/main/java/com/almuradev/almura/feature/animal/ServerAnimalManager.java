@@ -90,9 +90,12 @@ public final class ServerAnimalManager extends Witness.Impl  {
             other.offer(Keys.CUSTOM_NAME_VISIBLE, true);
             other.offer(Keys.AGE, -24000);
 
+
             if (this.colorifyNameplate(other)) {
                 other.offer(Keys.DISPLAY_NAME, Text.of(TextColors.AQUA, child.getType().getTranslation().get()));
             }
+
+            child.getWorld().spawnEntity(other);
         }
 
         parents.forEach(parent -> {
