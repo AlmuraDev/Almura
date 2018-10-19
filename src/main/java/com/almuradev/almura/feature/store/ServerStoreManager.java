@@ -545,7 +545,7 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
                                 final VanillaStack stack = entry.getValue();
 
                                 final BasicSellingItem item = new BasicSellingItem(record.getIndex(), record.getCreated().toInstant(),
-                                    stack.getItem(), stack.getMetadata(), stack.getQuantity(), record.getPrice(), record.getIndex(),
+                                    stack.getItem(), stack.getQuantity(), stack.getMetadata(), record.getPrice(), record.getIndex(),
                                     stack.getCompound());
 
                                 store.getSellingItems().add(item);
@@ -884,14 +884,14 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
                                 final VanillaStack stack = entry.getValue();
 
                                 final BasicBuyingItem item = new BasicBuyingItem(record.getIndex(), record.getCreated().toInstant(),
-                                    stack.getItem(), stack.getMetadata(), stack.getQuantity(), record.getPrice(), record.getIndex(),
+                                    stack.getItem(), stack.getQuantity(), stack.getMetadata(), record.getPrice(), record.getIndex(),
                                     stack.getCompound());
 
                                 store.getBuyingItems().add(item);
                             }
 
                             this.network.sendToAll(new ClientboundListItemsResponsePacket(store.getId(), StoreItemSegmentType.BUYING,
-                                store.getSellingItems()));
+                                store.getBuyingItems()));
                         })
                         .submit(this.container);
                 } catch (final SQLException e) {

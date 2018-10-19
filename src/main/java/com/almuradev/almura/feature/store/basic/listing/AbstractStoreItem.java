@@ -34,21 +34,21 @@ public abstract class AbstractStoreItem implements StoreItem {
     @Nullable protected ItemStack cacheStack;
     @Nullable protected NBTTagCompound compound;
 
-    public AbstractStoreItem(final int record, final Instant created, final Item item, final int metadata, final int quantity, final BigDecimal price,
+    public AbstractStoreItem(final int record, final Instant created, final Item item, final int quantity, final int metadata, final BigDecimal price,
         final int index, @Nullable final NBTTagCompound compound) {
         checkState(record >= 0);
         checkNotNull(created);
         checkNotNull(item);
-        checkState(metadata >= 0);
         checkState(quantity >= FeatureConstants.UNLIMITED);
+        checkState(metadata >= 0);
         checkNotNull(price);
         checkState(index >= 0);
 
         this.record = record;
         this.created = created;
         this.item = item;
-        this.metadata = metadata;
         this.quantity = quantity;
+        this.metadata = metadata;
         this.price = price;
         this.index = index;
         this.compound = compound;

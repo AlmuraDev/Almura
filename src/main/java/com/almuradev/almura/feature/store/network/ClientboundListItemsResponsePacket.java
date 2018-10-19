@@ -11,6 +11,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.feature.store.StoreItemSegmentType;
 import com.almuradev.almura.feature.store.basic.listing.AbstractStoreItem;
+import com.almuradev.almura.feature.store.basic.listing.BasicSellingItem;
 import com.almuradev.almura.feature.store.listing.BuyingItem;
 import com.almuradev.almura.feature.store.listing.SellingItem;
 import com.almuradev.almura.feature.store.listing.StoreItem;
@@ -105,10 +106,9 @@ public final class ClientboundListItemsResponsePacket implements Message {
 
                 final Constructor<? extends AbstractStoreItem> constructor;
                 try {
-                    constructor = this.type.getItemClass().getConstructor(Integer.class, Instant.class, Item.class, Integer.class, Integer.class,
-                        Integer.class, BigDecimal.class, NBTTagCompound.class);
-                    final AbstractStoreItem storeItem = constructor.newInstance(record, created, item, quantity, metadata, index, price,
-                        compound);
+                    constructor = this.type.getItemClass().getConstructor(Integer.TYPE, Instant.class, Item.class, Integer.TYPE, Integer.TYPE,
+                        BigDecimal.class, Integer.TYPE, NBTTagCompound.class);
+                    final AbstractStoreItem storeItem = constructor.newInstance(record, created, item, quantity, metadata, price, index, compound);
 
                     if (this.type == StoreItemSegmentType.SELLING) {
                         ((List<SellingItem>) this.storeItems).add((SellingItem) storeItem);

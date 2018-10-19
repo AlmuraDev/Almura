@@ -581,7 +581,7 @@ public class StoreScreen extends SimpleScreen {
 
             this.refreshDisplayName();
 
-            final boolean isSoldOut = this.item.getQuantity() != 0;
+            final boolean isSoldOut = this.item.getQuantity() == 0;
             this.soldOutContainer.setVisible(isSoldOut);
         }
     }

@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.store;
 
 import com.almuradev.almura.feature.store.client.ClientStoreManager;
+import com.almuradev.almura.feature.store.client.gui.StoreListScreen;
 import com.almuradev.almura.feature.store.client.gui.StoreManagementScreen;
 import com.almuradev.almura.feature.store.client.gui.StoreScreen;
 import com.almuradev.almura.feature.store.network.ClientboundListItemsResponsePacket;
@@ -72,6 +73,7 @@ public final class StoreModule extends AbstractModule implements CommonBinder {
                     this.facet().add(ClientStoreManager.class);
                     this.requestStaticInjection(StoreScreen.class);
                     this.requestStaticInjection(StoreManagementScreen.class);
+                    this.requestStaticInjection(StoreListScreen.class);
                 }
             }
             this.install(new ClientModule());

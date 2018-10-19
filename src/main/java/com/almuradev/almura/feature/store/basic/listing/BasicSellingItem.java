@@ -18,13 +18,13 @@ import javax.annotation.Nullable;
 
 public final class BasicSellingItem extends AbstractStoreItem implements SellingItem {
 
-    public BasicSellingItem(final int record, final Instant created, final Item item, final int metadata, final int quantity, final BigDecimal price,
+    public BasicSellingItem(final int record, final Instant created, final Item item, final int quantity, final int metadata, final BigDecimal price,
         final int index, @Nullable final NBTTagCompound compound) {
-        super(record, created, item, metadata, quantity, price, index, compound);
+        super(record, created, item, quantity, metadata, price, index, compound);
     }
 
     @Override
     public SellingItem copy() {
-        return new BasicSellingItem(this.record, this.created, this.item, this.metadata, this.quantity, this.price, this.index, this.compound);
+        return new BasicSellingItem(this.record, this.created, this.item, this.quantity, this.metadata, this.price, this.index, this.compound);
     }
 }

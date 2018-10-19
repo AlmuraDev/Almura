@@ -8,17 +8,15 @@
 package com.almuradev.almura.feature.store.client.gui;
 
 import com.almuradev.almura.feature.store.Store;
-import com.almuradev.almura.feature.store.basic.listing.BasicBuyingItem;
-import com.almuradev.almura.feature.store.basic.listing.BasicSellingItem;
 import com.almuradev.almura.feature.store.client.ClientStoreManager;
-import com.almuradev.almura.feature.store.listing.BuyingItem;
-import com.almuradev.almura.feature.store.listing.SellingItem;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.UITextBox;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.feature.FeatureConstants;
+import com.almuradev.almura.shared.item.BasicVanillaStack;
+import com.almuradev.almura.shared.item.VanillaStack;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
@@ -37,7 +35,6 @@ import net.minecraft.util.text.TextFormatting;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
-import java.time.Instant;
 
 public class StoreListScreen extends SimpleScreen {
 
@@ -153,9 +150,7 @@ public class StoreListScreen extends SimpleScreen {
         if (this.infiniteCheckBox.equals(event.getComponent())) {
             this.quantityTextBox.setEditable(!event.getNewValue());
 
-            if (event.getNewValue()) {
-                this.quantityTextBox.setText("-1");
-            }
+            this.quantityTextBox.setText(event.getNewValue() ? "-" : "" + "1");
 
             this.updateListButton(this.quantityTextBox, this.quantityTextBox.getText());
         }
@@ -227,28 +222,18 @@ public class StoreListScreen extends SimpleScreen {
             return;
         }
 
-        // TODO TEST CODE
         if (!this.buyPricePerTextBox.getText().isEmpty() && !this.quantityTextBox.getText().isEmpty()) {
-            // Add buying item
-            final int quantity = Integer.valueOf(this.quantityTextBox.getText());
-            final BigDecimal buyingPrice = new BigDecimal(this.buyPricePerTextBox.getText());
-            if (buyingPrice.doubleValue() > 0) {
-                final BuyingItem buyingItem = new BasicBuyingItem(0, Instant.now(), toList.getItem(), toList.getMetadata(), quantity, buyingPrice,
-                    0, null);
-                buyingItem.setCompound(toList.getTagCompound() == null ? null : toList.getTagCompound().copy());
-                this.store.getBuyingItems().add(buyingItem);
-            }
+            final VanillaStack toListBuy = new BasicVanillaStack(this.toList);
+            toListBuy.setQuantity(Integer.valueOf(this.quantityTextBox.getText()));
+
+            storeManager.requestListBuyingItem(this.store.getId(), toListBuy, 0, new BigDecimal(this.buyPricePerTextBox.getText()));
         }
 
-        if (!this.sellPricePerTextBox.getText().isEmpty()) {
-            // Add selling item
-            final BigDecimal sellingPrice = new BigDecimal(this.sellPricePerTextBox.getText());
-            if (sellingPrice.doubleValue() > 0) {
-                final SellingItem sellingItem = new BasicSellingItem(0, Instant.now(), toList.getItem(), toList.getMetadata(), -1, sellingPrice, 0,
-                    null);
-                sellingItem.setCompound(toList.getTagCompound() == null ? null : toList.getTagCompound().copy());
-                this.store.getSellingItems().add(sellingItem);
-            }
+        if (!this.sellPricePerTextBox.getText().isEmpty() && !this.quantityTextBox.getText().isEmpty()) {
+            final VanillaStack toListSell = new BasicVanillaStack(this.toList);
+            toListSell.setQuantity(Integer.valueOf(this.quantityTextBox.getText()));
+
+            storeManager.requestListSellingItem(this.store.getId(), toListSell, 0, new BigDecimal(this.sellPricePerTextBox.getText()));
         }
 
         ((StoreScreen) this.parent.get()).refresh();

@@ -217,11 +217,51 @@ public final class ClientStoreManager implements Witness {
         }
     }
 
-    public void handleSellingItems(final String id, final List<SellingItem> items) {
+    public void handleSellingItems(final String id, @Nullable final List<SellingItem> items) {
         checkNotNull(id);
+
+        // Ensure we have the store screen open
+        final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
+        if (!(currentScreen instanceof StoreScreen)) {
+            return;
+        }
+
+        // Update our local store
+        final Store store = this.stores.stream().filter(s -> s.getId().equals(id)).findAny().orElse(null);
+        if (store != null) {
+            // Clear existing items
+            store.getSellingItems().clear();
+            if (items != null) {
+                // Add new items
+                store.getSellingItems().addAll(items);
+            }
+        }
+
+        // Refresh the screen
+        ((StoreScreen) currentScreen).refresh();
     }
 
-    public void handleBuyingItems(final String id, final List<BuyingItem> items) {
+    public void handleBuyingItems(final String id, @Nullable final List<BuyingItem> items) {
         checkNotNull(id);
+
+        // Ensure we have the store screen open
+        final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
+        if (!(currentScreen instanceof StoreScreen)) {
+            return;
+        }
+
+        // Update our local store
+        final Store store = this.stores.stream().filter(s -> s.getId().equals(id)).findAny().orElse(null);
+        if (store != null) {
+            // Clear existing items
+            store.getBuyingItems().clear();
+            if (items != null) {
+                // Add new items
+                store.getBuyingItems().addAll(items);
+            }
+        }
+
+        // Refresh the screen
+        ((StoreScreen) currentScreen).refresh();
     }
 }
