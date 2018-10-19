@@ -50,7 +50,7 @@ import java.util.Random;
 import java.util.UUID;
 
 public final class ServerAnimalManager extends Witness.Impl  {
-
+    @SuppressWarnings( "deprecation" )
     private static final Random RANDOM = new Random();
     private final Map<UUID, ItemStackSnapshot> usedItemCache = new HashMap<>();
 
@@ -66,16 +66,29 @@ public final class ServerAnimalManager extends Witness.Impl  {
         }
 
         this.usedItemCache.put(event.getTargetEntity().getUniqueId(), snapshot);
+        System.out.println("Parent ID: " + event.getTargetEntity().getUniqueId());
     }
 
     @Listener
     public void onBreedEntity(final BreedEntityEvent.Breed event) {
         final List<Animal> parents = event.getCause().allOf(Animal.class);
-
+        System.out.println("Size: " + parents.size());
         // This isn't a frat house or a invitro, they have 2 parents
-        if (parents.size() != 2) {
+        if (parents.size() != 3) {
             return;
         }
+
+        System.out.println("Parent 0 Adult: " + parents.get(0).getAgeData().adult().get()); //Fail:  this always returns false
+        System.out.println("Parent 1 Adult: " + parents.get(1).getAgeData().adult().get()); //Fail:  this always returns false
+        System.out.println("Parent 2 Adult: " + parents.get(2).getAgeData().adult().get()); //Fail:  this always returns false
+
+        System.out.println("Parent 0 Age: " + parents.get(0).getAgeData().age().get()); //Fail:  this always returns 0
+        System.out.println("Parent 1 Age: " + parents.get(1).getAgeData().age().get()); //Fail:  this always returns 0
+        System.out.println("Parent 2 Age: " + parents.get(2).getAgeData().age().get()); //Fail:  this always returns 0
+
+        System.out.println("Parent 0 UUID: " + parents.get(0).getUniqueId());
+        System.out.println("Parent 1 UUID: " + parents.get(1).getUniqueId());
+        System.out.println("Parent 2 UUID: " + parents.get(2).getUniqueId()); //Fail:  this always return Parent 0's UUID, not the child, what is parent 2?
 
         final ItemStackSnapshot parentASnapshot = this.usedItemCache.remove(parents.get(0).getUniqueId());
         final ItemStackSnapshot parentBSnapshot = this.usedItemCache.remove(parents.get(1).getUniqueId());
@@ -88,7 +101,9 @@ public final class ServerAnimalManager extends Witness.Impl  {
             child.offer(Keys.DISPLAY_NAME, Text.of(TextColors.AQUA, child.getType().getTranslation().get()));
         }
 
-        final int additionalSpawnCount = this.getAdditionalSpawnCount(child, parentASnapshot); // TODO Dockter, change this to how you want to do this
+        final int additionalSpawnCount = this.getAdditionalSpawnCount(child, parentASnapshot, parentBSnapshot);
+
+        System.out.println("Spawn Additional: " + additionalSpawnCount);
 
         for (int i = 0; i < additionalSpawnCount; i++) {
             final Ageable other = (Ageable) child.getWorld().createEntity(child.getType(), child.getLocation().getPosition());
@@ -135,38 +150,61 @@ public final class ServerAnimalManager extends Witness.Impl  {
         return ageable instanceof Cow || ageable instanceof Chicken || ageable instanceof Horse || ageable instanceof Pig || ageable instanceof Sheep;
     }
 
-    private int getAdditionalSpawnCount(final Ageable baby, final ItemStackSnapshot usedItem) {
+    private int getAdditionalSpawnCount(final Ageable baby, final ItemStackSnapshot parentAItem, final ItemStackSnapshot parentBItem) {
         checkNotNull(baby);
-        checkNotNull(usedItem);
+        checkNotNull(parentAItem);
+        checkNotNull(parentBItem);
         int randomChance = RANDOM.nextInt(100);
 
         int additionalSpawnCount = 0;  //Physical count of additional spawn besides the original within the event.
         int spawnChance = 0;  // Percentage
 
         // Format:  almura:normal/ingredient/barley & almura:food/food/soybean
-        final String itemName = usedItem.getType().getName();
+        final String parentAItemName = parentAItem.getType().getName();
+        final String parentBItemName = parentBItem.getType().getName();
+
+        System.out.println("Parent A: " + parentAItemName);
+        System.out.println("Parent B: " + parentBItemName);
 
         // Cows
         if (baby.getType() == EntityTypes.COW) {
-            if (itemName.equalsIgnoreCase("almura:food/food/soybean") || itemName.equalsIgnoreCase("almura:food/food/corn")) {
-                additionalSpawnCount = 1;
+            System.out.println("Is Cow");
+            if (parentAItemName.equalsIgnoreCase("almura:food/food/soybean") || parentAItemName.equalsIgnoreCase("almura:food/food/corn")) {
+                System.out.println("+1");
+                additionalSpawnCount += 1;
+                spawnChance = 20;
+            }
+            if (parentBItemName.equalsIgnoreCase("almura:food/food/soybean") || parentBItemName.equalsIgnoreCase("almura:food/food/corn")) {
+                System.out.println("+1 again");
+                additionalSpawnCount += 1;
+                spawnChance = 20;
             }
         }
 
         // Pigs
         if (baby.getType() == EntityTypes.PIG) {
-            if (itemName.equalsIgnoreCase("almura:food/food/soybean")) {
-                additionalSpawnCount = 1;
+            if (parentAItemName.equalsIgnoreCase("almura:food/food/soybean")) {
+                additionalSpawnCount += 1;
                 spawnChance = 30;
             }
 
-            if (itemName.equalsIgnoreCase("almura:food/food/corn")) {
-                additionalSpawnCount = 2;
+            if (parentBItemName.equalsIgnoreCase("almura:food/food/soybean")) {
+                additionalSpawnCount += 1;
+                spawnChance = 30;
+            }
+
+            if (parentAItemName.equalsIgnoreCase("almura:food/food/corn")) {
+                additionalSpawnCount += 2;
+                spawnChance = 20;
+            }
+
+            if (parentBItemName.equalsIgnoreCase("almura:food/food/corn")) {
+                additionalSpawnCount += 2;
                 spawnChance = 20;
             }
         }
 
-        System.out.println("Item: " + itemName + " Random: " + randomChance + " Chance: " + spawnChance);
+        System.out.println("Pre Random: " + additionalSpawnCount + " Chance: " + spawnChance + " Random: " + randomChance);
 
         if (spawnChance > randomChance) {
             return additionalSpawnCount;
