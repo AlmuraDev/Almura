@@ -39,7 +39,6 @@ public abstract class MixinEntityAnimal extends EntityAgeable implements IAnimal
     @Overwrite
     public boolean processInteract(EntityPlayer player, EnumHand hand) {
         ItemStack itemstack = player.getHeldItem(hand);
-        //System.out.println("Shit works");
         if (!itemstack.isEmpty()) {
             if (this.isCustomBreedingItem(itemstack) && this.getGrowingAge() == 0 && this.inLove <= 0) {
                 this.consumeItemFromStack(player, itemstack);

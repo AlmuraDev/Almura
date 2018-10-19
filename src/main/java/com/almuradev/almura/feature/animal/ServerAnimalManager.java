@@ -10,14 +10,11 @@ package com.almuradev.almura.feature.animal;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.core.event.Witness;
-import com.google.inject.Inject;
-
 import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.passive.EntityCow;
 import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.passive.EntitySheep;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
@@ -30,14 +27,10 @@ import org.spongepowered.api.entity.living.animal.Pig;
 import org.spongepowered.api.entity.living.animal.Sheep;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.cause.EventContextKeys;
-import org.spongepowered.api.event.cause.entity.spawn.SpawnType;
-import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.event.entity.BreedEntityEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
-import org.spongepowered.api.event.entity.SpawnEntityEvent;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
-import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.common.text.SpongeTexts;
@@ -66,30 +59,16 @@ public final class ServerAnimalManager extends Witness.Impl  {
         }
 
         this.usedItemCache.put(event.getTargetEntity().getUniqueId(), snapshot);
-        System.out.println("Parent ID: " + event.getTargetEntity().getUniqueId());
     }
 
     @Listener
     public void onBreedEntity(final BreedEntityEvent.Breed event) {
         final List<Animal> parents = event.getCause().allOf(Animal.class);
         System.out.println("Size: " + parents.size());
-        // This isn't a frat house or a invitro, they have 2 parents
-        //Todo: for some reason this parents list has 3....  the 3rd seems to be a duplicate of parent 1.
-        if (parents.size() >= 2) {
-            return;
+
+        if (parents.size() < 2) { //Todo: fix this once sponge is fixed
+           return;
         }
-
-        System.out.println("Parent 0 Adult: " + parents.get(0).getAgeData().adult().get()); //Fail:  this always returns false
-        System.out.println("Parent 1 Adult: " + parents.get(1).getAgeData().adult().get()); //Fail:  this always returns false
-        System.out.println("Parent 2 Adult: " + parents.get(2).getAgeData().adult().get()); //Fail:  this always returns false
-
-        System.out.println("Parent 0 Age: " + parents.get(0).getAgeData().age().get()); //Fail:  this always returns 0
-        System.out.println("Parent 1 Age: " + parents.get(1).getAgeData().age().get()); //Fail:  this always returns 0
-        System.out.println("Parent 2 Age: " + parents.get(2).getAgeData().age().get()); //Fail:  this always returns 0
-
-        System.out.println("Parent 0 UUID: " + parents.get(0).getUniqueId());
-        System.out.println("Parent 1 UUID: " + parents.get(1).getUniqueId());
-        System.out.println("Parent 2 UUID: " + parents.get(2).getUniqueId()); //Fail:  this always return Parent 0's UUID, not the child, what is parent 2?
 
         final ItemStackSnapshot parentASnapshot = this.usedItemCache.remove(parents.get(0).getUniqueId());
         final ItemStackSnapshot parentBSnapshot = this.usedItemCache.remove(parents.get(1).getUniqueId());
@@ -169,14 +148,11 @@ public final class ServerAnimalManager extends Witness.Impl  {
 
         // Cows
         if (baby.getType() == EntityTypes.COW) {
-            System.out.println("Is Cow");
             if (parentAItemName.equalsIgnoreCase("almura:food/food/soybean") || parentAItemName.equalsIgnoreCase("almura:food/food/corn")) {
-                System.out.println("+1");
                 additionalSpawnCount += 1;
                 spawnChance = 20;
             }
             if (parentBItemName.equalsIgnoreCase("almura:food/food/soybean") || parentBItemName.equalsIgnoreCase("almura:food/food/corn")) {
-                System.out.println("+1 again");
                 additionalSpawnCount += 1;
                 spawnChance = 20;
             }
@@ -211,6 +187,6 @@ public final class ServerAnimalManager extends Witness.Impl  {
             return additionalSpawnCount;
         }
 
-        return 0;
+        return additionalSpawnCount;
     }
 }
