@@ -74,7 +74,8 @@ public final class ServerAnimalManager extends Witness.Impl  {
         final List<Animal> parents = event.getCause().allOf(Animal.class);
         System.out.println("Size: " + parents.size());
         // This isn't a frat house or a invitro, they have 2 parents
-        if (parents.size() != 3) {
+        //Todo: for some reason this parents list has 3....  the 3rd seems to be a duplicate of parent 1.
+        if (parents.size() >= 2) {
             return;
         }
 
