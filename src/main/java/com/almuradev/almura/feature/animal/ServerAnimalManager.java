@@ -64,9 +64,8 @@ public final class ServerAnimalManager extends Witness.Impl  {
     @Listener
     public void onBreedEntity(final BreedEntityEvent.Breed event) {
         final List<Animal> parents = event.getCause().allOf(Animal.class);
-        System.out.println("Size: " + parents.size());
 
-        if (parents.size() < 2) { //Todo: fix this once sponge is fixed
+        if (parents.size() != 2) {
            return;
         }
 
@@ -82,8 +81,6 @@ public final class ServerAnimalManager extends Witness.Impl  {
         }
 
         final int additionalSpawnCount = this.getAdditionalSpawnCount(child, parentASnapshot, parentBSnapshot);
-
-        System.out.println("Spawn Additional: " + additionalSpawnCount);
 
         for (int i = 0; i < additionalSpawnCount; i++) {
             final Ageable other = (Ageable) child.getWorld().createEntity(child.getType(), child.getLocation().getPosition());
@@ -146,9 +143,6 @@ public final class ServerAnimalManager extends Witness.Impl  {
         final String parentAItemName = parentAItem.getType().getName();
         final String parentBItemName = parentBItem.getType().getName();
 
-        System.out.println("Parent A: " + parentAItemName);
-        System.out.println("Parent B: " + parentBItemName);
-
         // Cows
         if (baby.getType() == EntityTypes.COW) {
             if (parentAItemName.equalsIgnoreCase("almura:food/food/soybean") || parentAItemName.equalsIgnoreCase("almura:food/food/corn")) {
@@ -184,12 +178,10 @@ public final class ServerAnimalManager extends Witness.Impl  {
             }
         }
 
-        System.out.println("Pre Random: " + additionalSpawnCount + " Chance: " + spawnChance + " Random: " + randomChance);
-
         if (spawnChance > randomChance) {
             return additionalSpawnCount;
         }
 
-        return additionalSpawnCount;
+        return 0;
     }
 }
