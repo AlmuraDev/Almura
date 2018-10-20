@@ -43,7 +43,6 @@ import java.util.Random;
 import java.util.UUID;
 
 public final class ServerAnimalManager extends Witness.Impl  {
-    @SuppressWarnings( "deprecation" )
     private static final Random RANDOM = new Random();
     private final Map<UUID, ItemStackSnapshot> usedItemCache = new HashMap<>();
 
@@ -134,8 +133,8 @@ public final class ServerAnimalManager extends Witness.Impl  {
         checkNotNull(baby);
         checkNotNull(parentAItem);
         checkNotNull(parentBItem);
-        int randomChance = RANDOM.nextInt(100);
 
+        final int randomChance = RANDOM.nextInt(100);
         int additionalSpawnCount = 0;  //Physical count of additional spawn besides the original within the event.
         int spawnChance = 0;  // Percentage
 
@@ -158,12 +157,12 @@ public final class ServerAnimalManager extends Witness.Impl  {
         // Pigs
         if (baby.getType() == EntityTypes.PIG) {
             if (parentAItemName.equalsIgnoreCase("almura:food/food/soybean")) {
-                additionalSpawnCount += 1;
+                additionalSpawnCount += 2;
                 spawnChance = 30;
             }
 
             if (parentBItemName.equalsIgnoreCase("almura:food/food/soybean")) {
-                additionalSpawnCount += 1;
+                additionalSpawnCount += 2;
                 spawnChance = 30;
             }
 
