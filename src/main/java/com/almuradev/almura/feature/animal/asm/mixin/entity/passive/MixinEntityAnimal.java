@@ -6,11 +6,21 @@
  * All Rights Reserved.
  */
 package com.almuradev.almura.feature.animal.asm.mixin.entity.passive;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.passive.EntityAnimal;
+import net.minecraft.entity.passive.EntityChicken;
+import net.minecraft.entity.passive.EntityCow;
+import net.minecraft.entity.passive.EntityOcelot;
+import net.minecraft.entity.passive.EntityPig;
+import net.minecraft.entity.passive.EntityRabbit;
+import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
@@ -58,9 +68,66 @@ public abstract class MixinEntityAnimal extends EntityAgeable implements IAnimal
 
     private boolean isCustomBreedingItem(ItemStack stack) {
         final String itemName = stack.getTranslationKey();
-        //System.out.println("ItemName: " + itemName);
-        return true;
-        //return stack.getItem() == Items.WHEAT;
+        final Entity animal = this;
+
+        if (animal instanceof EntityCow) {
+            switch (itemName.toUpperCase()) {
+                case "ITEM.ALMURA.FOOD.FOOD.CORN":
+                case "ITEM.ALMURA.FOOD.FOOD.SOYBEAN":
+                case "ITEM.WHEAT":
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
+        if (animal instanceof EntityPig) {
+            switch (itemName.toUpperCase()) {
+                case "ITEM.ALMURA.FOOD.FOOD.CORN":
+                case "ITEM.ALMURA.FOOD.FOOD.SOYBEAN":
+                case "ITEM.CARROT":
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
+        if (animal instanceof EntityChicken) {
+            switch (itemName.toUpperCase()) {
+                case "ITEM.ALMURA.FOOD.FOOD.CORN":
+                case "ITEM.ALMURA.FOOD.FOOD.SOYBEAN":
+                case "ITEM.WHEAT_SEEDS":
+                case "ITEM.MELON_SEEDS":
+                case "ITEM.BEETROOT_SEEDS":
+                case "ITEM.PUMPKIN_SEEDS":
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
+        if (animal instanceof EntityOcelot) {
+            switch (itemName.toUpperCase()) {
+                case "ITEM.FISH":
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
+        if (animal instanceof EntityWolf) {
+            return stack.getItem() instanceof ItemFood && ((ItemFood)stack.getItem()).isWolfsFavoriteMeat();
+        }
+
+        if (animal instanceof EntityRabbit) {
+            return this.isRabbitBreedingItem(stack.getItem());
+        }
+
+        return false;
     }
 
     protected void consumeItemFromStack(EntityPlayer player, ItemStack stack) {
@@ -77,5 +144,9 @@ public abstract class MixinEntityAnimal extends EntityAgeable implements IAnimal
         }
 
         this.world.setEntityState(this, (byte)18);
+    }
+
+    private boolean isRabbitBreedingItem(Item itemIn) { // from EntityRabbit
+        return itemIn == Items.CARROT || itemIn == Items.GOLDEN_CARROT || itemIn == Item.getItemFromBlock(Blocks.YELLOW_FLOWER);
     }
 }

@@ -65,7 +65,7 @@ public final class ServerAnimalManager extends Witness.Impl  {
         final List<Animal> parents = event.getCause().allOf(Animal.class);
 
         if (parents.size() != 2) {
-           return;
+            return;
         }
 
         final ItemStackSnapshot parentASnapshot = this.usedItemCache.remove(parents.get(0).getUniqueId());
@@ -97,7 +97,7 @@ public final class ServerAnimalManager extends Witness.Impl  {
         parents.forEach(parent -> {
             if (this.colorifyNameplate(parent)) {
                 parent.offer(Keys.DISPLAY_NAME, Text.of(TextColors.BLUE, LegacyTexts.stripAll(((net.minecraft.entity.Entity) parent).getName(),
-                  SpongeTexts.COLOR_CHAR)));
+                    SpongeTexts.COLOR_CHAR)));
             }
         });
     }
@@ -145,35 +145,38 @@ public final class ServerAnimalManager extends Witness.Impl  {
         // Cows
         if (baby.getType() == EntityTypes.COW) {
             if (parentAItemName.equalsIgnoreCase("almura:food/food/soybean") || parentAItemName.equalsIgnoreCase("almura:food/food/corn")) {
-                additionalSpawnCount += 1;
-                spawnChance = 20;
+                additionalSpawnCount = 1; // This is specifically NOT +=
+                spawnChance += 10;
             }
             if (parentBItemName.equalsIgnoreCase("almura:food/food/soybean") || parentBItemName.equalsIgnoreCase("almura:food/food/corn")) {
-                additionalSpawnCount += 1;
-                spawnChance = 20;
+                additionalSpawnCount = 1; // This is specifically NOT +=
+                spawnChance += 10;
             }
         }
 
         // Pigs
         if (baby.getType() == EntityTypes.PIG) {
-            if (parentAItemName.equalsIgnoreCase("almura:food/food/soybean")) {
-                additionalSpawnCount += 2;
-                spawnChance = 30;
+            if (parentAItemName.equalsIgnoreCase("almura:food/food/soybean") || parentAItemName.equalsIgnoreCase("almura:food/food/corn")) {
+                additionalSpawnCount += 1;
+                spawnChance += 10;
             }
 
-            if (parentBItemName.equalsIgnoreCase("almura:food/food/soybean")) {
+            if (parentBItemName.equalsIgnoreCase("almura:food/food/soybean") || parentBItemName.equalsIgnoreCase("almura:food/food/corn")) {
+                additionalSpawnCount += 1;
+                spawnChance += 10;
+            }
+        }
+
+        // Chickens
+        if (baby.getType() == EntityTypes.CHICKEN) {
+            if (parentAItemName.equalsIgnoreCase("almura:food/food/soybean") || parentAItemName.equalsIgnoreCase("almura:food/food/corn")) {
                 additionalSpawnCount += 2;
-                spawnChance = 30;
+                spawnChance += 25;
             }
 
-            if (parentAItemName.equalsIgnoreCase("almura:food/food/corn")) {
+            if (parentBItemName.equalsIgnoreCase("almura:food/food/soybean") || parentBItemName.equalsIgnoreCase("almura:food/food/corn")) {
                 additionalSpawnCount += 2;
-                spawnChance = 20;
-            }
-
-            if (parentBItemName.equalsIgnoreCase("almura:food/food/corn")) {
-                additionalSpawnCount += 2;
-                spawnChance = 20;
+                spawnChance += 15;
             }
         }
 
