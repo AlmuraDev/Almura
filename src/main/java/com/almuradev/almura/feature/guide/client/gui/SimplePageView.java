@@ -32,6 +32,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.plugin.PluginContainer;
 
@@ -59,6 +60,7 @@ public class SimplePageView extends SimpleScreen {
     @Override
     public void construct() {
         guiscreenBackground = false;
+        Keyboard.enableRepeatEvents(true);
 
         final UIForm form = new UIForm(this, 582, 315, TextFormatting.WHITE + I18n.format("almura.guide.view.form.title"));
 

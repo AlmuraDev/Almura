@@ -24,6 +24,7 @@ import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
+import org.lwjgl.input.Keyboard;
 import org.spongepowered.api.text.Text;
 
 import java.time.ZoneId;
@@ -51,6 +52,7 @@ public class SimplePageDetails extends SimpleScreen {
     @Override
     public void construct() {
         this.guiscreenBackground = true;
+        Keyboard.enableRepeatEvents(true);
 
         this.validatePage();
 

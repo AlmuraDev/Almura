@@ -21,6 +21,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 import org.spongepowered.api.text.Text;
 
 import javax.annotation.Nullable;
@@ -43,6 +44,7 @@ public class SimplePageCreate extends SimpleScreen {
     @Override
     public void construct() {
         this.guiscreenBackground = true;
+        Keyboard.enableRepeatEvents(true);
 
         final UIForm form = new UIForm(this, 150, 125, I18n.format("almura.guide.create.form.title"));
         form.setZIndex(10);
