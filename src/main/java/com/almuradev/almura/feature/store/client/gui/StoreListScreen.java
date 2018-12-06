@@ -11,34 +11,31 @@ import com.almuradev.almura.feature.store.Store;
 import com.almuradev.almura.feature.store.client.ClientStoreManager;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIForm;
+import com.almuradev.almura.shared.client.ui.component.UILine;
 import com.almuradev.almura.shared.client.ui.component.UITextBox;
 import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
+import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.almuradev.almura.shared.item.BasicVanillaStack;
 import com.almuradev.almura.shared.item.VanillaStack;
-import com.google.common.base.CharMatcher;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Iterables;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import net.malisis.core.client.gui.Anchor;
-import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UICheckBox;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.client.gui.event.ComponentEvent;
-import net.minecraft.client.resources.I18n;
+import net.malisis.core.renderer.font.FontOptions;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormatSymbols;
 
 public class StoreListScreen extends SimpleScreen {
 
-    private static final int maxTrailingDigits = 2;
+    private static final double TEN_MILLION = 10000000.0;
 
     @Inject private static ClientStoreManager storeManager;
 
@@ -46,9 +43,10 @@ public class StoreListScreen extends SimpleScreen {
     private final ItemStack toList;
 
     private UIButton buttonList, buttonCancel;
-    private UICheckBox infiniteCheckBox;
-    private UILabel quantityLabel, buyLabel, buyEaLabel, sellLabel, sellEaLabel;
-    private UITextBox quantityTextBox, buyPricePerTextBox, sellPricePerTextBox;
+    private UICheckBox buyInfiniteCheckBox, sellInfiniteCheckBox;
+    private UIContainer<?> buyContainer, sellContainer;
+    private UILabel buyQtyLabel, buyTitleLabel, buyPerLabel, buyTotalPriceLabel, sellQtyLabel, sellTitleLabel, sellPerLabel, sellTotalPriceLabel;
+    private UITextBox buyQtyTextBox, buyPricePerTextBox, sellQtyTextBox, sellPricePerTextBox;
     private UIForm form;
 
     public StoreListScreen(final StoreScreen parent, final Store store, final ItemStack toList) {
@@ -62,158 +60,180 @@ public class StoreListScreen extends SimpleScreen {
     public void construct() {
         this.guiscreenBackground = false;
 
-        this.form = new UIForm(this, 130, 130, I18n.format("almura.feature.exchange.title.enter_a_price"));
+        this.form = new UIForm(this, 250, 130, "List"); // TODO: Translation
         this.form.setZIndex(10); // Fixes issue overlapping draws from parent
         this.form.setBackgroundAlpha(255);
 
-        this.quantityLabel = new UILabel(this, I18n.format("almura.feature.common.text.quantity"));
-        this.quantityLabel.setPosition(2, 2);
-        this.quantityLabel.setFontOptions(FontColors.WHITE_FO);
+        final int containerWidth = getPaddedWidth(this.form) / 2 - 1;
 
-        this.quantityTextBox = new UITextBox(this, "0");
-        this.quantityTextBox.setSize(65, 0);
-        this.quantityTextBox.setFilter(s -> s.replaceAll("[^\\d-]", ""));
-        this.quantityTextBox.setPosition(2, SimpleScreen.getPaddedY(this.quantityLabel, 2));
-        this.quantityTextBox.setAcceptsReturn(false);
-        this.quantityTextBox.setOnEnter(tb -> this.list());
-        this.quantityTextBox.setAcceptsTab(false);
-        this.quantityTextBox.setTabIndex(0);
-        this.quantityTextBox.register(this);
+        // Buy container
+        this.buyContainer = new UIContainer<>(this, containerWidth, -18);
+        this.buyContainer.setColor(FontColors.BLACK);
+        this.buyContainer.setBorder(FontColors.WHITE, 1, 185);
+        this.buyContainer.setPadding(2);
 
-        this.infiniteCheckBox = new UICheckBox(this, TextFormatting.WHITE + "Infinite");
-        this.infiniteCheckBox.setPosition(SimpleScreen.getPaddedX(this.quantityTextBox, 2), this.quantityTextBox.getY() + 1);
-        this.infiniteCheckBox.register(this);
+        this.buyTitleLabel = new UILabel(this, TextFormatting.WHITE + "Buy"); // TODO: Translation
+        this.buyTitleLabel.setPosition(0, 2, Anchor.TOP | Anchor.CENTER);
 
-        this.buyLabel = new UILabel(this, I18n.format("almura.feature.common.button.buy"));
-        this.buyLabel.setPosition(2, SimpleScreen.getPaddedY(this.quantityTextBox, 5));
-        this.buyLabel.setFontOptions(FontColors.WHITE_FO);
+        final UILine buyLine = new UILine(this, getPaddedWidth(this.buyContainer) + 2);
+        buyLine.setPosition(-1, getPaddedY(this.buyTitleLabel, 2));
 
-        this.buyPricePerTextBox = new UITextBox(this, BigDecimal.ZERO.toString());
-        this.buyPricePerTextBox.setSize(65, 0);
-        this.buyPricePerTextBox.setFilter(this::filter);
-        this.buyPricePerTextBox.setPosition(2, SimpleScreen.getPaddedY(this.buyLabel, 2));
-        this.buyPricePerTextBox.setAcceptsReturn(false);
-        this.buyPricePerTextBox.setOnEnter(tb -> this.list());
-        this.buyPricePerTextBox.setAcceptsTab(false);
-        this.buyPricePerTextBox.setTabIndex(1);
+        this.buyPricePerTextBox = new UITextBox(this, "");
+        this.buyPricePerTextBox.setPosition(-2, getPaddedY(buyLine, 2), Anchor.TOP | Anchor.RIGHT);
+        this.buyPricePerTextBox.setSize(50, 0);
+        this.buyPricePerTextBox.setFilter(s -> this.filterAndLimit(s, 2, true));
         this.buyPricePerTextBox.register(this);
 
-        this.buyEaLabel = new UILabel(this, "/ea");
-        this.buyEaLabel.setFontOptions(FontColors.WHITE_FO);
-        this.buyEaLabel.setPosition(SimpleScreen.getPaddedX(this.buyPricePerTextBox, 2), this.buyPricePerTextBox.getY());
+        this.buyPerLabel = new UILabel(this, TextFormatting.WHITE + "Price (per):"); // TODO: Translation
+        this.buyPerLabel.setPosition(
+          getPaddedX(this.buyPricePerTextBox, 2, Anchor.RIGHT), this.buyPricePerTextBox.getY() + 2, Anchor.TOP | Anchor.RIGHT);
 
-        this.sellLabel = new UILabel(this, I18n.format("almura.feature.common.button.sell"));
-        this.sellLabel.setPosition(2, SimpleScreen.getPaddedY(this.buyPricePerTextBox, 5));
-        this.sellLabel.setFontOptions(FontColors.WHITE_FO);
+        this.buyQtyTextBox = new UITextBox(this, "");
+        this.buyQtyTextBox.setPosition(-2, getPaddedY(this.buyPricePerTextBox, 2), Anchor.TOP | Anchor.RIGHT);
+        this.buyQtyTextBox.setSize(50, 0);
+        this.buyQtyTextBox.setFilter(s -> this.filterAndLimit(s, 0, false));
+        this.buyQtyTextBox.register(this);
 
-        this.sellPricePerTextBox = new UITextBox(this, BigDecimal.ZERO.toString());
-        this.sellPricePerTextBox.setSize(65, 0);
-        this.sellPricePerTextBox.setFilter(this::filter);
-        this.sellPricePerTextBox.setPosition(2, SimpleScreen.getPaddedY(this.sellLabel, 2));
-        this.sellPricePerTextBox.setAcceptsReturn(false);
-        this.sellPricePerTextBox.setOnEnter(tb -> this.list());
-        this.sellPricePerTextBox.setAcceptsTab(false);
-        this.sellPricePerTextBox.setTabIndex(2);
+        this.buyQtyLabel = new UILabel(this, TextFormatting.WHITE + "Quantity:"); // TODO: Translation
+        this.buyQtyLabel.setPosition(
+          getPaddedX(this.buyQtyTextBox, 2, Anchor.RIGHT), this.buyQtyTextBox.getY() + 2, Anchor.TOP | Anchor.RIGHT);
+
+        this.buyInfiniteCheckBox = new UICheckBox(this, TextFormatting.WHITE + "Infinite"); // TODO: Translation
+        this.buyInfiniteCheckBox.setPosition(
+          this.buyContainer.componentX(this.buyQtyTextBox) - this.buyContainer.getRightPadding() - this.buyContainer.getRightBorderSize(),
+          getPaddedY(this.buyQtyTextBox, 2));
+        this.buyInfiniteCheckBox.register(this);
+
+        final int column2X = this.buyContainer.componentX(this.buyQtyTextBox)
+          - this.buyContainer.getRightPadding()
+          - this.buyContainer.getRightBorderSize();
+
+        this.buyTotalPriceLabel = new UILabel(this);
+        this.buyTotalPriceLabel.setFontOptions(FontOptions.builder().shadow(false).color(0x999999).build());
+        this.buyTotalPriceLabel.setPosition(column2X + 2, 0, Anchor.BOTTOM | Anchor.LEFT);
+        final UILabel buyTotalLabel = new UILabel(this, TextFormatting.WHITE + "Total:"); // TODO: Translation
+        buyTotalLabel.setPosition(this.buyTotalPriceLabel.getX() - buyTotalLabel.getWidth() - 3, 0, Anchor.BOTTOM | Anchor.LEFT);
+
+        this.buyContainer.add(this.buyTitleLabel, buyLine,
+                              this.buyPerLabel, this.buyPricePerTextBox,
+                              this.buyQtyLabel, this.buyQtyTextBox,
+                              this.buyInfiniteCheckBox,
+                              buyTotalLabel, this.buyTotalPriceLabel);
+
+
+        // Sell container
+        this.sellContainer = new UIContainer<>(this, containerWidth, -18);
+        this.sellContainer.setColor(FontColors.BLACK);
+        this.sellContainer.setBorder(FontColors.WHITE, 1, 185);
+        this.sellContainer.setPadding(2);
+        this.sellContainer.setPosition(0, 0, Anchor.TOP | Anchor.RIGHT);
+
+        this.sellTitleLabel = new UILabel(this, TextFormatting.WHITE + "Sell"); // TODO: Translation
+        this.sellTitleLabel.setPosition(0, 2, Anchor.TOP | Anchor.CENTER);
+
+        final UILine sellLine = new UILine(this, getPaddedWidth(this.sellContainer) + 2);
+        sellLine.setPosition(-1, getPaddedY(this.sellTitleLabel, 2));
+
+        this.sellPricePerTextBox = new UITextBox(this, "");
+        this.sellPricePerTextBox.setPosition(-2, getPaddedY(sellLine, 2), Anchor.TOP | Anchor.RIGHT);
+        this.sellPricePerTextBox.setSize(50, 0);
+        this.sellPricePerTextBox.setFilter(s -> this.filterAndLimit(s, 2, false));
         this.sellPricePerTextBox.register(this);
 
-        this.sellEaLabel = new UILabel(this, "/ea");
-        this.sellEaLabel.setFontOptions(FontColors.WHITE_FO);
-        this.sellEaLabel.setPosition(SimpleScreen.getPaddedX(this.sellPricePerTextBox, 2), this.sellPricePerTextBox.getY());
+        this.sellPerLabel = new UILabel(this, TextFormatting.WHITE + "Price (per):"); // TODO: Translation
+        this.sellPerLabel.setPosition(
+          getPaddedX(this.sellPricePerTextBox, 2, Anchor.RIGHT), this.sellPricePerTextBox.getY() + 2, Anchor.TOP | Anchor.RIGHT);
+
+        this.sellQtyTextBox = new UITextBox(this, "");
+        this.sellQtyTextBox.setPosition(-2, getPaddedY(this.sellPricePerTextBox, 2), Anchor.TOP | Anchor.RIGHT);
+        this.sellQtyTextBox.setSize(50, 0);
+        this.sellQtyTextBox.setFilter(s -> this.filterAndLimit(s, 0, false));
+        this.sellQtyTextBox.register(this);
+
+        this.sellQtyLabel = new UILabel(this, TextFormatting.WHITE + "Quantity:"); // TODO: Translation
+        this.sellQtyLabel.setPosition(
+          getPaddedX(this.sellQtyTextBox, 2, Anchor.RIGHT), this.sellQtyTextBox .getY() + 2, Anchor.TOP | Anchor.RIGHT);
+
+        this.sellInfiniteCheckBox = new UICheckBox(this, TextFormatting.WHITE + "Infinite"); // TODO: Translation
+        this.sellInfiniteCheckBox.setPosition(column2X, getPaddedY(this.sellQtyTextBox, 2));
+        this.sellInfiniteCheckBox.register(this);
+
+        this.sellTotalPriceLabel = new UILabel(this, "");
+        this.sellTotalPriceLabel.setFontOptions(FontOptions.builder().shadow(false).color(0x999999).build());
+        this.sellTotalPriceLabel.setPosition(column2X + 2, 0, Anchor.BOTTOM | Anchor.LEFT);
+        final UILabel sellTotalLabel = new UILabel(this, TextFormatting.WHITE + "Total:"); // TODO: Translation
+        sellTotalLabel.setPosition(this.sellTotalPriceLabel.getX() - sellTotalLabel.getWidth() - 3, 0, Anchor.BOTTOM | Anchor.LEFT);
+
+        this.sellContainer.add(this.sellTitleLabel, sellLine,
+                               this.sellPerLabel, this.sellPricePerTextBox,
+                               this.sellQtyLabel, this.sellQtyTextBox,
+                               this.sellInfiniteCheckBox,
+                               sellTotalLabel, this.sellTotalPriceLabel);
 
         this.buttonList = new UIButtonBuilder(this)
-                .text(I18n.format("almura.feature.common.button.list"))
-                .width(40)
-                .position(-2, -2)
-                .anchor(Anchor.RIGHT | Anchor.BOTTOM)
-                .enabled(false)
-                .onClick(this::list)
-                .build("button.list");
+          .text("List") // TODO: Translation
+          .anchor(Anchor.BOTTOM | Anchor.RIGHT)
+          .onClick(this::list)
+          .width(50)
+          .enabled(false)
+          .build("button.list");
 
         this.buttonCancel = new UIButtonBuilder(this)
-                .text(I18n.format("almura.button.cancel"))
-                .width(40)
-                .position(SimpleScreen.getPaddedX(this.buttonList, 2, Anchor.RIGHT), -2)
-                .anchor(Anchor.RIGHT | Anchor.BOTTOM)
-                .onClick(this::close)
-                .build("button.cancel");
+          .text("Cancel") // TODO: Translation
+          .anchor(Anchor.BOTTOM | Anchor.RIGHT)
+          .x(getPaddedX(this.buttonList, 2, Anchor.RIGHT))
+          .onClick(this::close)
+          .width(50)
+          .build("button.cancel");
 
-        this.form.add(this.quantityLabel, this.quantityTextBox, this.infiniteCheckBox, this.buyLabel, this.buyPricePerTextBox, this.buyEaLabel,
-                this.sellLabel, this.sellPricePerTextBox, this.sellEaLabel, this.buttonCancel, this.buttonList);
+        this.form.add(this.buyContainer, this.sellContainer, this.buttonCancel, this.buttonList);
         this.addToScreen(this.form);
-
-        this.quantityTextBox.focus();
-        this.quantityTextBox.selectAll();
     }
 
     @Subscribe
     private void onCheckChange(final ComponentEvent.ValueChange<UICheckBox, Boolean> event) {
-        if (this.infiniteCheckBox.equals(event.getComponent())) {
-            this.quantityTextBox.setEditable(!event.getNewValue());
-
-            this.quantityTextBox.setText(event.getNewValue() ? "-" : "" + "1");
-
-            this.updateListButton(this.quantityTextBox, this.quantityTextBox.getText());
+        if (this.buyInfiniteCheckBox.equals(event.getComponent())) {
+            this.buyQtyTextBox.setEditable(!event.getNewValue());
+            this.buyQtyTextBox.setFilter(s -> this.filterAndLimit(s, 0, event.getNewValue()));
+            this.buyQtyTextBox.setText(event.getNewValue() ? "-" : "" + "1");
         }
+
+        if (this.sellInfiniteCheckBox.equals(event.getComponent())) {
+            this.sellQtyTextBox.setEditable(!event.getNewValue());
+            this.sellQtyTextBox.setFilter(s -> this.filterAndLimit(s, 0, event.getNewValue()));
+            this.sellQtyTextBox.setText(event.getNewValue() ? "-" : "" + "1");
+        }
+
+        this.updateListButton();
     }
 
     @Subscribe
     private void onTextChange(final ComponentEvent.ValueChange<UITextField, String> event) {
-        this.updateListButton(event.getComponent(), event.getNewValue());
+        this.updateListButton();
     }
 
-    private void updateListButton(final UIComponent<?> component, final String newValue) {
-        final boolean isQuantityValid = !this.quantityTextBox.getText().isEmpty()
-                && (!this.quantityTextBox.isEditable()
-                || (Integer.valueOf(this.quantityTextBox.equals(component) ? newValue : this.quantityTextBox.getText()) > 0));
-        final boolean isBuyPriceValid = !this.buyPricePerTextBox.getText().isEmpty()
-                && this.validate(this.buyPricePerTextBox.equals(component) ? newValue : this.buyPricePerTextBox.getText());
-        final boolean isSellPriceValid = !this.sellPricePerTextBox.getText().isEmpty()
-                && this.validate(this.sellPricePerTextBox.equals(component) ? newValue : this.sellPricePerTextBox.getText());
+    private void updateListButton() {
+        // Check if there are any valid combinations
+        final boolean isBuyValid = !this.buyQtyTextBox.getText().isEmpty() && !this.buyPricePerTextBox.getText().isEmpty();
+        final boolean isSellValid = !this.sellQtyTextBox.getText().isEmpty() && !this.sellPricePerTextBox.getText().isEmpty();
 
-        this.buttonList.setEnabled(isQuantityValid && (isBuyPriceValid || isSellPriceValid));
-    }
+        // Update the list button based on the above
+        this.buttonList.setEnabled(isBuyValid || isSellValid);
 
-    private String filter(final String input) {
-        // TODO: Maybe make a fancy regex for some of this
-
-        // Get the current decimal separator
-        final String decimalSeparator = String.valueOf(DecimalFormatSymbols.getInstance().getDecimalSeparator());
-
-        // Filter out all non-digit and decimal separator characters
-        final String filteredValue = input.replaceAll("[^\\d" + decimalSeparator + "]", "");
-
-        // Return if empty
-        if (filteredValue.isEmpty()) {
-            return filteredValue;
+        if (isBuyValid) {
+            final int buyQty = Integer.valueOf(this.buyQtyTextBox.getText());
+            final BigDecimal buyPrice = new BigDecimal(this.buyPricePerTextBox.getText());
+            this.buyTotalPriceLabel.setText(FeatureConstants.withSuffix(buyPrice.doubleValue() * buyQty));
+        } else {
+            this.buyTotalPriceLabel.setText("");
         }
 
-        // Don't allow multiple decimal separators if one is present
-        if (filteredValue.indexOf(decimalSeparator) != filteredValue.lastIndexOf(decimalSeparator)) {
-            return filteredValue.substring(0, filteredValue.length() - 1);
-        }
-
-        // Split against the decimal separator
-        final String[] values = Iterables.toArray(Splitter.on(CharMatcher.anyOf(decimalSeparator)).split(filteredValue), String.class);
-
-        // If we have more than 2 sets of values after the split or the length of the 2nd block is bigger than 2
-        // then return a value we expect to see.
-        if (values.length > 2 || values.length > 1 && values[1].length() > maxTrailingDigits) {
-            return values[0] + decimalSeparator + values[1].substring(0, maxTrailingDigits);
-        }
-
-        return filteredValue;
-    }
-
-    private boolean validate(final String value) {
-        if (value.isEmpty()) {
-            return false;
-        }
-
-        try {
-            final BigDecimal newValue = new BigDecimal(value);
-            return newValue.doubleValue() > 0 && newValue.doubleValue() <= FeatureConstants.TRILLION;
-        } catch (final NumberFormatException e) {
-            return false;
+        if (isSellValid) {
+            final int sellQty = Integer.valueOf(this.sellQtyTextBox.getText());
+            final BigDecimal sellPrice = new BigDecimal(this.sellPricePerTextBox.getText());
+            this.sellTotalPriceLabel.setText(FeatureConstants.withSuffix(sellPrice.doubleValue() * sellQty));
+        } else {
+            this.sellTotalPriceLabel.setText("");
         }
     }
 
@@ -222,21 +242,38 @@ public class StoreListScreen extends SimpleScreen {
             return;
         }
 
-        if (!this.buyPricePerTextBox.getText().isEmpty() && !this.quantityTextBox.getText().isEmpty()) {
+        // Check if there are any valid combinations
+        final boolean isBuyValid = !this.buyQtyTextBox.getText().isEmpty() && !this.buyPricePerTextBox.getText().isEmpty();
+        final boolean isSellValid = !this.sellQtyTextBox.getText().isEmpty() && !this.sellPricePerTextBox.getText().isEmpty();
+
+        if (isBuyValid) {
             final VanillaStack toListBuy = new BasicVanillaStack(this.toList);
-            toListBuy.setQuantity(Integer.valueOf(this.quantityTextBox.getText()));
+            toListBuy.setQuantity(Integer.valueOf(this.buyQtyTextBox.getText()));
 
             storeManager.requestListBuyingItem(this.store.getId(), toListBuy, 0, new BigDecimal(this.buyPricePerTextBox.getText()));
         }
 
-        if (!this.sellPricePerTextBox.getText().isEmpty() && !this.quantityTextBox.getText().isEmpty()) {
+        if (isSellValid) {
             final VanillaStack toListSell = new BasicVanillaStack(this.toList);
-            toListSell.setQuantity(Integer.valueOf(this.quantityTextBox.getText()));
+            toListSell.setQuantity(Integer.valueOf(this.sellQtyTextBox.getText()));
 
             storeManager.requestListSellingItem(this.store.getId(), toListSell, 0, new BigDecimal(this.sellPricePerTextBox.getText()));
         }
 
         ((StoreScreen) this.parent.get()).refresh();
         this.close();
+    }
+
+    private String filterAndLimit(final String value, final int maxTrailingDigits, final boolean allowNegatives) {
+        final String filteredValue = FeatureConstants.filterToNumber(value, maxTrailingDigits, allowNegatives);
+        try {
+            final BigDecimal parsedValue = new BigDecimal(filteredValue);
+            if (parsedValue.longValue() > TEN_MILLION) {
+                return filteredValue.substring(0, filteredValue.length() - 1);
+            }
+        } catch (final NumberFormatException e) {
+            return "";
+        }
+        return filteredValue;
     }
 }

@@ -351,11 +351,6 @@ public class StoreScreen extends SimpleScreen {
 
         this.updateAdminControls();
         this.updateStoreControls();
-
-        this.adminItemList.getComponents()
-                .stream()
-                .filter(i -> i instanceof AdminItemComponent)
-                .forEach(i -> ((AdminItemComponent) i).update());
     }
 
     private void transact(int value) {
@@ -454,6 +449,7 @@ public class StoreScreen extends SimpleScreen {
     }
 
     private void updateAdminControls() {
+        if (!this.isAdmin) return;
         final ItemStack selectedItem = this.adminItemList.getSelectedItem();
 
         this.buttonAdminList.setEnabled(selectedItem != null);
@@ -472,6 +468,11 @@ public class StoreScreen extends SimpleScreen {
 
         final String status = (buyingItem.isPresent() || sellingItem.isPresent()) ? "unlist" : "list";
         this.buttonAdminList.setText(I18n.format("almura.feature.common.button." + status));
+
+        this.adminItemList.getComponents()
+          .stream()
+          .filter(i -> i instanceof AdminItemComponent)
+          .forEach(i -> ((AdminItemComponent) i).update());
     }
 
     public static boolean isStackEqualIgnoreSize(@Nullable final ItemStack a, @Nullable final ItemStack b) {

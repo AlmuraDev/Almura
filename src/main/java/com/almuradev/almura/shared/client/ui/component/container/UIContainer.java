@@ -9,6 +9,7 @@ package com.almuradev.almura.shared.client.ui.component.container;
 
 import com.almuradev.almura.shared.client.ui.component.UITextBox;
 import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
+import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
@@ -16,6 +17,7 @@ import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.client.gui.element.GuiShape;
 import net.malisis.core.client.gui.element.SimpleGuiShape;
 import net.malisis.core.client.gui.element.XYResizableGuiShape;
+import net.malisis.core.client.gui.event.component.SpaceChangeEvent;
 import net.malisis.core.renderer.RenderParameters;
 import net.malisis.core.renderer.animation.transformation.ITransformable;
 import net.malisis.core.renderer.element.Face;
@@ -26,6 +28,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @SideOnly(Side.CLIENT)
@@ -46,6 +49,7 @@ public class UIContainer<T extends UIContainer<T>> extends net.malisis.core.clie
     protected int bottomBorderSize = 0;
     protected int borderColor = 0;
     protected int borderAlpha = 0;
+    private Consumer<SpaceChangeEvent.SizeChangeEvent> onResizeConsumer;
 
     /**
      * Default constructor, creates the components list.
@@ -677,6 +681,16 @@ public class UIContainer<T extends UIContainer<T>> extends net.malisis.core.clie
         renderer.next();
 
         renderer.enableTextures();
+    }
+
+    public void setOnResize(final Consumer<SpaceChangeEvent.SizeChangeEvent> consumer) {
+        this.onResizeConsumer = consumer;
+    }
+
+    @Subscribe
+    public void onResize(final SpaceChangeEvent.SizeChangeEvent event) {
+        if (this.onResizeConsumer == null || event.getComponent() != this) return;
+        this.onResizeConsumer.accept(event);
     }
 
     private static final class SidedShape extends GuiShape {
