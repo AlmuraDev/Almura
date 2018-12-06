@@ -449,7 +449,9 @@ public class StoreScreen extends SimpleScreen {
     }
 
     private void updateAdminControls() {
-        if (!this.isAdmin) return;
+        if (!this.isAdmin) {
+            return;
+        }
         final ItemStack selectedItem = this.adminItemList.getSelectedItem();
 
         this.buttonAdminList.setEnabled(selectedItem != null);
