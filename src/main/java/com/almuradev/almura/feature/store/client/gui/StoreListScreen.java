@@ -30,12 +30,11 @@ import net.malisis.core.client.gui.event.ComponentEvent;
 import net.malisis.core.renderer.font.FontOptions;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
+import org.spongepowered.api.Sponge;
 
 import java.math.BigDecimal;
 
 public class StoreListScreen extends SimpleScreen {
-
-    private static final double TEN_MILLION = 10000000.0;
 
     @Inject private static ClientStoreManager storeManager;
 
@@ -260,7 +259,7 @@ public class StoreListScreen extends SimpleScreen {
             storeManager.requestListSellingItem(this.store.getId(), toListSell, 0, new BigDecimal(this.sellPricePerTextBox.getText()));
         }
 
-        ((StoreScreen) this.parent.get()).refresh();
+        ((StoreScreen) this.parent.get()).refresh(true);
         this.close();
     }
 
@@ -268,7 +267,7 @@ public class StoreListScreen extends SimpleScreen {
         final String filteredValue = FeatureConstants.filterToNumber(value, maxTrailingDigits, allowNegatives);
         try {
             final BigDecimal parsedValue = new BigDecimal(filteredValue);
-            if (parsedValue.longValue() > TEN_MILLION) {
+            if (parsedValue.longValue() > FeatureConstants.TEN_MILLION) {
                 return filteredValue.substring(0, filteredValue.length() - 1);
             }
         } catch (final NumberFormatException e) {

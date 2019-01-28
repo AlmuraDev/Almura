@@ -138,7 +138,7 @@ public class ExchangeListPriceScreen extends SimpleScreen {
 
         try {
             final BigDecimal newValue = new BigDecimal(value);
-            return newValue.doubleValue() > 0 && newValue.doubleValue() <= FeatureConstants.TRILLION;
+            return newValue.doubleValue() > 0 && newValue.doubleValue() <= FeatureConstants.ONE_TRILLION;
         } catch (NumberFormatException e) {
             return false;
         }

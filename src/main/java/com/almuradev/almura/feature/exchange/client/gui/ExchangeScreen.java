@@ -550,7 +550,7 @@ public final class ExchangeScreen extends SimpleScreen {
             this.itemLabel.setPosition(getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
 
             // Exact value
-            if (this.item.getQuantity() >= (int) FeatureConstants.MILLION) {
+            if (this.item.getQuantity() >= (int) FeatureConstants.ONE_MILLION) {
                 this.itemLabel.setTooltip(new UISaneTooltip(gui, FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getQuantity())));
             }
 

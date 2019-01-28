@@ -37,7 +37,7 @@ public final class BasicForSaleItem implements ForSaleItem {
         checkState(record >= 0, "Record must be greater than or equal to 0.");
         checkNotNull(price);
         checkState(price.doubleValue() >= 0, "Price must be greater than or equal to 0.");
-        checkState(price.doubleValue() <= FeatureConstants.TRILLION, "Price must be lesser than or equal to 1 trillion.");
+        checkState(price.doubleValue() <= FeatureConstants.ONE_TRILLION, "Price must be lesser than or equal to 1 trillion.");
 
         this.listItem = listItem;
         this.record = record;

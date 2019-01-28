@@ -299,7 +299,7 @@ public final class StoreQueries {
         checkNotNull(buyer);
         checkNotNull(price);
         checkState(price.doubleValue() >= 0);
-        checkState(price.doubleValue() <= FeatureConstants.TRILLION);
+        checkState(price.doubleValue() <= FeatureConstants.ONE_TRILLION);
         checkState(quantity > 0);
 
         final byte[] buyerData = SerializationUtil.toBytes(buyer);
@@ -321,7 +321,7 @@ public final class StoreQueries {
         checkNotNull(buyer);
         checkNotNull(price);
         checkState(price.doubleValue() >= 0);
-        checkState(price.doubleValue() <= FeatureConstants.TRILLION);
+        checkState(price.doubleValue() <= FeatureConstants.ONE_TRILLION);
         checkState(quantity > 0);
 
         final byte[] buyerData = SerializationUtil.toBytes(buyer);

@@ -244,15 +244,13 @@ public class StoreScreen extends SimpleScreen {
         }
 
         addToScreen(form);
-
-        this.refresh();
     }
 
     @Override
     protected void mouseClicked(final int x, final int y, final int button) {
         this.getTabContainer(x, y).ifPresent(tab -> {
             this.currentSide = (SideType) tab.getData();
-            this.refresh();
+            this.refresh(false);
         });
         super.mouseClicked(x, y, button);
     }
@@ -290,58 +288,10 @@ public class StoreScreen extends SimpleScreen {
 
     @Subscribe
     private void onSelect(final UISelect.SelectEvent<ItemLocation> event) {
-        // Clear search field
-        this.adminSearchTextBox.setText("");
-
-        final NonNullList<ItemStack> items = NonNullList.create();
-        switch (event.getNewValue()) {
-            case STORE:
-                items.addAll(this.store.getBuyingItems()
-                        .stream()
-                        .map(i -> {
-                            final ItemStack copyStack = i.asRealStack().copy();
-                            copyStack.setCount(1);
-                            return copyStack;
-                        })
-                        .collect(Collectors.toList()));
-                items.addAll(this.store.getSellingItems()
-                        .stream()
-                        .map(i -> {
-                            final ItemStack copyStack = i.asRealStack().copy();
-                            copyStack.setCount(1);
-                            return copyStack;
-                        })
-                        .filter(i1 -> items.stream().noneMatch(i2 -> ItemStack.areItemStacksEqual(i1, i2)))
-                        .collect(Collectors.toList()));
-                break;
-            case REGISTRY:
-                // Get registry items
-                ForgeRegistries.ITEMS.getValuesCollection()
-                        .stream()
-                        .map(ItemStack::new)
-                        .forEach(i -> i.getItem().getSubItems(CreativeTabs.SEARCH, items));
-                break;
-            case INVENTORY:
-                items.addAll(Minecraft.getMinecraft().player.inventory.mainInventory
-                        .stream()
-                        .filter(i -> !i.isEmpty())
-                        .collect(Collectors.toList()));
-                break;
-        }
-
-        this.adminBaseList.clear();
-        this.adminBaseList.addAll(items
-                .stream()
-                .sorted(Comparator.comparing(ItemStack::getDisplayName))
-                .collect(Collectors.toList()));
-        this.adminItemList.setItems(this.adminBaseList);
-
-        this.adminItemList.setSelectedItem(this.adminItemList.getItems().stream().findFirst().orElse(null));
-
-        this.updateAdminControls();
+        this.createAdminControls(event.getNewValue());
     }
 
-    public void refresh() {
+    public void refresh(final boolean createControls) {
         // Collections.unmodifiableList because you know... Java.
         this.itemList.setItems(Collections.unmodifiableList(this.currentSide == SideType.BUY
                 ? this.store.getBuyingItems()
@@ -349,8 +299,12 @@ public class StoreScreen extends SimpleScreen {
 
         this.itemList.setSelectedItem(this.itemList.getItems().stream().findFirst().orElse(null));
 
-        this.updateAdminControls();
+        if (createControls) {
+            this.createAdminControls(this.locationSelect.getSelectedValue());
+        }
+
         this.updateStoreControls();
+        this.updateAdminControls();
     }
 
     private void transact(int value) {
@@ -376,9 +330,7 @@ public class StoreScreen extends SimpleScreen {
                 .filter(i -> StoreScreen.isStackEqualIgnoreSize(i.asRealStack(), selectedItem))
                 .findAny();
 
-        if (buyingItem.isPresent()) {
-            // Delist
-        } else if (sellingItem.isPresent()) {
+        if (buyingItem.isPresent() || sellingItem.isPresent()) {
             // Delist
         } else {
             new StoreListScreen(this, this.store, selectedItem).display();
@@ -430,7 +382,6 @@ public class StoreScreen extends SimpleScreen {
     }
 
     private void updateStoreControls() {
-
         // Update buttons
         final String side = this.currentSide.name().toLowerCase();
         this.buttonTransactOne.setText(I18n.format("almura.feature.common.button." + side + ".one"));
@@ -448,6 +399,58 @@ public class StoreScreen extends SimpleScreen {
         this.buttonTransactAll.setEnabled(isSelected && selectedItem.getQuantity() > 0);
     }
 
+    private void createAdminControls(final ItemLocation location) {
+        // Clear search field
+        this.adminSearchTextBox.setText("");
+
+        final NonNullList<ItemStack> items = NonNullList.create();
+        switch (location) {
+            case STORE:
+                items.addAll(this.store.getBuyingItems()
+                  .stream()
+                  .map(i -> {
+                      final ItemStack copyStack = i.asRealStack().copy();
+                      copyStack.setCount(1);
+                      return copyStack;
+                  })
+                  .collect(Collectors.toList()));
+                items.addAll(this.store.getSellingItems()
+                  .stream()
+                  .map(i -> {
+                      final ItemStack copyStack = i.asRealStack().copy();
+                      copyStack.setCount(1);
+                      return copyStack;
+                  })
+                  .filter(i1 -> items.stream().noneMatch(i2 -> ItemStack.areItemStacksEqual(i1, i2)))
+                  .collect(Collectors.toList()));
+                break;
+            case REGISTRY:
+                // Get registry items
+                ForgeRegistries.ITEMS.getValuesCollection()
+                  .stream()
+                  .map(ItemStack::new)
+                  .forEach(i -> i.getItem().getSubItems(CreativeTabs.SEARCH, items));
+                break;
+            case INVENTORY:
+                items.addAll(Minecraft.getMinecraft().player.inventory.mainInventory
+                  .stream()
+                  .filter(i -> !i.isEmpty())
+                  .collect(Collectors.toList()));
+                break;
+        }
+
+        this.adminBaseList.clear();
+        this.adminBaseList.addAll(items
+          .stream()
+          .sorted(Comparator.comparing(ItemStack::getDisplayName))
+          .collect(Collectors.toList()));
+        this.adminItemList.setItems(this.adminBaseList);
+
+        this.adminItemList.setSelectedItem(this.adminItemList.getItems().stream().findFirst().orElse(null));
+
+        this.updateAdminControls();
+    }
+
     private void updateAdminControls() {
         if (!this.isAdmin) {
             return;
@@ -455,9 +458,6 @@ public class StoreScreen extends SimpleScreen {
         final ItemStack selectedItem = this.adminItemList.getSelectedItem();
 
         this.buttonAdminList.setEnabled(selectedItem != null);
-        if (selectedItem == null) {
-            return;
-        }
 
         final Optional<BuyingItem> buyingItem = this.store.getBuyingItems()
                 .stream()
@@ -533,7 +533,7 @@ public class StoreScreen extends SimpleScreen {
             this.itemLabel.setPosition(getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
 
             // Exact value
-            if (this.item.getQuantity() >= (int) FeatureConstants.MILLION) {
+            if (this.item.getQuantity() >= (int) FeatureConstants.ONE_MILLION) {
                 this.itemLabel.setTooltip(new UISaneTooltip(gui, FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getQuantity())));
             }
 
@@ -546,7 +546,6 @@ public class StoreScreen extends SimpleScreen {
             this.update();
         }
 
-        @SuppressWarnings("deprecation")
         protected void refreshDisplayName() {
             // Limit item name to prevent over drawing
             final ItemStack fakeStack = this.item.asRealStack().copy();
@@ -568,7 +567,6 @@ public class StoreScreen extends SimpleScreen {
         }
 
 
-        @SuppressWarnings("deprecation")
         public void update() {
             this.priceLabel.setText(TextFormatting.GOLD + FeatureConstants.withSuffix(this.item.getPrice().doubleValue())
                     + TextFormatting.GRAY + "/ea");
@@ -580,7 +578,7 @@ public class StoreScreen extends SimpleScreen {
             this.itemNameSpaceAvailable = this.getWidth()
                     - (this.priceLabel.isVisible() ? this.priceLabel.getWidth() : 0)
                     - (this.image.isVisible() ? this.image.getWidth() : 0)
-                    - 16;
+                    - 16; // Static amount for spacing
 
             this.refreshDisplayName();
 
@@ -596,7 +594,7 @@ public class StoreScreen extends SimpleScreen {
         protected int itemNameSpaceAvailable;
         private UIContainer<?> listedIndicatorContainer;
 
-        public AdminItemComponent(final MalisisGui gui, final UIDynamicList<ItemStack> parent, final ItemStack item) {
+        AdminItemComponent(final MalisisGui gui, final UIDynamicList<ItemStack> parent, final ItemStack item) {
             super(gui, parent, item);
 
             this.setOnDoubleClickConsumer(i -> ((StoreScreen) getGui()).list());
@@ -638,7 +636,7 @@ public class StoreScreen extends SimpleScreen {
             this.sellPriceLabel.setPosition(-(this.listedIndicatorContainer.getWidth() + 6), 0, Anchor.BOTTOM | Anchor.RIGHT);
 
             // Exact value
-            if (this.item.getCount() >= (int) FeatureConstants.MILLION) {
+            if (this.item.getCount() >= (int) FeatureConstants.ONE_MILLION) {
                 this.itemLabel.setTooltip(new UISaneTooltip(gui, FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getCount())));
             }
 
@@ -647,8 +645,7 @@ public class StoreScreen extends SimpleScreen {
             this.update();
         }
 
-        @SuppressWarnings("deprecation")
-        protected void refreshDisplayName() {
+        private void refreshDisplayName() {
             // Limit item name to prevent over drawing
             final ItemStack fakeStack = this.item.copy();
             final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
@@ -666,7 +663,6 @@ public class StoreScreen extends SimpleScreen {
         }
 
 
-        @SuppressWarnings("deprecation")
         public void update() {
             final StoreScreen parentScreen = (StoreScreen) this.getGui();
             final Optional<BuyingItem> buyingItem = parentScreen.store.getBuyingItems()

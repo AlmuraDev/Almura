@@ -234,11 +234,13 @@ public final class ClientStoreManager implements Witness {
             if (items != null) {
                 // Add new items
                 store.getSellingItems().addAll(items);
+                // Refresh the screen and create controls
+                ((StoreScreen) currentScreen).refresh(true);
             }
+        } else {
+            // Refresh the screen
+            ((StoreScreen) currentScreen).refresh(false);
         }
-
-        // Refresh the screen
-        ((StoreScreen) currentScreen).refresh();
     }
 
     public void handleBuyingItems(final String id, @Nullable final List<BuyingItem> items) {
@@ -258,10 +260,12 @@ public final class ClientStoreManager implements Witness {
             if (items != null) {
                 // Add new items
                 store.getBuyingItems().addAll(items);
+                // Refresh the screen and create controls
+                ((StoreScreen) currentScreen).refresh(true);
             }
+        } else {
+            // Refresh the screen
+            ((StoreScreen) currentScreen).refresh(false);
         }
-
-        // Refresh the screen
-        ((StoreScreen) currentScreen).refresh();
     }
 }

@@ -47,7 +47,7 @@ import java.util.function.Consumer;
 public class IngameFeatureManagementScreen<T extends IngameFeature> extends SimpleScreen {
 
     private static final int requiredScreenWidth = 375;
-    private static final int requiredScreenHeight = 260;
+    private static final int requiredScreenHeight = 215;
     private static final String filter = "[^A-Za-z0-9_.]";
 
     private final String title, name;
