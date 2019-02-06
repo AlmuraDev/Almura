@@ -129,8 +129,8 @@ public final class StoreQueries {
                 .columns(STORE_SELLING_ITEM.STORE, STORE_SELLING_ITEM.CREATED, STORE_SELLING_ITEM.DOMAIN, STORE_SELLING_ITEM.PATH, STORE_SELLING_ITEM
                     .QUANTITY, STORE_SELLING_ITEM.METADATA, STORE_SELLING_ITEM.INDEX, STORE_SELLING_ITEM.PRICE);
 
-            insertionStep.values(id, Timestamp.from(created), item.getRegistryName().getResourceDomain(), item.getRegistryName()
-                .getResourcePath(), quantity, metadata, index, price);
+            insertionStep.values(id, Timestamp.from(created), item.getRegistryName().getNamespace(), item.getRegistryName()
+                .getPath(), quantity, metadata, index, price);
 
             return insertionStep.returning();
         };
@@ -225,8 +225,8 @@ public final class StoreQueries {
                     .columns(STORE_BUYING_ITEM.STORE, STORE_BUYING_ITEM.CREATED, STORE_BUYING_ITEM.DOMAIN, STORE_BUYING_ITEM.PATH, STORE_BUYING_ITEM
                         .QUANTITY, STORE_BUYING_ITEM.METADATA, STORE_BUYING_ITEM.INDEX, STORE_BUYING_ITEM.PRICE);
 
-            insertionStep.values(id, Timestamp.from(created), item.getRegistryName().getResourceDomain(), item.getRegistryName()
-                .getResourcePath(), quantity, metadata, index, price);
+            insertionStep.values(id, Timestamp.from(created), item.getRegistryName().getNamespace(), item.getRegistryName()
+                .getNamespace(), quantity, metadata, index, price);
 
             return insertionStep.returning();
         };
