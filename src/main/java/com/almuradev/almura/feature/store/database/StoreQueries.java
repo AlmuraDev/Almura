@@ -226,7 +226,7 @@ public final class StoreQueries {
                         .QUANTITY, STORE_BUYING_ITEM.METADATA, STORE_BUYING_ITEM.INDEX, STORE_BUYING_ITEM.PRICE);
 
             insertionStep.values(id, Timestamp.from(created), item.getRegistryName().getNamespace(), item.getRegistryName()
-                .getNamespace(), quantity, metadata, index, price);
+                .getPath(), quantity, metadata, index, price);
 
             return insertionStep.returning();
         };

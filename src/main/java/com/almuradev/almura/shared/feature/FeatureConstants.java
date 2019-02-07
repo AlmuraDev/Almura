@@ -53,8 +53,10 @@ public interface FeatureConstants {
         // Get the current decimal separator
         final String decimalSeparator = String.valueOf(DecimalFormatSymbols.getInstance().getDecimalSeparator());
 
+        final String filter = "[^" + (allowNegative ? "-" : "") + decimalSeparator + "\\d]";
+
         // Filter out characters that are not a digit, the decimal separator, or (if allowed) a minus sign for negatives
-        final String filteredValue = input.replaceAll("[^" + (allowNegative ? "-" : "") + decimalSeparator + "\\d]", "");
+        final String filteredValue = input.replaceAll(filter, "");
 
         // Return if empty
         if (filteredValue.isEmpty()) {

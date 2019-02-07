@@ -11,7 +11,9 @@ import com.almuradev.almura.feature.store.client.ClientStoreManager;
 import com.almuradev.almura.feature.store.client.gui.StoreListScreen;
 import com.almuradev.almura.feature.store.client.gui.StoreManagementScreen;
 import com.almuradev.almura.feature.store.client.gui.StoreScreen;
+import com.almuradev.almura.feature.store.client.gui.StoreTransactQuantityScreen;
 import com.almuradev.almura.feature.store.network.ClientboundListItemsResponsePacket;
+import com.almuradev.almura.feature.store.network.ServerboundDelistItemsPacket;
 import com.almuradev.almura.feature.store.network.ServerboundItemTransactionPacket;
 import com.almuradev.almura.feature.store.network.ServerboundListItemsRequestPacket;
 import com.almuradev.almura.feature.store.network.ClientboundStoreGuiResponsePacket;
@@ -21,6 +23,7 @@ import com.almuradev.almura.feature.store.network.ServerboundModifyStorePacket;
 import com.almuradev.almura.feature.store.network.handler.ClientboundStoreGuiResponsePacketHandler;
 import com.almuradev.almura.feature.store.network.handler.ClientboundListItemsResponsePacketHandler;
 import com.almuradev.almura.feature.store.network.handler.ClientboundStoresRegistryPacketHandler;
+import com.almuradev.almura.feature.store.network.handler.ServerboundDelistItemsPacketHandler;
 import com.almuradev.almura.feature.store.network.handler.ServerboundItemTransactionPacketHandler;
 import com.almuradev.almura.feature.store.network.handler.ServerboundModifyItemsPacketHandler;
 import com.almuradev.almura.feature.store.network.handler.ServerboundModifyStorePacketHandler;
@@ -61,6 +64,9 @@ public final class StoreModule extends AbstractModule implements CommonBinder {
             .bind(ServerboundModifyItemsPacket.class,
                 binder -> binder.handler(ServerboundModifyItemsPacketHandler.class, Platform.Type.SERVER))
 
+          .bind(ServerboundDelistItemsPacket.class,
+            binder -> binder.handler(ServerboundDelistItemsPacketHandler.class, Platform.Type.SERVER))
+
             .bind(ServerboundItemTransactionPacket.class,
                 binder -> binder.handler(ServerboundItemTransactionPacketHandler.class, Platform.Type.SERVER));
 
@@ -71,9 +77,10 @@ public final class StoreModule extends AbstractModule implements CommonBinder {
                 @Override
                 protected void configure() {
                     this.facet().add(ClientStoreManager.class);
-                    this.requestStaticInjection(StoreScreen.class);
-                    this.requestStaticInjection(StoreManagementScreen.class);
                     this.requestStaticInjection(StoreListScreen.class);
+                    this.requestStaticInjection(StoreManagementScreen.class);
+                    this.requestStaticInjection(StoreScreen.class);
+                    this.requestStaticInjection(StoreTransactQuantityScreen.class);
                 }
             }
             this.install(new ClientModule());

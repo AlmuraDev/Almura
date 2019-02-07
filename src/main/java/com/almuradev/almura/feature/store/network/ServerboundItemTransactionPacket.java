@@ -56,7 +56,7 @@ public final class ServerboundItemTransactionPacket implements Message {
         checkState(this.quantity >= 0);
 
         buf.writeString(this.id);
-        buf.writeString(this.type.name().toLowerCase(Locale.ENGLISH));
+        buf.writeString(this.type.name().toUpperCase(Locale.ENGLISH));
         buf.writeInteger(this.recNo);
         buf.writeInteger(this.quantity);
     }

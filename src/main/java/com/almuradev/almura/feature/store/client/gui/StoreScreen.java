@@ -29,6 +29,7 @@ import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
+import net.malisis.core.client.gui.component.decoration.UITooltip;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UISelect;
 import net.malisis.core.client.gui.component.interaction.UITextField;
@@ -91,8 +92,7 @@ public class StoreScreen extends SimpleScreen {
     public void construct() {
         guiscreenBackground = false;
 
-        // Keep this an odd number in width to maintain a perfectly centered line
-        final UIForm form = new UIForm(this, 254, 300, this.store.getName());
+        final UIForm form = new UIForm(this, 257, 300, this.store.getName());
         form.setBackgroundAlpha(255);
 
         final UIContainer<?> storeContainer = new UIContainer<>(this, 251, UIComponent.INHERITED);
@@ -171,10 +171,22 @@ public class StoreScreen extends SimpleScreen {
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .enabled(false)
                 .onClick(() -> {
-                    if (this.itemList.getSelectedItem() == null) {
+                    final StoreItem selectedItem = this.itemList.getSelectedItem();
+                    if (selectedItem == null) {
                         return;
                     }
-                    final int value = this.itemList.getSelectedItem().getQuantity();
+
+                    // Determine the value to transact
+                    final int value;
+                    if (this.currentSide == SideType.BUY) { // If we are buying then base the value on the quantity remaining for the item to purchase
+                        value = this.itemList.getSelectedItem().getQuantity();
+                    } else { // If we're selling then base it on how many we have in our main inventory
+                        value = Minecraft.getMinecraft().player.inventory.mainInventory
+                          .stream()
+                          .filter(i -> ItemStack.areItemsEqual(i, selectedItem.asRealStack()))
+                          .mapToInt(ItemStack::getCount)
+                          .sum();
+                    }
                     this.transact(value);
                 })
                 .build("button.transact.all");
@@ -184,7 +196,14 @@ public class StoreScreen extends SimpleScreen {
                 .x(SimpleScreen.getPaddedX(this.buttonTransactAll, 2, Anchor.RIGHT))
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .enabled(false)
-                .onClick(() -> this.transact(0)) // Use quantity from window
+                .onClick(() -> {
+                    final StoreItem selectedItem = this.itemList.getSelectedItem();
+                    if (selectedItem == null) {
+                        return;
+                    }
+
+                    new StoreTransactQuantityScreen(this, this.store, selectedItem, this.currentSide).display();
+                })
                 .build("button.transact.quantity");
 
         storeContainer.add(this.buyTabContainer, this.sellTabContainer, tabContainerLineBottom, this.thisDoesNotExistLine, this.itemList,
@@ -249,7 +268,17 @@ public class StoreScreen extends SimpleScreen {
     @Override
     protected void mouseClicked(final int x, final int y, final int button) {
         this.getTabContainer(x, y).ifPresent(tab -> {
-            this.currentSide = (SideType) tab.getData();
+            final SideType targetSide = (SideType) tab.getData();;
+
+            if (targetSide == SideType.BUY && this.store.getBuyingItems().size() == 0) {
+                return;
+            }
+
+            if (targetSide == SideType.SELL && this.store.getSellingItems().size() == 0) {
+                return;
+            }
+
+            this.currentSide = targetSide;
             this.refresh(false);
         });
         super.mouseClicked(x, y, button);
@@ -263,7 +292,17 @@ public class StoreScreen extends SimpleScreen {
 
         // Hover logic
         this.getTabContainer(mouseX, mouseY).ifPresent(tab -> {
-            if (this.currentSide != tab.getData()) {
+            final SideType tabType = (SideType) tab.getData();
+
+            if (tabType == SideType.BUY && this.store.getBuyingItems().size() == 0) {
+                return;
+            }
+
+            if (tabType == SideType.SELL && this.store.getSellingItems().size() == 0) {
+                return;
+            }
+
+            if (this.currentSide != tabType) {
                 tab.setColor(hoveredTabColor);
             }
         });
@@ -292,6 +331,18 @@ public class StoreScreen extends SimpleScreen {
     }
 
     public void refresh(final boolean createControls) {
+        if (this.currentSide == SideType.BUY && this.store.getBuyingItems().size() == 0) {
+            // Determine if we stay on buy or move to sell
+            this.currentSide = this.store.getSellingItems().size() > 0 ? SideType.SELL : SideType.BUY;
+        } else if (this.currentSide == SideType.SELL && this.store.getSellingItems().size() == 0) {
+            this.currentSide = SideType.BUY;
+        }
+
+        // TODO: Translation
+        this.buyTabContainer.setTooltip(this.store.getBuyingItems().size() == 0 ? new UITooltip(this, "There are no items for sale.") : null);
+        // TODO: Translation
+        this.sellTabContainer.setTooltip(this.store.getSellingItems().size() == 0 ? new UITooltip(this, "There are no items available for purchase.") : null);
+
         // Collections.unmodifiableList because you know... Java.
         this.itemList.setItems(Collections.unmodifiableList(this.currentSide == SideType.BUY
                 ? this.store.getBuyingItems()
@@ -308,10 +359,15 @@ public class StoreScreen extends SimpleScreen {
     }
 
     private void transact(int value) {
+        final StoreItem selectedItem = this.itemList.getSelectedItem();
+        if (selectedItem == null) {
+            return;
+        }
+
         if (this.currentSide == SideType.BUY) {
-            // Buy
+            storeManager.buy(this.store.getId(), selectedItem.getRecord(), value);
         } else {
-            // Sell
+            storeManager.sell(this.store.getId(), selectedItem.getRecord(), value);
         }
     }
 
@@ -330,10 +386,11 @@ public class StoreScreen extends SimpleScreen {
                 .filter(i -> StoreScreen.isStackEqualIgnoreSize(i.asRealStack(), selectedItem))
                 .findAny();
 
-        if (buyingItem.isPresent() || sellingItem.isPresent()) {
-            // Delist
-        } else {
+        if (!buyingItem.isPresent() && !sellingItem.isPresent()) {
             new StoreListScreen(this, this.store, selectedItem).display();
+        } else {
+            buyingItem.ifPresent(i -> storeManager.requestDelistBuyingItem(this.store.getId(), i.getRecord()));
+            sellingItem.ifPresent(i -> storeManager.requestDelistSellingItem(this.store.getId(), i.getRecord()));
         }
     }
 
@@ -382,21 +439,56 @@ public class StoreScreen extends SimpleScreen {
     }
 
     private void updateStoreControls() {
-        // Update buttons
-        final String side = this.currentSide.name().toLowerCase();
-        this.buttonTransactOne.setText(I18n.format("almura.feature.common.button." + side + ".one"));
-        this.buttonTransactQuantity.setText(I18n.format("almura.feature.common.button." + side + ".quantity"));
-        this.buttonTransactAll.setText(I18n.format("almura.feature.common.button." + side + ".all"));
-
+        final String sideName = this.currentSide.name().toLowerCase();
         final StoreItem selectedItem = this.itemList.getSelectedItem();
-        final boolean isSelected = selectedItem != null;
-        final int stackSize = isSelected ? selectedItem.asRealStack().getMaxStackSize() : 0;
-        this.buttonTransactStack.setText(I18n.format("almura.feature.common.button." + side + ".stack", stackSize));
 
-        this.buttonTransactOne.setEnabled(isSelected && selectedItem.getQuantity() > 0);
-        this.buttonTransactStack.setEnabled(isSelected && stackSize != 1 && selectedItem.getQuantity() >= stackSize);
-        this.buttonTransactQuantity.setEnabled(isSelected && selectedItem.getQuantity() > 0);
-        this.buttonTransactAll.setEnabled(isSelected && selectedItem.getQuantity() > 0);
+        // Common
+        this.buttonTransactOne.setText(I18n.format("almura.feature.common.button." + sideName + ".one"));
+        this.buttonTransactQuantity.setText(I18n.format("almura.feature.common.button." + sideName + ".quantity"));
+        this.buttonTransactAll.setText(I18n.format("almura.feature.common.button." + sideName + ".all"));
+
+        // Nothing selected
+        if (selectedItem == null) {
+            this.buttonTransactOne.setEnabled(false);
+            this.buttonTransactStack.setEnabled(false);
+            this.buttonTransactQuantity.setEnabled(false);
+            this.buttonTransactAll.setEnabled(false);
+
+            // Generic info
+            this.buttonTransactStack.setText(I18n.format("almura.feature.common.button." + sideName + ".stack", 64));
+
+            return;
+        }
+
+        final boolean isAvailable = selectedItem.getQuantity() != 0; // Do we have stock?
+        final int maxStackSize = selectedItem.asRealStack().getMaxStackSize();
+
+        if (currentSide == SideType.SELL) {
+            // Determine how much we have in our main inventory
+            final int heldQuantity =
+              Minecraft.getMinecraft().player.inventory.mainInventory
+                .stream()
+                .filter(i -> ItemStack.areItemsEqual(selectedItem.asRealStack(), i))
+                .mapToInt(ItemStack::getCount)
+                .sum();
+
+            // Update all enable states
+            this.buttonTransactOne.setEnabled(isAvailable && heldQuantity >= 1); // We want at least one
+            this.buttonTransactStack.setEnabled(isAvailable && heldQuantity >= maxStackSize);
+            this.buttonTransactQuantity.setEnabled(isAvailable && heldQuantity > 1);
+            this.buttonTransactAll.setEnabled(isAvailable && heldQuantity >= 1); // We want at least one
+
+            // Update stack button
+            this.buttonTransactStack.setText(I18n.format("almura.feature.common.button." + sideName + ".stack", maxStackSize));
+        } else {
+            final boolean isInfinite = selectedItem.getQuantity() == -1;
+            this.buttonTransactStack.setText(I18n.format("almura.feature.common.button." + sideName + ".stack", maxStackSize));
+
+            this.buttonTransactOne.setEnabled(isInfinite || isAvailable && selectedItem.getQuantity() > 0);
+            this.buttonTransactStack.setEnabled(isInfinite || isAvailable && selectedItem.getQuantity() >= maxStackSize);
+            this.buttonTransactQuantity.setEnabled(isInfinite || isAvailable && selectedItem.getQuantity() > 0);
+            this.buttonTransactAll.setEnabled(isAvailable && selectedItem.getQuantity() >= 1);
+        }
     }
 
     private void createAdminControls(final ItemLocation location) {
@@ -702,7 +794,7 @@ public class StoreScreen extends SimpleScreen {
         }
     }
 
-    private enum SideType {
+    protected enum SideType {
         BUY,
         SELL
     }

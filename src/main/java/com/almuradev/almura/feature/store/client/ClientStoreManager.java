@@ -150,7 +150,7 @@ public final class ClientStoreManager implements Witness {
         checkState(recNo >= 0);
         checkState(quantity >= 0);
 
-        this.network.sendToServer(new ServerboundItemTransactionPacket(id, StoreItemSegmentType.SELLING, recNo, quantity));
+        this.network.sendToServer(new ServerboundItemTransactionPacket(id, StoreItemSegmentType.BUYING, recNo, quantity));
     }
 
     /**
@@ -192,7 +192,7 @@ public final class ClientStoreManager implements Witness {
         checkState(recNo >= 0);
         checkState(quantity >= 0);
 
-        this.network.sendToServer(new ServerboundItemTransactionPacket(id, StoreItemSegmentType.BUYING, recNo, quantity));
+        this.network.sendToServer(new ServerboundItemTransactionPacket(id, StoreItemSegmentType.SELLING, recNo, quantity));
     }
 
     public void handleStoreRegistry(@Nullable final Set<Store> stores) {
@@ -231,12 +231,14 @@ public final class ClientStoreManager implements Witness {
         if (store != null) {
             // Clear existing items
             store.getSellingItems().clear();
+
             if (items != null) {
                 // Add new items
                 store.getSellingItems().addAll(items);
-                // Refresh the screen and create controls
-                ((StoreScreen) currentScreen).refresh(true);
             }
+
+            // Refresh the screen and create controls
+            ((StoreScreen) currentScreen).refresh(true);
         } else {
             // Refresh the screen
             ((StoreScreen) currentScreen).refresh(false);
@@ -257,12 +259,14 @@ public final class ClientStoreManager implements Witness {
         if (store != null) {
             // Clear existing items
             store.getBuyingItems().clear();
+
             if (items != null) {
                 // Add new items
                 store.getBuyingItems().addAll(items);
-                // Refresh the screen and create controls
-                ((StoreScreen) currentScreen).refresh(true);
             }
+
+            // Refresh the screen and create controls
+            ((StoreScreen) currentScreen).refresh(true);
         } else {
             // Refresh the screen
             ((StoreScreen) currentScreen).refresh(false);

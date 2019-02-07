@@ -194,13 +194,13 @@ public class StoreListScreen extends SimpleScreen {
         if (this.buyInfiniteCheckBox.equals(event.getComponent())) {
             this.buyQtyTextBox.setEditable(!event.getNewValue());
             this.buyQtyTextBox.setFilter(s -> this.filterAndLimit(s, 0, event.getNewValue()));
-            this.buyQtyTextBox.setText(event.getNewValue() ? "-" : "" + "1");
+            this.buyQtyTextBox.setText((event.getNewValue() ? "-" : "") + "1");
         }
 
         if (this.sellInfiniteCheckBox.equals(event.getComponent())) {
             this.sellQtyTextBox.setEditable(!event.getNewValue());
             this.sellQtyTextBox.setFilter(s -> this.filterAndLimit(s, 0, event.getNewValue()));
-            this.sellQtyTextBox.setText(event.getNewValue() ? "-" : "" + "1");
+            this.sellQtyTextBox.setText((event.getNewValue() ? "-" : "") + "1");
         }
 
         this.updateListButton();
