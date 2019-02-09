@@ -9,6 +9,7 @@ package com.almuradev.almura.feature.store.client.gui;
 
 import com.almuradev.almura.feature.store.Store;
 import com.almuradev.almura.feature.store.client.ClientStoreManager;
+import com.almuradev.almura.feature.store.listing.StoreItem;
 import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.UILine;
@@ -34,13 +35,16 @@ import org.spongepowered.api.Sponge;
 
 import java.math.BigDecimal;
 
+import javax.annotation.Nullable;
+
 public class StoreListScreen extends SimpleScreen {
 
     @Inject private static ClientStoreManager storeManager;
 
     private final Store store;
-    private final ItemStack toList;
 
+    private ItemStack toList;
+    @Nullable private StoreItem toModifyBuy, toModifySell;
     private UIButton buttonList, buttonCancel;
     private UICheckBox buyInfiniteCheckBox, sellInfiniteCheckBox;
     private UIContainer<?> buyContainer, sellContainer;
@@ -52,6 +56,16 @@ public class StoreListScreen extends SimpleScreen {
         super(parent, true);
 
         this.store = store;
+        this.toList = toList;
+    }
+
+    public StoreListScreen(final StoreScreen parent, final Store store, @Nullable final StoreItem toModifyBuy, @Nullable final StoreItem toModifySell,
+      final ItemStack toList) {
+        super(parent, true);
+
+        this.store = store;
+        this.toModifyBuy = toModifyBuy;
+        this.toModifySell = toModifySell;
         this.toList = toList;
     }
 
@@ -77,9 +91,11 @@ public class StoreListScreen extends SimpleScreen {
         final UILine buyLine = new UILine(this, getPaddedWidth(this.buyContainer) + 2);
         buyLine.setPosition(-1, getPaddedY(this.buyTitleLabel, 2));
 
-        this.buyPricePerTextBox = new UITextBox(this, "");
+        this.buyPricePerTextBox = new UITextBox(this, this.toModifyBuy != null ? this.toModifyBuy.getPrice().toString() : "");
         this.buyPricePerTextBox.setPosition(-2, getPaddedY(buyLine, 2), Anchor.TOP | Anchor.RIGHT);
         this.buyPricePerTextBox.setSize(50, 0);
+        this.buyPricePerTextBox.setAcceptsTab(false);
+        this.buyPricePerTextBox.setTabIndex(1);
         this.buyPricePerTextBox.setFilter(s -> this.filterAndLimit(s, 2, true));
         this.buyPricePerTextBox.register(this);
 
@@ -90,6 +106,8 @@ public class StoreListScreen extends SimpleScreen {
         this.buyQtyTextBox = new UITextBox(this, "");
         this.buyQtyTextBox.setPosition(-2, getPaddedY(this.buyPricePerTextBox, 2), Anchor.TOP | Anchor.RIGHT);
         this.buyQtyTextBox.setSize(50, 0);
+        this.buyQtyTextBox.setAcceptsTab(false);
+        this.buyQtyTextBox.setTabIndex(2);
         this.buyQtyTextBox.setFilter(s -> this.filterAndLimit(s, 0, false));
         this.buyQtyTextBox.register(this);
 
@@ -134,9 +152,11 @@ public class StoreListScreen extends SimpleScreen {
         final UILine sellLine = new UILine(this, getPaddedWidth(this.sellContainer) + 2);
         sellLine.setPosition(-1, getPaddedY(this.sellTitleLabel, 2));
 
-        this.sellPricePerTextBox = new UITextBox(this, "");
+        this.sellPricePerTextBox = new UITextBox(this, this.toModifySell != null ? this.toModifySell.getPrice().toString() : "");
         this.sellPricePerTextBox.setPosition(-2, getPaddedY(sellLine, 2), Anchor.TOP | Anchor.RIGHT);
         this.sellPricePerTextBox.setSize(50, 0);
+        this.sellPricePerTextBox.setAcceptsTab(false);
+        this.sellPricePerTextBox.setTabIndex(3);
         this.sellPricePerTextBox.setFilter(s -> this.filterAndLimit(s, 2, false));
         this.sellPricePerTextBox.register(this);
 
@@ -147,6 +167,8 @@ public class StoreListScreen extends SimpleScreen {
         this.sellQtyTextBox = new UITextBox(this, "");
         this.sellQtyTextBox.setPosition(-2, getPaddedY(this.sellPricePerTextBox, 2), Anchor.TOP | Anchor.RIGHT);
         this.sellQtyTextBox.setSize(50, 0);
+        this.sellQtyTextBox.setAcceptsTab(false);
+        this.sellQtyTextBox.setTabIndex(4);
         this.sellQtyTextBox.setFilter(s -> this.filterAndLimit(s, 0, false));
         this.sellQtyTextBox.register(this);
 
@@ -172,9 +194,9 @@ public class StoreListScreen extends SimpleScreen {
                                sellTotalLabel, this.sellTotalPriceLabel);
 
         this.buttonList = new UIButtonBuilder(this)
-          .text("List") // TODO: Translation
+          .text(this.toModifyBuy != null || this.toModifySell != null ? "Modify" : "List") // TODO: Translation
           .anchor(Anchor.BOTTOM | Anchor.RIGHT)
-          .onClick(this::list)
+          .onClick(this::modifyOrList)
           .width(50)
           .enabled(false)
           .build("button.list");
@@ -189,6 +211,25 @@ public class StoreListScreen extends SimpleScreen {
 
         this.form.add(this.buyContainer, this.sellContainer, this.buttonCancel, this.buttonList);
         this.addToScreen(this.form);
+
+        // Update quantity
+        if (this.toModifyBuy != null) {
+            if (this.toModifyBuy.getQuantity() == -1) {
+                this.buyInfiniteCheckBox.setChecked(true);
+                this.buyInfiniteCheckBox.fireEvent(new ComponentEvent.ValueChange<>(this.buyInfiniteCheckBox, false, true));
+            } else {
+                this.buyQtyTextBox.setText(String.valueOf(this.toModifyBuy.getQuantity()));
+            }
+        }
+
+        if (this.toModifySell != null) {
+            if (this.toModifySell.getQuantity() == -1) {
+                this.sellInfiniteCheckBox.setChecked(true);
+                this.sellInfiniteCheckBox.fireEvent(new ComponentEvent.ValueChange<>(this.sellInfiniteCheckBox, false, true));
+            } else {
+                this.sellQtyTextBox.setText(String.valueOf(this.toModifySell.getQuantity()));
+            }
+        }
     }
 
     @Subscribe
@@ -209,40 +250,48 @@ public class StoreListScreen extends SimpleScreen {
             this.sellTotalPriceLabel.setVisible(!event.getNewValue());
         }
 
-        this.updateListButton();
+        this.updateListButton(this.buyPricePerTextBox.getText(), this.buyQtyTextBox.getText(), this.sellPricePerTextBox.getText(),
+          this.sellQtyTextBox.getText());
     }
 
     @Subscribe
     private void onTextChange(final ComponentEvent.ValueChange<UITextField, String> event) {
-        this.updateListButton();
+        // Ensure we're using the latest information
+        // TODO: Add POST method for MalisisCore
+        final String buyPriceText = this.buyPricePerTextBox.equals(event.getComponent()) ? event.getNewValue() : this.buyPricePerTextBox.getText();
+        final String buyQtyText = this.buyQtyTextBox.equals(event.getComponent()) ? event.getNewValue() : this.buyQtyTextBox.getText();
+        final String sellPriceText = this.sellPricePerTextBox.equals(event.getComponent()) ? event.getNewValue() : this.sellPricePerTextBox.getText();
+        final String sellQtyText = this.sellQtyTextBox.equals(event.getComponent()) ? event.getNewValue() : this.sellQtyTextBox.getText();
+
+        this.updateListButton(buyPriceText, buyQtyText, sellPriceText, sellQtyText);
     }
 
-    private void updateListButton() {
+    private void updateListButton(final String buyPriceText, final String buyQtyText, final String sellPriceText, final String sellQtyText) {
         // Check if there are any valid combinations
-        final boolean isBuyValid = !this.buyQtyTextBox.getText().isEmpty() && !this.buyPricePerTextBox.getText().isEmpty();
-        final boolean isSellValid = !this.sellQtyTextBox.getText().isEmpty() && !this.sellPricePerTextBox.getText().isEmpty();
+        final boolean isBuyValid = !buyQtyText.isEmpty() && !buyPriceText.isEmpty() && !buyPriceText.equals("0") && !buyQtyText.equals("0");
+        final boolean isSellValid = !sellQtyText.isEmpty() && !sellPriceText.isEmpty() && !sellPriceText.equals("0") && !sellQtyText.equals("0");
 
         // Update the list button based on the above
         this.buttonList.setEnabled(isBuyValid || isSellValid);
 
         if (isBuyValid) {
-            final int buyQty = Integer.valueOf(this.buyQtyTextBox.getText());
-            final BigDecimal buyPrice = new BigDecimal(this.buyPricePerTextBox.getText());
+            final int buyQty = Integer.valueOf(buyQtyText);
+            final BigDecimal buyPrice = new BigDecimal(buyPriceText);
             this.buyTotalPriceLabel.setText(FeatureConstants.withSuffix(buyPrice.doubleValue() * buyQty));
         } else {
             this.buyTotalPriceLabel.setText("");
         }
 
         if (isSellValid) {
-            final int sellQty = Integer.valueOf(this.sellQtyTextBox.getText());
-            final BigDecimal sellPrice = new BigDecimal(this.sellPricePerTextBox.getText());
+            final int sellQty = Integer.valueOf(sellQtyText);
+            final BigDecimal sellPrice = new BigDecimal(sellPriceText);
             this.sellTotalPriceLabel.setText(FeatureConstants.withSuffix(sellPrice.doubleValue() * sellQty));
         } else {
             this.sellTotalPriceLabel.setText("");
         }
     }
 
-    private void list() {
+    private void modifyOrList() {
         if (!this.buttonList.isEnabled()) {
             return;
         }
@@ -252,17 +301,35 @@ public class StoreListScreen extends SimpleScreen {
         final boolean isSellValid = !this.sellQtyTextBox.getText().isEmpty() && !this.sellPricePerTextBox.getText().isEmpty();
 
         if (isBuyValid) {
-            final VanillaStack toListBuy = new BasicVanillaStack(this.toList);
-            toListBuy.setQuantity(Integer.valueOf(this.buyQtyTextBox.getText()));
+            // We're modifying an existing listing
+            if (this.toModifyBuy != null) {
+                final int newBuyQuantity = Integer.valueOf(this.buyQtyTextBox.getText());
+                storeManager.requestModifyBuyingItem(this.store.getId(), this.toModifyBuy.getRecord(), newBuyQuantity, 0,
+                  new BigDecimal(this.buyPricePerTextBox.getText()));
+            } else { // We're adding a new listing
+                final VanillaStack toListBuy = new BasicVanillaStack(this.toList);
+                toListBuy.setQuantity(Integer.valueOf(this.buyQtyTextBox.getText()));
 
-            storeManager.requestListBuyingItem(this.store.getId(), toListBuy, 0, new BigDecimal(this.buyPricePerTextBox.getText()));
+                storeManager.requestListBuyingItem(this.store.getId(), toListBuy, 0, new BigDecimal(this.buyPricePerTextBox.getText()));
+            }
+        } else if (this.toModifyBuy != null) { // We're unlisting an existing listing
+            storeManager.requestDelistBuyingItem(this.store.getId(), this.toModifyBuy.getRecord());
         }
 
         if (isSellValid) {
-            final VanillaStack toListSell = new BasicVanillaStack(this.toList);
-            toListSell.setQuantity(Integer.valueOf(this.sellQtyTextBox.getText()));
+            // We're modifying an existing listing
+            if (this.toModifySell != null) {
+                final int newQuantity = Integer.valueOf(this.sellQtyTextBox.getText());
+                storeManager.requestModifySellingItem(this.store.getId(), this.toModifySell.getRecord(), newQuantity, 0,
+                  new BigDecimal(this.sellPricePerTextBox.getText()));
+            } else { // We're adding a new listing
+                final VanillaStack toListSell = new BasicVanillaStack(this.toList);
+                toListSell.setQuantity(Integer.valueOf(this.sellQtyTextBox.getText()));
 
-            storeManager.requestListSellingItem(this.store.getId(), toListSell, 0, new BigDecimal(this.sellPricePerTextBox.getText()));
+                storeManager.requestListSellingItem(this.store.getId(), toListSell, 0, new BigDecimal(this.sellPricePerTextBox.getText()));
+            }
+        } else if (this.toModifySell != null) { // We're unlisting an existing listing
+            storeManager.requestDelistSellingItem(this.store.getId(), this.toModifySell.getRecord());
         }
 
         ((StoreScreen) this.parent.get()).refresh(true);

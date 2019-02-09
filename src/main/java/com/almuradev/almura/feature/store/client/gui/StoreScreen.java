@@ -75,11 +75,11 @@ public class StoreScreen extends SimpleScreen {
     private final List<ItemStack> adminBaseList = new ArrayList<>();
 
     private SideType currentSide = SideType.BUY;
-    private UIButton buttonTransactStack, buttonTransactOne, buttonTransactAll, buttonTransactQuantity, buttonAdminList;
+    private UIButton buttonTransactStack, buttonTransactOne, buttonTransactAll, buttonTransactQuantity, buttonAdminList, buttonAdminUnlist;
     private UIContainer<?> adminTitleContainer, buyTabContainer, sellTabContainer;
     private UIDynamicList<StoreItem> itemList;
     private UIDynamicList<ItemStack> adminItemList;
-    private UILabel buyTabLabel, sellTabLabel;
+    private UILabel adminListTotalLabel, buyTabLabel, sellTabLabel;
     private UILine thisDoesNotExistLine;
     private UISelect<ItemLocation> locationSelect;
     private UITextBox adminSearchTextBox;
@@ -256,14 +256,26 @@ public class StoreScreen extends SimpleScreen {
             this.adminItemList.setSelectConsumer(i -> this.updateAdminControls());
 
             this.buttonAdminList = new UIButtonBuilder(this)
-                    .width(60)
-                    .anchor(Anchor.BOTTOM | Anchor.CENTER)
+                    .width(50)
+                    .anchor(Anchor.BOTTOM | Anchor.LEFT)
                     .enabled(false)
-                    .onClick(this::list)
+                    .onClick(this::listOrModify)
                     .text(I18n.format("almura.feature.common.button.list"))
                     .build("button.list");
+            this.buttonAdminUnlist = new UIButtonBuilder(this)
+                    .width(50)
+                    .anchor(Anchor.BOTTOM | Anchor.LEFT)
+                    .position(SimpleScreen.getPaddedX(this.buttonAdminList, 2), 0)
+                    .enabled(false)
+                    .onClick(this::unlist)
+                    .text(I18n.format("almura.feature.common.button.unlist"))
+                    .build("button.unlist");
 
-            adminContainer.add(this.adminTitleContainer, this.locationSelect, this.adminSearchTextBox, this.adminItemList, this.buttonAdminList);
+            this.adminListTotalLabel = new UILabel(this, TextFormatting.WHITE + "Total: "); // TODO: Translation
+            this.adminListTotalLabel.setPosition(0, -2, Anchor.BOTTOM | Anchor.RIGHT);
+
+            adminContainer.add(this.adminTitleContainer, this.locationSelect, this.adminSearchTextBox, this.adminItemList, this.buttonAdminList,
+                               this.buttonAdminUnlist, this.adminListTotalLabel);
 
             form.add(adminContainer);
 
@@ -331,6 +343,8 @@ public class StoreScreen extends SimpleScreen {
                     .filter(i -> i.getDisplayName().toLowerCase().contains(event.getNewValue().toLowerCase()))
                     .sorted(Comparator.comparing(ItemStack::getDisplayName))
                     .collect(Collectors.toList()));
+
+            this.adminListTotalLabel.setText(TextFormatting.WHITE + "Total: " + this.adminItemList.getItems().size()); // TODO: Translation
         }
     }
 
@@ -373,6 +387,10 @@ public class StoreScreen extends SimpleScreen {
             return;
         }
 
+        if (selectedItem.getQuantity() == 0) {
+            return;
+        }
+
         if (this.currentSide == SideType.BUY) {
             storeManager.buy(this.store.getId(), selectedItem.getRecord(), value);
         } else {
@@ -380,7 +398,7 @@ public class StoreScreen extends SimpleScreen {
         }
     }
 
-    private void list() {
+    private void listOrModify() {
         final ItemStack selectedItem = this.adminItemList.getSelectedItem();
         if (selectedItem == null) {
             return;
@@ -395,12 +413,29 @@ public class StoreScreen extends SimpleScreen {
                 .filter(i -> StoreScreen.isStackEqualIgnoreSize(i.asRealStack(), selectedItem))
                 .findAny();
 
-        if (!buyingItem.isPresent() && !sellingItem.isPresent()) {
-            new StoreListScreen(this, this.store, selectedItem).display();
+        if (buyingItem.isPresent() || sellingItem.isPresent()) {
+            new StoreListScreen(this, this.store, buyingItem.orElse(null), sellingItem.orElse(null), selectedItem).display();
         } else {
-            buyingItem.ifPresent(i -> storeManager.requestDelistBuyingItem(this.store.getId(), i.getRecord()));
-            sellingItem.ifPresent(i -> storeManager.requestDelistSellingItem(this.store.getId(), i.getRecord()));
+            new StoreListScreen(this, this.store, selectedItem).display();
         }
+    }
+
+    private void unlist() {
+        final ItemStack selectedItem = this.adminItemList.getSelectedItem();
+        if (selectedItem == null) {
+            return;
+        }
+
+        this.store.getBuyingItems()
+          .stream()
+          .filter(i -> StoreScreen.isStackEqualIgnoreSize(i.asRealStack(), selectedItem))
+          .findAny()
+          .ifPresent(i -> storeManager.requestDelistSellingItem(this.store.getId(), i.getRecord()));
+        this.store.getSellingItems()
+          .stream()
+          .filter(i -> StoreScreen.isStackEqualIgnoreSize(i.asRealStack(), selectedItem))
+          .findAny()
+          .ifPresent(i -> storeManager.requestDelistSellingItem(this.store.getId(), i.getRecord()));
     }
 
     /**
@@ -565,13 +600,17 @@ public class StoreScreen extends SimpleScreen {
                 .filter(i -> StoreScreen.isStackEqualIgnoreSize(i.asRealStack(), selectedItem))
                 .findAny();
 
-        final String status = (buyingItem.isPresent() || sellingItem.isPresent()) ? "unlist" : "list";
+        this.buttonAdminUnlist.setEnabled(buyingItem.isPresent() || sellingItem.isPresent());
+
+        final String status = (buyingItem.isPresent() || sellingItem.isPresent()) ? "modify" : "list";
         this.buttonAdminList.setText(I18n.format("almura.feature.common.button." + status));
 
         this.adminItemList.getComponents()
           .stream()
           .filter(i -> i instanceof AdminItemComponent)
           .forEach(i -> ((AdminItemComponent) i).update());
+
+        this.adminListTotalLabel.setText(TextFormatting.WHITE + "Total: " + this.adminItemList.getItems().size()); // TODO: Translation
     }
 
     public static boolean isStackEqualIgnoreSize(@Nullable final ItemStack a, @Nullable final ItemStack b) {
@@ -693,8 +732,6 @@ public class StoreScreen extends SimpleScreen {
 
         AdminItemComponent(final MalisisGui gui, final UIDynamicList<ItemStack> parent, final ItemStack item) {
             super(gui, parent, item);
-
-            this.setOnDoubleClickConsumer(i -> ((StoreScreen) getGui()).list());
         }
 
         @Override

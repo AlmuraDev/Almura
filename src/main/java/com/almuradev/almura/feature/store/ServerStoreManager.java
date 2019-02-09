@@ -616,7 +616,7 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
                             .build(context));
                     }
 
-                    context.batch(toUpdate);
+                    context.batch(toUpdate).execute();
 
                     final Results results = StoreQueries
                         .createFetchSellingItemsAndDataFor(store.getId(), false)
@@ -955,7 +955,7 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
                             .build(context));
                     }
 
-                    context.batch(toUpdate);
+                    context.batch(toUpdate).execute();
 
                     final Results results = StoreQueries
                         .createFetchBuyingItemsAndDataFor(store.getId(), false)
