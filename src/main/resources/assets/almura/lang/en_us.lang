@@ -135,6 +135,8 @@ almura.feature.common.title.management=%s - Management
 # ---------------
 
 almura.feature.store.name=Store
+almura.feature.store.itemfinder.store=Store
+almura.feature.store.itemfinder.inventory=Inventory
 
 # ---------------
 # -- exchange ---

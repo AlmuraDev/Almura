@@ -52,8 +52,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -65,7 +69,7 @@ public class StoreScreen extends SimpleScreen {
     @Inject private static ClientStoreManager storeManager;
     private static final int defaultTabColor = 0x1E1E1E;
     private static final int hoveredTabColor = 0x3C3C3C;
-    private static final NonNullList<ItemStack> registryItems = NonNullList.create();
+    private final Map<ItemFinder, Object> itemFinderRelationshipMap = new LinkedHashMap<>();
 
     private final Store store;
     private final boolean isAdmin;
@@ -76,25 +80,36 @@ public class StoreScreen extends SimpleScreen {
 
     private SideType currentSide = SideType.BUY;
     private UIButton buttonTransactStack, buttonTransactOne, buttonTransactAll, buttonTransactQuantity, buttonAdminList, buttonAdminUnlist;
-    private UIContainer<?> adminTitleContainer, buyTabContainer, sellTabContainer;
+    private UIContainer<?> buyTabContainer, sellTabContainer;
     private UIDynamicList<StoreItem> itemList;
     private UIDynamicList<ItemStack> adminItemList;
     private UILabel adminListTotalLabel, buyTabLabel, sellTabLabel;
     private UILine thisDoesNotExistLine;
-    private UISelect<ItemLocation> locationSelect;
+    private UISelect<ItemFinder> locationSelect;
     private UITextBox adminSearchTextBox;
-
-    static {
-        // Get registry items
-        ForgeRegistries.ITEMS.getValuesCollection()
-          .stream()
-          .map(ItemStack::new)
-          .forEach(i -> i.getItem().getSubItems(CreativeTabs.SEARCH, registryItems));
-    }
 
     public StoreScreen(final Store store, final boolean isAdmin) {
         this.store = store;
         this.isAdmin = isAdmin;
+
+        // Always clear inventory and store items
+        this.itemFinderRelationshipMap.put(ItemFinders.STORE_ITEM_FINDER, this.store);
+        this.itemFinderRelationshipMap.put(ItemFinders.INVENTORY_ITEM_FINDER, Minecraft.getMinecraft().player);
+
+        // Generate an item finder for each creativetab
+        Arrays
+          .stream(CreativeTabs.CREATIVE_TAB_ARRAY)
+          .sorted(Comparator.comparing(t -> I18n.format(t.getTranslationKey())))
+          .forEach(tab -> {
+            final NonNullList<ItemStack> itemList = NonNullList.create();
+            this.itemFinderRelationshipMap.put(new ItemFinder<CreativeTabs>(tab.getTabLabel().toLowerCase(), tab.getTranslationKey(), (innerTab) -> {
+                ForgeRegistries.ITEMS.getValuesCollection()
+                  .stream()
+                  .map(ItemStack::new)
+                  .forEach((i -> i.getItem().getSubItems(innerTab, itemList)));
+                return itemList;
+            }, true), tab);
+        });
     }
 
     @Override
@@ -234,8 +249,8 @@ public class StoreScreen extends SimpleScreen {
 
             // Item location selection
             this.locationSelect = new UISelect<>(this, UIComponent.INHERITED);
-            this.locationSelect.setOptions(Arrays.stream(ItemLocation.values()).collect(Collectors.toList()));
-            this.locationSelect.setLabelFunction(o -> o != null ? o.name : "");
+            this.locationSelect.setOptions(this.itemFinderRelationshipMap.keySet());
+            this.locationSelect.setLabelFunction(o -> I18n.format(o.translationKey));
             this.locationSelect.setPosition(0, 0);
             this.locationSelect.register(this);
 
@@ -274,7 +289,7 @@ public class StoreScreen extends SimpleScreen {
             this.adminListTotalLabel = new UILabel(this, TextFormatting.WHITE + "Total: "); // TODO: Translation
             this.adminListTotalLabel.setPosition(0, -2, Anchor.BOTTOM | Anchor.RIGHT);
 
-            adminContainer.add(this.adminTitleContainer, this.locationSelect, this.adminSearchTextBox, this.adminItemList, this.buttonAdminList,
+            adminContainer.add(this.locationSelect, this.adminSearchTextBox, this.adminItemList, this.buttonAdminList,
                                this.buttonAdminUnlist, this.adminListTotalLabel);
 
             form.add(adminContainer);
@@ -349,7 +364,7 @@ public class StoreScreen extends SimpleScreen {
     }
 
     @Subscribe
-    private void onSelect(final UISelect.SelectEvent<ItemLocation> event) {
+    private void onSelect(final UISelect.SelectEvent<ItemFinder> event) {
         this.createAdminControls(event.getNewValue());
     }
 
@@ -535,45 +550,12 @@ public class StoreScreen extends SimpleScreen {
         }
     }
 
-    private void createAdminControls(final ItemLocation location) {
-        // Clear search field
-        this.adminSearchTextBox.setText("");
-
-        final NonNullList<ItemStack> items = NonNullList.create();
-        switch (location) {
-            case STORE:
-                items.addAll(this.store.getBuyingItems()
-                  .stream()
-                  .map(i -> {
-                      final ItemStack copyStack = i.asRealStack().copy();
-                      copyStack.setCount(1);
-                      return copyStack;
-                  })
-                  .collect(Collectors.toList()));
-                items.addAll(this.store.getSellingItems()
-                  .stream()
-                  .map(i -> {
-                      final ItemStack copyStack = i.asRealStack().copy();
-                      copyStack.setCount(1);
-                      return copyStack;
-                  })
-                  .filter(i1 -> items.stream().noneMatch(i2 -> ItemStack.areItemStacksEqual(i1, i2)))
-                  .collect(Collectors.toList()));
-                break;
-            case REGISTRY:
-                items.addAll(registryItems);
-                break;
-            case INVENTORY:
-                items.addAll(Minecraft.getMinecraft().player.inventory.mainInventory
-                  .stream()
-                  .filter(i -> !i.isEmpty())
-                  .collect(Collectors.toList()));
-                break;
-        }
-
+    @SuppressWarnings("unchecked")
+    private void createAdminControls(final ItemFinder finder) {
         this.adminBaseList.clear();
-        this.adminBaseList.addAll(items
+        this.adminBaseList.addAll((List<ItemStack>) finder.getItems(this.itemFinderRelationshipMap.get(finder))
           .stream()
+          .filter(i -> ((ItemStack) i).getDisplayName().toLowerCase().contains(this.adminSearchTextBox.getText().toLowerCase()))
           .sorted(Comparator.comparing(ItemStack::getDisplayName))
           .collect(Collectors.toList()));
         this.adminItemList.setItems(this.adminBaseList);
@@ -839,16 +821,5 @@ public class StoreScreen extends SimpleScreen {
     protected enum SideType {
         BUY,
         SELL
-    }
-
-    private enum ItemLocation {
-        STORE("Store Items"),
-        REGISTRY("Registry Items"),
-        INVENTORY("Inventory Items");
-
-        protected final String name;
-        ItemLocation(final String name) {
-            this.name = name;
-        }
     }
 }
