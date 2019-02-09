@@ -65,10 +65,11 @@ public class StoreScreen extends SimpleScreen {
     @Inject private static ClientStoreManager storeManager;
     private static final int defaultTabColor = 0x1E1E1E;
     private static final int hoveredTabColor = 0x3C3C3C;
-    private final int selectedTabColor = 0;
+    private static final NonNullList<ItemStack> registryItems = NonNullList.create();
 
     private final Store store;
     private final boolean isAdmin;
+    private final int selectedTabColor = 0;
     private final int tabWidth = 115;
     private final int tabHeight = 16;
     private final List<ItemStack> adminBaseList = new ArrayList<>();
@@ -78,10 +79,18 @@ public class StoreScreen extends SimpleScreen {
     private UIContainer<?> adminTitleContainer, buyTabContainer, sellTabContainer;
     private UIDynamicList<StoreItem> itemList;
     private UIDynamicList<ItemStack> adminItemList;
-    private UILabel adminTitleLabel, buyTabLabel, sellTabLabel;
+    private UILabel buyTabLabel, sellTabLabel;
     private UILine thisDoesNotExistLine;
     private UISelect<ItemLocation> locationSelect;
     private UITextBox adminSearchTextBox;
+
+    static {
+        // Get registry items
+        ForgeRegistries.ITEMS.getValuesCollection()
+          .stream()
+          .map(ItemStack::new)
+          .forEach(i -> i.getItem().getSubItems(CreativeTabs.SEARCH, registryItems));
+    }
 
     public StoreScreen(final Store store, final boolean isAdmin) {
         this.store = store;
@@ -358,7 +367,7 @@ public class StoreScreen extends SimpleScreen {
         this.updateAdminControls();
     }
 
-    private void transact(int value) {
+    private void transact(final int value) {
         final StoreItem selectedItem = this.itemList.getSelectedItem();
         if (selectedItem == null) {
             return;
@@ -517,11 +526,7 @@ public class StoreScreen extends SimpleScreen {
                   .collect(Collectors.toList()));
                 break;
             case REGISTRY:
-                // Get registry items
-                ForgeRegistries.ITEMS.getValuesCollection()
-                  .stream()
-                  .map(ItemStack::new)
-                  .forEach(i -> i.getItem().getSubItems(CreativeTabs.SEARCH, items));
+                items.addAll(registryItems);
                 break;
             case INVENTORY:
                 items.addAll(Minecraft.getMinecraft().player.inventory.mainInventory
