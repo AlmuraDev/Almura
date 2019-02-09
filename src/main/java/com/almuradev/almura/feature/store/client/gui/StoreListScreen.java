@@ -44,7 +44,7 @@ public class StoreListScreen extends SimpleScreen {
     private UIButton buttonList, buttonCancel;
     private UICheckBox buyInfiniteCheckBox, sellInfiniteCheckBox;
     private UIContainer<?> buyContainer, sellContainer;
-    private UILabel buyQtyLabel, buyTitleLabel, buyPerLabel, buyTotalPriceLabel, sellQtyLabel, sellTitleLabel, sellPerLabel, sellTotalPriceLabel;
+    private UILabel buyQtyLabel, buyTitleLabel, buyPerLabel, buyTotalPriceLabel, buyTotalLabel, sellQtyLabel, sellTitleLabel, sellPerLabel, sellTotalPriceLabel, sellTotalLabel;
     private UITextBox buyQtyTextBox, buyPricePerTextBox, sellQtyTextBox, sellPricePerTextBox;
     private UIForm form;
 
@@ -110,7 +110,8 @@ public class StoreListScreen extends SimpleScreen {
         this.buyTotalPriceLabel = new UILabel(this);
         this.buyTotalPriceLabel.setFontOptions(FontOptions.builder().shadow(false).color(0x999999).build());
         this.buyTotalPriceLabel.setPosition(column2X + 2, 0, Anchor.BOTTOM | Anchor.LEFT);
-        final UILabel buyTotalLabel = new UILabel(this, TextFormatting.WHITE + "Total:"); // TODO: Translation
+
+        buyTotalLabel = new UILabel(this, TextFormatting.WHITE + "Total:"); // TODO: Translation
         buyTotalLabel.setPosition(this.buyTotalPriceLabel.getX() - buyTotalLabel.getWidth() - 3, 0, Anchor.BOTTOM | Anchor.LEFT);
 
         this.buyContainer.add(this.buyTitleLabel, buyLine,
@@ -160,7 +161,8 @@ public class StoreListScreen extends SimpleScreen {
         this.sellTotalPriceLabel = new UILabel(this, "");
         this.sellTotalPriceLabel.setFontOptions(FontOptions.builder().shadow(false).color(0x999999).build());
         this.sellTotalPriceLabel.setPosition(column2X + 2, 0, Anchor.BOTTOM | Anchor.LEFT);
-        final UILabel sellTotalLabel = new UILabel(this, TextFormatting.WHITE + "Total:"); // TODO: Translation
+
+        sellTotalLabel = new UILabel(this, TextFormatting.WHITE + "Total:"); // TODO: Translation
         sellTotalLabel.setPosition(this.sellTotalPriceLabel.getX() - sellTotalLabel.getWidth() - 3, 0, Anchor.BOTTOM | Anchor.LEFT);
 
         this.sellContainer.add(this.sellTitleLabel, sellLine,
@@ -195,12 +197,16 @@ public class StoreListScreen extends SimpleScreen {
             this.buyQtyTextBox.setEditable(!event.getNewValue());
             this.buyQtyTextBox.setFilter(s -> this.filterAndLimit(s, 0, event.getNewValue()));
             this.buyQtyTextBox.setText((event.getNewValue() ? "-" : "") + "1");
+            this.buyTotalLabel.setVisible(!event.getNewValue());
+            this.buyTotalPriceLabel.setVisible(!event.getNewValue());
         }
 
         if (this.sellInfiniteCheckBox.equals(event.getComponent())) {
             this.sellQtyTextBox.setEditable(!event.getNewValue());
             this.sellQtyTextBox.setFilter(s -> this.filterAndLimit(s, 0, event.getNewValue()));
             this.sellQtyTextBox.setText((event.getNewValue() ? "-" : "") + "1");
+            this.sellTotalLabel.setVisible(!event.getNewValue());
+            this.sellTotalPriceLabel.setVisible(!event.getNewValue());
         }
 
         this.updateListButton();
