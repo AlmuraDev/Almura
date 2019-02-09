@@ -350,7 +350,7 @@ public class StoreScreen extends SimpleScreen {
 
         this.itemList.setSelectedItem(this.itemList.getItems().stream().findFirst().orElse(null));
 
-        if (createControls) {
+        if (createControls && this.isAdmin) {
             this.createAdminControls(this.locationSelect.getSelectedValue());
         }
 
