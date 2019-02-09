@@ -13,6 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class ItemFinders {
@@ -42,8 +43,18 @@ public class ItemFinders {
   }, false);
 
   static final ItemFinder INVENTORY_ITEM_FINDER = new ItemFinder<EntityPlayer>("inventory", translationKeyBase + "inventory",
-    (player) -> player.inventory.mainInventory
-      .stream()
-      .filter(i -> !i.isEmpty())
-      .collect(Collectors.toList()), false);
+    (player) -> {
+      final List<ItemStack> uniqueItems = NonNullList.create();
+
+      player.inventory.mainInventory
+        .stream()
+        .filter(i -> !i.isEmpty())
+        .forEach(item -> {
+          if (uniqueItems.stream().noneMatch(uniqueItem -> ItemStack.areItemsEqual(uniqueItem, item))) {
+            uniqueItems.add(item);
+          }
+        });
+
+      return uniqueItems;
+  }, false);
 }

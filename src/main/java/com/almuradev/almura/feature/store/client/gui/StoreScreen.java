@@ -69,7 +69,7 @@ public class StoreScreen extends SimpleScreen {
     @Inject private static ClientStoreManager storeManager;
     private static final int defaultTabColor = 0x1E1E1E;
     private static final int hoveredTabColor = 0x3C3C3C;
-    private final Map<ItemFinder, Object> itemFinderRelationshipMap = new LinkedHashMap<>();
+    private static final Map<ItemFinder, Object> itemFinderRelationshipMap = new LinkedHashMap<>();
 
     private final Store store;
     private final boolean isAdmin;
@@ -92,24 +92,20 @@ public class StoreScreen extends SimpleScreen {
         this.store = store;
         this.isAdmin = isAdmin;
 
-        // Always clear inventory and store items
-        this.itemFinderRelationshipMap.put(ItemFinders.STORE_ITEM_FINDER, this.store);
-        this.itemFinderRelationshipMap.put(ItemFinders.INVENTORY_ITEM_FINDER, Minecraft.getMinecraft().player);
+        if (itemFinderRelationshipMap.isEmpty()) {
+            // Always clear inventory and store items
+            itemFinderRelationshipMap.put(ItemFinders.STORE_ITEM_FINDER, this.store);
+            itemFinderRelationshipMap.put(ItemFinders.INVENTORY_ITEM_FINDER, Minecraft.getMinecraft().player);
 
-        // Generate an item finder for each creativetab
-        Arrays
-          .stream(CreativeTabs.CREATIVE_TAB_ARRAY)
-          .sorted(Comparator.comparing(t -> I18n.format(t.getTranslationKey())))
-          .forEach(tab -> {
-            final NonNullList<ItemStack> itemList = NonNullList.create();
-            this.itemFinderRelationshipMap.put(new ItemFinder<CreativeTabs>(tab.getTabLabel().toLowerCase(), tab.getTranslationKey(), (innerTab) -> {
-                ForgeRegistries.ITEMS.getValuesCollection()
-                  .stream()
-                  .map(ItemStack::new)
-                  .forEach((i -> i.getItem().getSubItems(innerTab, itemList)));
-                return itemList;
-            }, true), tab);
-        });
+            // Generate an item finder for each creativetab
+            Arrays.stream(CreativeTabs.CREATIVE_TAB_ARRAY).sorted(Comparator.comparing(t -> I18n.format(t.getTranslationKey()))).forEach(tab -> {
+                final NonNullList<ItemStack> itemList = NonNullList.create();
+                itemFinderRelationshipMap.put(new ItemFinder<CreativeTabs>(tab.getTabLabel().toLowerCase(), tab.getTranslationKey(), (innerTab) -> {
+                    ForgeRegistries.ITEMS.getValuesCollection().stream().map(ItemStack::new).forEach((i -> i.getItem().getSubItems(innerTab, itemList)));
+                    return itemList;
+                }, true), tab);
+            });
+        }
     }
 
     @Override
@@ -249,7 +245,7 @@ public class StoreScreen extends SimpleScreen {
 
             // Item location selection
             this.locationSelect = new UISelect<>(this, UIComponent.INHERITED);
-            this.locationSelect.setOptions(this.itemFinderRelationshipMap.keySet());
+            this.locationSelect.setOptions(itemFinderRelationshipMap.keySet());
             this.locationSelect.setLabelFunction(o -> I18n.format(o.translationKey));
             this.locationSelect.setPosition(0, 0);
             this.locationSelect.register(this);
@@ -714,6 +710,11 @@ public class StoreScreen extends SimpleScreen {
 
         AdminItemComponent(final MalisisGui gui, final UIDynamicList<ItemStack> parent, final ItemStack item) {
             super(gui, parent, item);
+
+            this.setOnDoubleClickConsumer(itemStack -> {
+                final StoreScreen parentScreen = (StoreScreen) this.getGui();
+                parentScreen.listOrModify();
+            });
         }
 
         @Override
