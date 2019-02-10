@@ -635,7 +635,7 @@ public class StoreScreen extends SimpleScreen {
             this.soldOutContainer.setVisible(false);
 
             // Sold out label
-            this.soldOutLabel = new UILabel(this.getGui(), "Unavailable"); // TODO: Translation
+            this.soldOutLabel = new UILabel(this.getGui(), "Sold Out!"); // TODO: Translation
             this.soldOutLabel.setFontOptions(FontColors.RED_FO.toBuilder().scale(2f).build());
             this.soldOutLabel.setPosition(0, 1, Anchor.MIDDLE | Anchor.CENTER);
             this.soldOutContainer.add(this.soldOutLabel);
