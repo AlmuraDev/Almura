@@ -109,6 +109,8 @@ public class StoreScreen extends SimpleScreen {
                     return itemList;
                 }, true), tab);
             });
+        } else {
+            itemFinderRelationshipMap.replace(ItemFinders.STORE_ITEM_FINDER, this.store);
         }
     }
 
