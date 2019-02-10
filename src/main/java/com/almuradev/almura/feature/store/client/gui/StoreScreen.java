@@ -98,7 +98,11 @@ public class StoreScreen extends SimpleScreen {
             itemFinderRelationshipMap.put(ItemFinders.INVENTORY_ITEM_FINDER, Minecraft.getMinecraft().player);
 
             // Generate an item finder for each creativetab
-            Arrays.stream(CreativeTabs.CREATIVE_TAB_ARRAY).sorted(Comparator.comparing(t -> I18n.format(t.getTranslationKey()))).forEach(tab -> {
+            Arrays
+              .stream(CreativeTabs.CREATIVE_TAB_ARRAY)
+              .filter(tab -> tab != CreativeTabs.INVENTORY && tab != CreativeTabs.SEARCH && tab != CreativeTabs.HOTBAR)
+              .sorted(Comparator.comparing(t -> I18n.format(t.getTranslationKey())))
+              .forEach(tab -> {
                 final NonNullList<ItemStack> itemList = NonNullList.create();
                 itemFinderRelationshipMap.put(new ItemFinder<CreativeTabs>(tab.getTabLabel().toLowerCase(), tab.getTranslationKey(), (innerTab) -> {
                     ForgeRegistries.ITEMS.getValuesCollection().stream().map(ItemStack::new).forEach((i -> i.getItem().getSubItems(innerTab, itemList)));
