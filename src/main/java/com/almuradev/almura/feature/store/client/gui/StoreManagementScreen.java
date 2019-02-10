@@ -31,12 +31,12 @@ public class StoreManagementScreen extends IngameFeatureManagementScreen<Store> 
                 (screen, feature) -> feature.ifPresent(f -> storeManager.requestStoreSpecificGui(f.getId())),
                 // onSave
                 (screen, feature) -> {
-                    if (feature.isPresent()) { // It's a new listing if true
-                        storeManager.addStore(screen.getPendingId(), screen.getPendingTitle(), screen.getPendingPermission(),
-                                screen.getPendingHiddenState());
+                    if (feature.isPresent()) { // It's an existing listing if true
+                      storeManager.modifyStore(screen.getPendingId(), screen.getPendingTitle(), screen.getPendingPermission(),
+                        screen.getPendingHiddenState());
                     } else {
-                        storeManager.modifyStore(screen.getPendingId(), screen.getPendingTitle(), screen.getPendingPermission(),
-                                screen.getPendingHiddenState());
+                      storeManager.addStore(screen.getPendingId(), screen.getPendingTitle(), screen.getPendingPermission(),
+                        screen.getPendingHiddenState());
                     }
                 });
     }

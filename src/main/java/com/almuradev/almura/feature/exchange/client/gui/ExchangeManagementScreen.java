@@ -39,12 +39,12 @@ public final class ExchangeManagementScreen extends IngameFeatureManagementScree
                 },
                 // onSave
                 (screen, feature) -> {
-                    if (feature.isPresent()) { // It's a new listing if true
-                        exchangeManager.addExchange(screen.getPendingId(), screen.getPendingTitle(), screen.getPendingPermission(),
-                                screen.getPendingHiddenState());
+                    if (feature.isPresent()) { // It's an existing listing if true
+                      exchangeManager.modifyExchange(screen.getPendingId(), screen.getPendingTitle(), screen.getPendingPermission(),
+                        screen.getPendingHiddenState());
                     } else {
-                        exchangeManager.modifyExchange(screen.getPendingId(), screen.getPendingTitle(), screen.getPendingPermission(),
-                                screen.getPendingHiddenState());
+                      exchangeManager.addExchange(screen.getPendingId(), screen.getPendingTitle(), screen.getPendingPermission(),
+                        screen.getPendingHiddenState());
                     }
                 });
     }
