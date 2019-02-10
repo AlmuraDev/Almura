@@ -31,7 +31,6 @@ import net.malisis.core.client.gui.event.ComponentEvent;
 import net.malisis.core.renderer.font.FontOptions;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
-import org.spongepowered.api.Sponge;
 
 import java.math.BigDecimal;
 
@@ -196,7 +195,7 @@ public class StoreListScreen extends SimpleScreen {
         this.buttonList = new UIButtonBuilder(this)
           .text(this.toModifyBuy != null || this.toModifySell != null ? "Modify" : "List") // TODO: Translation
           .anchor(Anchor.BOTTOM | Anchor.RIGHT)
-          .onClick(this::modifyOrList)
+          .onClick(this::listOrModify)
           .width(50)
           .enabled(false)
           .build("button.list");
@@ -268,8 +267,8 @@ public class StoreListScreen extends SimpleScreen {
 
     private void updateListButton(final String buyPriceText, final String buyQtyText, final String sellPriceText, final String sellQtyText) {
         // Check if there are any valid combinations
-        final boolean isBuyValid = !buyQtyText.isEmpty() && !buyPriceText.isEmpty() && !buyPriceText.equals("0") && !buyQtyText.equals("0");
-        final boolean isSellValid = !sellQtyText.isEmpty() && !sellPriceText.isEmpty() && !sellPriceText.equals("0") && !sellQtyText.equals("0");
+        final boolean isBuyValid = !buyQtyText.isEmpty() && !buyPriceText.isEmpty() && !buyPriceText.equals("0");
+        final boolean isSellValid = !sellQtyText.isEmpty() && !sellPriceText.isEmpty() && !sellPriceText.equals("0");
 
         // Update the list button based on the above
         this.buttonList.setEnabled(isBuyValid || isSellValid);
@@ -291,7 +290,7 @@ public class StoreListScreen extends SimpleScreen {
         }
     }
 
-    private void modifyOrList() {
+    private void listOrModify() {
         if (!this.buttonList.isEnabled()) {
             return;
         }
