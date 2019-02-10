@@ -1210,8 +1210,8 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
 
             this.notificationManager.sendPopupNotification(player,
               Text.of(TextColors.GREEN, "Transaction Complete"),
-              Text.of("Purchased ", TextColors.YELLOW, quantity, "x ", found.asRealStack().getDisplayName(),
-                TextColors.RESET, " for a total of ", TextColors.AQUA, FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(total)), 3);
+              Text.of("Purchased ", TextColors.AQUA, quantity, TextColors.WHITE," x ", TextColors.YELLOW, found.asRealStack().getDisplayName(),
+                TextColors.RESET, " for a total of ", TextColors.GOLD, "$", FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(total)), 3);
         }
 
         this.scheduler
@@ -1437,8 +1437,8 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
 
                                 this.notificationManager.sendPopupNotification(player,
                                   Text.of(TextColors.GREEN, "Transaction Complete"),
-                                  Text.of("Sold ", TextColors.YELLOW, quantity, "x ", TextColors.YELLOW, found.asRealStack().getDisplayName(),
-                                    TextColors.RESET, " for a total of ", TextColors.AQUA, FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(total)), 3);
+                                  Text.of("Sold ", TextColors.AQUA, quantity, TextColors.WHITE," x ", TextColors.YELLOW, found.asRealStack().getDisplayName(),
+                                    TextColors.RESET, " for a total of ", TextColors.GOLD, "$", FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(total)), 3);
                             }
 
                             if (!infinite) {
