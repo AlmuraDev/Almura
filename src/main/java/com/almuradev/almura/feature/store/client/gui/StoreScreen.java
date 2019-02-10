@@ -467,7 +467,7 @@ public class StoreScreen extends SimpleScreen {
           .stream()
           .filter(i -> StoreScreen.isStackEqualIgnoreSize(i.asRealStack(), selectedItem))
           .findAny()
-          .ifPresent(i -> storeManager.requestDelistSellingItem(this.store.getId(), i.getRecord()));
+          .ifPresent(i -> storeManager.requestDelistBuyingItem(this.store.getId(), i.getRecord()));
         this.store.getSellingItems()
           .stream()
           .filter(i -> StoreScreen.isStackEqualIgnoreSize(i.asRealStack(), selectedItem))
