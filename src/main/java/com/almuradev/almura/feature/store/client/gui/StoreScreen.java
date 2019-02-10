@@ -83,7 +83,7 @@ public class StoreScreen extends SimpleScreen {
     private UIContainer<?> buyTabContainer, sellTabContainer;
     private UIDynamicList<StoreItem> itemList;
     private UIDynamicList<ItemStack> adminItemList;
-    private UILabel adminListTotalLabel, buyTabLabel, sellTabLabel;
+    private UILabel typeLabel, adminListTotalLabel, buyTabLabel, sellTabLabel;
     private UILine thisDoesNotExistLine;
     private UISelect<ItemFinder> locationSelect;
     private UITextBox adminSearchTextBox;
@@ -243,11 +243,17 @@ public class StoreScreen extends SimpleScreen {
             adminContainer.setPadding(3);
             adminContainer.setColor(0);
 
+            // Buy tab label
+            this.typeLabel = new UILabel(this, TextFormatting.WHITE + "Type: ");
+            this.typeLabel.setPosition(0, 2, Anchor.TOP | Anchor.LEFT);
+
             // Item location selection
             this.locationSelect = new UISelect<>(this, UIComponent.INHERITED);
             this.locationSelect.setOptions(itemFinderRelationshipMap.keySet());
             this.locationSelect.setLabelFunction(o -> I18n.format(o.translationKey));
-            this.locationSelect.setPosition(0, 0);
+            this.locationSelect.setPosition(30, 0);
+            this.locationSelect.setSize(184,12);
+            this.locationSelect.maxDisplayedOptions(24);
             this.locationSelect.register(this);
 
             // Search text box
@@ -285,7 +291,7 @@ public class StoreScreen extends SimpleScreen {
             this.adminListTotalLabel = new UILabel(this, TextFormatting.WHITE + "Total: "); // TODO: Translation
             this.adminListTotalLabel.setPosition(0, -2, Anchor.BOTTOM | Anchor.RIGHT);
 
-            adminContainer.add(this.locationSelect, this.adminSearchTextBox, this.adminItemList, this.buttonAdminList,
+            adminContainer.add(this.typeLabel, this.locationSelect, this.adminSearchTextBox, this.adminItemList, this.buttonAdminList,
                                this.buttonAdminUnlist, this.adminListTotalLabel);
 
             form.add(adminContainer);
