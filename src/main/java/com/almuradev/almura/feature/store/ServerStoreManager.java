@@ -1207,6 +1207,11 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
             frame.pushCause(store);
 
             account.withdraw(economyService.getDefaultCurrency(), BigDecimal.valueOf(total), frame.getCurrentCause());
+
+            this.notificationManager.sendPopupNotification(player,
+              Text.of(TextColors.GREEN, "Transaction Complete"),
+              Text.of("Purchased ", TextColors.YELLOW, quantity, "x ", found.asRealStack().getDisplayName(),
+                TextColors.RESET, " for a total of ", TextColors.AQUA, FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(total)), 3);
         }
 
         this.scheduler
@@ -1429,6 +1434,11 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
                                 frame.pushCause(store);
 
                                 account.deposit(economyService.getDefaultCurrency(), BigDecimal.valueOf(total), frame.getCurrentCause());
+
+                                this.notificationManager.sendPopupNotification(player,
+                                  Text.of(TextColors.GREEN, "Transaction Complete"),
+                                  Text.of("Sold ", TextColors.YELLOW, quantity, "x ", TextColors.YELLOW, found.asRealStack().getDisplayName(),
+                                    TextColors.RESET, " for a total of ", TextColors.AQUA, FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(total)), 3);
                             }
 
                             if (!infinite) {
