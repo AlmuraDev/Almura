@@ -389,12 +389,16 @@ public class StoreScreen extends SimpleScreen {
         // TODO: Translation
         this.sellTabContainer.setTooltip(this.store.getSellingItems().size() == 0 ? new UITooltip(this, "There are no items available for purchase.") : null);
 
+        // Store current selection
+        final Optional<StoreItem> optCurrentItem = Optional.ofNullable(this.itemList.getSelectedItem());
+
         // Collections.unmodifiableList because you know... Java.
         this.itemList.setItems(Collections.unmodifiableList(this.currentSide == SideType.BUY
                 ? this.store.getBuyingItems()
                 : this.store.getSellingItems()));
 
-        this.itemList.setSelectedItem(this.itemList.getItems().stream().findFirst().orElse(null));
+        // Select the current item if available, otherwise the first item, last but not least, null if nothing is available.
+        this.itemList.setSelectedItem(optCurrentItem.orElse(this.itemList.getItems().stream().findFirst().orElse(null)));
 
         if (createControls && this.isAdmin) {
             this.createAdminControls(this.locationSelect.getSelectedValue());
