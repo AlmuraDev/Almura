@@ -390,7 +390,7 @@ public class StoreScreen extends SimpleScreen {
         this.sellTabContainer.setTooltip(this.store.getSellingItems().size() == 0 ? new UITooltip(this, "There are no items available for purchase.") : null);
 
         // Store current selection
-        final Optional<StoreItem> optCurrentItem = Optional.ofNullable(this.itemList.getSelectedItem());
+        final int currentRecord = this.itemList.getSelectedItem() != null ? this.itemList.getSelectedItem().getRecord() : -1;
 
         // Collections.unmodifiableList because you know... Java.
         this.itemList.setItems(Collections.unmodifiableList(this.currentSide == SideType.BUY
@@ -398,7 +398,11 @@ public class StoreScreen extends SimpleScreen {
                 : this.store.getSellingItems()));
 
         // Select the current item if available, otherwise the first item, last but not least, null if nothing is available.
-        this.itemList.setSelectedItem(optCurrentItem.orElse(this.itemList.getItems().stream().findFirst().orElse(null)));
+        this.itemList.setSelectedItem(this.itemList.getItems()
+          .stream()
+          .filter(i -> i.getRecord() == currentRecord)
+          .findFirst()
+          .orElse(this.itemList.getItems().stream().findFirst().orElse(null)));
 
         if (createControls && this.isAdmin) {
             this.createAdminControls(this.locationSelect.getSelectedValue());
@@ -421,6 +425,12 @@ public class StoreScreen extends SimpleScreen {
         if (this.currentSide == SideType.BUY) {
             storeManager.buy(this.store.getId(), selectedItem.getRecord(), value);
         } else {
+            // Don't attempt to sell if the player doesn't have that item
+            if (Minecraft.getMinecraft().player.inventory.mainInventory
+                  .stream()
+                  .noneMatch((i -> ItemStack.areItemsEqual(i,selectedItem.asRealStack())))) {
+                return;
+            }
             storeManager.sell(this.store.getId(), selectedItem.getRecord(), value);
         }
     }
