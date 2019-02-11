@@ -223,7 +223,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         checkNotNull(player);
 
         if (!player.hasPermission(Almura.ID + ".exchange.admin")) {
-            this.notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Store"), Text.of("You do not have permission "
+            this.notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Exchange"), Text.of("You do not have permission "
               + "to manage exchanges!"), 5);
             return;
         }
@@ -236,7 +236,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         checkNotNull(axs);
 
         if (!player.hasPermission(axs.getPermission())) {
-            this.notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Store"), Text.of("You do not have permission "
+            this.notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Exchange"), Text.of("You do not have permission "
               + "to open this exchange!"), 5);
             return;
         }
