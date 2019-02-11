@@ -165,10 +165,12 @@ public class StoreScreen extends SimpleScreen {
 
         // List
         this.itemList = new UIDynamicList<>(this, UIComponent.INHERITED,
-                SimpleScreen.getPaddedHeight(form) - this.buyTabContainer.getHeight() - tabContainerLineBottom.getHeight() - 24);
+                SimpleScreen.getPaddedHeight(form) - this.buyTabContainer.getHeight() - tabContainerLineBottom.getHeight() - 28);
         this.itemList.setPosition(0, SimpleScreen.getPaddedY(tabContainerLineBottom, 2));
         this.itemList.setSelectConsumer(i -> this.updateStoreControls());
         this.itemList.setItemComponentSpacing(1);
+        this.itemList.setBorder(FontColors.WHITE, 1, 185);
+        this.itemList.setPadding(2);
         this.itemList.setItemComponentFactory(StoreItemComponent::new);
 
         this.buttonTransactOne = new UIButtonBuilder(this)

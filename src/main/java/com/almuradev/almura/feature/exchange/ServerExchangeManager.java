@@ -222,12 +222,24 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
     void openExchangeManage(final Player player) {
         checkNotNull(player);
 
+        if (!player.hasPermission(Almura.ID + ".exchange.admin")) {
+            this.notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Exchange"), Text.of("You do not have permission "
+              + "to manage exchanges!"), 5);
+            return;
+        }
+
         this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.MANAGE));
     }
 
     void openExchangeSpecific(final Player player, final Exchange axs) {
         checkNotNull(player);
         checkNotNull(axs);
+
+        if (!player.hasPermission(axs.getPermission())) {
+            this.notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Exchange"), Text.of("You do not have permission "
+              + "to open this exchange!"), 5);
+            return;
+        }
 
         this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.SPECIFIC, axs.getId(), this.getListingsLimit(player)));
 
