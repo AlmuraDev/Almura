@@ -243,6 +243,7 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
               + "to manage stores!"), 5);
             return;
         }
+
         this.network.sendTo(player, new ClientboundStoreGuiResponsePacket(StoreGuiType.MANAGE));
     }
 
@@ -480,6 +481,12 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
         checkNotNull(player);
         checkNotNull(id);
 
+        if (!player.hasPermission(Almura.ID + ".store.admin")) {
+            this.notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Store"), Text.of("You do not have permission "
+              + "to list items!"), 5);
+            return;
+        }
+
         final Store store = this.getStore(id).orElse(null);
 
         if (store == null) {
@@ -579,6 +586,12 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
         checkNotNull(id);
         checkNotNull(candidates);
 
+        if (!player.hasPermission(Almura.ID + ".store.admin")) {
+            this.notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Store"), Text.of("You do not have permission "
+              + "to modify listed items!"), 5);
+            return;
+        }
+
         final Store store = this.getStore(id).orElse(null);
 
         if (store == null) {
@@ -659,6 +672,12 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
         checkNotNull(id);
         checkNotNull(recNos);
         checkState(!recNos.isEmpty());
+
+        if (!player.hasPermission(Almura.ID + ".store.admin")) {
+            this.notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Store"), Text.of("You do not have permission "
+              + "to unlist items!"), 5);
+            return;
+        }
 
         final Store store = this.getStore(id).orElse(null);
 
@@ -819,6 +838,12 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
         checkNotNull(player);
         checkNotNull(id);
 
+        if (!player.hasPermission(Almura.ID + ".store.admin")) {
+            this.notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Store"), Text.of("You do not have permission "
+              + "to list items!"), 5);
+            return;
+        }
+
         final Store store = this.getStore(id).orElse(null);
 
         if (store == null) {
@@ -917,6 +942,12 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
         checkNotNull(player);
         checkNotNull(id);
         checkNotNull(candidates);
+
+        if (!player.hasPermission(Almura.ID + ".store.admin")) {
+            this.notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Store"), Text.of("You do not have permission "
+              + "to modify listed items!"), 5);
+            return;
+        }
 
         final Store store = this.getStore(id).orElse(null);
 
@@ -1044,6 +1075,12 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
         checkNotNull(id);
         checkNotNull(recNos);
         checkState(!recNos.isEmpty());
+
+        if (!player.hasPermission(Almura.ID + ".store.admin")) {
+            this.notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Store"), Text.of("You do not have permission "
+              + "to unlist items!"), 5);
+            return;
+        }
 
         final Store store = this.getStore(id).orElse(null);
 
