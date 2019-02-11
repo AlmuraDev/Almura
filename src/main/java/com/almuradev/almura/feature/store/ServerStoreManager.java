@@ -238,6 +238,11 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
     public void openStoreManage(final Player player) {
         checkNotNull(player);
 
+        if (!player.hasPermission(Almura.ID + ".store.admin")) {
+            this.notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Store"), Text.of("You do not have permission "
+              + "to manage stores!"), 5);
+            return;
+        }
         this.network.sendTo(player, new ClientboundStoreGuiResponsePacket(StoreGuiType.MANAGE));
     }
 
@@ -245,7 +250,14 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
         checkNotNull(player);
         checkNotNull(store);
 
-        this.network.sendTo(player, new ClientboundStoreGuiResponsePacket(StoreGuiType.SPECIFIC, store.getId()));
+        if (!player.hasPermission(store.getPermission())) {
+            this.notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Store"), Text.of("You do not have permission "
+              + "to open this store!"), 5);
+            return;
+        }
+
+        this.network.sendTo(player, new ClientboundStoreGuiResponsePacket(StoreGuiType.SPECIFIC, store.getId(),
+          player.hasPermission(Almura.ID + ".store.admin")));
 
         if (!store.isLoaded()) {
             this.playerSpecificInitiatorIds.add(player.getUniqueId());

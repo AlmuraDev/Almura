@@ -46,7 +46,7 @@ public final class ClientboundStoreGuiResponsePacketHandler implements MessageHa
                     this.storeManager.handleStoreManage();
                     break;
                 case SPECIFIC:
-                    this.storeManager.handleStoreSpecific(message.id);
+                    this.storeManager.handleStoreSpecific(message.id, message.isAdmin);
                     break;
                 default:
                     throw new UnsupportedOperationException(message.type + " is not supported yet!");

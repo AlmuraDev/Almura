@@ -209,11 +209,11 @@ public final class ClientStoreManager implements Witness {
         new StoreManagementScreen().display();
     }
 
-    public void handleStoreSpecific(final String id) {
+    public void handleStoreSpecific(final String id, boolean isAdmin) {
         final Store store = this.getStore(id);
 
         if (store != null) {
-            new StoreScreen(store, true).display();
+            new StoreScreen(store, isAdmin).display();
         }
     }
 

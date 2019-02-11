@@ -19,16 +19,17 @@ public final class ClientboundStoreGuiResponsePacket implements Message {
 
     @Nullable public StoreGuiType type;
     @Nullable public String id;
+    public boolean isAdmin;
 
     public ClientboundStoreGuiResponsePacket() {
 
     }
 
     public ClientboundStoreGuiResponsePacket(final StoreGuiType type) {
-        this(type, null);
+        this(type, null, false);
     }
 
-    public ClientboundStoreGuiResponsePacket(final StoreGuiType type, @Nullable final String id) {
+    public ClientboundStoreGuiResponsePacket(final StoreGuiType type, @Nullable final String id, final boolean isAdmin) {
         checkNotNull(type);
 
         this.type = type;
@@ -36,6 +37,7 @@ public final class ClientboundStoreGuiResponsePacket implements Message {
         if (this.type != StoreGuiType.MANAGE) {
             checkNotNull(id);
             this.id = id;
+            this.isAdmin = isAdmin;
         }
     }
 
@@ -45,6 +47,7 @@ public final class ClientboundStoreGuiResponsePacket implements Message {
 
         if (this.type != StoreGuiType.MANAGE) {
             this.id = buf.readString();
+            this.isAdmin = buf.readBoolean();
         }
     }
 
@@ -58,6 +61,7 @@ public final class ClientboundStoreGuiResponsePacket implements Message {
             checkNotNull(this.id);
 
             buf.writeString(this.id);
+            buf.writeBoolean(this.isAdmin);
         }
     }
 }
