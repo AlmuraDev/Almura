@@ -9,15 +9,14 @@ package com.almuradev.almura.feature.hud.screen.origin.component.panel;
 
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
-import com.almuradev.almura.shared.client.ui.FontColors;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.decoration.UILabel;
+import net.malisis.core.util.FontColors;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
 @SideOnly(Side.CLIENT)
 @SuppressWarnings("deprecation")

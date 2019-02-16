@@ -104,7 +104,7 @@ dependencies {
     compile 'net.kyori:lunar:1.0.5-SNAPSHOT'
     compile 'net.kyori:membrane:1.0.5'
     compile 'net.kyori:violet:1.0.0'
-    deobfCompile ('com.almuradev:malisiscore:1.12.2-6.4.2-SNAPSHOT') {
+    deobfCompile ('com.almuradev:malisiscore:1.12.2-6.5.0-SNAPSHOT') {
         transitive = false
     }
     compile 'org.spongepowered:configurate-json:3.5'

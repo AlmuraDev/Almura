@@ -13,16 +13,17 @@ import com.almuradev.almura.feature.guide.ClientPageManager;
 import com.almuradev.almura.feature.nick.ClientNickManager;
 import com.almuradev.almura.feature.store.client.ClientStoreManager;
 import com.almuradev.almura.feature.title.ClientTitleManager;
-import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UIForm;
-import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
-import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.BasicScreen;
+import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.decoration.UISeparator;
 import net.malisis.core.client.gui.component.interaction.UIButton;
+import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
 import net.malisis.core.renderer.font.FontOptions;
+import net.malisis.core.util.FontColors;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -33,7 +34,7 @@ import org.spongepowered.api.text.Text;
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
-public final class FeaturesGUI extends SimpleScreen {
+public final class FeatureScreen extends BasicScreen {
 
   private int lastUpdate = 0;
   private boolean unlockMouse = true;
@@ -50,7 +51,7 @@ public final class FeaturesGUI extends SimpleScreen {
   @Inject private static ClientClaimManager claimManager;
   @Inject private static ClientStoreManager storeManager;
 
-  public FeaturesGUI(EntityPlayerSP player, World worldIn, boolean isAdmin) {
+  public FeatureScreen(EntityPlayerSP player, World worldIn, boolean isAdmin) {
     this.player = player;
     this.world = worldIn;
     this.isAdmin = isAdmin;
@@ -62,7 +63,7 @@ public final class FeaturesGUI extends SimpleScreen {
     Keyboard.enableRepeatEvents(true);
 
     // Main Panel
-    final UIForm form = new UIForm(this, 150, 220, "Almura Features");
+    final BasicForm form = new BasicForm(this, 150, 220, "Almura Features");
 
     if (!isAdmin) {
       form.setSize(form.getWidth(), 150);
@@ -153,7 +154,7 @@ public final class FeaturesGUI extends SimpleScreen {
     final UIButton buttonClose = new UIButtonBuilder(this)
         .width(40)
         .anchor(Anchor.BOTTOM | Anchor.RIGHT)
-        .text(Text.of("almura.button.close"))
+        .text(I18n.format("almura.button.close"))
         .onClick(this::close)
         .build("button.close");
 

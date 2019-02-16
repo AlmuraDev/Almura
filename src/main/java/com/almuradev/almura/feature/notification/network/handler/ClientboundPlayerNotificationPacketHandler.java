@@ -11,8 +11,6 @@ import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.network.ClientboundPlayerNotificationPacket;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.feature.notification.type.WindowNotification;
-import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
-import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;

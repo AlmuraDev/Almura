@@ -8,7 +8,7 @@
 package com.almuradev.almura.feature.claim.network.handler;
 
 import com.almuradev.almura.feature.claim.ClientClaimManager;
-import com.almuradev.almura.feature.claim.gui.ManageClaimGUI;
+import com.almuradev.almura.feature.claim.gui.ClaimManageScreen;
 import com.almuradev.almura.feature.claim.network.ClientboundClaimDataPacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
@@ -52,8 +52,8 @@ public final class ClientboundClaimDataPacketHandler implements MessageHandler<C
                 clientClaimManager.hasWECUI = message.hasWECUI;
                 final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
 
-                if (currentScreen instanceof ManageClaimGUI) {
-                    ((ManageClaimGUI) currentScreen).updateValues();
+                if (currentScreen instanceof ClaimManageScreen) {
+                    ((ClaimManageScreen) currentScreen).updateValues();
                 }
             }
         }

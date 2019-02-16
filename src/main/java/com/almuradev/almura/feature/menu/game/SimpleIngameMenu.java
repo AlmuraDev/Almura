@@ -8,16 +8,17 @@
 package com.almuradev.almura.feature.menu.game;
 
 import com.almuradev.almura.shared.client.GuiConfig;
-import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
-import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
-import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.GuiTexture;
+import net.malisis.core.client.gui.UIConstants;
+import net.malisis.core.client.gui.component.container.BasicContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.interaction.UIButton;
+import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
 import net.malisis.core.renderer.font.FontOptions;
+import net.malisis.core.util.FontColors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiOptions;
@@ -36,15 +37,17 @@ import java.net.URISyntaxException;
 import java.util.Locale;
 
 @SideOnly(Side.CLIENT)
-public final class SimpleIngameMenu extends SimpleScreen {
+public final class SimpleIngameMenu extends BasicScreen {
 
     private static final int PADDING = 4;
 
     @Override
     public void construct() {
+        this.renderer.setDefaultTexture(GuiConfig.SpriteSheet.ALMURA);
+
         this.guiscreenBackground = true;
 
-        final UIContainer<?> contentContainer = new UIContainer<>(this);
+        final BasicContainer<?> contentContainer = new BasicContainer<>(this);
         contentContainer.setBackgroundAlpha(0);
         contentContainer.setSize(220, 202);
         contentContainer.setAnchor(Anchor.MIDDLE | Anchor.CENTER);
@@ -57,16 +60,16 @@ public final class SimpleIngameMenu extends SimpleScreen {
         final UIButton backButton = new UIButtonBuilder(this)
                 .text(I18n.format("menu.returnToGame"))
                 .size(192, 20)
-                .position(0, SimpleScreen.getPaddedY(almuraHeader, 10))
+                .position(0, BasicScreen.getPaddedY(almuraHeader, 10))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
                 .container(contentContainer)
                 .build("button.back");
 
-        final UIContainer<?> shortcutContainer = new UIContainer<>(this);
+        final BasicContainer<?> shortcutContainer = new BasicContainer<>(this);
         shortcutContainer.setBackgroundAlpha(0);
         shortcutContainer.setSize(192, 24);
-        shortcutContainer.setPosition(backButton.getX(), SimpleScreen.getPaddedY(backButton, PADDING));
+        shortcutContainer.setPosition(backButton.getX(), BasicScreen.getPaddedY(backButton, PADDING));
         shortcutContainer.setAnchor(Anchor.TOP | Anchor.CENTER);
 
         final boolean lanAvaiable = Minecraft.getMinecraft().isSingleplayer() && !Minecraft.getMinecraft()
@@ -75,80 +78,80 @@ public final class SimpleIngameMenu extends SimpleScreen {
         final UIButton shopButton = new UIButtonBuilder(this)
                 .container(shortcutContainer)
                 .icon(GuiConfig.Icon.FA_SHOPPING_BAG)
-                .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
+                .size(UIConstants.Button.WIDTH_ICON, UIConstants.Button.HEIGHT_ICON)
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(Text.of(I18n.format("almura.menu_button.shop")))
+                .tooltip(I18n.format("almura.menu_button.shop"))
                 .build("button.shop");
 
         final UIButton mapButton = new UIButtonBuilder(this)
                 .container(shortcutContainer)
                 .icon(GuiConfig.Icon.FA_MAP)
-                .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
-                .position(SimpleScreen.getPaddedX(shopButton, PADDING), shopButton.getY())
+                .size(UIConstants.Button.WIDTH_ICON, UIConstants.Button.HEIGHT_ICON)
+                .position(BasicScreen.getPaddedX(shopButton, PADDING), shopButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(Text.of(I18n.format("item.map.name")))
+                .tooltip(I18n.format("item.map.name"))
                 .build("button.instance");
 
         final UIButton statisticsButton = new UIButtonBuilder(this)
                 .container(shortcutContainer)
                 .icon(GuiConfig.Icon.FA_PIE_CHART)
-                .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
-                .position(SimpleScreen.getPaddedX(mapButton, PADDING), mapButton.getY())
+                .size(UIConstants.Button.WIDTH_ICON, UIConstants.Button.HEIGHT_ICON)
+                .position(BasicScreen.getPaddedX(mapButton, PADDING), mapButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(Text.of(I18n.format("gui.stats")))
+                .tooltip(I18n.format("gui.stats"))
                 .build("button.statistics");
 
         final UIButton advancementsButton = new UIButtonBuilder(this)
                 .container(shortcutContainer)
                 .icon(GuiConfig.Icon.FA_TROPHY)
-                .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
-                .position(SimpleScreen.getPaddedX(statisticsButton, PADDING), mapButton.getY())
+                .size(UIConstants.Button.WIDTH_ICON, UIConstants.Button.HEIGHT_ICON)
+                .position(BasicScreen.getPaddedX(statisticsButton, PADDING), mapButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(Text.of("gui.advancements"))
+                .tooltip(I18n.format("gui.advancements"))
                 .build("button.advancements");
 
         final UIButton forumsButton = new UIButtonBuilder(this)
                 .container(shortcutContainer)
                 .icon(GuiConfig.Icon.ENJIN)
-                .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
-                .position(SimpleScreen.getPaddedX(advancementsButton, PADDING), mapButton.getY())
+                .size(UIConstants.Button.WIDTH_ICON, UIConstants.Button.HEIGHT_ICON)
+                .position(BasicScreen.getPaddedX(advancementsButton, PADDING), mapButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(Text.of(I18n.format("almura.menu_button.forums")))
+                .tooltip(I18n.format("almura.menu_button.forums"))
                 .build("button.forums");
 
         final UIButton lanButton = new UIButtonBuilder(this)
                 .container(shortcutContainer)
                 .icon(GuiConfig.Icon.FA_SITEMAP)
-                .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
-                .position(SimpleScreen.getPaddedX(forumsButton, PADDING), mapButton.getY())
+                .size(UIConstants.Button.WIDTH_ICON, UIConstants.Button.HEIGHT_ICON)
+                .position(BasicScreen.getPaddedX(forumsButton, PADDING), mapButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(Text.of(I18n.format("menu.shareToLan")))
+                .tooltip(I18n.format("menu.shareToLan"))
                 .enabled(lanAvaiable)
                 .build("button.lan");
 
         final UIButton optionsButton = new UIButtonBuilder(this)
                 .container(shortcutContainer)
                 .icon(GuiConfig.Icon.FA_COG)
-                .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
-                .position(SimpleScreen.getPaddedX(lanButton, PADDING), mapButton.getY())
+                .size(UIConstants.Button.WIDTH_ICON, UIConstants.Button.HEIGHT_ICON)
+                .position(BasicScreen.getPaddedX(lanButton, PADDING), mapButton.getY())
                 .anchor(Anchor.MIDDLE | Anchor.LEFT)
                 .listener(this)
-                .tooltip(Text.of(I18n.format("menu.options")))
+                .tooltip(I18n.format("menu.options"))
                 .build("button.options");
 
         final UIButton quitButton = new UIButtonBuilder(this)
                 .container(contentContainer)
-                .text(Text.of(I18n.format("almura.menu_button.quit")))
-                .fro(FontOptions.builder().from(FontColors.RED_FO).shadow(true).build())
-                .hoverFro(FontOptions.builder().color(Color.ofRgb(255, 89, 89).getRgb()).shadow(true).build())
-                .size(GuiConfig.Button.WIDTH_SHORT, GuiConfig.Button.HEIGHT)
-                .position(0, SimpleScreen.getPaddedY(shortcutContainer, 25))
+                .text(I18n.format("almura.menu_button.quit"))
+                .fontOptions(FontOptions.builder().from(FontColors.RED_FO).shadow(true).build())
+                .hoverFontOptions(FontOptions.builder().color(Color.ofRgb(255, 89, 89).getRgb()).shadow(true).build())
+                .size(UIConstants.Button.WIDTH_SHORT, UIConstants.Button.HEIGHT)
+                .position(0, BasicScreen.getPaddedY(shortcutContainer, 25))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
                 .build("button.quit");

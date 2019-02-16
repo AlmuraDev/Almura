@@ -10,6 +10,7 @@ package com.almuradev.almura.shared.client.ui.screen;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.asm.ClientStaticAccess;
 import com.almuradev.almura.shared.util.MathUtil;
+import net.malisis.core.client.gui.BasicScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -41,7 +42,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 
 @SideOnly(Side.CLIENT)
-public abstract class PanoramicScreen extends SimpleScreen {
+public abstract class PanoramicScreen extends BasicScreen {
 
     private static final Path PATH_ASSETS_ALMURA = Paths.get(".").resolve("assets").resolve(Almura.ID);
     private static final Map<Daypart, List<PanoramicBundle>> bundles = new HashMap<>();
@@ -81,7 +82,7 @@ public abstract class PanoramicScreen extends SimpleScreen {
         this(null);
     }
 
-    public PanoramicScreen(@Nullable SimpleScreen parent) {
+    public PanoramicScreen(@Nullable BasicScreen parent) {
         super(parent);
 
         // Get the list of bundles based on the current daypart

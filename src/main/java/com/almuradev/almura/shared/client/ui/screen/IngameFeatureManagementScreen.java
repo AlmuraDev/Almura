@@ -7,25 +7,26 @@
  */
 package com.almuradev.almura.shared.client.ui.screen;
 
-import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
-import com.almuradev.almura.shared.client.ui.component.UIForm;
-import com.almuradev.almura.shared.client.ui.component.UITextBox;
-import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
-import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
-import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
-import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxResult;
-import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
 import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.almuradev.almura.shared.feature.IngameFeature;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
+import net.malisis.core.client.gui.component.container.BasicContainer;
+import net.malisis.core.client.gui.component.container.BasicForm;
+import net.malisis.core.client.gui.component.container.BasicList;
+import net.malisis.core.client.gui.component.container.dialog.BasicMessageBox;
+import net.malisis.core.client.gui.component.container.dialog.MessageBoxButtons;
+import net.malisis.core.client.gui.component.container.dialog.MessageBoxResult;
 import net.malisis.core.client.gui.component.decoration.UILabel;
+import net.malisis.core.client.gui.component.interaction.BasicTextBox;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UICheckBox;
 import net.malisis.core.client.gui.component.interaction.UITextField;
+import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
 import net.malisis.core.client.gui.event.ComponentEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
@@ -44,7 +45,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 @SideOnly(Side.CLIENT)
-public class IngameFeatureManagementScreen<T extends IngameFeature> extends SimpleScreen {
+public class IngameFeatureManagementScreen<T extends IngameFeature> extends BasicScreen {
 
     private static final int requiredScreenWidth = 375;
     private static final int requiredScreenHeight = 215;
@@ -56,10 +57,10 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
 
     private UIButton buttonAdd, buttonDelete, buttonOpen, buttonSave;
     private UICheckBox hiddenCheckbox;
-    private UIDynamicList<T> featureList;
-    private UIForm form;
+    private BasicList<T> featureList;
+    private BasicForm form;
     private UILabel creatorNameLabel, creatorUniqueIdLabel, createdLabel;
-    private UITextBox tbId, tbPermission, tbCreatorName, tbCreatorUniqueId, tbCreated, tbTitle;
+    private BasicTextBox tbId, tbPermission, tbCreatorName, tbCreatorUniqueId, tbCreated, tbTitle;
 
     public IngameFeatureManagementScreen(final String title, final String name,
             final Consumer<IngameFeatureManagementScreen<T>> onRefresh,
@@ -79,9 +80,9 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
     public void construct() {
         this.guiscreenBackground = false;
 
-        this.form = new UIForm(this, requiredScreenWidth, requiredScreenHeight, this.title);
+        this.form = new BasicForm(this, requiredScreenWidth, requiredScreenHeight, this.title);
 
-        this.featureList = new UIDynamicList<>(this, 120, requiredScreenHeight - 40);
+        this.featureList = new BasicList<>(this, 120, requiredScreenHeight - 40);
         this.featureList.setSelectConsumer(this.onSelect());
         this.featureList.setItemComponentFactory((g, l, i) -> new IngameFeatureItemComponent(this, l, i));
         this.featureList.setItemComponentSpacing(1);
@@ -93,7 +94,7 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
 
         this.form.add(this.featureList);
 
-        final UIContainer<?> container = new UIContainer(this);
+        final BasicContainer<?> container = new BasicContainer(this);
         container.setBorder(0xFFFFFF, 1, 215);
         container.setPadding(4, 4);
         container.setAnchor(Anchor.RIGHT | Anchor.TOP);
@@ -102,7 +103,7 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
         container.setBackgroundAlpha(0);
 
         // ID
-        this.tbId = new UITextBox(this, "");
+        this.tbId = new BasicTextBox(this, "");
         this.tbId.setAcceptsReturn(false);
         this.tbId.setAcceptsTab(false);
         this.tbId.setTabIndex(0);
@@ -117,26 +118,26 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
                 .setPosition(0, this.tbId.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         // Title
-        this.tbTitle = new UITextBox(this, "");
+        this.tbTitle = new BasicTextBox(this, "");
         this.tbTitle.setAcceptsReturn(false);
         this.tbTitle.setAcceptsTab(false);
         this.tbTitle.setTabIndex(1);
         this.tbTitle.setOnEnter(tb -> this.save());
         this.tbTitle.setSize(140, 0);
-        this.tbTitle.setPosition(0, SimpleScreen.getPaddedY(this.tbId, 2), Anchor.RIGHT | Anchor.TOP);
+        this.tbTitle.setPosition(0, BasicScreen.getPaddedY(this.tbId, 2), Anchor.RIGHT | Anchor.TOP);
         this.tbTitle.register(this);
 
         final UILabel titleLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.title") + ":")
                 .setPosition(0, this.tbTitle.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         // Permission
-        this.tbPermission = new UITextBox(this, "");
+        this.tbPermission = new BasicTextBox(this, "");
         this.tbPermission.setAcceptsReturn(false);
         this.tbPermission.setAcceptsTab(false);
         this.tbPermission.setTabIndex(2);
         this.tbPermission.setOnEnter(tb -> this.save());
         this.tbPermission.setSize(140, 0);
-        this.tbPermission.setPosition(0, SimpleScreen.getPaddedY(this.tbTitle, 2), Anchor.RIGHT | Anchor.TOP);
+        this.tbPermission.setPosition(0, BasicScreen.getPaddedY(this.tbTitle, 2), Anchor.RIGHT | Anchor.TOP);
         this.tbPermission.register(this);
         this.tbPermission.setFilter(s -> s.replaceAll(filter, "").toLowerCase());
 
@@ -144,27 +145,27 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
                 .setPosition(0, this.tbPermission.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         // Created by (name)
-        this.tbCreatorName = new UITextBox(this, "");
+        this.tbCreatorName = new BasicTextBox(this, "");
         this.tbCreatorName.setSize(140, 0);
-        this.tbCreatorName.setPosition(0, SimpleScreen.getPaddedY(this.tbPermission, 2), Anchor.RIGHT | Anchor.TOP);
+        this.tbCreatorName.setPosition(0, BasicScreen.getPaddedY(this.tbPermission, 2), Anchor.RIGHT | Anchor.TOP);
         this.tbCreatorName.setEditable(false);
 
         this.creatorNameLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.creator_name") + ":")
                 .setPosition(0, this.tbCreatorName.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         // Created by (Unique ID)
-        this.tbCreatorUniqueId = new UITextBox(this, "");
+        this.tbCreatorUniqueId = new BasicTextBox(this, "");
         this.tbCreatorUniqueId.setSize(140, 0);
-        this.tbCreatorUniqueId.setPosition(0, SimpleScreen.getPaddedY(this.tbCreatorName, 2), Anchor.RIGHT | Anchor.TOP);
+        this.tbCreatorUniqueId.setPosition(0, BasicScreen.getPaddedY(this.tbCreatorName, 2), Anchor.RIGHT | Anchor.TOP);
         this.tbCreatorUniqueId.setEditable(false);
 
         this.creatorUniqueIdLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.creator_uuid") + ":")
                 .setPosition(0, this.tbCreatorUniqueId.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         // Created on
-        this.tbCreated = new UITextBox(this, "");
+        this.tbCreated = new BasicTextBox(this, "");
         this.tbCreated.setSize(140, 0);
-        this.tbCreated.setPosition(0, SimpleScreen.getPaddedY(this.tbCreatorUniqueId, 2), Anchor.RIGHT | Anchor.TOP);
+        this.tbCreated.setPosition(0, BasicScreen.getPaddedY(this.tbCreatorUniqueId, 2), Anchor.RIGHT | Anchor.TOP);
         this.tbCreated.setEditable(false);
 
         this.createdLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.created") + ":")
@@ -188,7 +189,7 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
         this.buttonOpen = new UIButtonBuilder(this)
                 .width(40)
                 .text(I18n.format("almura.button.open"))
-                .position(SimpleScreen.getPaddedX(this.buttonSave, 2, Anchor.RIGHT), 0)
+                .position(BasicScreen.getPaddedX(this.buttonSave, 2, Anchor.RIGHT), 0)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .enabled(false)
                 .onClick(this::open)
@@ -204,7 +205,7 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
 
         // Add button
         this.buttonAdd = new UIButtonBuilder(this)
-                .text(Text.of(TextColors.GREEN, "+"))
+                .text(TextFormatting.GREEN + "+")
                 .anchor(Anchor.BOTTOM | Anchor.LEFT)
                 .onClick(() -> {
                     this.featureList.setSelectedItem(null);
@@ -214,13 +215,13 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
 
         // Remove button
         this.buttonDelete = new UIButtonBuilder(this)
-                .x(SimpleScreen.getPaddedX(this.buttonAdd, 2))
-                .text(Text.of(TextColors.RED, "-"))
+                .x(BasicScreen.getPaddedX(this.buttonAdd, 2))
+                .text(TextFormatting.RED + "-")
                 .anchor(Anchor.BOTTOM | Anchor.LEFT)
                 .onClick(() -> {
                     final IngameFeature selectedFeature = this.featureList.getSelectedItem();
                     if (selectedFeature != null) {
-                        UIMessageBox.showDialog(this, I18n.format("almura.feature.common.title.are_you_sure"),
+                        BasicMessageBox.showDialog(this, I18n.format("almura.feature.common.title.are_you_sure"),
                                 I18n.format("almura.feature.common.text.delete_feature", selectedFeature.getId(), name),
                                 MessageBoxButtons.YES_NO, (result) -> {
                                     if (result != MessageBoxResult.YES) return;
@@ -235,7 +236,7 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
         final UIButton buttonClose = new UIButtonBuilder(this)
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
-                .text(Text.of("almura.button.close"))
+                .text(I18n.format("almura.button.close"))
                 .onClick(this::close)
                 .build("button.close");
 
@@ -357,7 +358,7 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
 
         final boolean isNew = this.featureList.getSelectedItem() == null;
 
-        UIMessageBox.showDialog(this, I18n.format("almura.feature.common.title.are_you_sure"),
+        BasicMessageBox.showDialog(this, I18n.format("almura.feature.common.title.are_you_sure"),
                 I18n.format(String.format("almura.feature.common.text.%s_feature", isNew ? "add" : "modify"), this.name),
                 MessageBoxButtons.YES_NO,
                 (result) -> {
@@ -410,9 +411,9 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Simp
         };
     }
 
-    private static final class IngameFeatureItemComponent<T extends IngameFeature> extends UIDynamicList.ItemComponent<T> {
+    private static final class IngameFeatureItemComponent<T extends IngameFeature> extends BasicList.ItemComponent<T> {
 
-        IngameFeatureItemComponent(final IngameFeatureManagementScreen<T> screen, final UIDynamicList<T> parent, final T item) {
+        IngameFeatureItemComponent(final IngameFeatureManagementScreen<T> screen, final BasicList<T> parent, final T item) {
             super(screen, parent, item);
             this.setOnDoubleClickConsumer(i -> screen.open());
         }

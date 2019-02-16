@@ -12,17 +12,17 @@ import com.almuradev.almura.feature.hud.HeadUpDisplay;
 import com.almuradev.almura.feature.hud.screen.origin.UIAvatarImage;
 import com.almuradev.almura.feature.hud.screen.origin.component.UIXPOrbImage;
 import com.almuradev.almura.shared.client.GuiConfig;
-import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.Fonts;
-import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.util.MathUtil;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.renderer.icon.Icon;
+import net.malisis.core.util.FontColors;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -68,11 +68,11 @@ public class UIUserPanel extends AbstractPanel {
 
         // Username
         this.usernameLabel = new UILabel(gui, TextFormatting.WHITE + this.client.player.getDisplayName().getFormattedText());
-        this.usernameLabel.setPosition(SimpleScreen.getPaddedX(this.userAvatarImage, 3), 2);
+        this.usernameLabel.setPosition(BasicScreen.getPaddedX(this.userAvatarImage, 3), 2);
 
         // Level
         this.levelLabel = new UILabel(gui, "");
-        this.levelLabel.setPosition(SimpleScreen.getPaddedX(this.userAvatarImage, 3), SimpleScreen.getPaddedY(this.usernameLabel, 0));
+        this.levelLabel.setPosition(BasicScreen.getPaddedX(this.userAvatarImage, 3), BasicScreen.getPaddedY(this.usernameLabel, 0));
         this.levelLabel.setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.7F));
 
         // Currency
@@ -89,7 +89,7 @@ public class UIUserPanel extends AbstractPanel {
         // XP Orb Image
         this.xpOrbImage = new UIXPOrbImage(gui);
         this.xpOrbImage.setSize(9, 9);
-        this.xpOrbImage.setPosition(2, SimpleScreen.getPaddedY(this.levelLabel, 3));
+        this.xpOrbImage.setPosition(2, BasicScreen.getPaddedY(this.levelLabel, 3));
 
         // TODO: Toggle for font scaling? Looks horrid on GUI Size: Normal
 
@@ -194,8 +194,8 @@ public class UIUserPanel extends AbstractPanel {
             this.currencyLabel.setVisible(true);
             this.currencyLabel.setText("$ " + hudData.economyAmount);
             this.currencyLabel.setFontOptions(Fonts.colorAndScale(FontColors.GOLD, 0.7F));
-            this.currencyLabel.setPosition(-4, SimpleScreen.getPaddedY(this.usernameLabel, 1),Anchor.TOP | Anchor.RIGHT);
-            this.currencyImage.setPosition(-(this.currencyLabel.getWidth() + 10), SimpleScreen.getPaddedY(this.usernameLabel, -1), Anchor.TOP | Anchor.RIGHT);
+            this.currencyLabel.setPosition(-4, BasicScreen.getPaddedY(this.usernameLabel, 1),Anchor.TOP | Anchor.RIGHT);
+            this.currencyImage.setPosition(-(this.currencyLabel.getWidth() + 10), BasicScreen.getPaddedY(this.usernameLabel, -1), Anchor.TOP | Anchor.RIGHT);
             this.currencyImage.setVisible(false);
         }
     }
@@ -211,8 +211,8 @@ public class UIUserPanel extends AbstractPanel {
         this.updateBarProperties(this.experienceBar, experience, experienceCap, false, false);
 
         this.xpOrbImage.setPosition(2, this.lastVisibleComponent != null
-                ? SimpleScreen.getPaddedY(this.lastVisibleComponent, 2)
-                : SimpleScreen.getPaddedY(this.levelLabel, 3));
+                ? BasicScreen.getPaddedY(this.lastVisibleComponent, 2)
+                : BasicScreen.getPaddedY(this.levelLabel, 3));
         this.experienceBar.setPosition(6, this.xpOrbImage.getY(), Anchor.TOP | Anchor.CENTER);
         this.lastVisibleComponent = this.xpOrbImage;
     }
@@ -288,8 +288,8 @@ public class UIUserPanel extends AbstractPanel {
         // Pad against last visible component
         if (updatePosition) {
             propertyBar.setPosition(0, this.lastVisibleComponent != null
-                    ? SimpleScreen.getPaddedY(this.lastVisibleComponent, 1)
-                    : SimpleScreen.getPaddedY(this.levelLabel, 3), Anchor.TOP | Anchor.CENTER);
+                    ? BasicScreen.getPaddedY(this.lastVisibleComponent, 1)
+                    : BasicScreen.getPaddedY(this.levelLabel, 3), Anchor.TOP | Anchor.CENTER);
         }
 
         // Update last visible component

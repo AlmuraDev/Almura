@@ -10,25 +10,25 @@ package com.almuradev.almura.feature.store.client.gui;
 import com.almuradev.almura.feature.store.Store;
 import com.almuradev.almura.feature.store.client.ClientStoreManager;
 import com.almuradev.almura.feature.store.listing.StoreItem;
-import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UIForm;
-import com.almuradev.almura.shared.client.ui.component.UILine;
-import com.almuradev.almura.shared.client.ui.component.UITextBox;
-import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
-import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
-import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.almuradev.almura.shared.item.BasicVanillaStack;
 import com.almuradev.almura.shared.item.VanillaStack;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.BasicScreen;
+import net.malisis.core.client.gui.component.container.BasicContainer;
+import net.malisis.core.client.gui.component.container.BasicForm;
+import net.malisis.core.client.gui.component.decoration.BasicLine;
 import net.malisis.core.client.gui.component.decoration.UILabel;
+import net.malisis.core.client.gui.component.interaction.BasicTextBox;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UICheckBox;
 import net.malisis.core.client.gui.component.interaction.UITextField;
+import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
 import net.malisis.core.client.gui.event.ComponentEvent;
 import net.malisis.core.renderer.font.FontOptions;
+import net.malisis.core.util.FontColors;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 
@@ -36,7 +36,7 @@ import java.math.BigDecimal;
 
 import javax.annotation.Nullable;
 
-public class StoreListScreen extends SimpleScreen {
+public class StoreListScreen extends BasicScreen {
 
     @Inject private static ClientStoreManager storeManager;
 
@@ -46,10 +46,10 @@ public class StoreListScreen extends SimpleScreen {
     @Nullable private StoreItem toModifyBuy, toModifySell;
     private UIButton buttonList, buttonCancel;
     private UICheckBox buyInfiniteCheckBox, sellInfiniteCheckBox;
-    private UIContainer<?> buyContainer, sellContainer;
+    private BasicContainer<?> buyContainer, sellContainer;
     private UILabel buyQtyLabel, buyTitleLabel, buyPerLabel, buyTotalPriceLabel, buyTotalLabel, sellQtyLabel, sellTitleLabel, sellPerLabel, sellTotalPriceLabel, sellTotalLabel;
-    private UITextBox buyQtyTextBox, buyPricePerTextBox, sellQtyTextBox, sellPricePerTextBox;
-    private UIForm form;
+    private BasicTextBox buyQtyTextBox, buyPricePerTextBox, sellQtyTextBox, sellPricePerTextBox;
+    private BasicForm form;
 
     public StoreListScreen(final StoreScreen parent, final Store store, final ItemStack toList) {
         super(parent, true);
@@ -72,14 +72,14 @@ public class StoreListScreen extends SimpleScreen {
     public void construct() {
         this.guiscreenBackground = false;
 
-        this.form = new UIForm(this, 250, 130, "List"); // TODO: Translation
+        this.form = new BasicForm(this, 250, 130, "List"); // TODO: Translation
         this.form.setZIndex(10); // Fixes issue overlapping draws from parent
         this.form.setBackgroundAlpha(255);
 
         final int containerWidth = getPaddedWidth(this.form) / 2 - 1;
 
         // Buy container
-        this.buyContainer = new UIContainer<>(this, containerWidth, -18);
+        this.buyContainer = new BasicContainer<>(this, containerWidth, -18);
         this.buyContainer.setColor(FontColors.BLACK);
         this.buyContainer.setBorder(FontColors.WHITE, 1, 185);
         this.buyContainer.setPadding(2);
@@ -87,10 +87,10 @@ public class StoreListScreen extends SimpleScreen {
         this.buyTitleLabel = new UILabel(this, TextFormatting.WHITE + "Buy"); // TODO: Translation
         this.buyTitleLabel.setPosition(0, 2, Anchor.TOP | Anchor.CENTER);
 
-        final UILine buyLine = new UILine(this, getPaddedWidth(this.buyContainer) + 2);
+        final BasicLine buyLine = new BasicLine(this, getPaddedWidth(this.buyContainer) + 2);
         buyLine.setPosition(-1, getPaddedY(this.buyTitleLabel, 2));
 
-        this.buyPricePerTextBox = new UITextBox(this, this.toModifyBuy != null ? this.toModifyBuy.getPrice().toString() : "");
+        this.buyPricePerTextBox = new BasicTextBox(this, this.toModifyBuy != null ? this.toModifyBuy.getPrice().toString() : "");
         this.buyPricePerTextBox.setPosition(-2, getPaddedY(buyLine, 2), Anchor.TOP | Anchor.RIGHT);
         this.buyPricePerTextBox.setSize(50, 0);
         this.buyPricePerTextBox.setAcceptsTab(false);
@@ -102,7 +102,7 @@ public class StoreListScreen extends SimpleScreen {
         this.buyPerLabel.setPosition(
           getPaddedX(this.buyPricePerTextBox, 2, Anchor.RIGHT), this.buyPricePerTextBox.getY() + 2, Anchor.TOP | Anchor.RIGHT);
 
-        this.buyQtyTextBox = new UITextBox(this, "");
+        this.buyQtyTextBox = new BasicTextBox(this, "");
         this.buyQtyTextBox.setPosition(-2, getPaddedY(this.buyPricePerTextBox, 2), Anchor.TOP | Anchor.RIGHT);
         this.buyQtyTextBox.setSize(50, 0);
         this.buyQtyTextBox.setAcceptsTab(false);
@@ -139,7 +139,7 @@ public class StoreListScreen extends SimpleScreen {
 
 
         // Sell container
-        this.sellContainer = new UIContainer<>(this, containerWidth, -18);
+        this.sellContainer = new BasicContainer<>(this, containerWidth, -18);
         this.sellContainer.setColor(FontColors.BLACK);
         this.sellContainer.setBorder(FontColors.WHITE, 1, 185);
         this.sellContainer.setPadding(2);
@@ -148,10 +148,10 @@ public class StoreListScreen extends SimpleScreen {
         this.sellTitleLabel = new UILabel(this, TextFormatting.WHITE + "Sell"); // TODO: Translation
         this.sellTitleLabel.setPosition(0, 2, Anchor.TOP | Anchor.CENTER);
 
-        final UILine sellLine = new UILine(this, getPaddedWidth(this.sellContainer) + 2);
+        final BasicLine sellLine = new BasicLine(this, getPaddedWidth(this.sellContainer) + 2);
         sellLine.setPosition(-1, getPaddedY(this.sellTitleLabel, 2));
 
-        this.sellPricePerTextBox = new UITextBox(this, this.toModifySell != null ? this.toModifySell.getPrice().toString() : "");
+        this.sellPricePerTextBox = new BasicTextBox(this, this.toModifySell != null ? this.toModifySell.getPrice().toString() : "");
         this.sellPricePerTextBox.setPosition(-2, getPaddedY(sellLine, 2), Anchor.TOP | Anchor.RIGHT);
         this.sellPricePerTextBox.setSize(50, 0);
         this.sellPricePerTextBox.setAcceptsTab(false);
@@ -163,7 +163,7 @@ public class StoreListScreen extends SimpleScreen {
         this.sellPerLabel.setPosition(
           getPaddedX(this.sellPricePerTextBox, 2, Anchor.RIGHT), this.sellPricePerTextBox.getY() + 2, Anchor.TOP | Anchor.RIGHT);
 
-        this.sellQtyTextBox = new UITextBox(this, "");
+        this.sellQtyTextBox = new BasicTextBox(this, "");
         this.sellQtyTextBox.setPosition(-2, getPaddedY(this.sellPricePerTextBox, 2), Anchor.TOP | Anchor.RIGHT);
         this.sellQtyTextBox.setSize(50, 0);
         this.sellQtyTextBox.setAcceptsTab(false);
@@ -331,7 +331,7 @@ public class StoreListScreen extends SimpleScreen {
             storeManager.requestDelistSellingItem(this.store.getId(), this.toModifySell.getRecord());
         }
 
-        ((StoreScreen) this.parent.get()).refresh(true);
+        ((StoreScreen) this.parent).refresh(true);
         this.close();
     }
 

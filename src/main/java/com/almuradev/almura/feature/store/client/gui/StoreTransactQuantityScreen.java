@@ -10,25 +10,25 @@ package com.almuradev.almura.feature.store.client.gui;
 import com.almuradev.almura.feature.store.Store;
 import com.almuradev.almura.feature.store.client.ClientStoreManager;
 import com.almuradev.almura.feature.store.listing.StoreItem;
-import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UIForm;
-import com.almuradev.almura.shared.client.ui.component.UITextBox;
-import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
-import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.almuradev.almura.shared.util.MathUtil;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.BasicScreen;
+import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.decoration.UILabel;
+import net.malisis.core.client.gui.component.interaction.BasicTextBox;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UITextField;
+import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
 import net.malisis.core.client.gui.event.ComponentEvent;
+import net.malisis.core.util.FontColors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 
-public class StoreTransactQuantityScreen extends SimpleScreen {
+public class StoreTransactQuantityScreen extends BasicScreen {
 
   @Inject private static ClientStoreManager storeManager;
 
@@ -39,8 +39,8 @@ public class StoreTransactQuantityScreen extends SimpleScreen {
 
   private UIButton buttonTransact, buttonCancel;
   private UILabel quantityLabel, perItemLabel, perItemValueLabel, totalLabel, totalValueLabel;
-  private UITextBox quantityTextBox;
-  private UIForm form;
+  private BasicTextBox quantityTextBox;
+  private BasicForm form;
 
   public StoreTransactQuantityScreen(final StoreScreen parent, final Store store, final StoreItem transactItem, StoreScreen.SideType sideType) {
     super(parent, true);
@@ -71,7 +71,7 @@ public class StoreTransactQuantityScreen extends SimpleScreen {
   public void construct() {
     this.guiscreenBackground = false;
 
-    this.form = new UIForm(this, 130, 90, I18n.format("almura.feature.exchange.title.enter_a_quantity"));
+    this.form = new BasicForm(this, 130, 90, I18n.format("almura.feature.exchange.title.enter_a_quantity"));
     this.form.setZIndex(10); // Fixes issue overlapping draws from parent
     this.form.setBackgroundAlpha(255);
 
@@ -79,7 +79,7 @@ public class StoreTransactQuantityScreen extends SimpleScreen {
     this.quantityLabel.setFontOptions(FontColors.WHITE_FO);
     this.quantityLabel.setPosition(0, 2);
 
-    this.quantityTextBox = new UITextBox(this, "1");
+    this.quantityTextBox = new BasicTextBox(this, "1");
     this.quantityTextBox.setAcceptsReturn(false);
     this.quantityTextBox.setOnEnter(tb -> this.transact());
     this.quantityTextBox.setSize(45, 0);
@@ -89,7 +89,7 @@ public class StoreTransactQuantityScreen extends SimpleScreen {
     this.quantityTextBox.register(this);
 
     this.perItemLabel = new UILabel(this, "Per:");
-    this.perItemLabel.setPosition(0, SimpleScreen.getPaddedY(this.quantityTextBox, 8));
+    this.perItemLabel.setPosition(0, BasicScreen.getPaddedY(this.quantityTextBox, 8));
     this.perItemLabel.setFontOptions(FontColors.WHITE_FO);
 
     this.perItemValueLabel = new UILabel(this, "");
@@ -97,7 +97,7 @@ public class StoreTransactQuantityScreen extends SimpleScreen {
     this.perItemValueLabel.setFontOptions(FontColors.WHITE_FO);
 
     this.totalLabel = new UILabel(this, I18n.format("almura.feature.common.text.total") + ":");
-    this.totalLabel.setPosition(0, SimpleScreen.getPaddedY(this.perItemLabel, 4));
+    this.totalLabel.setPosition(0, BasicScreen.getPaddedY(this.perItemLabel, 4));
     this.totalLabel.setFontOptions(FontColors.WHITE_FO);
 
     this.totalValueLabel = new UILabel(this, "");
@@ -115,7 +115,7 @@ public class StoreTransactQuantityScreen extends SimpleScreen {
     this.buttonCancel = new UIButtonBuilder(this)
       .text(I18n.format("almura.button.cancel"))
       .width(40)
-      .position(SimpleScreen.getPaddedX(this.buttonTransact, 2, Anchor.RIGHT), -2)
+      .position(BasicScreen.getPaddedX(this.buttonTransact, 2, Anchor.RIGHT), -2)
       .anchor(Anchor.RIGHT | Anchor.BOTTOM)
       .onClick(this::close)
       .build("button.cancel");

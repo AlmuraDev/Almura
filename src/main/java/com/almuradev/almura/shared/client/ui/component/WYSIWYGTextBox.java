@@ -7,17 +7,18 @@
  */
 package com.almuradev.almura.shared.client.ui.component;
 
-import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.UIConstants;
-import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
-import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.util.TextUtil;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.GuiRenderer;
+import net.malisis.core.client.gui.UIConstants;
 import net.malisis.core.client.gui.component.UIComponent;
+import net.malisis.core.client.gui.component.container.BasicContainer;
 import net.malisis.core.client.gui.component.decoration.UILabel;
+import net.malisis.core.client.gui.component.interaction.BasicTextBox;
 import net.malisis.core.client.gui.event.component.SpaceChangeEvent;
+import net.malisis.core.util.FontColors;
 import net.minecraft.util.text.TextFormatting;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColor;
@@ -27,7 +28,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import java.util.Arrays;
 import java.util.List;
 
-public class WYSIWYGTextBox extends UIContainer {
+public class WYSIWYGTextBox extends BasicContainer {
 
     private static final List<TextColor> colors = Arrays.asList(
             TextColors.DARK_BLUE, TextColors.BLUE,
@@ -48,14 +49,14 @@ public class WYSIWYGTextBox extends UIContainer {
 
     private static final int colorContainerSize = 18;
     private static final int colorContainerPadding = 1;
-    private final UIContainer<?> colorStyleContainer, rawFormatContainer;
+    private final BasicContainer<?> colorStyleContainer, rawFormatContainer;
     private final UILabel collapsedLabel;
-    private final UITextBox tbContent;
+    private final BasicTextBox tbContent;
     private ToolbarState state = ToolbarState.EXPANDED;
     private boolean showRaw = false;
 
     @SuppressWarnings("unchecked")
-    public WYSIWYGTextBox(final SimpleScreen screen, final int height, final String text) {
+    public WYSIWYGTextBox(final BasicScreen screen, final int height, final String text) {
         super(screen);
 
         this.collapsedLabel = new UILabel(screen, "...");
@@ -64,7 +65,7 @@ public class WYSIWYGTextBox extends UIContainer {
 
         this.setBackgroundAlpha(0);
 
-        this.colorStyleContainer = new UIContainer<>(screen, 0, colorContainerSize);
+        this.colorStyleContainer = new BasicContainer<>(screen, 0, colorContainerSize);
         this.colorStyleContainer.setColor(FontColors.GRAY);
         this.colorStyleContainer.add(this.collapsedLabel);
 
@@ -72,7 +73,7 @@ public class WYSIWYGTextBox extends UIContainer {
         int startX = 0;
         for (final TextColor color : colors) {
             final int currentWidth = this.colorStyleContainer.getWidth();
-            final UIContainer<?> colorContainer = this.generateColorContainer(screen, startX, color);
+            final BasicContainer<?> colorContainer = this.generateColorContainer(screen, startX, color);
             colorContainer.attachData(color);
             startX += colorContainerSize + colorContainerPadding;
             this.colorStyleContainer.add(colorContainer);
@@ -80,7 +81,7 @@ public class WYSIWYGTextBox extends UIContainer {
         }
         for (final TextFormatting style : styles) {
             final int currentWidth = this.colorStyleContainer.getWidth();
-            final UIContainer<?> styleContainer = this.generateStyleContainer(screen, startX, style);
+            final BasicContainer<?> styleContainer = this.generateStyleContainer(screen, startX, style);
             styleContainer.attachData(style);
             startX += colorContainerSize + colorContainerPadding;
             this.colorStyleContainer.add(styleContainer);
@@ -91,7 +92,7 @@ public class WYSIWYGTextBox extends UIContainer {
         this.colorStyleContainer.setWidth(this.colorStyleContainer.getWidth() + this.rawFormatContainer.getWidth());
 
         // Content textbox
-        this.tbContent = new UITextBox(screen, text, true);
+        this.tbContent = new BasicTextBox(screen, text, true);
         this.tbContent.setFontOptions(UIConstants.DEFAULT_TEXTBOX_FO);
         this.tbContent.getScrollbar().setAutoHide(true);
 
@@ -111,7 +112,7 @@ public class WYSIWYGTextBox extends UIContainer {
 
     @Override
     @Deprecated
-    public UIContainer setWidth(final int width) {
+    public BasicContainer setWidth(final int width) {
         throw new UnsupportedOperationException("This component does not support setting this property!");
     }
 
@@ -171,29 +172,29 @@ public class WYSIWYGTextBox extends UIContainer {
         // Reset alpha values
         this.colorStyleContainer.getComponents()
                 .stream()
-                .filter(c -> c instanceof UIContainer)
-                .forEach(c -> ((UIContainer) c).setBackgroundAlpha(255));
+                .filter(c -> c instanceof BasicContainer)
+                .forEach(c -> ((BasicContainer) c).setBackgroundAlpha(255));
         // Reset colors
         this.colorStyleContainer.getComponents()
                 .stream()
-                .filter(c -> c instanceof UIContainer && c.getData() instanceof TextFormatting
+                .filter(c -> c instanceof BasicContainer && c.getData() instanceof TextFormatting
                         || (c.getName() != null && c.getName().startsWith("container.label")))
-                .forEach(c -> ((UIContainer) c).setColor(0));
+                .forEach(c -> ((BasicContainer) c).setColor(0));
 
         final UIComponent<?> componentAt = this.getComponentAt(mouseX, mouseY);
         if (componentAt != null) {
             if (componentAt.getData() instanceof TextColor) {
-                ((UIContainer) componentAt).setBackgroundAlpha(200);
+                ((BasicContainer) componentAt).setBackgroundAlpha(200);
             } else if (componentAt.getData() instanceof TextFormatting
                     || (componentAt.getName() != null && componentAt.getName().startsWith("container.label"))) {
-                ((UIContainer) componentAt).setColor(FontColors.GRAY);
-                ((UIContainer) componentAt).setBackgroundAlpha(200);
+                ((BasicContainer) componentAt).setColor(FontColors.GRAY);
+                ((BasicContainer) componentAt).setBackgroundAlpha(200);
             }
         }
         super.draw(renderer, mouseX, mouseY, partialTick);
     }
 
-    public UITextBox getTextBox() {
+    public BasicTextBox getTextBox() {
         return this.tbContent;
     }
 
@@ -214,7 +215,7 @@ public class WYSIWYGTextBox extends UIContainer {
 
     private void updateControls() {
         final int y;
-        int height = SimpleScreen.getPaddedHeight(this);
+        int height = BasicScreen.getPaddedHeight(this);
         switch (state) {
             case COLLAPSED:
                 final int collapsedContainerHeight = 4;
@@ -222,8 +223,8 @@ public class WYSIWYGTextBox extends UIContainer {
                 this.colorStyleContainer.setVisible(true);
                 this.colorStyleContainer.setHeight(collapsedContainerHeight);
                 this.colorStyleContainer.setBackgroundAlpha(185);
-                this.colorStyleContainer.getComponents().stream().filter(c -> c instanceof UIContainer).forEach(c -> c.setVisible(false));
-                y = SimpleScreen.getPaddedY(this.colorStyleContainer, 0);
+                this.colorStyleContainer.getComponents().stream().filter(c -> c instanceof BasicContainer).forEach(c -> c.setVisible(false));
+                y = BasicScreen.getPaddedY(this.colorStyleContainer, 0);
                 height -= collapsedContainerHeight;
                 break;
             case EXPANDED:
@@ -233,7 +234,7 @@ public class WYSIWYGTextBox extends UIContainer {
                 this.colorStyleContainer.setHeight(expandedContainerHeight);
                 this.colorStyleContainer.setBackgroundAlpha(0);
                 this.colorStyleContainer.getComponents().forEach(c -> c.setVisible(true));
-                y = SimpleScreen.getPaddedY(this.colorStyleContainer, colorContainerPadding);
+                y = BasicScreen.getPaddedY(this.colorStyleContainer, colorContainerPadding);
                 height -= expandedContainerHeight + colorContainerPadding;
                 break;
             case HIDDEN:
@@ -249,7 +250,7 @@ public class WYSIWYGTextBox extends UIContainer {
 
     private void format() {
         final float scrollPos = this.getTextBox().getScrollbar().getOffset();
-        final UITextBox.CursorPosition cursorPos = this.getTextBox().getCursorPosition();
+        final BasicTextBox.CursorPosition cursorPos = this.getTextBox().getCursorPosition();
 
         final String currentContent = this.getTextBox().getText();
         if (this.showRaw) {
@@ -275,7 +276,7 @@ public class WYSIWYGTextBox extends UIContainer {
 
     private void color(final String value) {
         final float scrollPosition = this.tbContent.getScrollbar().getOffset();
-        final UITextBox.CursorPosition cursorPosition = this.tbContent.getCursorPosition();
+        final BasicTextBox.CursorPosition cursorPosition = this.tbContent.getCursorPosition();
 
         if (this.tbContent.getSelectedText().isEmpty()) {
             // Add the value to the text
@@ -295,8 +296,8 @@ public class WYSIWYGTextBox extends UIContainer {
         this.tbContent.focus();
     }
 
-    private UIContainer<?> generateBaseContainer(final SimpleScreen screen, final String name, final int x) {
-        final UIContainer<?> baseContainer = new UIContainer<>(screen, colorContainerSize, colorContainerSize);
+    private BasicContainer<?> generateBaseContainer(final BasicScreen screen, final String name, final int x) {
+        final BasicContainer<?> baseContainer = new BasicContainer<>(screen, colorContainerSize, colorContainerSize);
         baseContainer.setPosition(x, 0);
         baseContainer.setBorder(FontColors.WHITE, 1, 185);
         baseContainer.setName("container." + name);
@@ -304,8 +305,8 @@ public class WYSIWYGTextBox extends UIContainer {
         return baseContainer;
     }
 
-    private UIContainer<?> generateColorContainer(final SimpleScreen screen, final int x, final TextColor color) {
-        final UIContainer<?> baseContainer = this.generateBaseContainer(screen, "color." + color.getId(), x);
+    private BasicContainer<?> generateColorContainer(final BasicScreen screen, final int x, final TextColor color) {
+        final BasicContainer<?> baseContainer = this.generateBaseContainer(screen, "color." + color.getId(), x);
         baseContainer.setBorder(FontColors.WHITE, 1, 185);
         baseContainer.setTooltip(color.getName());
         baseContainer.setColor(color.getColor().getRgb());
@@ -313,8 +314,8 @@ public class WYSIWYGTextBox extends UIContainer {
         return baseContainer;
     }
 
-    private UIContainer<?> generateStyleContainer(final SimpleScreen screen, final int x, final TextFormatting style) {
-        final UIContainer<?> baseContainer = this.generateBaseContainer(screen, "style." + style.getFriendlyName().toLowerCase(), x);
+    private BasicContainer<?> generateStyleContainer(final BasicScreen screen, final int x, final TextFormatting style) {
+        final BasicContainer<?> baseContainer = this.generateBaseContainer(screen, "style." + style.getFriendlyName().toLowerCase(), x);
         baseContainer.setTooltip(style.getFriendlyName());
         baseContainer.setColor(0);
 
@@ -327,8 +328,8 @@ public class WYSIWYGTextBox extends UIContainer {
         return baseContainer;
     }
 
-    private UIContainer<?> generateLabelContainer(final SimpleScreen screen, final int x, final String id, final String value, final String tooltip) {
-        final UIContainer<?> baseContainer = this.generateBaseContainer(screen, "label." + id, x);
+    private BasicContainer<?> generateLabelContainer(final BasicScreen screen, final int x, final String id, final String value, final String tooltip) {
+        final BasicContainer<?> baseContainer = this.generateBaseContainer(screen, "label." + id, x);
         baseContainer.setTooltip(tooltip);
         baseContainer.setColor(0);
 

@@ -8,17 +8,17 @@
 package com.almuradev.almura.feature.menu.multiplayer;
 
 import com.almuradev.almura.shared.client.GuiConfig;
-import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
 import com.almuradev.almura.shared.client.ui.screen.PanoramicScreen;
-import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.util.Query;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
+import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
 import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.resources.I18n;
@@ -132,34 +132,34 @@ public class ServerMenu extends PanoramicScreen {
                 .position(-padding, -padding)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .listener(this)
-                .tooltip(Text.of(I18n.format("almura.menu.forums")))
+                .tooltip(I18n.format("almura.menu.forums"))
                 .build("button.forums");
 
         final UIButton issuesButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
                 .icon(GuiConfig.Icon.FA_GITHUB)
                 .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
-                .position(SimpleScreen.getPaddedX(forumsButton, padding, Anchor.RIGHT), forumsButton.getY())
+                .position(BasicScreen.getPaddedX(forumsButton, padding, Anchor.RIGHT), forumsButton.getY())
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .listener(this)
-                .tooltip(Text.of(I18n.format(I18n.format("almura.menu.issues"))))
+                .tooltip(I18n.format(I18n.format("almura.menu.issues")))
                 .build("button.issues");
 
         final UIButton shopButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
                 .icon(GuiConfig.Icon.FA_SHOPPING_BAG)
                 .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
-                .position(SimpleScreen.getPaddedX(issuesButton, padding, Anchor.RIGHT), issuesButton.getY())
+                .position(BasicScreen.getPaddedX(issuesButton, padding, Anchor.RIGHT), issuesButton.getY())
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .listener(this)
-                .tooltip(Text.of(I18n.format("almura.menu.shop")))
+                .tooltip(I18n.format("almura.menu.shop"))
                 .build("button.shop");
 
         final UILabel trademarkLabel = new UILabel(this, TextFormatting.YELLOW + I18n.format("almura.menu.main.trademark"));
         trademarkLabel.setPosition(padding, -padding, Anchor.BOTTOM | Anchor.LEFT);
 
         final UILabel copyrightLabel = new UILabel(this, TextFormatting.YELLOW + I18n.format("almura.menu.main.copyright"));
-        copyrightLabel.setPosition(trademarkLabel.getX(), SimpleScreen.getPaddedY(trademarkLabel, padding, Anchor.BOTTOM), trademarkLabel.getAnchor());
+        copyrightLabel.setPosition(trademarkLabel.getX(), BasicScreen.getPaddedY(trademarkLabel, padding, Anchor.BOTTOM), trademarkLabel.getAnchor());
 
         form.add(logoImage, liveServerTitle, liveServerOnline, almuraLiveButton, devServerTitle,
                 devServerOnline, almuraDevButton, devPlayersOnline, livePlayersOnline, anotherButton, backButton);

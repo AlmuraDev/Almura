@@ -18,19 +18,19 @@ package com.almuradev.almura.feature.death.client.gui;
 import com.almuradev.almura.feature.death.network.ServerboundReviveRequestPacket;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.shared.client.GuiConfig;
-import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UIForm;
-import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
-import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.GuiTexture;
+import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.decoration.UISeparator;
 import net.malisis.core.client.gui.component.interaction.UIButton;
+import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
 import net.malisis.core.renderer.font.FontOptions;
+import net.malisis.core.util.FontColors;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.resources.I18n;
@@ -54,14 +54,14 @@ import java.util.Random;
 import java.util.function.Consumer;
 
 @SideOnly(Side.CLIENT)
-public final class PlayerDiedGUI extends SimpleScreen {
+public final class PlayerDiedGUI extends BasicScreen {
 
     private static final int innerPadding = 2;
     private int lastUpdate = 0;
     private boolean unlockMouse = true;
     private boolean update = true;
     private UILabel messageLabel, droppedLabel, deathTaxLabel;
-    private UIForm form;
+    private BasicForm form;
     private UIButton buttonRespawn, buttonRevive, buttonRagequit;
 
     private EntityPlayer player;
@@ -89,7 +89,7 @@ public final class PlayerDiedGUI extends SimpleScreen {
         this.guiscreenBackground = true;
         Keyboard.enableRepeatEvents(true);
 
-        this.form = new UIForm(this, 50, 200, "You have died.");
+        this.form = new BasicForm(this, 50, 200, "You have died.");
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(false);
         this.form.setClosable(false);
@@ -173,8 +173,8 @@ public final class PlayerDiedGUI extends SimpleScreen {
         this.buttonRagequit = new UIButtonBuilder(this)
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
-                .text(Text.of(I18n.format("almura.menu_button.quit")))
-                .fro(FontOptions.builder().from(FontColors.RED_FO).shadow(true).build())
+                .text(I18n.format("almura.menu_button.quit"))
+                .fontOptions(FontOptions.builder().from(FontColors.RED_FO).shadow(true).build())
                 .listener(this)
                 .build("button.ragequit");
 

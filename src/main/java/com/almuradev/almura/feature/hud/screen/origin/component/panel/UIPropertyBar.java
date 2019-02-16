@@ -8,7 +8,6 @@
 package com.almuradev.almura.feature.hud.screen.origin.component.panel;
 
 import com.almuradev.almura.shared.client.GuiConfig;
-import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.Fonts;
 import com.almuradev.almura.shared.util.MathUtil;
 import net.malisis.core.client.gui.GuiRenderer;
@@ -19,6 +18,7 @@ import net.malisis.core.client.gui.element.GuiShape;
 import net.malisis.core.client.gui.element.SimpleGuiShape;
 import net.malisis.core.renderer.font.FontOptions;
 import net.malisis.core.renderer.icon.GuiIcon;
+import net.malisis.core.util.FontColors;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.text.Text;

@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.claim;
 
-import com.almuradev.almura.feature.claim.gui.ManageClaimGUI;
+import com.almuradev.almura.feature.claim.gui.ClaimManageScreen;
 import com.almuradev.almura.feature.claim.network.ClientboundClaimDataPacket;
 import com.almuradev.almura.feature.claim.network.ClientboundClaimGuiResponsePacket;
 import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiAbandonRequestPacket;
@@ -59,7 +59,7 @@ public final class ClaimModule extends AbstractModule implements CommonBinder {
                         this.packet().bind(ServerboundClaimGuiToggleDenyMessagesRequestPacket.class);
                     }
 
-                    this.requestStaticInjection(ManageClaimGUI.class);
+                    this.requestStaticInjection(ClaimManageScreen.class);
                 }
             }
             this.install(new ClientModule());

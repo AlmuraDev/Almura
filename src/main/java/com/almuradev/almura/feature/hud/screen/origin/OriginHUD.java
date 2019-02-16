@@ -21,10 +21,10 @@ import com.almuradev.almura.feature.hud.screen.origin.component.panel.debug.Info
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.debug.LookingDebugPanel;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.shared.client.GuiConfig;
-import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.util.MathUtil;
 import com.almuradev.toolbox.config.map.MappedConfiguration;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.BasicScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraftforge.fml.relauncher.Side;
@@ -70,7 +70,7 @@ public class OriginHUD extends AbstractHUD {
 
         // Debug block panel
         this.debugBlockPanel = new LookingDebugPanel(this, 124, 45);
-        this.debugBlockPanel.setPosition(0, SimpleScreen.getPaddedY(this.userPanel, PADDING));
+        this.debugBlockPanel.setPosition(0, BasicScreen.getPaddedY(this.userPanel, PADDING));
 
         // Notifications panel
         this.notificationPanel = new UINotificationPanel(this, 124, 26, this.manager);
@@ -87,11 +87,11 @@ public class OriginHUD extends AbstractHUD {
 
         // Debug details panel
         this.debugDetailsPanel = new InformationDebugPanel(this, 155, 64, this.game);
-        this.debugDetailsPanel.setPosition(0, SimpleScreen.getPaddedY(this.detailsPanel, PADDING), Anchor.TOP | Anchor.RIGHT);
+        this.debugDetailsPanel.setPosition(0, BasicScreen.getPaddedY(this.detailsPanel, PADDING), Anchor.TOP | Anchor.RIGHT);
 
         // Boss bar panel
         this.bossBarPanel = new UIBossBarPanel(this, 124, 33);
-        this.bossBarPanel.setPosition(0, SimpleScreen.getPaddedY(this.worldPanel, PADDING), Anchor.TOP | Anchor.CENTER);
+        this.bossBarPanel.setPosition(0, BasicScreen.getPaddedY(this.worldPanel, PADDING), Anchor.TOP | Anchor.CENTER);
 
         // Player list panel
         this.playerListPanel = new UIPlayerListPanel(this, 150, 16);
@@ -139,7 +139,7 @@ public class OriginHUD extends AbstractHUD {
         this.debugDetailsPanel.setVisible(isDebugEnabled);
         if (isDebugEnabled) {
             // Get proper position based on what potion effects are being shown
-            int yOffset = SimpleScreen.getPaddedY(this.detailsPanel, PADDING);
+            int yOffset = BasicScreen.getPaddedY(this.detailsPanel, PADDING);
             if (this.client.player.getActivePotionEffects().stream().anyMatch(potion -> potion.getPotion().isBeneficial())) {
                 yOffset += 25; // 24 for potion icon, 1 for padding
             }
@@ -147,7 +147,7 @@ public class OriginHUD extends AbstractHUD {
                 yOffset += 25; // 24 for potion icon, 1 for padding
             }
             // Debug block panel
-            this.debugBlockPanel.setPosition(0, SimpleScreen.getPaddedY(this.userPanel, PADDING));
+            this.debugBlockPanel.setPosition(0, BasicScreen.getPaddedY(this.userPanel, PADDING));
             this.debugBlockPanel.setAlpha(general.originHudOpacity);
 
             // Debug details panel

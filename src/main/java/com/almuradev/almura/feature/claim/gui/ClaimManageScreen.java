@@ -7,14 +7,6 @@
  */
 package com.almuradev.almura.feature.claim.gui;
 
-/*
- * This file is part of Almura.
- *
- * Copyright (c) AlmuraDev <https://github.com/AlmuraDev/>
- *
- * All Rights Reserved.
- */
-
 import com.almuradev.almura.feature.claim.ClientClaimManager;
 import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiAbandonRequestPacket;
 import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiSaveRequestPacket;
@@ -22,23 +14,23 @@ import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiToggleDenyM
 import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiToggleVisualsRequestPacket;
 import com.almuradev.almura.feature.hud.HeadUpDisplay;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
-import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UIForm;
-import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
-import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
-import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxResult;
-import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
-import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.BasicScreen;
+import net.malisis.core.client.gui.component.container.BasicForm;
+import net.malisis.core.client.gui.component.container.dialog.BasicMessageBox;
+import net.malisis.core.client.gui.component.container.dialog.MessageBoxButtons;
+import net.malisis.core.client.gui.component.container.dialog.MessageBoxResult;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.decoration.UISeparator;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UICheckBox;
 import net.malisis.core.client.gui.component.interaction.UITextField;
+import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
 import net.malisis.core.client.gui.event.ComponentEvent;
 import net.malisis.core.renderer.font.FontOptions;
+import net.malisis.core.util.FontColors;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
@@ -55,7 +47,7 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
-public final class ManageClaimGUI extends SimpleScreen {
+public final class ClaimManageScreen extends BasicScreen {
 
     @Inject @ChannelId(NetworkConfig.CHANNEL) private static ChannelBinding.IndexedMessageChannel network;
     @Inject private static ClientClaimManager clientClaimManager;
@@ -66,7 +58,7 @@ public final class ManageClaimGUI extends SimpleScreen {
     private boolean unlockMouse = true;
     private boolean update = true;
 
-    private UIForm form, functionsArea, econArea;
+    private BasicForm form, functionsArea, econArea;
     private UITextField claimNameField, claimOwnerField, claimGreetingField, claimFarewellField, claimSizeField, claimValueField, claimTaxField;
     private UILabel claimNameLabel, claimForSaleLabel, claimOwnerLabel, claimGreetingLabel, claimFarewellLabel, claimSizeLabel, claimTaxLabel;
     private UICheckBox showWarningsCheckbox;
@@ -74,7 +66,7 @@ public final class ManageClaimGUI extends SimpleScreen {
 
     private boolean isOwner, isTrusted, isAdmin, toggleVisuals, closeOnAbandon;
 
-    public ManageClaimGUI(boolean isOwner, boolean isTrusted, boolean isAdmin) {
+    public ClaimManageScreen(boolean isOwner, boolean isTrusted, boolean isAdmin) {
         this.isOwner = isOwner;
         this.isTrusted = isTrusted;
         this.isAdmin = isAdmin;
@@ -88,7 +80,7 @@ public final class ManageClaimGUI extends SimpleScreen {
 
         final DecimalFormat dFormat = new DecimalFormat("###,###,##0.00");
 
-        this.form = new UIForm(this, 400, 250, "");
+        this.form = new BasicForm(this, 400, 250, "");
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(true);
         this.form.setClosable(true);
@@ -163,7 +155,7 @@ public final class ManageClaimGUI extends SimpleScreen {
         this.claimFarewellField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
         // Economy Container
-        this.econArea = new UIForm(this, 252, 125, "");
+        this.econArea = new BasicForm(this, 252, 125, "");
         this.econArea.setPosition(7, claimFarewellLabel.getY() + 20, Anchor.LEFT | Anchor.TOP);
         this.econArea.setMovable(false);
         this.econArea.setClosable(false);
@@ -218,7 +210,7 @@ public final class ManageClaimGUI extends SimpleScreen {
         this.econArea.add(econSeparator, econSeparator, econTitleLabel, claimValueLabel, this.claimValueField, this.claimTaxLabel, this.claimTaxField, this.claimForSaleLabel);
 
         // Functions Container
-        this.functionsArea = new UIForm(this, 110, 200, "");
+        this.functionsArea = new BasicForm(this, 110, 200, "");
         this.functionsArea.setPosition(-10, 5, Anchor.RIGHT | Anchor.TOP);
         this.functionsArea.setMovable(false);
         this.functionsArea.setClosable(false);
@@ -254,7 +246,7 @@ public final class ManageClaimGUI extends SimpleScreen {
             .listener(this)
             .enabled(this.isOwner || this.isAdmin)
             .onClick(() -> {
-                UIMessageBox.showDialog(this, "Abandon Claim",
+                BasicMessageBox.showDialog(this, "Abandon Claim",
                     "Do you wish to abandon this claim?",
                     MessageBoxButtons.YES_NO, (result) -> {
                         if (result != MessageBoxResult.YES) return;

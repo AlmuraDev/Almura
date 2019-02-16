@@ -10,25 +10,23 @@ package com.almuradev.almura.feature.menu.main;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.shared.client.texture.GuiRemoteTexture;
-import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UISimpleList;
-import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
-import com.almuradev.almura.shared.client.ui.screen.SimpleContainerScreen;
-import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.BasicContainerScreen;
+import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
-import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
-import net.malisis.core.client.gui.component.container.UIListContainer;
+import net.malisis.core.client.gui.component.container.BasicList;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UITextField;
+import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
 import net.malisis.core.renderer.font.FontOptions;
+import net.malisis.core.util.FontColors;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
@@ -47,13 +45,13 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 @SideOnly(Side.CLIENT)
-public class SimpleAboutMenu extends SimpleContainerScreen {
+public class SimpleAboutMenu extends BasicContainerScreen {
 
-    private UISimpleList<AboutListElementData> list;
+    private BasicList<AboutItemData> list;
     private UITextField textField;
 
-    public SimpleAboutMenu(@Nullable SimpleScreen parent) {
-        super(parent, Text.of(I18n.format("almura.menu_button.about")));
+    public SimpleAboutMenu(@Nullable final BasicScreen parent) {
+        super(parent, I18n.format("almura.menu_button.about"));
     }
 
     @SuppressWarnings({"unchecked"})
@@ -61,24 +59,24 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
     public void construct() {
         super.construct();
 
-        this.list = new UISimpleList(this, 125, UIComponent.INHERITED);
+        this.list = new BasicList<>(this, 125, UIComponent.INHERITED);
         this.list.setPosition(4, 0);
-        this.list.setElementSpacing(4);
-        this.list.setUnselect(false);
+        this.list.setItemComponentSpacing(4);
+        this.list.setCanDeselect(false);
 
-        final List<AboutListElementData> elementDataList = Lists.newArrayList();
+        final List<AboutItemData> elementDataList = Lists.newArrayList();
 
         // Static entry
-        elementDataList.add(new AboutListElementData(this.list,
+        elementDataList.add(new AboutItemData(this.list,
                 new UIImage(this, new GuiTexture(GuiConfig.Location.ALMURA_MAN), null), 5, 0, 23, 32, 8, AboutConfig.TITLE, AboutConfig.STORY));
 
         // Dynamic entry
         AboutConfig.ENTRIES.forEach(entry -> {
             Text titles = Text.EMPTY;
-            for (String title : entry.titles) {
+            for (final String title : entry.titles) {
                 titles = titles.toBuilder().append(Text.of("  • ", I18n.format(title)), Text.NEW_LINE).build();
             }
-            elementDataList.add(new AboutListElementData(this.list,
+            elementDataList.add(new AboutItemData(this.list,
                     new UIImage(this, new GuiRemoteTexture(
                             GuiConfig.Location.GENERIC_AVATAR,
                             new ResourceLocation(Almura.ID, "textures/gui/skins/avatars/" + entry.uniqueId + ".png"),
@@ -92,7 +90,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
         });
 
         final UIButton doneButton = new UIButtonBuilder(this)
-                .text(Text.of(I18n.format("gui.done")))
+                .text(I18n.format("gui.done"))
                 .size(98, 20)
                 .position(0, -15, 1)
                 .anchor(Anchor.BOTTOM | Anchor.CENTER)
@@ -100,14 +98,14 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
                 .build("button.done");
 
         this.textField = new UITextField(this, "", true);
-        this.textField.setPosition(SimpleScreen.getPaddedX(this.list, 4), 0);
+        this.textField.setPosition(BasicScreen.getPaddedX(this.list, 4), 0);
         this.textField.setEditable(false);
         this.textField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
-        this.list.setComponentFactory(AboutListElement::new);
-        this.list.setElements(elementDataList);
-        this.list.register(this);
-        this.list.select(elementDataList.get(0));
+        this.list.setItemComponentFactory(AboutItemComponent::new);
+        this.list.setItems(elementDataList);
+        this.list.setSelectConsumer(i -> this.textField.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(i.getContent())));
+        this.list.setSelectedItem(elementDataList.get(0));
 
         this.getContainer().add(this.list, this.textField);
 
@@ -133,7 +131,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
         this.list.setPosition(4, 0);
         this.list.setSize(125, this.getContainer().getHeight());
         this.textField.setSize(this.width - this.list.getWidth() - 12, this.getContainer().getHeight());
@@ -141,7 +139,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
     }
 
     @Subscribe
-    public void onButtonClick(UIButton.ClickEvent event) {
+    public void onButtonClick(final UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.done":
                 this.close();
@@ -150,37 +148,29 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
     }
 
     @SuppressWarnings("deprecation")
-    @Subscribe
-    private void onElementSelect(UIListContainer.SelectEvent<AboutListElementData> event) {
-        if (event.getSelected() != null) {
-            this.textField.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(event.getSelected().getContent()));
-        }
-    }
-
-    @SuppressWarnings("deprecation")
-    private static final class AboutListElement extends UIBackgroundContainer {
+    private static final class AboutItemComponent extends BasicList.ItemComponent<AboutItemData> {
 
         private static final int BORDER_COLOR = org.spongepowered.api.util.Color.ofRgb(128, 128, 128).getRgb();
         private static final int INNER_COLOR = org.spongepowered.api.util.Color.ofRgb(0, 0, 0).getRgb();
 
-        private final AboutListElementData elementData;
+        private final AboutItemData item;
         private final UILabel label;
 
-        private AboutListElement(MalisisGui gui, AboutListElementData elementData) {
-            super(gui);
+        public AboutItemComponent(final MalisisGui gui, final BasicList<AboutItemData> parent, final AboutItemData item) {
+            super(gui, parent, item);
 
-            this.elementData = elementData;
+            this.item = item;
 
-            this.parent = this.elementData.getParent();
+            this.parent = parent;
 
-            this.label = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(this.elementData.getTitle()));
-            this.label.setPosition(SimpleScreen.getPaddedX(this.elementData.getImage(), this.elementData.getPadding()), 2);
+            this.label = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(this.item.getTitle()));
+            this.label.setPosition(BasicScreen.getPaddedX(this.item.getImage(), this.item.getPadding()), 2);
 
             // Add image/label
-            this.add(this.elementData.getImage(), this.label);
+            this.add(this.item.getImage(), this.label);
 
-            // Set size
-            this.setSize(((UIListContainer) this.getParent()).getContentWidth() - 3, this.elementData.getImage().getHeight() + 6);
+            // Set height
+            this.setHeight(38);
 
             // Set padding
             this.setPadding(1, 1);
@@ -190,45 +180,42 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
             this.setBorder(BORDER_COLOR, 1, 255);
         }
 
-        private AboutListElementData getElementData() {
-            return this.elementData;
-        }
-
+        @SuppressWarnings("unchecked")
         @Override
-        public boolean onClick(int x, int y) {
+        public boolean onClick(final int x, final int y) {
             final UIComponent component = getComponentAt(x, y);
-            if (this.label.equals(component) || this.elementData.getImage().equals(component) || this.equals(component)) {
-                this.elementData.getParent().select(this.elementData);
+            if (this.label.equals(component) || this.item.getImage().equals(component) || this.equals(component)) {
+                ((BasicList<AboutItemData>) this.parent).setSelectedItem(this.item);
             }
             return true;
         }
 
         @Override
-        public void drawBackground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-            if (this.parent instanceof UISimpleList) {
-                final UISimpleList parent = (UISimpleList) this.parent;
+        public void drawBackground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
+            if (this.parent instanceof BasicList) {
+                final BasicList parent = (BasicList) this.parent;
 
                 final int width = parent.getContentWidth() - (parent.getScrollBar().isEnabled() ? parent.getScrollBar().getRawWidth() + 1 : 0);
 
                 setSize(width, getHeight());
 
-                if (this.elementData == parent.getSelected()) {
+                if (this.item == parent.getSelectedItem()) {
                     super.drawBackground(renderer, mouseX, mouseY, partialTick);
                 }
             }
         }
     }
 
-    private static final class AboutListElementData {
+    private static final class AboutItemData {
 
-        private final UISimpleList<AboutListElementData> parent;
+        private final BasicList<AboutItemData> parent;
         private final UIImage image;
         private final Text title;
         private final Text content;
         private final int padding;
 
-        private AboutListElementData(UISimpleList<AboutListElementData> parent, UIImage image, int imageX, int imageY,
-                int imageWidth,int imageHeight, int padding, Text title, Text content) {
+        private AboutItemData(final BasicList<AboutItemData> parent, final UIImage image, final int imageX, final int imageY,
+                final int imageWidth, final int imageHeight, final int padding, final Text title, final Text content) {
             this.parent = parent;
             this.image = image;
             this.image.setPosition(imageX, imageY, Anchor.MIDDLE | Anchor.LEFT);
@@ -240,7 +227,7 @@ public class SimpleAboutMenu extends SimpleContainerScreen {
             this.content = content;
         }
 
-        public UISimpleList<AboutListElementData> getParent() {
+        public BasicList<AboutItemData> getParent() {
             return this.parent;
         }
 

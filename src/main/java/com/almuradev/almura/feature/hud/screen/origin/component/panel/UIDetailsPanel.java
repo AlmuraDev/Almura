@@ -9,16 +9,16 @@ package com.almuradev.almura.feature.hud.screen.origin.component.panel;
 
 import com.almuradev.almura.feature.hud.HeadUpDisplay;
 import com.almuradev.almura.shared.client.GuiConfig;
-import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.component.UIExpandingLabel;
-import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.google.common.base.MoreObjects;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
+import net.malisis.core.util.FontColors;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -51,7 +51,7 @@ public class UIDetailsPanel extends AbstractPanel {
         this.playerCountLabel.setFontOptions(FontColors.WHITE_FO);
         this.playerCountImage = new UIImage(gui, new GuiTexture(GuiConfig.Location.GENERIC_AVATAR), null);
         this.playerCountImage.setSize(16, 16);
-        this.playerCountImage.setPosition(SimpleScreen.getPaddedX(this.clockImage, 4, Anchor.RIGHT), 0, Anchor.MIDDLE | Anchor.RIGHT);
+        this.playerCountImage.setPosition(BasicScreen.getPaddedX(this.clockImage, 4, Anchor.RIGHT), 0, Anchor.MIDDLE | Anchor.RIGHT);
 
         // Coordinates
         this.coordsLabel = new UIExpandingLabel(gui, "");
@@ -85,7 +85,7 @@ public class UIDetailsPanel extends AbstractPanel {
         final boolean isOnline = !this.client.isSingleplayer() || (this.client.isSingleplayer() && this.client.getIntegratedServer().getPublic());
         if (isOnline) {
             this.playerCountLabel.setText(TextFormatting.WHITE.toString() + hudData.onlinePlayerCount + "/" + hudData.maxPlayerCount);
-            this.playerCountLabel.setPosition(SimpleScreen.getPaddedX(this.playerCountImage, 2, Anchor.RIGHT), 1, Anchor.MIDDLE | Anchor.RIGHT);
+            this.playerCountLabel.setPosition(BasicScreen.getPaddedX(this.playerCountImage, 2, Anchor.RIGHT), 1, Anchor.MIDDLE | Anchor.RIGHT);
         }
         this.playerCountImage.setVisible(isOnline);
         this.playerCountLabel.setVisible(isOnline);

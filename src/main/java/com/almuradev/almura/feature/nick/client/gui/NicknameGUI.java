@@ -20,24 +20,25 @@ import com.almuradev.almura.feature.nick.NickUtil;
 import com.almuradev.almura.feature.nick.asm.mixin.iface.IMixinEntityPlayer;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
-import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UIForm;
-import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
-import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.BasicScreen;
+import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UISelect;
 import net.malisis.core.client.gui.component.interaction.UITextField;
+import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
 import net.malisis.core.renderer.font.FontOptions;
+import net.malisis.core.util.FontColors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.relauncher.Side;
@@ -53,13 +54,13 @@ import java.util.Arrays;
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
-public final class NicknameGUI extends SimpleScreen {
+public final class NicknameGUI extends BasicScreen {
 
     private int lastUpdate = 0;
     private boolean unlockMouse = true;
     private boolean update = true;
     private String originalNickname;
-    private UIForm form;
+    private BasicForm form;
     private UITextField nicknameTextbox;
     private UISelect colorSelector;
 
@@ -94,7 +95,7 @@ public final class NicknameGUI extends SimpleScreen {
         Keyboard.enableRepeatEvents(true);
 
         // Master Panel
-        this.form = new UIForm(this, 400, 225, "");
+        this.form = new BasicForm(this, 400, 225, "");
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(true);
         this.form.setClosable(true);
@@ -110,7 +111,7 @@ public final class NicknameGUI extends SimpleScreen {
         titleLabel.setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
 
         // Player Render Area
-        final UIForm playerArea = new UIForm(this, 175, 185, "");
+        final BasicForm playerArea = new BasicForm(this, 175, 185, "");
         playerArea.setPosition(0, 0, Anchor.RIGHT | Anchor.MIDDLE);
         playerArea.setMovable(false);
         playerArea.setClosable(false);
@@ -122,7 +123,7 @@ public final class NicknameGUI extends SimpleScreen {
         playerArea.setLeftPadding(3);
 
         // Nickname List Area
-        final UIForm listArea = new UIForm(this, 217, 85, "");
+        final BasicForm listArea = new BasicForm(this, 217, 85, "");
         listArea.setPosition(0, 0, Anchor.LEFT | Anchor.TOP);
         listArea.setMovable(false);
         listArea.setClosable(false);
@@ -182,7 +183,7 @@ public final class NicknameGUI extends SimpleScreen {
         final UIButton buttonColor = new UIButtonBuilder(this)
                 .width(40)
                 .position(110, 49, Anchor.LEFT | Anchor.TOP)
-                .text(Text.of("almura.button.add"))
+                .text(I18n.format("almura.button.add"))
                 .listener(this)
                 .build("button.color");
 
@@ -190,7 +191,7 @@ public final class NicknameGUI extends SimpleScreen {
         final UIButton buttonReset = new UIButtonBuilder(this)
                 .width(40)
                 .position(150, 49, Anchor.LEFT | Anchor.TOP)
-                .text(Text.of("almura.button.reset"))
+                .text(I18n.format("almura.button.reset"))
                 .listener(this)
                 .build("button.reset");
 
@@ -198,7 +199,7 @@ public final class NicknameGUI extends SimpleScreen {
         final UIButton buttonRemove = new UIButtonBuilder(this)
                 .width(70)
                 .position(105, 65, Anchor.LEFT | Anchor.TOP)
-                .text(Text.of("almura.button.nick.remove"))
+                .text(I18n.format("almura.button.nick.remove"))
                 .enabled(this.canChangeNickname)
                 .listener(this)
                 .build("button.remove");

@@ -7,9 +7,9 @@
  */
 package com.almuradev.almura.feature.hud.screen.origin.component.panel;
 
-import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.Fonts;
 import net.malisis.core.client.gui.MalisisGui;
+import net.malisis.core.util.FontColors;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;

@@ -12,28 +12,28 @@ import com.almuradev.almura.feature.store.client.ClientStoreManager;
 import com.almuradev.almura.feature.store.listing.BuyingItem;
 import com.almuradev.almura.feature.store.listing.SellingItem;
 import com.almuradev.almura.feature.store.listing.StoreItem;
-import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
 import com.almuradev.almura.shared.client.ui.component.UIExpandingLabel;
-import com.almuradev.almura.shared.client.ui.component.UIForm;
-import com.almuradev.almura.shared.client.ui.component.UILine;
 import com.almuradev.almura.shared.client.ui.component.UISaneTooltip;
-import com.almuradev.almura.shared.client.ui.component.UITextBox;
-import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
-import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
-import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
+import net.malisis.core.client.gui.component.container.BasicContainer;
+import net.malisis.core.client.gui.component.container.BasicForm;
+import net.malisis.core.client.gui.component.container.BasicList;
+import net.malisis.core.client.gui.component.decoration.BasicLine;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.decoration.UITooltip;
+import net.malisis.core.client.gui.component.interaction.BasicTextBox;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UISelect;
 import net.malisis.core.client.gui.component.interaction.UITextField;
+import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
 import net.malisis.core.client.gui.event.ComponentEvent;
+import net.malisis.core.util.FontColors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
@@ -64,7 +64,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
-public class StoreScreen extends SimpleScreen {
+public class StoreScreen extends BasicScreen {
 
     @Inject private static ClientStoreManager storeManager;
     private static final int defaultTabColor = 0x1E1E1E;
@@ -80,13 +80,13 @@ public class StoreScreen extends SimpleScreen {
 
     private SideType currentSide = SideType.BUY;
     private UIButton buttonTransactStack, buttonTransactOne, buttonTransactAll, buttonTransactQuantity, buttonAdminList, buttonAdminUnlist;
-    private UIContainer<?> buyTabContainer, sellTabContainer;
-    private UIDynamicList<StoreItem> itemList;
-    private UIDynamicList<ItemStack> adminItemList;
+    private BasicContainer<?> buyTabContainer, sellTabContainer;
+    private BasicList<StoreItem> itemList;
+    private BasicList<ItemStack> adminItemList;
     private UILabel typeLabel, adminListTotalLabel, buyTabLabel, sellTabLabel;
-    private UILine thisDoesNotExistLine;
+    private BasicLine thisDoesNotExistLine;
     private UISelect<ItemFinder> locationSelect;
-    private UITextBox adminSearchTextBox;
+    private BasicTextBox adminSearchTextBox;
 
     public StoreScreen(final Store store, final boolean isAdmin) {
         this.store = store;
@@ -118,17 +118,17 @@ public class StoreScreen extends SimpleScreen {
     public void construct() {
         guiscreenBackground = false;
 
-        final UIForm form = new UIForm(this, 257, 300, this.store.getName());
+        final BasicForm form = new BasicForm(this, 257, 300, this.store.getName());
         form.setBackgroundAlpha(255);
 
-        final UIContainer<?> storeContainer = new UIContainer<>(this, 251, UIComponent.INHERITED);
+        final BasicContainer<?> storeContainer = new BasicContainer<>(this, 251, UIComponent.INHERITED);
         storeContainer.setBorder(FontColors.WHITE, 1, 185);
         storeContainer.setPadding(3);
         storeContainer.setColor(0);
 
         // Buy tab
         final int leftOffset = storeContainer.getLeftPadding() - storeContainer.getLeftBorderSize();
-        this.buyTabContainer = new UIContainer<>(this, this.tabWidth, this.tabHeight);
+        this.buyTabContainer = new BasicContainer<>(this, this.tabWidth, this.tabHeight);
         this.buyTabContainer.setBorders(FontColors.WHITE, 185, 1, 1, 1, 0);
         this.buyTabContainer.setPosition(4, 2);
         this.buyTabContainer.setColor(defaultTabColor);
@@ -141,7 +141,7 @@ public class StoreScreen extends SimpleScreen {
         this.buyTabContainer.add(this.buyTabLabel);
 
         // Sell tab
-        this.sellTabContainer = new UIContainer<>(this, this.tabWidth, this.tabHeight);
+        this.sellTabContainer = new BasicContainer<>(this, this.tabWidth, this.tabHeight);
         this.sellTabContainer.setBorders(FontColors.WHITE, 185, 1, 1, 1, 0);
         this.sellTabContainer.setColor(defaultTabColor);
         this.sellTabContainer.setPosition(-4, 2, Anchor.TOP | Anchor.RIGHT);
@@ -154,19 +154,19 @@ public class StoreScreen extends SimpleScreen {
         this.sellTabContainer.add(this.sellTabLabel);
 
         // Doesn't exist.
-        this.thisDoesNotExistLine = new UILine(this, this.tabWidth - 2);
+        this.thisDoesNotExistLine = new BasicLine(this, this.tabWidth - 2);
         this.thisDoesNotExistLine.setBackgroundAlpha(255);
         this.thisDoesNotExistLine.setColor(selectedTabColor);
 
         // Bottom tab line
-        final UILine tabContainerLineBottom = new UILine(this,
+        final BasicLine tabContainerLineBottom = new BasicLine(this,
                 storeContainer.getWidth() - (storeContainer.getLeftBorderSize() + storeContainer.getRightBorderSize()), 1);
-        tabContainerLineBottom.setPosition(-leftOffset, SimpleScreen.getPaddedY(this.buyTabContainer, 0));
+        tabContainerLineBottom.setPosition(-leftOffset, BasicScreen.getPaddedY(this.buyTabContainer, 0));
 
         // List
-        this.itemList = new UIDynamicList<>(this, UIComponent.INHERITED,
-                SimpleScreen.getPaddedHeight(form) - this.buyTabContainer.getHeight() - tabContainerLineBottom.getHeight() - 28);
-        this.itemList.setPosition(0, SimpleScreen.getPaddedY(tabContainerLineBottom, 2));
+        this.itemList = new BasicList<>(this, UIComponent.INHERITED,
+                BasicScreen.getPaddedHeight(form) - this.buyTabContainer.getHeight() - tabContainerLineBottom.getHeight() - 28);
+        this.itemList.setPosition(0, BasicScreen.getPaddedY(tabContainerLineBottom, 2));
         this.itemList.setSelectConsumer(i -> this.updateStoreControls());
         this.itemList.setItemComponentSpacing(1);
         this.itemList.setBorder(FontColors.WHITE, 1, 185);
@@ -182,7 +182,7 @@ public class StoreScreen extends SimpleScreen {
 
         this.buttonTransactStack = new UIButtonBuilder(this)
                 .width(60)
-                .x(SimpleScreen.getPaddedX(this.buttonTransactOne, 2))
+                .x(BasicScreen.getPaddedX(this.buttonTransactOne, 2))
                 .anchor(Anchor.BOTTOM | Anchor.LEFT)
                 .enabled(false)
                 .onClick(() -> {
@@ -221,7 +221,7 @@ public class StoreScreen extends SimpleScreen {
 
         this.buttonTransactQuantity = new UIButtonBuilder(this)
                 .width(60)
-                .x(SimpleScreen.getPaddedX(this.buttonTransactAll, 2, Anchor.RIGHT))
+                .x(BasicScreen.getPaddedX(this.buttonTransactAll, 2, Anchor.RIGHT))
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .enabled(false)
                 .onClick(() -> {
@@ -245,8 +245,8 @@ public class StoreScreen extends SimpleScreen {
             form.setWidth(form.getWidth() + 224);
 
             // Create admin pane
-            final UIContainer<?> adminContainer = new UIContainer(this, 220, UIComponent.INHERITED);
-            adminContainer.setPosition(SimpleScreen.getPaddedX(storeContainer, 4), 0);
+            final BasicContainer<?> adminContainer = new BasicContainer(this, 220, UIComponent.INHERITED);
+            adminContainer.setPosition(BasicScreen.getPaddedX(storeContainer, 4), 0);
             adminContainer.setBorder(FontColors.WHITE, 1, 185);
             adminContainer.setPadding(3);
             adminContainer.setColor(0);
@@ -265,17 +265,17 @@ public class StoreScreen extends SimpleScreen {
             this.locationSelect.register(this);
 
             // Search text box
-            this.adminSearchTextBox = new UITextBox(this, "");
+            this.adminSearchTextBox = new BasicTextBox(this, "");
             this.adminSearchTextBox.setSize(UIComponent.INHERITED, this.locationSelect.getHeight());
-            this.adminSearchTextBox.setPosition(0, SimpleScreen.getPaddedY(this.locationSelect, 2));
+            this.adminSearchTextBox.setPosition(0, BasicScreen.getPaddedY(this.locationSelect, 2));
             this.adminSearchTextBox.register(this);
 
             // Item list
-            this.adminItemList = new UIDynamicList<>(this, UIComponent.INHERITED,
-                    SimpleScreen.getPaddedHeight(form) - this.locationSelect.getHeight() - this.adminSearchTextBox.getHeight() - 28);
+            this.adminItemList = new BasicList<>(this, UIComponent.INHERITED,
+                    BasicScreen.getPaddedHeight(form) - this.locationSelect.getHeight() - this.adminSearchTextBox.getHeight() - 28);
             this.adminItemList.setItemComponentFactory(AdminItemComponent::new);
             this.adminItemList.setItemComponentSpacing(1);
-            this.adminItemList.setPosition(0, SimpleScreen.getPaddedY(this.adminSearchTextBox, 2));
+            this.adminItemList.setPosition(0, BasicScreen.getPaddedY(this.adminSearchTextBox, 2));
             this.adminItemList.setPadding(2);
             this.adminItemList.setBorder(FontColors.WHITE, 1, 185);
             this.adminItemList.setSelectConsumer(i -> this.updateAdminControls());
@@ -290,7 +290,7 @@ public class StoreScreen extends SimpleScreen {
             this.buttonAdminUnlist = new UIButtonBuilder(this)
                     .width(50)
                     .anchor(Anchor.BOTTOM | Anchor.LEFT)
-                    .position(SimpleScreen.getPaddedX(this.buttonAdminList, 2), 0)
+                    .position(BasicScreen.getPaddedX(this.buttonAdminList, 2), 0)
                     .enabled(false)
                     .onClick(this::unlist)
                     .text(I18n.format("almura.feature.common.button.unlist"))
@@ -484,13 +484,13 @@ public class StoreScreen extends SimpleScreen {
      * @param y The y position
      * @return The tab container for that location if present, empty otherwise
      */
-    private Optional<UIContainer> getTabContainer(final int x, final int y) {
+    private Optional<BasicContainer> getTabContainer(final int x, final int y) {
         final UIComponent<?> componentAt = this.getComponentAt(x, y);
         final UIComponent<?> componentAtParent = componentAt != null ? componentAt.getParent() : null;
         if (this.buyTabContainer.equals(componentAt) || this.sellTabContainer.equals(componentAt)) {
-            return Optional.of((UIContainer) componentAt);
+            return Optional.of((BasicContainer) componentAt);
         } else if (this.buyTabContainer.equals(componentAtParent) || this.sellTabContainer.equals(componentAtParent)) {
-            return Optional.of((UIContainer) componentAtParent);
+            return Optional.of((BasicContainer) componentAtParent);
         }
 
         return Optional.empty();
@@ -502,7 +502,7 @@ public class StoreScreen extends SimpleScreen {
      * @param tabContainer The container
      * @param tabLabel The label
      */
-    private void updateTabs(final UIContainer<?> tabContainer, final UILabel tabLabel) {
+    private void updateTabs(final BasicContainer<?> tabContainer, final UILabel tabLabel) {
         if (tabContainer.getData() instanceof SideType && tabLabel.getData() instanceof SideType) {
             tabContainer.setColor(this.currentSide == tabContainer.getData() ? selectedTabColor : defaultTabColor);
             tabLabel.setFontOptions(this.currentSide == tabLabel.getData() ? FontColors.WHITE_FO : FontColors.GRAY_FO);
@@ -513,7 +513,7 @@ public class StoreScreen extends SimpleScreen {
                 // Update something that doesn't exist
                 final int offsetX = this.currentSide == SideType.BUY ? 1 : -1;
                 this.thisDoesNotExistLine.setColor(selectedTabColor);
-                this.thisDoesNotExistLine.setPosition(tabContainer.getX() + offsetX, SimpleScreen.getPaddedY(tabContainer, 0),
+                this.thisDoesNotExistLine.setPosition(tabContainer.getX() + offsetX, BasicScreen.getPaddedY(tabContainer, 0),
                         tabContainer.getAnchor());
 
                 this.updateStoreControls();
@@ -626,15 +626,15 @@ public class StoreScreen extends SimpleScreen {
         return net.minecraft.item.ItemStack.areItemsEqual(a, b) && net.minecraft.item.ItemStack.areItemStackTagsEqual(a, b);
     }
 
-    public static class StoreItemComponent<T extends StoreItem> extends UIDynamicList.ItemComponent<T> {
+    public static class StoreItemComponent<T extends StoreItem> extends BasicList.ItemComponent<T> {
 
         protected UIImage image;
         protected UIExpandingLabel itemLabel, priceLabel;
         protected int itemNameSpaceAvailable;
         private UILabel soldOutLabel;
-        private UIContainer<?> soldOutContainer;
+        private BasicContainer<?> soldOutContainer;
 
-        public StoreItemComponent(final MalisisGui gui, final UIDynamicList<T> parent, final T item) {
+        public StoreItemComponent(final MalisisGui gui, final BasicList<T> parent, final T item) {
             super(gui, parent, item);
 
             this.setOnDoubleClickConsumer(i -> ((StoreScreen) getGui()).transact(1));
@@ -645,7 +645,7 @@ public class StoreScreen extends SimpleScreen {
             this.setSize(0, 24);
 
             // Sold out container
-            this.soldOutContainer = new UIContainer<>(this.getGui(), UIComponent.INHERITED, UIComponent.INHERITED);
+            this.soldOutContainer = new BasicContainer<>(this.getGui(), UIComponent.INHERITED, UIComponent.INHERITED);
             this.soldOutContainer.setColor(FontColors.DARK_GRAY);
             this.soldOutContainer.setBackgroundAlpha(180);
             this.soldOutContainer.setVisible(false);
@@ -729,14 +729,14 @@ public class StoreScreen extends SimpleScreen {
         }
     }
 
-    public static class AdminItemComponent extends UIDynamicList.ItemComponent<ItemStack> {
+    public static class AdminItemComponent extends BasicList.ItemComponent<ItemStack> {
 
         protected UIImage image;
         protected UIExpandingLabel itemLabel, buyPriceLabel, sellPriceLabel;
         protected int itemNameSpaceAvailable;
-        private UIContainer<?> listedIndicatorContainer;
+        private BasicContainer<?> listedIndicatorContainer;
 
-        AdminItemComponent(final MalisisGui gui, final UIDynamicList<ItemStack> parent, final ItemStack item) {
+        AdminItemComponent(final MalisisGui gui, final BasicList<ItemStack> parent, final ItemStack item) {
             super(gui, parent, item);
 
             this.setOnDoubleClickConsumer(itemStack -> {
@@ -752,7 +752,7 @@ public class StoreScreen extends SimpleScreen {
             // Default available space
             this.itemNameSpaceAvailable = this.getWidth();
 
-            this.listedIndicatorContainer = new UIContainer<>(gui, 5, this.height - (this.getLeftBorderSize() + this.getRightBorderSize()));
+            this.listedIndicatorContainer = new BasicContainer<>(gui, 5, this.height - (this.getLeftBorderSize() + this.getRightBorderSize()));
             this.listedIndicatorContainer.setVisible(false);
             this.listedIndicatorContainer.setPosition(2, -2, Anchor.TOP | Anchor.RIGHT);
 

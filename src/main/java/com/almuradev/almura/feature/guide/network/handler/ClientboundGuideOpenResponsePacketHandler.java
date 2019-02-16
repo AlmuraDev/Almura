@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.guide.network.handler;
 
-import com.almuradev.almura.feature.guide.client.gui.SimplePageView;
+import com.almuradev.almura.feature.guide.client.gui.GuidePageViewScreen;
 import com.almuradev.almura.feature.guide.network.ClientboundGuideOpenResponsePacket;
 import com.almuradev.almura.feature.guide.network.GuideOpenType;
 import com.almuradev.almura.shared.util.PacketUtil;
@@ -27,9 +27,9 @@ public final class ClientboundGuideOpenResponsePacketHandler implements MessageH
 
             if (PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
                 if (message.type == GuideOpenType.PLAYER_LOGGED_IN && (!Minecraft.getMinecraft().isIntegratedServerRunning())) {
-                    new SimplePageView(message.canAdd, message.canRemove, message.canModify).display();
+                    new GuidePageViewScreen(message.canAdd, message.canRemove, message.canModify).display();
                 } else if (message.type != GuideOpenType.PLAYER_LOGGED_IN) {
-                    new SimplePageView(message.canAdd, message.canRemove, message.canModify).display();
+                    new GuidePageViewScreen(message.canAdd, message.canRemove, message.canModify).display();
                 }
             }
         }
