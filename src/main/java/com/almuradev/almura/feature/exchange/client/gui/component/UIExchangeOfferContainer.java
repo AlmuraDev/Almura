@@ -35,12 +35,10 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.ItemHandlerHelper;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -89,14 +87,14 @@ public class UIExchangeOfferContainer extends BasicDualListContainer<VanillaStac
 
         // Add property bars
         this.leftPropertyBar = new UIPropertyBar(gui, BasicScreen.getPaddedWidth(this.leftContainer), 14);
-        this.leftPropertyBar.setColor(org.spongepowered.api.util.Color.ofRgb(0, 130, 0).getRgb());
+        this.leftPropertyBar.setColor(0x008200);
         this.leftPropertyBar.setPosition(-1, 0, Anchor.BOTTOM | Anchor.LEFT);
-        this.leftPropertyBar.setText(Text.of(0, "/", this.leftLimit));
+        this.leftPropertyBar.setText("0/" + this.leftLimit);
 
         this.rightPropertyBar = new UIPropertyBar(gui, BasicScreen.getPaddedWidth(this.rightContainer), 14);
-        this.rightPropertyBar.setColor(org.spongepowered.api.util.Color.ofRgb(0, 130, 0).getRgb());
+        this.rightPropertyBar.setColor(0x008200);
         this.rightPropertyBar.setPosition(-1, 0, Anchor.BOTTOM | Anchor.LEFT);
-        this.rightPropertyBar.setText(Text.of(0, "/", this.rightLimit));
+        this.rightPropertyBar.setText("0/" + this.rightLimit);
 
         this.leftContainer.add(this.leftPropertyBar);
         this.rightContainer.add(this.rightPropertyBar);
@@ -180,12 +178,12 @@ public class UIExchangeOfferContainer extends BasicDualListContainer<VanillaStac
         // Left property bar
         final int leftSize = this.leftDynamicList.getSize();
         this.leftPropertyBar.setAmount(MathUtil.scalef(leftSize, 0, this.leftLimit, 0f, 1f));
-        this.leftPropertyBar.setText(Text.of(leftSize, "/", this.leftLimit));
+        this.leftPropertyBar.setText(leftSize + "/" + this.leftLimit);
 
         // Right progress bar
         final int rightSize = this.rightDynamicList.getSize() + this.listedItems;
         this.rightPropertyBar.setAmount(MathUtil.scalef(rightSize, 0, this.rightLimit, 0f, 1f));
-        this.rightPropertyBar.setText(Text.of(rightSize, "/", this.rightLimit));
+        this.rightPropertyBar.setText(rightSize + "/" + this.rightLimit);
 
         super.updateControls(selectedValue, targetSide);
     }
@@ -393,7 +391,6 @@ public class UIExchangeOfferContainer extends BasicDualListContainer<VanillaStac
             });
         }
 
-        @SuppressWarnings("deprecation")
         @Override
         protected void construct(final MalisisGui gui) {
             this.setSize(0, 24);
@@ -428,10 +425,8 @@ public class UIExchangeOfferContainer extends BasicDualListContainer<VanillaStac
                 displayName = displayNameBuilder.toString();
             }
 
-            this.itemLabelText = TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.WHITE, displayName));
-            this.itemQuantityText = TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.GRAY, " x ", FeatureConstants.withSuffix(this.item.getQuantity())));
+            this.itemLabelText = TextFormatting.WHITE + displayName;
+            this.itemQuantityText = TextFormatting.GRAY + " x " + FeatureConstants.withSuffix(this.item.getQuantity());
 
             this.itemLabel = new UIExpandingLabel(gui, this.itemLabelText + this.itemQuantityText);
             this.itemLabel.setPosition(BasicScreen.getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
@@ -446,12 +441,10 @@ public class UIExchangeOfferContainer extends BasicDualListContainer<VanillaStac
         }
 
         @Override
-        @SuppressWarnings("deprecation")
         public void drawForeground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
             // Update the item label if the quantity has changed to reflect the new quantity
             if (this.lastKnownQuantity != this.item.getQuantity()) {
-                this.itemQuantityText = TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                        Text.of(TextColors.GRAY, " x ", FeatureConstants.withSuffix(this.item.getQuantity())));
+                this.itemQuantityText = TextFormatting.GRAY + " x " + FeatureConstants.withSuffix(this.item.getQuantity());
                 this.itemLabel.setText(this.itemLabelText + this.itemQuantityText);
                 this.lastKnownQuantity = this.item.getQuantity();
             }

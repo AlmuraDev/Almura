@@ -45,10 +45,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.slf4j.Logger;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.format.TextStyles;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -350,7 +346,6 @@ public final class ExchangeScreen extends BasicScreen {
         return this.axs;
     }
 
-    @SuppressWarnings("deprecation")
     private void setPage(int page) {
         page = MathUtil.squashi(page, 1, this.pages);
 
@@ -415,7 +410,6 @@ public final class ExchangeScreen extends BasicScreen {
         }
     }
 
-    @SuppressWarnings("deprecation")
     private void updateControls() {
 
         // Results list
@@ -443,7 +437,7 @@ public final class ExchangeScreen extends BasicScreen {
         this.buttonNextPage.setEnabled(this.currentPage != this.pages);
         this.buttonLastPage.setEnabled(this.currentPage != this.pages);
 
-        this.labelSearchPage.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextColors.WHITE, this.currentPage, "/", this.pages)));
+        this.labelSearchPage.setText(TextFormatting.WHITE + String.valueOf(this.currentPage) + "/" + this.pages);
 
         // Update all items
         this.listItemList.getComponents()
@@ -453,8 +447,7 @@ public final class ExchangeScreen extends BasicScreen {
                 .forEach(ListItemComponent::update);
 
         // Update the limit label
-        this.labelLimit.setText(TextSerializers.LEGACY_FORMATTING_CODE
-                .serialize(Text.of(TextColors.WHITE, this.listItemList.getItems().size(), "/", this.limit)));
+        this.labelLimit.setText(TextFormatting.WHITE + String.valueOf(this.listItemList.getItems().size()) + "/" + this.limit);
 
         // Hide the list and show the label if there are no items to present
         final boolean isEmpty = this.forSaleList.getItems().isEmpty();
@@ -558,7 +551,6 @@ public final class ExchangeScreen extends BasicScreen {
             this.add(this.image, this.itemLabel);
         }
 
-        @SuppressWarnings("deprecation")
         protected void refreshDisplayName() {
             // Limit item name to prevent over drawing
             final ItemStack fakeStack = this.item.asRealStack().copy();
@@ -573,9 +565,8 @@ public final class ExchangeScreen extends BasicScreen {
                 displayName.append(c);
             }
 
-            this.itemLabel.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.WHITE, displayName.toString(), TextColors.GRAY, " x ",
-                        FeatureConstants.withSuffix(this.item.getQuantity()))));
+            this.itemLabel.setText(TextFormatting.WHITE + displayName.toString() + TextFormatting.GRAY + " x "
+              + FeatureConstants.withSuffix(this.item.getQuantity()));
         }
     }
 
@@ -608,7 +599,6 @@ public final class ExchangeScreen extends BasicScreen {
             this.update();
         }
 
-        @SuppressWarnings("deprecation")
         public void update() {
             final boolean listed = this.item.getForSaleItem().isPresent();
 
@@ -620,8 +610,7 @@ public final class ExchangeScreen extends BasicScreen {
                 final BigDecimal forSalePrice = this.item.getForSaleItem().map(ForSaleItem::getPrice).orElse(BigDecimal.valueOf(0));
                 final double forSaleDoublePrice = forSalePrice.doubleValue();
 
-                this.priceLabel.setText(TextSerializers.LEGACY_FORMATTING_CODE
-                        .serialize(Text.of(TextColors.GOLD, FeatureConstants.withSuffix(forSaleDoublePrice), TextColors.GRAY, "/ea")));
+                this.priceLabel.setText(TextFormatting.GOLD + FeatureConstants.withSuffix(forSaleDoublePrice) + TextFormatting.GRAY + "/ea");
                 this.priceLabel.setPosition(-(this.listedIndicatorContainer.getWidth() + 6), 0, Anchor.RIGHT | Anchor.MIDDLE);
 
                 // Exact value
@@ -649,21 +638,19 @@ public final class ExchangeScreen extends BasicScreen {
             this.setOnDoubleClickConsumer(i -> ((ExchangeScreen) getGui()).buy(1));
         }
 
-        @SuppressWarnings("deprecation")
         @Override
         protected void construct(final MalisisGui gui) {
             super.construct(gui);
 
             final int maxPlayerTextWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth("9999999999999999");
 
-            this.sellerLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                Text.of(TextColors.GRAY, TextStyles.ITALIC,
-                        this.item.getListItem().getSellerName().orElse(I18n.format("almura.feature.common.text.unknown")))));
+            this.sellerLabel = new UILabel(gui, TextFormatting.GRAY + "" + TextFormatting.ITALIC
+              + this.item.getListItem().getSellerName().orElse(I18n.format("almura.feature.common.text.unknown")));
             this.sellerLabel.setPosition(-innerPadding, 0, Anchor.RIGHT | Anchor.MIDDLE);
 
             final double price = this.item.getPrice().doubleValue();
 
-            this.priceLabel = new UIExpandingLabel(gui, Text.of(TextColors.GOLD, FeatureConstants.withSuffix(price), TextColors.GRAY, "/ea"));
+            this.priceLabel = new UIExpandingLabel(gui, TextFormatting.GOLD + FeatureConstants.withSuffix(price) + TextFormatting.GRAY + "/ea");
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-maxPlayerTextWidth + 6, 0, Anchor.RIGHT | Anchor.MIDDLE);
 

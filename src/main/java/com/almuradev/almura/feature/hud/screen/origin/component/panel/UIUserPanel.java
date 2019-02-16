@@ -277,9 +277,9 @@ public class UIUserPanel extends AbstractPanel {
 
     private void updateBarProperties(UIPropertyBar propertyBar, float value, float maxValue, boolean updatePosition, boolean updateLastVisible) {
         // Update text
-        Text text = ClientStaticAccess.configAdapter.get().general.displayNumericHUDValues
-                ? Text.of(this.df.format(value) + "/" + this.df.format(maxValue))
-                : Text.EMPTY;
+        final String text = ClientStaticAccess.configAdapter.get().general.displayNumericHUDValues
+                ? this.df.format(value) + "/" + this.df.format(maxValue)
+                : "";
         propertyBar.setText(text);
 
         // Update amount value
