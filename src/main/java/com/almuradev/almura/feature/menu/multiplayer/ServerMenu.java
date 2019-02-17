@@ -62,6 +62,7 @@ public class ServerMenu extends PanoramicScreen {
 
     @Override
     public void construct() {
+        this.renderer.setDefaultTexture(GuiConfig.SpriteSheet.ALMURA);
 
         // Create the form
         final UIBackgroundContainer form = new UIBackgroundContainer(this, "", 225, 225);
