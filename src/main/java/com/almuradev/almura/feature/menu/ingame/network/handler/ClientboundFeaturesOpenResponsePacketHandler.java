@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.menu.ingame.network.handler;
 
-import com.almuradev.almura.feature.menu.ingame.FeaturesGUI;
+import com.almuradev.almura.feature.menu.ingame.FeatureScreen;
 import com.almuradev.almura.feature.menu.ingame.network.ClientboundFeaturesOpenResponsePacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
@@ -29,7 +29,7 @@ public final class ClientboundFeaturesOpenResponsePacketHandler implements Messa
                 final WorldClient world = client.world;
                 final boolean isAdmin = message.admin;
 
-                new FeaturesGUI(player, world, isAdmin).display();
+                new FeatureScreen(player, world, isAdmin).display();
             }
         }
     }

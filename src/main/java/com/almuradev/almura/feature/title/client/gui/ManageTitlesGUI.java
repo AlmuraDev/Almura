@@ -12,27 +12,28 @@ import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.feature.title.ClientTitleManager;
 import com.almuradev.almura.feature.title.Title;
 import com.almuradev.almura.feature.title.TitleModifyType;
-import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
 import com.almuradev.almura.shared.client.ui.component.UIExpandingLabel;
-import com.almuradev.almura.shared.client.ui.component.UIForm;
-import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
-import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
-import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.TextUtil;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
+import net.malisis.core.client.gui.component.container.BasicContainer;
+import net.malisis.core.client.gui.component.container.BasicForm;
+import net.malisis.core.client.gui.component.container.BasicList;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UICheckBox;
 import net.malisis.core.client.gui.component.interaction.UISelect;
 import net.malisis.core.client.gui.component.interaction.UITextField;
+import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
 import net.malisis.core.client.gui.event.ComponentEvent;
 import net.malisis.core.renderer.font.FontOptions;
+import net.malisis.core.util.FontColors;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -49,7 +50,7 @@ import java.util.Arrays;
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
-public final class ManageTitlesGUI extends SimpleScreen {
+public final class ManageTitlesGUI extends BasicScreen {
 
     @Inject private static ClientTitleManager titleManager;
     @Inject @ChannelId(NetworkConfig.CHANNEL) private static ChannelBinding.IndexedMessageChannel network;
@@ -61,10 +62,10 @@ public final class ManageTitlesGUI extends SimpleScreen {
     private UILabel modeNameLabel, titleSelectionLabel;
     private UITextField idField, permissionField, contentField;
     private UIButton buttonAdd, buttonDelete, buttonColor, buttonApply, buttonRemove;
-    private UIDynamicList<Title> titleList;
+    private BasicList<Title> titleList;
     private UICheckBox hiddenCheckbox, formattedCheckbox, editModeCheckbox;
     private UISelect<String> colorSelector;
-    private UIForm form, listArea, editArea, playerArea;
+    private BasicForm form, listArea, editArea, playerArea;
 
     private int screenWidth = 450;
     private int screenHeight = 300;
@@ -86,7 +87,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
 
 
         // Master Pane
-        this.form = new UIForm(this, this.screenWidth, this.screenHeight, "Title Manager");
+        this.form = new BasicForm(this, this.screenWidth, this.screenHeight, "Title Manager");
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(true);
         this.form.setClosable(true);
@@ -98,7 +99,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
         this.form.setLeftPadding(3);
 
         // Title List Area
-        this.listArea = new UIForm(this, 220, 260, "");
+        this.listArea = new BasicForm(this, 220, 260, "");
         this.listArea.setPosition(0, 0, Anchor.LEFT | Anchor.TOP);
         this.listArea.setMovable(false);
         this.listArea.setClosable(false);
@@ -110,13 +111,13 @@ public final class ManageTitlesGUI extends SimpleScreen {
         this.listArea.setLeftPadding(3);
 
         // Create left container
-        final UIContainer<?> titleContainer = new UIContainer(this, 200, UIComponent.INHERITED);
+        final BasicContainer<?> titleContainer = new BasicContainer(this, 200, UIComponent.INHERITED);
         titleContainer.setBackgroundAlpha(0);
         titleContainer.setPosition(0, 0, Anchor.CENTER | Anchor.TOP);
         titleContainer.setPadding(4, 4);
         titleContainer.setTopPadding(20);
 
-        this.titleList = new UIDynamicList<>(this, UIComponent.INHERITED, UIComponent.INHERITED);
+        this.titleList = new BasicList<>(this, UIComponent.INHERITED, UIComponent.INHERITED);
         this.titleList.setItemComponentFactory(TitleItemComponent::new);
         this.titleList.setItemComponentSpacing(1);
         this.titleList.setCanDeselect(false);
@@ -137,7 +138,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
         this.listArea.add(titleContainer);
 
         // Edit Container
-        this.editArea = new UIForm(this, 220, 260, "");
+        this.editArea = new BasicForm(this, 220, 260, "");
         this.editArea.setPosition(0, 0, Anchor.RIGHT | Anchor.TOP);
         this.editArea.setMovable(false);
         this.editArea.setClosable(false);
@@ -260,7 +261,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
             .width(40)
             .anchor(Anchor.TOP | Anchor.LEFT)
             .position(130, 125)
-            .text(Text.of("Add"))
+            .text("Add")
             .listener(this)
             .build("button.color");
 
@@ -281,7 +282,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
         // Save Changes button
         final UIButton saveChangesButton = new UIButtonBuilder(this)
             .width(30)
-            .text(Text.of("almura.button.save"))
+            .text(I18n.format("almura.button.save"))
             .position(0, -5)
             .anchor(Anchor.BOTTOM | Anchor.RIGHT)
             .listener(this)
@@ -292,7 +293,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
             this.colorSelector, this.buttonColor, this.formattedCheckbox, this.hiddenCheckbox, saveChangesButton);
 
         // Edit Container
-        this.playerArea = new UIForm(this, 220, 260, "");
+        this.playerArea = new BasicForm(this, 220, 260, "");
         this.playerArea.setPosition(0, 0, Anchor.RIGHT | Anchor.TOP);
         this.playerArea.setMovable(false);
         this.playerArea.setClosable(false);
@@ -316,7 +317,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
                 .setPosition(0, 05, Anchor.CENTER | Anchor.TOP);
 
         this.buttonApply = new UIButtonBuilder(this)
-                .text(Text.of(TextColors.WHITE, "Apply"))
+                .text("Apply")
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .tooltip("Apply Title and Exit")
                 .listener(this)
@@ -325,7 +326,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
                 .build("button.apply");
 
         this.buttonRemove = new UIButtonBuilder(this)
-                .text(Text.of(TextColors.WHITE, "Remove"))
+                .text("Remove")
                 .anchor(Anchor.BOTTOM | Anchor.LEFT)
                 .tooltip("Remove Title and Exit")
                 .enabled(this.canChangeTitle)
@@ -348,7 +349,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
         this.buttonAdd = new UIButtonBuilder(this)
             .width(15)
             .x(5)
-            .text(Text.of(TextColors.GREEN, "+"))
+            .text(TextFormatting.GREEN + "+")
             .anchor(Anchor.BOTTOM | Anchor.LEFT)
             .tooltip("Add New Title")
             .listener(this)
@@ -359,7 +360,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
         this.buttonDelete = new UIButtonBuilder(this)
             .width(15)
             .x(24)
-            .text(Text.of(TextColors.RED, "-"))
+            .text(TextFormatting.RED + "-")
             .anchor(Anchor.BOTTOM | Anchor.LEFT)
             .tooltip("Remove Title")
             .listener(this)
@@ -378,7 +379,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
         final UIButton buttonClose = new UIButtonBuilder(this)
             .width(40)
             .anchor(Anchor.BOTTOM | Anchor.RIGHT)
-            .text(Text.of("almura.button.close"))
+            .text(I18n.format("almura.button.close"))
             .listener(this)
             .build("button.close");
 
@@ -389,7 +390,7 @@ public final class ManageTitlesGUI extends SimpleScreen {
     }
 
     @Subscribe
-    public void onUIListClickEvent(UIDynamicList.SelectEvent<Title> event) {
+    public void onUIListClickEvent(BasicList.SelectEvent<Title> event) {
         if (event.getNewValue() != null) {
             if (this.editModeCheckbox.isChecked()) {
                 this.permissionField.setText(event.getNewValue().getPermission());
@@ -657,11 +658,11 @@ public final class ManageTitlesGUI extends SimpleScreen {
     }
 
     // TODO: Merge this with the ExchangeItemComponent class as a new default style
-    public static class TitleItemComponent extends UIDynamicList.ItemComponent<Title> {
+    public static class TitleItemComponent extends BasicList.ItemComponent<Title> {
 
         private UIExpandingLabel titleLabel;
 
-        public TitleItemComponent(MalisisGui gui, UIDynamicList<Title> parent, Title item) {
+        public TitleItemComponent(MalisisGui gui, BasicList<Title> parent, Title item) {
             super(gui, parent, item);
         }
 

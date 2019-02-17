@@ -8,7 +8,7 @@
 package com.almuradev.almura.feature.guide.network.handler;
 
 import com.almuradev.almura.feature.guide.ClientPageManager;
-import com.almuradev.almura.feature.guide.client.gui.SimplePageView;
+import com.almuradev.almura.feature.guide.client.gui.GuidePageViewScreen;
 import com.almuradev.almura.feature.guide.network.ClientboundPageChangeResponsePacket;
 import com.almuradev.almura.feature.guide.network.PageChangeType;
 import com.almuradev.almura.feature.guide.network.ServerboundGuideOpenRequestPacket;
@@ -41,12 +41,12 @@ public final class ClientboundPageChangeResponsePacketHandler implements Message
 
             if (PacketUtil.checkThreadAndEnqueue(client, message, this, connection, side)) {
                 final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
-                if (currentScreen != null && currentScreen instanceof SimplePageView) {
+                if (currentScreen != null && currentScreen instanceof GuidePageViewScreen) {
                     if (message.changeType == PageChangeType.REMOVE) {
-                        ((SimplePageView) currentScreen).close();
+                        ((GuidePageViewScreen) currentScreen).close();
                         manager.network.sendToServer(new ServerboundGuideOpenRequestPacket());
                     } else {
-                        ((SimplePageView) currentScreen).refreshPage();
+                        ((GuidePageViewScreen) currentScreen).refreshPage();
                     }
                 }
             }

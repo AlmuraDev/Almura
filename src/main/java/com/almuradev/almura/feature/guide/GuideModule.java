@@ -7,9 +7,9 @@
  */
 package com.almuradev.almura.feature.guide;
 
-import com.almuradev.almura.feature.guide.client.gui.SimplePageCreate;
-import com.almuradev.almura.feature.guide.client.gui.SimplePageDetails;
-import com.almuradev.almura.feature.guide.client.gui.SimplePageView;
+import com.almuradev.almura.feature.guide.client.gui.GuidePageCreateScreen;
+import com.almuradev.almura.feature.guide.client.gui.GuidePageDetailsScreen;
+import com.almuradev.almura.feature.guide.client.gui.GuidePageViewScreen;
 import com.almuradev.almura.feature.guide.network.ClientboundGuideOpenResponsePacket;
 import com.almuradev.almura.feature.guide.network.ClientboundPageChangeResponsePacket;
 import com.almuradev.almura.feature.guide.network.ClientboundPageListingsPacket;
@@ -29,7 +29,6 @@ import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Keyboard;
 import org.spongepowered.api.Platform;
 
 public final class GuideModule extends AbstractModule implements CommonBinder {
@@ -63,9 +62,9 @@ public final class GuideModule extends AbstractModule implements CommonBinder {
                 @SideOnly(Side.CLIENT)
                 @Override
                 protected void configure() {
-                    this.requestStaticInjection(SimplePageView.class);
-                    this.requestStaticInjection(SimplePageCreate.class);
-                    this.requestStaticInjection(SimplePageDetails.class);
+                    this.requestStaticInjection(GuidePageViewScreen.class);
+                    this.requestStaticInjection(GuidePageCreateScreen.class);
+                    this.requestStaticInjection(GuidePageDetailsScreen.class);
 
                     this.facet().add(ClientPageManager.class);
                 }

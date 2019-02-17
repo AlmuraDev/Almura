@@ -12,42 +12,39 @@ import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.feature.exchange.Exchange;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
-import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
 import com.almuradev.almura.shared.client.ui.component.UIExpandingLabel;
-import com.almuradev.almura.shared.client.ui.component.UIForm;
-import com.almuradev.almura.shared.client.ui.component.UILine;
 import com.almuradev.almura.shared.client.ui.component.UISaneTooltip;
-import com.almuradev.almura.shared.client.ui.component.UITextBox;
-import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
-import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
-import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
 import com.almuradev.almura.feature.exchange.listing.ListItem;
 import com.almuradev.almura.shared.item.VirtualStack;
 import com.almuradev.almura.shared.util.MathUtil;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
+import net.malisis.core.client.gui.component.container.BasicContainer;
+import net.malisis.core.client.gui.component.container.BasicForm;
+import net.malisis.core.client.gui.component.container.BasicList;
+import net.malisis.core.client.gui.component.decoration.BasicLine;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
+import net.malisis.core.client.gui.component.interaction.BasicTextBox;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UISelect;
+import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
 import net.malisis.core.renderer.font.FontOptions;
+import net.malisis.core.util.FontColors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.slf4j.Logger;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.format.TextStyles;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -59,7 +56,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
-public final class ExchangeScreen extends SimpleScreen {
+public final class ExchangeScreen extends BasicScreen {
 
     private static final int minScreenWidth = 600;
     private static final int minScreenHeight = 370;
@@ -76,12 +73,12 @@ public final class ExchangeScreen extends SimpleScreen {
     buttonBuyAll, buttonBuyQuantity, buttonList;
     private UILabel labelSearchPage, labelLimit, noResultsLabel;
     private UISelect<SortType> comboBoxSortType;
-    private UITextBox displayNameSearchTextBox, sellerSearchTextBox;
+    private BasicTextBox displayNameSearchTextBox, sellerSearchTextBox;
     private int currentPage = 1;
     private int pages;
 
-    public UIDynamicList<ListItem> listItemList;
-    public UIDynamicList<ForSaleItem> forSaleList;
+    public BasicList<ListItem> listItemList;
+    public BasicList<ForSaleItem> forSaleList;
 
     public ExchangeScreen(final Exchange axs, final int limit) {
         this.axs = axs;
@@ -101,10 +98,10 @@ public final class ExchangeScreen extends SimpleScreen {
         }
 
         // Main Panel
-        final UIForm form = new UIForm(this, minScreenWidth, minScreenHeight, this.getExchange().getName());
+        final BasicForm form = new BasicForm(this, minScreenWidth, minScreenHeight, this.getExchange().getName());
 
         // Search section
-        final UIContainer<?> searchContainer = new UIContainer(this, 295, 322);
+        final BasicContainer<?> searchContainer = new BasicContainer<>(this, 295, 322);
         searchContainer.setPosition(0, 0, Anchor.LEFT | Anchor.TOP);
         searchContainer.setColor(0);
         searchContainer.setBorder(FontColors.WHITE, 1, 185);
@@ -115,7 +112,7 @@ public final class ExchangeScreen extends SimpleScreen {
         itemSearchLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).scale(1.1F).build());
         itemSearchLabel.setPosition(0, 4, Anchor.LEFT | Anchor.TOP);
 
-        this.displayNameSearchTextBox = new UITextBox(this, "");
+        this.displayNameSearchTextBox = new BasicTextBox(this, "");
         this.displayNameSearchTextBox.setAcceptsReturn(false);
         this.displayNameSearchTextBox.setAcceptsTab(false);
         this.displayNameSearchTextBox.setTabIndex(0);
@@ -129,7 +126,7 @@ public final class ExchangeScreen extends SimpleScreen {
         sellerSearchLabel.setPosition(displayNameSearchTextBox.getX() - sellerSearchLabel.getWidth() - 1,
             getPaddedY(itemSearchLabel, 7), Anchor.LEFT | Anchor.TOP);
 
-        this.sellerSearchTextBox = new UITextBox(this, "");
+        this.sellerSearchTextBox = new BasicTextBox(this, "");
         this.sellerSearchTextBox.setAcceptsReturn(false);
         this.sellerSearchTextBox.setAcceptsTab(false);
         this.sellerSearchTextBox.setTabIndex(1);
@@ -154,13 +151,13 @@ public final class ExchangeScreen extends SimpleScreen {
                 .build("button.search");
 
         // Separator
-        final UIContainer<?> forSaleTopLine = new UIContainer<>(this, searchContainer.getRawWidth() - 2, 1);
+        final BasicContainer<?> forSaleTopLine = new BasicContainer<>(this, searchContainer.getRawWidth() - 2, 1);
         forSaleTopLine.setColor(FontColors.WHITE);
         forSaleTopLine.setBackgroundAlpha(185);
-        forSaleTopLine.setPosition(0, SimpleScreen.getPaddedY(this.sellerSearchTextBox, 4), Anchor.CENTER | Anchor.TOP);
+        forSaleTopLine.setPosition(0, BasicScreen.getPaddedY(this.sellerSearchTextBox, 4), Anchor.CENTER | Anchor.TOP);
 
-        this.forSaleList = new UIDynamicList<>(this, UIComponent.INHERITED, 254);
-        this.forSaleList.setPosition(0, SimpleScreen.getPaddedY(forSaleTopLine, 2));
+        this.forSaleList = new BasicList<>(this, UIComponent.INHERITED, 254);
+        this.forSaleList.setPosition(0, BasicScreen.getPaddedY(forSaleTopLine, 2));
         this.forSaleList.setItemComponentFactory(ForSaleItemComponent::new);
         this.forSaleList.setItemComponentSpacing(1);
         this.forSaleList.setSelectConsumer((i) -> this.updateControls());
@@ -216,8 +213,8 @@ public final class ExchangeScreen extends SimpleScreen {
             .build("button.next");
 
         // Separator
-        final UILine forSaleBottomLine = new UILine(this, searchContainer.getRawWidth() - 2);
-        forSaleBottomLine.setPosition(0, SimpleScreen.getPaddedY(this.buttonFirstPage, 2, Anchor.BOTTOM), Anchor.CENTER | Anchor.BOTTOM);
+        final BasicLine forSaleBottomLine = new BasicLine(this, searchContainer.getRawWidth() - 2);
+        forSaleBottomLine.setPosition(0, BasicScreen.getPaddedY(this.buttonFirstPage, 2, Anchor.BOTTOM), Anchor.CENTER | Anchor.BOTTOM);
 
         // Add Elements of Search Area
         searchContainer.add(itemSearchLabel, this.displayNameSearchTextBox, sellerSearchLabel, this.sellerSearchTextBox, buttonSearch,
@@ -225,7 +222,7 @@ public final class ExchangeScreen extends SimpleScreen {
                 this.noResultsLabel, this.labelSearchPage, forSaleTopLine, forSaleBottomLine);
 
         // Buy container
-        final UIContainer<?> buyContainer = new UIContainer(this, 295, 21);
+        final BasicContainer<?> buyContainer = new BasicContainer(this, 295, 21);
         buyContainer.setPosition(0, getPaddedY(searchContainer, innerPadding), Anchor.LEFT | Anchor.TOP);
         buyContainer.setColor(0);
         buyContainer.setBorder(FontColors.WHITE, 1, 185);
@@ -244,7 +241,7 @@ public final class ExchangeScreen extends SimpleScreen {
         this.buttonBuyStack = new UIButtonBuilder(this)
                 .width(60)
                 .anchor(Anchor.LEFT | Anchor.MIDDLE)
-                .position(SimpleScreen.getPaddedX(this.buttonBuyOne, 10), 0)
+                .position(BasicScreen.getPaddedX(this.buttonBuyOne, 10), 0)
                 .text(I18n.format("almura.feature.common.button.buy.stack", 0))
                 .enabled(false)
                 .onClick(() -> {
@@ -272,7 +269,7 @@ public final class ExchangeScreen extends SimpleScreen {
         this.buttonBuyQuantity = new UIButtonBuilder(this)
                 .width(60)
                 .anchor(Anchor.RIGHT | Anchor.MIDDLE)
-                .position(SimpleScreen.getPaddedX(this.buttonBuyAll, 10, Anchor.RIGHT), 0)
+                .position(BasicScreen.getPaddedX(this.buttonBuyAll, 10, Anchor.RIGHT), 0)
                 .text(I18n.format("almura.feature.common.button.buy.quantity"))
                 .enabled(false)
                 .onClick(() -> {
@@ -286,7 +283,7 @@ public final class ExchangeScreen extends SimpleScreen {
         buyContainer.add(this.buttonBuyOne, this.buttonBuyStack, this.buttonBuyQuantity, this.buttonBuyAll);
 
         // Listable Items section
-        final UIContainer<?> listableItemsContainer = new UIContainer(this, 295, 345);
+        final BasicContainer<?> listableItemsContainer = new BasicContainer(this, 295, 345);
         listableItemsContainer.setPosition(0, 0, Anchor.RIGHT | Anchor.TOP);
         listableItemsContainer.setBorder(FontColors.WHITE, 1, 185);
         listableItemsContainer.setColor(0);
@@ -297,11 +294,11 @@ public final class ExchangeScreen extends SimpleScreen {
         listableItemsLabel.setPosition(0, 2, Anchor.CENTER | Anchor.TOP);
         listableItemsLabel.setFontOptions(FontColors.WHITE_FO);
 
-        final UILine listTopLine = new UILine(this, listableItemsContainer.getRawWidth() - 2);
-        listTopLine.setPosition(0, SimpleScreen.getPaddedY(listableItemsLabel, 3), Anchor.TOP | Anchor.CENTER);
+        final BasicLine listTopLine = new BasicLine(this, listableItemsContainer.getRawWidth() - 2);
+        listTopLine.setPosition(0, BasicScreen.getPaddedY(listableItemsLabel, 3), Anchor.TOP | Anchor.CENTER);
 
-        this.listItemList = new UIDynamicList<>(this, UIComponent.INHERITED, 302);
-        this.listItemList.setPosition(0, SimpleScreen.getPaddedY(listTopLine, 2));
+        this.listItemList = new BasicList<>(this, UIComponent.INHERITED, 302);
+        this.listItemList.setPosition(0, BasicScreen.getPaddedY(listTopLine, 2));
         this.listItemList.setItemComponentFactory(ListItemComponent::new);
         this.listItemList.setItemComponentSpacing(1);
         this.listItemList.setSelectConsumer((i) -> this.updateControls());
@@ -322,14 +319,14 @@ public final class ExchangeScreen extends SimpleScreen {
             .width(30)
             .anchor(Anchor.RIGHT | Anchor.BOTTOM)
             .position(0, 0)
-            .text(Text.of(TextColors.DARK_GREEN, "+", TextColors.GRAY, "/", TextColors.RED, "-"))
+            .text(TextFormatting.DARK_GREEN + "+" + TextFormatting.GRAY + "/" + TextFormatting.RED + "-")
             .enabled(true)
             .onClick(() -> exchangeManager.requestExchangeSpecificOfferGui(this.axs.getId()))
             .build("button.offer");
 
         // Separator
-        final UILine listBottomLine = new UILine(this, searchContainer.getRawWidth() - 2);
-        listBottomLine.setPosition(0, SimpleScreen.getPaddedY(this.buttonList, 2, Anchor.BOTTOM), Anchor.CENTER | Anchor.BOTTOM);
+        final BasicLine listBottomLine = new BasicLine(this, searchContainer.getRawWidth() - 2);
+        listBottomLine.setPosition(0, BasicScreen.getPaddedY(this.buttonList, 2, Anchor.BOTTOM), Anchor.CENTER | Anchor.BOTTOM);
 
         listableItemsContainer.add(listableItemsLabel, listTopLine, this.listItemList, this.buttonList, this.labelLimit, buttonOffer, listBottomLine);
 
@@ -349,7 +346,6 @@ public final class ExchangeScreen extends SimpleScreen {
         return this.axs;
     }
 
-    @SuppressWarnings("deprecation")
     private void setPage(int page) {
         page = MathUtil.squashi(page, 1, this.pages);
 
@@ -414,7 +410,6 @@ public final class ExchangeScreen extends SimpleScreen {
         }
     }
 
-    @SuppressWarnings("deprecation")
     private void updateControls() {
 
         // Results list
@@ -442,7 +437,7 @@ public final class ExchangeScreen extends SimpleScreen {
         this.buttonNextPage.setEnabled(this.currentPage != this.pages);
         this.buttonLastPage.setEnabled(this.currentPage != this.pages);
 
-        this.labelSearchPage.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(TextColors.WHITE, this.currentPage, "/", this.pages)));
+        this.labelSearchPage.setText(TextFormatting.WHITE + String.valueOf(this.currentPage) + "/" + this.pages);
 
         // Update all items
         this.listItemList.getComponents()
@@ -452,8 +447,7 @@ public final class ExchangeScreen extends SimpleScreen {
                 .forEach(ListItemComponent::update);
 
         // Update the limit label
-        this.labelLimit.setText(TextSerializers.LEGACY_FORMATTING_CODE
-                .serialize(Text.of(TextColors.WHITE, this.listItemList.getItems().size(), "/", this.limit)));
+        this.labelLimit.setText(TextFormatting.WHITE + String.valueOf(this.listItemList.getItems().size()) + "/" + this.limit);
 
         // Hide the list and show the label if there are no items to present
         final boolean isEmpty = this.forSaleList.getItems().isEmpty();
@@ -517,13 +511,13 @@ public final class ExchangeScreen extends SimpleScreen {
         this.updateControls();
     }
 
-    public static class ExchangeItemComponent<T extends VirtualStack> extends UIDynamicList.ItemComponent<T> {
+    public static class ExchangeItemComponent<T extends VirtualStack> extends BasicList.ItemComponent<T> {
 
         protected UIImage image;
         protected UIExpandingLabel itemLabel;
         protected int itemNameSpaceAvailable;
 
-        public ExchangeItemComponent(final MalisisGui gui, final UIDynamicList<T> parent, final T item) {
+        public ExchangeItemComponent(final MalisisGui gui, final BasicList<T> parent, final T item) {
             super(gui, parent, item);
         }
 
@@ -557,7 +551,6 @@ public final class ExchangeScreen extends SimpleScreen {
             this.add(this.image, this.itemLabel);
         }
 
-        @SuppressWarnings("deprecation")
         protected void refreshDisplayName() {
             // Limit item name to prevent over drawing
             final ItemStack fakeStack = this.item.asRealStack().copy();
@@ -572,18 +565,17 @@ public final class ExchangeScreen extends SimpleScreen {
                 displayName.append(c);
             }
 
-            this.itemLabel.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                    Text.of(TextColors.WHITE, displayName.toString(), TextColors.GRAY, " x ",
-                        FeatureConstants.withSuffix(this.item.getQuantity()))));
+            this.itemLabel.setText(TextFormatting.WHITE + displayName.toString() + TextFormatting.GRAY + " x "
+              + FeatureConstants.withSuffix(this.item.getQuantity()));
         }
     }
 
     public static final class ListItemComponent extends ExchangeItemComponent<ListItem> {
 
-        private UIContainer<?> listedIndicatorContainer;
+        private BasicContainer<?> listedIndicatorContainer;
         private UIExpandingLabel priceLabel;
 
-        public ListItemComponent(final MalisisGui gui, final UIDynamicList<ListItem> parent, final ListItem item) {
+        public ListItemComponent(final MalisisGui gui, final BasicList<ListItem> parent, final ListItem item) {
             super(gui, parent, item);
             this.setOnDoubleClickConsumer(i -> ((ExchangeScreen) getGui()).list());
         }
@@ -592,7 +584,7 @@ public final class ExchangeScreen extends SimpleScreen {
         protected void construct(final MalisisGui gui) {
             super.construct(gui);
 
-            this.listedIndicatorContainer = new UIContainer<>(gui, 5, this.height - (this.getLeftBorderSize() + this.getRightBorderSize()));
+            this.listedIndicatorContainer = new BasicContainer<>(gui, 5, this.height - (this.getLeftBorderSize() + this.getRightBorderSize()));
             this.listedIndicatorContainer.setVisible(false);
             this.listedIndicatorContainer.setPosition(2, -2, Anchor.TOP | Anchor.RIGHT);
             this.listedIndicatorContainer.setColor(FontColors.DARK_GREEN);
@@ -607,7 +599,6 @@ public final class ExchangeScreen extends SimpleScreen {
             this.update();
         }
 
-        @SuppressWarnings("deprecation")
         public void update() {
             final boolean listed = this.item.getForSaleItem().isPresent();
 
@@ -619,8 +610,7 @@ public final class ExchangeScreen extends SimpleScreen {
                 final BigDecimal forSalePrice = this.item.getForSaleItem().map(ForSaleItem::getPrice).orElse(BigDecimal.valueOf(0));
                 final double forSaleDoublePrice = forSalePrice.doubleValue();
 
-                this.priceLabel.setText(TextSerializers.LEGACY_FORMATTING_CODE
-                        .serialize(Text.of(TextColors.GOLD, FeatureConstants.withSuffix(forSaleDoublePrice), TextColors.GRAY, "/ea")));
+                this.priceLabel.setText(TextFormatting.GOLD + FeatureConstants.withSuffix(forSaleDoublePrice) + TextFormatting.GRAY + "/ea");
                 this.priceLabel.setPosition(-(this.listedIndicatorContainer.getWidth() + 6), 0, Anchor.RIGHT | Anchor.MIDDLE);
 
                 // Exact value
@@ -643,26 +633,24 @@ public final class ExchangeScreen extends SimpleScreen {
         private UILabel sellerLabel;
         private UIExpandingLabel priceLabel;
 
-        public ForSaleItemComponent(final MalisisGui gui, final UIDynamicList<ForSaleItem> parent, final ForSaleItem item) {
+        public ForSaleItemComponent(final MalisisGui gui, final BasicList<ForSaleItem> parent, final ForSaleItem item) {
             super(gui, parent, item);
             this.setOnDoubleClickConsumer(i -> ((ExchangeScreen) getGui()).buy(1));
         }
 
-        @SuppressWarnings("deprecation")
         @Override
         protected void construct(final MalisisGui gui) {
             super.construct(gui);
 
             final int maxPlayerTextWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth("9999999999999999");
 
-            this.sellerLabel = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(
-                Text.of(TextColors.GRAY, TextStyles.ITALIC,
-                        this.item.getListItem().getSellerName().orElse(I18n.format("almura.feature.common.text.unknown")))));
+            this.sellerLabel = new UILabel(gui, TextFormatting.GRAY + "" + TextFormatting.ITALIC
+              + this.item.getListItem().getSellerName().orElse(I18n.format("almura.feature.common.text.unknown")));
             this.sellerLabel.setPosition(-innerPadding, 0, Anchor.RIGHT | Anchor.MIDDLE);
 
             final double price = this.item.getPrice().doubleValue();
 
-            this.priceLabel = new UIExpandingLabel(gui, Text.of(TextColors.GOLD, FeatureConstants.withSuffix(price), TextColors.GRAY, "/ea"));
+            this.priceLabel = new UIExpandingLabel(gui, TextFormatting.GOLD + FeatureConstants.withSuffix(price) + TextFormatting.GRAY + "/ea");
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-maxPlayerTextWidth + 6, 0, Anchor.RIGHT | Anchor.MIDDLE);
 

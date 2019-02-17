@@ -19,19 +19,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public interface GuiConfig {
 
     @SideOnly(Side.CLIENT)
-    interface Button {
-
-        int WIDTH_TINY = 64;
-        int WIDTH_ICON = 24;
-        int WIDTH_SHORT = 98;
-        int WIDTH_LONG = 200;
-
-        int HEIGHT = 20;
-        int HEIGHT_TINY = 15;
-        int HEIGHT_ICON = 24;
-    }
-
-    @SideOnly(Side.CLIENT)
     interface Icon {
 
         GuiIcon VANILLA_CONTAINER_INVENTORY_ADVANCEMENT = SpriteSheet.VANILLA_CONTAINER_INVENTORY.getXYResizableIcon(141, 166, 24, 24, 5);

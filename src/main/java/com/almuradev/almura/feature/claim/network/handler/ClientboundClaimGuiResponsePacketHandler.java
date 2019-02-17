@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.claim.network.handler;
 
-import com.almuradev.almura.feature.claim.gui.ManageClaimGUI;
+import com.almuradev.almura.feature.claim.gui.ClaimManageScreen;
 import com.almuradev.almura.feature.claim.network.ClientboundClaimGuiResponsePacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
@@ -23,7 +23,7 @@ public final class ClientboundClaimGuiResponsePacketHandler implements MessageHa
     @Override
     public void handleMessage(ClientboundClaimGuiResponsePacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isClient() && PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
-            new ManageClaimGUI(message.isOwner, message.isTrusted, message.isAdmin).display();
+            new ClaimManageScreen(message.isOwner, message.isTrusted, message.isAdmin).display();
         }
     }
 }

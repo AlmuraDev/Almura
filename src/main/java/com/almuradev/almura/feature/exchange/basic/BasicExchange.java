@@ -11,7 +11,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.feature.exchange.Exchange;
 import com.almuradev.almura.shared.feature.FeatureConstants;
-import com.almuradev.almura.shared.feature.IngameFeature;
 import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
 import com.almuradev.almura.feature.exchange.listing.ListItem;
 import com.google.common.base.MoreObjects;

@@ -9,24 +9,21 @@ package com.almuradev.almura.feature.guide.client.gui;
 
 import com.almuradev.almura.feature.guide.ClientPageManager;
 import com.almuradev.almura.feature.guide.PageListEntry;
-import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
-import com.almuradev.almura.shared.client.ui.component.UIForm;
 import com.almuradev.almura.shared.client.ui.component.WYSIWYGTextBox;
-import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
-import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
-import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
-import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxResult;
-import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
-import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.util.TextUtil;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.MalisisGui;
-import net.malisis.core.client.gui.component.UIComponent;
+import net.malisis.core.client.gui.component.container.BasicForm;
+import net.malisis.core.client.gui.component.container.BasicList;
+import net.malisis.core.client.gui.component.container.dialog.BasicMessageBox;
+import net.malisis.core.client.gui.component.container.dialog.MessageBoxButtons;
+import net.malisis.core.client.gui.component.container.dialog.MessageBoxResult;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
-import net.malisis.core.util.MouseButton;
+import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
+import net.malisis.core.util.FontColors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
@@ -40,18 +37,18 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
-public class SimplePageView extends SimpleScreen {
+public class GuidePageViewScreen extends BasicScreen {
 
     @Inject private static PluginContainer container;
     @Inject public static ClientPageManager manager;
     private boolean canAdd, canRemove, canModify;
     private float snapshotScrollOffset;
     private int snapshotCursorPositionX, snapshotCursorPositionY;
-    private UIDynamicList<PageListEntry> pagesList;
+    private BasicList<PageListEntry> pagesList;
     private WYSIWYGTextBox tbContent;
     @Nullable private UIButton buttonRemove, buttonAdd, buttonDetails, buttonSave;
 
-    public SimplePageView(final boolean canAdd, final boolean canRemove, final boolean canModify) {
+    public GuidePageViewScreen(final boolean canAdd, final boolean canRemove, final boolean canModify) {
         this.canAdd = canAdd;
         this.canRemove = canRemove;
         this.canModify = canModify;
@@ -62,10 +59,10 @@ public class SimplePageView extends SimpleScreen {
         guiscreenBackground = false;
         Keyboard.enableRepeatEvents(true);
 
-        final UIForm form = new UIForm(this, 582, 315, TextFormatting.WHITE + I18n.format("almura.guide.view.form.title"));
+        final BasicForm form = new BasicForm(this, 582, 315, TextFormatting.WHITE + I18n.format("almura.guide.view.form.title"));
 
         // Page list
-        this.pagesList = new UIDynamicList<>(this, 156, SimpleScreen.getPaddedHeight(form));
+        this.pagesList = new BasicList<>(this, 156, BasicScreen.getPaddedHeight(form));
         this.pagesList.setBorder(0xFFFFFF, 1, 215);
         this.pagesList.setPadding(2, 2);
         this.pagesList.setPosition(1, 0);
@@ -100,7 +97,7 @@ public class SimplePageView extends SimpleScreen {
                     .text(TextFormatting.RED + "-")
                     .onClick(() -> this.runScheduledTask("remove"))
                     .anchor(Anchor.BOTTOM | Anchor.LEFT)
-                    .position(SimpleScreen.getPaddedX(this.buttonAdd, 2), 0)
+                    .position(BasicScreen.getPaddedX(this.buttonAdd, 2), 0)
                     .visible(this.canRemove)
                     .tooltip(I18n.format("almura.guide.view.button.remove.tooltip"))
                     .build("button.remove");
@@ -112,11 +109,11 @@ public class SimplePageView extends SimpleScreen {
                     .visible(this.canModify)
                     .tooltip(I18n.format("almura.guide.view.button.details.tooltip"))
                     .build("button.details");
-            this.buttonDetails.setPosition(SimpleScreen.getPaddedX(this.pagesList, -this.buttonDetails.getWidth()) + 1, 0);
+            this.buttonDetails.setPosition(BasicScreen.getPaddedX(this.pagesList, -this.buttonDetails.getWidth()) + 1, 0);
         }
 
-        this.tbContent = new WYSIWYGTextBox(this, SimpleScreen.getPaddedHeight(form), "");
-        this.tbContent.setPosition(SimpleScreen.getPaddedX(this.pagesList, 2), 0);
+        this.tbContent = new WYSIWYGTextBox(this, BasicScreen.getPaddedHeight(form), "");
+        this.tbContent.setPosition(BasicScreen.getPaddedX(this.pagesList, 2), 0);
         this.tbContent.getTextBox().setEditable(this.canModify);
         this.tbContent.getTextBox().setOptions(0x555555, 0xc8c8c8, 0x00000);
         if (!this.canModify) {
@@ -124,7 +121,7 @@ public class SimplePageView extends SimpleScreen {
         }
 
         if (this.canModify) {
-            this.tbContent.setHeight(SimpleScreen.getPaddedHeight(form) - 17);
+            this.tbContent.setHeight(BasicScreen.getPaddedHeight(form) - 17);
 
             this.buttonSave = new UIButtonBuilder(this)
                     .width(50)
@@ -144,7 +141,7 @@ public class SimplePageView extends SimpleScreen {
             final UIButton buttonCancel = new UIButtonBuilder(this)
                     .width(50)
                     .anchor(Anchor.BOTTOM | Anchor.RIGHT)
-                    .position(SimpleScreen.getPaddedX(buttonSave, 2, Anchor.RIGHT), 0)
+                    .position(BasicScreen.getPaddedX(buttonSave, 2, Anchor.RIGHT), 0)
                     .text(I18n.format("almura.button.cancel"))
                     .onClick(this::close)
                     .build("button.cancel");
@@ -164,17 +161,17 @@ public class SimplePageView extends SimpleScreen {
         Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(task -> {
             switch (details.toUpperCase()) {
                 case "ADD":
-                    new SimplePageCreate(this).display();
+                    new GuidePageCreateScreen(this).display();
                     break;
                 case "DETAILS":
-                    new SimplePageDetails(this).display();
+                    new GuidePageDetailsScreen(this).display();
                     break;
                 case "REMOVE":
                     if (manager.getPage() == null) {
                         return;
                     }
 
-                    UIMessageBox.showDialog(this, I18n.format("almura.guide.view.form.title"), "Do you wish to delete the selected guide?",
+                    BasicMessageBox.showDialog(this, I18n.format("almura.guide.view.form.title"), "Do you wish to delete the selected guide?",
                             MessageBoxButtons.YES_NO,
                             messageBoxResult -> {
                                 if (messageBoxResult == MessageBoxResult.YES && manager.getPage() != null) {
@@ -183,8 +180,8 @@ public class SimplePageView extends SimpleScreen {
                             });
                     break;
                 case "CLOSE":
-                    if (Minecraft.getMinecraft().currentScreen instanceof SimplePageView) {
-                        ((SimplePageView) Minecraft.getMinecraft().currentScreen).close();
+                    if (Minecraft.getMinecraft().currentScreen instanceof GuidePageViewScreen) {
+                        ((GuidePageViewScreen) Minecraft.getMinecraft().currentScreen).close();
                     }
                     break;
             }
@@ -204,7 +201,7 @@ public class SimplePageView extends SimpleScreen {
 
         // Save the postSnapshot to the manager so it can be accessed within manager.
         manager.postSnapshot = this.tbContent.getTextBox().getText();
-        UIMessageBox.showDialog(this, I18n.format("almura.guide.view.form.title"), "Changes detected to current guide, do you wish to save?",
+        BasicMessageBox.showDialog(this, I18n.format("almura.guide.view.form.title"), "Changes detected to current guide, do you wish to save?",
                 MessageBoxButtons.YES_NO_CANCEL, messageBoxResult -> {
                     if (messageBoxResult == MessageBoxResult.YES) {
                         manager.getPage().setContent(manager.postSnapshot);
@@ -279,13 +276,13 @@ public class SimplePageView extends SimpleScreen {
         return false; // Can't stop the game otherwise the Sponge Scheduler also stops.
     }
 
-    private static final class PageListEntryItemComponent extends UIDynamicList.ItemComponent<PageListEntry> {
+    private static final class PageListEntryItemComponent extends BasicList.ItemComponent<PageListEntry> {
 
-        PageListEntryItemComponent(final MalisisGui gui, final UIDynamicList<PageListEntry> parent, final PageListEntry item) {
+        PageListEntryItemComponent(final MalisisGui gui, final BasicList<PageListEntry> parent, final PageListEntry item) {
             super(gui, parent, item);
             this.setHeight(25);
             this.setOnDoubleClickConsumer(i -> {
-                final SimplePageView parentScreen = (SimplePageView) this.getGui();
+                final GuidePageViewScreen parentScreen = (GuidePageViewScreen) this.getGui();
                 if (parentScreen.canModify) {
                     parentScreen.runScheduledTask("details");
                 }
@@ -315,7 +312,7 @@ public class SimplePageView extends SimpleScreen {
                 categoryLabel.setAnchor(Anchor.TOP | Anchor.LEFT);
 
                 final UILabel nameLabel = new UILabel(gui, splitName[1]);
-                nameLabel.setPosition(xPos, SimpleScreen.getPaddedY(categoryLabel, 2));
+                nameLabel.setPosition(xPos, BasicScreen.getPaddedY(categoryLabel, 2));
                 nameLabel.setFontOptions(FontColors.GRAY_FO);
                 this.add(nameLabel);
             }

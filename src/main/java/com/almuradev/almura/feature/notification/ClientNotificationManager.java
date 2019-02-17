@@ -14,9 +14,9 @@ import com.almuradev.almura.feature.hud.screen.AbstractHUD;
 import com.almuradev.almura.feature.hud.screen.origin.OriginHUD;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.feature.notification.type.WindowNotification;
-import com.almuradev.almura.shared.client.ui.component.dialog.MessageBoxButtons;
-import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
 import com.almuradev.core.event.Witness;
+import net.malisis.core.client.gui.component.container.dialog.BasicMessageBox;
+import net.malisis.core.client.gui.component.container.dialog.MessageBoxButtons;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -106,7 +106,7 @@ public final class ClientNotificationManager implements Witness {
         final AbstractHUD hud = this.manager.getHUDDirect();
 
         if (hud != null) {
-            UIMessageBox.showDialog(Minecraft.getMinecraft().currentScreen, notification.getTitle(), notification.getMessage(), MessageBoxButtons.OK,
+            BasicMessageBox.showDialog(Minecraft.getMinecraft().currentScreen, notification.getTitle(), notification.getMessage(), MessageBoxButtons.OK,
                 null);
         } else {
             Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessage(SpongeTexts.toComponent(SpongeTexts.fromLegacy(notification.getMessage()

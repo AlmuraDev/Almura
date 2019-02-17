@@ -190,8 +190,8 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
 
                 if (this.stores.isEmpty()) {
                     // TODO TEST CODE, remove before going live
-                    final BasicStore store = new BasicStore("almura.store.test", Instant.now(), FeatureConstants.UNKNOWN_OWNER, "Test "
-                        + "Store", "almura.store.test", false);
+                    final BasicStore store = new BasicStore("almura.store.test", Instant.now(), FeatureConstants.UNKNOWN_OWNER, "Test Store",
+                      "almura.store.test", false);
                     this.stores.put("almura.store.test", store);
 
                     // Yes, I am purposely running this sync

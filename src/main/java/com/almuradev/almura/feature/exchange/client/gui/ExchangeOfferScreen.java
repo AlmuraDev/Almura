@@ -11,23 +11,22 @@ import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.feature.exchange.Exchange;
 import com.almuradev.almura.feature.exchange.InventoryAction;
 import com.almuradev.almura.feature.exchange.client.gui.component.UIExchangeOfferContainer;
-import com.almuradev.almura.shared.client.ui.component.UIForm;
-import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
-import com.almuradev.almura.shared.client.ui.component.container.UIDualListContainer;
-import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.item.BasicVanillaStack;
 import com.almuradev.almura.shared.item.VanillaStack;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.BasicScreen;
+import net.malisis.core.client.gui.component.container.BasicDualListContainer;
+import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.interaction.UIButton;
+import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +35,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
-public class ExchangeOfferScreen extends SimpleScreen {
+public class ExchangeOfferScreen extends BasicScreen {
 
     @Inject private static ClientExchangeManager clientExchangeManager;
 
@@ -58,7 +57,7 @@ public class ExchangeOfferScreen extends SimpleScreen {
         this.guiscreenBackground = false;
 
         // Form
-        final UIForm form = new UIForm(this, 400, 325, I18n.format("almura.feature.exchange.title.offer"));
+        final BasicForm form = new BasicForm(this, 400, 325, I18n.format("almura.feature.exchange.title.offer"));
         form.setZIndex(10); // Fixes issue overlapping draws from parent
         form.setBackgroundAlpha(255);
 
@@ -82,8 +81,8 @@ public class ExchangeOfferScreen extends SimpleScreen {
         final NonNullList<ItemStack> mainInventory = Minecraft.getMinecraft().player.inventory.mainInventory;
         final int totalItemsForSale = this.exchange.getForSaleItemsFor(Minecraft.getMinecraft().player.getUniqueID()).map(List::size).orElse(0);
         this.offerContainer = new UIExchangeOfferContainer(this, getPaddedWidth(form), getPaddedHeight(form) - 20,
-                Text.of(TextColors.WHITE, I18n.format("almura.feature.exchange.text.inventory")),
-                Text.of(TextColors.WHITE, I18n.format("almura.feature.exchange.text.unlisted_items")),
+                TextFormatting.WHITE + I18n.format("almura.feature.exchange.text.inventory"),
+                TextFormatting.WHITE + I18n.format("almura.feature.exchange.text.unlisted_items"),
                 mainInventory.size(),
                 this.limit,
                 totalItemsForSale);
@@ -93,8 +92,8 @@ public class ExchangeOfferScreen extends SimpleScreen {
         final List<VanillaStack> inventoryOffers = new ArrayList<>();
         mainInventory.stream().filter(i -> !i.isEmpty() && i.getItem() != null).forEach(i -> inventoryOffers.add(new BasicVanillaStack(i)));
 
-        this.offerContainer.setItems(this.pendingItems, UIDualListContainer.SideType.RIGHT);
-        this.offerContainer.setItems(inventoryOffers, UIDualListContainer.SideType.LEFT);
+        this.offerContainer.setItems(this.pendingItems, BasicDualListContainer.SideType.RIGHT);
+        this.offerContainer.setItems(inventoryOffers, BasicDualListContainer.SideType.LEFT);
 
         form.add(this.offerContainer, buttonOk, buttonCancel);
 
@@ -103,10 +102,10 @@ public class ExchangeOfferScreen extends SimpleScreen {
 
     @Subscribe
     private void onTransactionComplete(UIExchangeOfferContainer.TransactionCompletedEvent event) {
-        final InventoryAction.Direction direction = event.targetSide == UIDualListContainer.SideType.LEFT
+        final InventoryAction.Direction direction = event.targetSide == BasicDualListContainer.SideType.LEFT
                 ? InventoryAction.Direction.TO_INVENTORY
                 : InventoryAction.Direction.TO_LISTING;
-        final InventoryAction.Direction oppositeDirection = event.targetSide == UIDualListContainer.SideType.LEFT
+        final InventoryAction.Direction oppositeDirection = event.targetSide == BasicDualListContainer.SideType.LEFT
                 ? InventoryAction.Direction.TO_LISTING
                 : InventoryAction.Direction.TO_INVENTORY;
 

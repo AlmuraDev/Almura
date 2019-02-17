@@ -9,11 +9,6 @@ package com.almuradev.almura.feature.complex.item.almanac.gui;
 
 import com.almuradev.almura.feature.complex.item.almanac.asm.interfaces.IMixinBlockCrops;
 import com.almuradev.almura.feature.complex.item.almanac.network.ClientboundWorldPositionInformationPacket;
-import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.UIForm;
-import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
-import com.almuradev.almura.shared.client.ui.component.container.UIContainer;
-import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.almura.shared.util.MathUtil;
 import com.almuradev.content.type.block.state.value.RangeStateValue;
 import com.almuradev.content.type.block.type.crop.CropBlockImpl;
@@ -22,12 +17,17 @@ import com.almuradev.content.type.block.type.crop.processor.hydration.Hydration;
 import com.almuradev.content.type.block.type.crop.state.CropBlockStateDefinition;
 import com.almuradev.toolbox.util.math.DoubleRange;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.component.UIComponent;
+import net.malisis.core.client.gui.component.container.BasicContainer;
+import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.control.UIScrollBar;
 import net.malisis.core.client.gui.component.control.UISlimScrollbar;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
+import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
+import net.malisis.core.util.FontColors;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
 import net.minecraft.block.BlockFarmland;
@@ -54,7 +54,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Optional;
 
-public class IngameFarmersAlmanac extends SimpleScreen {
+public class IngameFarmersAlmanac extends BasicScreen {
 
     private static final NumberFormat numberFormat = new DecimalFormat("0.00");
     private static final String formTitle = "Farmer's Almanac";
@@ -64,7 +64,7 @@ public class IngameFarmersAlmanac extends SimpleScreen {
     private static final int leftPad = 8;
     private final Minecraft client = Minecraft.getMinecraft();
     private final ClientboundWorldPositionInformationPacket message;
-    private UIContainer propertyContainer;
+    private BasicContainer propertyContainer;
     private UILabel cropStatusLabel;
     private int lastPropertyY = 4;
 
@@ -85,7 +85,7 @@ public class IngameFarmersAlmanac extends SimpleScreen {
     public void construct() {
         guiscreenBackground = false;
 
-        final UIForm form = new UIForm(this, formWidth, formHeight, formTitle);
+        final BasicForm form = new BasicForm(this, formWidth, formHeight, formTitle);
         form.setClosable(false);
 
         final WorldClient world = this.client.world;
@@ -103,21 +103,21 @@ public class IngameFarmersAlmanac extends SimpleScreen {
         // Localized name
         final UILabel labelLocalizedName = new UILabel(this, block.getLocalizedName());
         labelLocalizedName.setFontOptions(FontColors.WHITE_FO);
-        labelLocalizedName.setPosition(SimpleScreen.getPaddedX(blockImage, 4), 0);
+        labelLocalizedName.setPosition(BasicScreen.getPaddedX(blockImage, 4), 0);
         form.add(labelLocalizedName);
 
         // Registry name
         final String registryName = block.getRegistryName() == null ? "unknown" : block.getRegistryName().toString();
         final UILabel labelRegistryName = new UILabel(this, registryName);
         labelRegistryName.setFontOptions(FontColors.GRAY_FO);
-        labelRegistryName.setPosition(labelLocalizedName.getX(), SimpleScreen.getPaddedY(labelLocalizedName, 2));
+        labelRegistryName.setPosition(labelLocalizedName.getX(), BasicScreen.getPaddedY(labelLocalizedName, 2));
         form.add(labelRegistryName);
 
         // Property container
-        this.propertyContainer = new UIContainer<>(this);
+        this.propertyContainer = new BasicContainer<>(this);
         new UISlimScrollbar(this, this.propertyContainer, UIScrollBar.Type.VERTICAL).setAutoHide(true);
         this.propertyContainer.setBackgroundAlpha(35);
-        this.propertyContainer.setPosition(0, SimpleScreen.getPaddedY(labelRegistryName, 5), Anchor.TOP | Anchor.CENTER);
+        this.propertyContainer.setPosition(0, BasicScreen.getPaddedY(labelRegistryName, 5), Anchor.TOP | Anchor.CENTER);
         this.propertyContainer.setBorder(FontColors.WHITE, 1, 185);
 
         form.add(this.propertyContainer);
@@ -256,7 +256,7 @@ public class IngameFarmersAlmanac extends SimpleScreen {
 
         if (temperatureRange != null) {
             TextColor temperatureColor = TextColors.DARK_GREEN;
-            if (!MathUtil.withinRange(this.round(message.biomeTemperature,2), temperatureRange.min(), temperatureRange.max())) {
+            if (!MathUtil.withinRange(round(message.biomeTemperature,2), temperatureRange.min(), temperatureRange.max())) {
                 if (!message.hasAdditionalLightHeatSource) {
                     this.growing = false;
                     temperatureColor = TextColors.RED;

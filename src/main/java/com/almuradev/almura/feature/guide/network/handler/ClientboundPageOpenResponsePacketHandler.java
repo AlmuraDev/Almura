@@ -8,10 +8,10 @@
 package com.almuradev.almura.feature.guide.network.handler;
 
 import com.almuradev.almura.feature.guide.ClientPageManager;
-import com.almuradev.almura.feature.guide.client.gui.SimplePageView;
+import com.almuradev.almura.feature.guide.client.gui.GuidePageViewScreen;
 import com.almuradev.almura.feature.guide.network.ClientboundPageOpenResponsePacket;
-import com.almuradev.almura.shared.client.ui.component.dialog.UIMessageBox;
 import com.almuradev.almura.shared.util.PacketUtil;
+import net.malisis.core.client.gui.component.container.dialog.BasicMessageBox;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import org.spongepowered.api.Platform;
@@ -38,15 +38,15 @@ public final class ClientboundPageOpenResponsePacketHandler implements MessageHa
             if (PacketUtil.checkThreadAndEnqueue(client, message, this, connection, side)) {
                 this.manager.setPage(message.page);
 
-                SimplePageView view = null;
+                GuidePageViewScreen view = null;
 
                 final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
 
-                if (currentScreen instanceof UIMessageBox.MessageBoxDialogScreen && ((UIMessageBox.MessageBoxDialogScreen) currentScreen).getParent()
-                        instanceof SimplePageView) {
-                    view = (SimplePageView) ((UIMessageBox.MessageBoxDialogScreen) currentScreen).getParent();
-                } else if (currentScreen instanceof SimplePageView) {
-                    view = (SimplePageView) currentScreen;
+                if (currentScreen instanceof BasicMessageBox.MessageBoxDialogScreen && ((BasicMessageBox.MessageBoxDialogScreen) currentScreen).getParent()
+                        instanceof GuidePageViewScreen) {
+                    view = (GuidePageViewScreen) ((BasicMessageBox.MessageBoxDialogScreen) currentScreen).getParent();
+                } else if (currentScreen instanceof GuidePageViewScreen) {
+                    view = (GuidePageViewScreen) currentScreen;
                 }
 
                 if (view != null) {

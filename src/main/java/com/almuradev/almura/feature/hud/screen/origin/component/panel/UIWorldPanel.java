@@ -9,15 +9,14 @@ package com.almuradev.almura.feature.hud.screen.origin.component.panel;
 
 import com.almuradev.almura.feature.claim.ClientClaimManager;
 import com.almuradev.almura.feature.hud.HeadUpDisplay;
-import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.renderer.font.FontOptions;
-import net.minecraft.client.Minecraft;
+import net.malisis.core.util.FontColors;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -113,7 +112,7 @@ public class UIWorldPanel extends AbstractPanel {
       }
     }
 
-    final int y = this.components.contains(this.worldLabel) ? SimpleScreen.getPaddedY(this.worldLabel, 2) : 2;
+    final int y = this.components.contains(this.worldLabel) ? BasicScreen.getPaddedY(this.worldLabel, 2) : 2;
     this.claimLabel.setPosition(1, y, Anchor.TOP | Anchor.CENTER);
   }
 
@@ -125,6 +124,6 @@ public class UIWorldPanel extends AbstractPanel {
       .stream()
       .filter(c -> this.compassLabel != c)
       .max(Comparator.comparingInt(UIComponent::getY)).orElse(null);
-    this.compassLabel.setPosition(1, lowestComponent != null ? SimpleScreen.getPaddedY(lowestComponent, 2) : 2, Anchor.TOP | Anchor.CENTER);
+    this.compassLabel.setPosition(1, lowestComponent != null ? BasicScreen.getPaddedY(lowestComponent, 2) : 2, Anchor.TOP | Anchor.CENTER);
   }
 }

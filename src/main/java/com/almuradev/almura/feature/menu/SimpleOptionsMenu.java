@@ -12,15 +12,12 @@ import com.almuradev.almura.core.client.config.ClientConfiguration;
 import com.almuradev.almura.core.client.config.category.GeneralCategory;
 import com.almuradev.almura.feature.hud.HUDType;
 import com.almuradev.almura.feature.speed.FirstLaunchOptimization;
-import com.almuradev.almura.shared.client.ui.FontColors;
-import com.almuradev.almura.shared.client.ui.component.button.UIButtonBuilder;
-import com.almuradev.almura.shared.client.ui.component.slider.UISliderBuilder;
-import com.almuradev.almura.shared.client.ui.screen.SimpleScreen;
 import com.almuradev.toolbox.config.map.MappedConfiguration;
 import com.google.common.base.Converter;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UILabel;
@@ -28,7 +25,10 @@ import net.malisis.core.client.gui.component.decoration.UITooltip;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UICheckBox;
 import net.malisis.core.client.gui.component.interaction.UISlider;
+import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
+import net.malisis.core.client.gui.component.interaction.slider.builder.UISliderBuilder;
 import net.malisis.core.client.gui.event.ComponentEvent;
+import net.malisis.core.util.FontColors;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
@@ -37,7 +37,7 @@ import java.util.Arrays;
 
 import javax.annotation.Nullable;
 
-public final class SimpleOptionsMenu extends SimpleScreen {
+public final class SimpleOptionsMenu extends BasicScreen {
 
     @Inject private static MappedConfiguration<ClientConfiguration> configAdapter;
 

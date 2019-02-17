@@ -8,7 +8,6 @@
 package com.almuradev.almura.feature.hud.screen.origin.component.panel;
 
 import com.almuradev.almura.shared.client.GuiConfig;
-import com.almuradev.almura.shared.client.ui.FontColors;
 import com.almuradev.almura.shared.client.ui.Fonts;
 import com.almuradev.almura.shared.util.MathUtil;
 import net.malisis.core.client.gui.GuiRenderer;
@@ -19,10 +18,9 @@ import net.malisis.core.client.gui.element.GuiShape;
 import net.malisis.core.client.gui.element.SimpleGuiShape;
 import net.malisis.core.renderer.font.FontOptions;
 import net.malisis.core.renderer.icon.GuiIcon;
+import net.malisis.core.util.FontColors;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
 import javax.annotation.Nullable;
 
@@ -34,13 +32,13 @@ public class UIPropertyBar extends UIComponent {
     private final GuiShape iconShape;
     private int color;
     private float amount = 1.0f;
-    private Text text = Text.EMPTY;
+    private String text = "";
     private FontOptions fontOptions = FontColors.WHITE_FO;
     private GuiTexture spritesheet = GuiConfig.SpriteSheet.VANILLA_ICON;
 
     @Nullable private GuiIcon backgroundIcon, foregroundIcon;
 
-    public UIPropertyBar(MalisisGui gui, int width, int height) {
+    public UIPropertyBar(final MalisisGui gui, final int width, final int height) {
         super(gui);
         this.width = width;
         this.height = height;
@@ -48,7 +46,7 @@ public class UIPropertyBar extends UIComponent {
     }
 
     @Override
-    public void drawBackground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
+    public void drawBackground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
         int barWidth = this.width;
         int barHeight = this.height;
         int barX = 0;
@@ -84,21 +82,20 @@ public class UIPropertyBar extends UIComponent {
         renderer.drawRectangle(barX + 1, 2, getZIndex(), this.getConvertedFill(), barHeight - 2, this.color, this.getAlpha());
     }
 
-    public Text getText() {
+    public String getText() {
         return this.text;
     }
 
-    public void setText(Text text) {
+    public void setText(final String text) {
         this.text = text;
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-        if (this.text != Text.EMPTY) {
-            final String rawText = TextSerializers.LEGACY_FORMATTING_CODE.serialize(this.text);
-            int textWidth = (int) Fonts.MINECRAFT.getStringWidth(rawText, this.fontOptions);
-            int textHeight = (int) Fonts.MINECRAFT.getStringHeight(this.fontOptions);
+    public void drawForeground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
+        if (!this.text.isEmpty()) {
+            final int textWidth = (int) Fonts.MINECRAFT.getStringWidth(this.text, this.fontOptions);
+            final int textHeight = (int) Fonts.MINECRAFT.getStringHeight(this.fontOptions);
 
             int x = (((this.backgroundIcon != null || this.foregroundIcon != null) ? ICON_SIZE + 4 + this.width : this.width) - textWidth) / 2;
 
@@ -110,7 +107,7 @@ public class UIPropertyBar extends UIComponent {
             if (y == 0) {
                 y = 1;
             }
-            renderer.drawText(Fonts.MINECRAFT, rawText, x, y, getZIndex(), this.fontOptions);
+            renderer.drawText(Fonts.MINECRAFT, this.text, x, y, getZIndex(), this.fontOptions);
         }
     }
 
@@ -118,7 +115,7 @@ public class UIPropertyBar extends UIComponent {
         return this.color;
     }
 
-    public UIPropertyBar setColor(int color) {
+    public UIPropertyBar setColor(final int color) {
         this.color = color;
         return this;
     }
@@ -128,7 +125,7 @@ public class UIPropertyBar extends UIComponent {
         return this.backgroundIcon;
     }
 
-    public UIPropertyBar setBackgroundIcon(GuiIcon backgroundIcon) {
+    public UIPropertyBar setBackgroundIcon(final GuiIcon backgroundIcon) {
         this.backgroundIcon = backgroundIcon;
         this.backgroundIcon.setSize(ICON_SIZE, ICON_SIZE);
         return this;
@@ -139,13 +136,13 @@ public class UIPropertyBar extends UIComponent {
         return this.foregroundIcon;
     }
 
-    public UIPropertyBar setForegroundIcon(GuiIcon foregroundIcon) {
+    public UIPropertyBar setForegroundIcon(final GuiIcon foregroundIcon) {
         this.foregroundIcon = foregroundIcon;
         this.foregroundIcon.setSize(ICON_SIZE, ICON_SIZE);
         return this;
     }
 
-    public UIPropertyBar setIcons(GuiIcon backgroundIcon, GuiIcon foregroundIcon) {
+    public UIPropertyBar setIcons(final GuiIcon backgroundIcon, final GuiIcon foregroundIcon) {
         this.setBackgroundIcon(backgroundIcon);
         return this.setForegroundIcon(foregroundIcon);
     }
@@ -164,7 +161,7 @@ public class UIPropertyBar extends UIComponent {
         return this.spritesheet;
     }
 
-    public UIPropertyBar setSpritesheet(GuiTexture spritesheet) {
+    public UIPropertyBar setSpritesheet(final GuiTexture spritesheet) {
         this.spritesheet = spritesheet;
         return this;
     }
@@ -175,12 +172,12 @@ public class UIPropertyBar extends UIComponent {
     }
 
     @Override
-    public UIPropertyBar setPosition(int x, int y) {
+    public UIPropertyBar setPosition(final int x, final int y) {
         return (UIPropertyBar) super.setPosition(x, y);
     }
 
     @Override
-    public UIPropertyBar setPosition(int x, int y, int anchor) {
+    public UIPropertyBar setPosition(final int x, final int y, final int anchor) {
         return (UIPropertyBar) super.setPosition(x, y, anchor);
     }
 
@@ -189,8 +186,8 @@ public class UIPropertyBar extends UIComponent {
         return (int) ((this.amount) * shapeWidth / 1.0f);
     }
 
-    public UIPropertyBar setFontOptions(FontOptions fro) {
-        this.fontOptions = fro;
+    public UIPropertyBar setFontOptions(final FontOptions fontOptions) {
+        this.fontOptions = fontOptions;
         return this;
     }
 }

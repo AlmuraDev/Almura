@@ -7,10 +7,10 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui.component;
 
-import com.almuradev.almura.shared.client.ui.component.UIDynamicList;
 import com.almuradev.almura.shared.item.BasicVanillaStack;
 import com.almuradev.almura.shared.item.VanillaStack;
 import net.malisis.core.client.gui.MalisisGui;
+import net.malisis.core.client.gui.component.container.BasicList;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -21,7 +21,7 @@ import javax.annotation.Nonnull;
  * An implementation of IItemHandler for the Exchange framework. Pay careful attention to the fact that all {@link ItemStack} maniuplations
  * MUST be resync'd back to the {@link VanillaStack} at the call site.
  */
-public final class UIItemList extends UIDynamicList<VanillaStack> implements IItemHandler {
+public final class UIItemList extends BasicList<VanillaStack> implements IItemHandler {
 
     public static final VanillaStack VANILLA_STACK_EMPTY = new BasicVanillaStack(ItemStack.EMPTY);
 
