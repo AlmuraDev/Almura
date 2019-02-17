@@ -124,7 +124,7 @@ public class SimpleAboutMenu extends BasicContainerScreen {
         final PluginContainer almuraContainer = Sponge.getPluginManager().getPlugin("almura").orElseThrow(NullPointerException::new);
         // Todo: why the hell is this broken all of the sudden....
         //final UILabel almuraVersionLabel = new UILabel(this, TextFormatting.WHITE + "Almura: " + almuraContainer.getVersion().orElse("dev"));
-        final UILabel almuraVersionLabel = new UILabel(this, TextFormatting.WHITE + "Almura: 1.12.2 - b61" );
+        final UILabel almuraVersionLabel = new UILabel(this, TextFormatting.WHITE + "Almura: 1.12.2 - b62" );
         almuraVersionLabel.setPosition(4, -4, Anchor.LEFT | Anchor.BOTTOM);
         addToScreen(almuraVersionLabel);
 
