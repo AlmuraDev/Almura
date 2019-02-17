@@ -713,9 +713,11 @@ public class StoreScreen extends BasicScreen {
             this.priceLabel.setText(TextFormatting.GOLD + FeatureConstants.withSuffix(this.item.getPrice().doubleValue())
                     + TextFormatting.GRAY + "/ea");
 
-            // Exact value
-            this.priceLabel.setTooltip(I18n.format("almura.feature.exchange.tooltip.total")
-                    + ": " + FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getQuantity() * this.item.getPrice().doubleValue()));
+            if (this.item.getQuantity() > 0) {
+                // Exact value
+                this.priceLabel.setTooltip(I18n.format("almura.feature.exchange.tooltip.total") + ": " + FeatureConstants.CURRENCY_DECIMAL_FORMAT
+                  .format(this.item.getQuantity() * this.item.getPrice().doubleValue()));
+            }
 
             this.itemNameSpaceAvailable = this.getWidth()
                     - (this.priceLabel.isVisible() ? this.priceLabel.getWidth() : 0)
