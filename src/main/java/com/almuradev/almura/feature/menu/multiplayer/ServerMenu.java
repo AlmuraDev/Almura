@@ -14,6 +14,7 @@ import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.GuiTexture;
+import net.malisis.core.client.gui.UIConstants;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
@@ -114,21 +115,21 @@ public class ServerMenu extends PanoramicScreen {
         // Create the join another server button
         UIButton anotherButton = new UIButton(this, "Other Multiplayer");
         anotherButton.setPosition(0, getPaddedY(almuraDevButton, padding) + 13, Anchor.TOP | Anchor.CENTER);
-        anotherButton.setSize(GuiConfig.Button.WIDTH_LONG, GuiConfig.Button.HEIGHT);
+        anotherButton.setSize(UIConstants.Button.WIDTH_LONG, UIConstants.Button.HEIGHT);
         anotherButton.setName("button.server.another");
         anotherButton.register(this);
 
         // Create the back button
         UIButton backButton = new UIButton(this, "Back");
         backButton.setPosition(0, getPaddedY(anotherButton, padding) + 3, Anchor.TOP | Anchor.CENTER);
-        backButton.setSize(GuiConfig.Button.WIDTH_LONG, GuiConfig.Button.HEIGHT);
+        backButton.setSize(UIConstants.Button.WIDTH_LONG, UIConstants.Button.HEIGHT);
         backButton.setName("button.back");
         backButton.register(this);
 
         final UIButton forumsButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
                 .icon(GuiConfig.Icon.ENJIN)
-                .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
+                .size(UIConstants.Button.WIDTH_ICON, UIConstants.Button.HEIGHT_ICON)
                 .position(-padding, -padding)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .listener(this)
@@ -138,17 +139,17 @@ public class ServerMenu extends PanoramicScreen {
         final UIButton issuesButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
                 .icon(GuiConfig.Icon.FA_GITHUB)
-                .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
+                .size(UIConstants.Button.WIDTH_ICON, UIConstants.Button.HEIGHT_ICON)
                 .position(BasicScreen.getPaddedX(forumsButton, padding, Anchor.RIGHT), forumsButton.getY())
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .listener(this)
-                .tooltip(I18n.format(I18n.format("almura.menu.issues")))
+                .tooltip(I18n.format("almura.menu.issues"))
                 .build("button.issues");
 
         final UIButton shopButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
                 .icon(GuiConfig.Icon.FA_SHOPPING_BAG)
-                .size(GuiConfig.Button.WIDTH_ICON, GuiConfig.Button.HEIGHT_ICON)
+                .size(UIConstants.Button.WIDTH_ICON, UIConstants.Button.HEIGHT_ICON)
                 .position(BasicScreen.getPaddedX(issuesButton, padding, Anchor.RIGHT), issuesButton.getY())
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .listener(this)
