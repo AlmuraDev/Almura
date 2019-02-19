@@ -172,23 +172,19 @@ public class MultiplayerScreen extends PanoramicScreen {
       e.status = e.query.pingServer() ? ServerStatus.ONLINE : ServerStatus.OFFLINE;
 
       if (e.status == ServerStatus.ONLINE) {
-        try {
-          // Query the server
-          e.query.sendQuery();
+        // Query the server
+        e.query.sendQuery();
 
-          // Determine if it is in the process of restarting
-          if (e.query.getPlayers() == null || e.query.getMaxPlayers() == null) {
-            e.status = ServerStatus.RESTARTING;
-            return;
-          }
-
-          // Update player counts
-          e.players = Integer.valueOf(e.query.getPlayers());
-          e.maxPlayers = Integer.valueOf(e.query.getMaxPlayers());
-          e.motd = e.query.getMotd();
-
-        } catch (final IOException ignored) {
+        // Determine if it is in the process of restarting
+        if (e.query.getPlayers() == null || e.query.getMaxPlayers() == null) {
+          e.status = ServerStatus.RESTARTING;
+          return;
         }
+
+        // Update player counts
+        e.players = Integer.valueOf(e.query.getPlayers());
+        e.maxPlayers = Integer.valueOf(e.query.getMaxPlayers());
+        e.motd = e.query.getMotd();
       }
     });
   }
@@ -202,7 +198,7 @@ public class MultiplayerScreen extends PanoramicScreen {
     private String motd;
     private int players;
     private int maxPlayers;
-    private ServerStatus status = ServerStatus.OFFLINE;
+    private ServerStatus status = ServerStatus.UPDATING;
 
     ServerEntry(final String name, final String address, final int port) {
       this.name = name;
@@ -247,29 +243,13 @@ public class MultiplayerScreen extends PanoramicScreen {
 
     public void update() {
       // Update status indicator
-      final int statusColor;
-      switch (this.item.status) {
-        case ONLINE:
-          statusColor = 0x55FF55;
-          break;
-        case RESTARTING:
-          statusColor = 0xFFFFAA;
-          break;
-        default:
-          statusColor = 0xFF5555;
-      }
-      this.statusIndicatorContainer.setColor(statusColor);
+      this.statusIndicatorContainer.setColor(this.item.status.color);
 
       // Update server status label
-      switch (this.item.status) {
-        case ONLINE:
-          this.serverStatusLabel.setText(TextFormatting.WHITE + "" + this.item.players + "/" + this.item.maxPlayers);
-          break;
-        case RESTARTING:
-          this.serverStatusLabel.setText(TextFormatting.YELLOW + I18n.format("almura.multiplayer.status.restarting"));
-          break;
-        default:
-          this.serverStatusLabel.setText(TextFormatting.RED + I18n.format("almura.multiplayer.status.offline"));
+      if (this.item.status == ServerStatus.ONLINE) {
+        this.serverStatusLabel.setText(TextFormatting.WHITE + "" + this.item.players + "/" + this.item.maxPlayers);
+      } else {
+        this.serverStatusLabel.setText(this.item.status.getFormattedName());
       }
 
       // Update MOTD tooltip
@@ -278,8 +258,22 @@ public class MultiplayerScreen extends PanoramicScreen {
   }
 
   private enum ServerStatus {
-    ONLINE,
-    OFFLINE,
-    RESTARTING
+    OFFLINE("almura.multiplayer.status.offline", TextFormatting.RED, 0xFF5555),
+    ONLINE("almura.multiplayer.status.online", TextFormatting.GREEN, 0x055FF55),
+    RESTARTING("almura.multiplayer.status.restarting", TextFormatting.YELLOW, 0xFFFFAA),
+    UPDATING("almura.multiplayer.status.updating", TextFormatting.DARK_PURPLE, 0xAA00AA);
+
+    private final String translationKey;
+    private final TextFormatting textFormatting;
+    private final int color;
+    ServerStatus(final String translationKey, final TextFormatting textFormatting, final int color) {
+      this.translationKey = translationKey;
+      this.textFormatting = textFormatting;
+      this.color = color;
+    }
+
+    private String getFormattedName() {
+      return this.textFormatting + I18n.format(this.translationKey);
+    }
   }
 }
