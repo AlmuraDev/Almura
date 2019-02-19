@@ -39,7 +39,7 @@ import javax.inject.Singleton;
 @Singleton
 public final class RootContentLoader implements Witness {
     private static final boolean FORCE_SEARCH_JARS = Boolean.getBoolean(ContentConfig.SYSTEM_PROPERTY_PREFIX + "loader.searchJars");
-    public static final String FILESYSTEM_ASSETS = "fs_2";
+    public static final String FILESYSTEM_ASSETS = "fs_3";
     public static final String MANAGED_ASSETS = "managed";
     private final Path assets;
     private final Injector injector;
