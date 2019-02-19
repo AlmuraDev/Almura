@@ -12,9 +12,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.fml.relauncher.Side;
@@ -60,9 +57,11 @@ public final class NormalBlockImpl extends Block implements NormalBlock {
     @Deprecated
     @Override
     public boolean isOpaqueCube(final IBlockState state) {
+        final Boolean opaque = this.definition(state).opaque;
+        if(opaque != null) {
+            return opaque;
+        }
         return false;
-        // todo:  this needs to load from block config.
-        // note: this is false for non 100% cubes, turn to true for 100% cubes for proper block face culling.
     }
 
     @Override

@@ -137,6 +137,10 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
     @Deprecated
     @Override
     public boolean isOpaqueCube(final IBlockState state) {
+        final Boolean opaque = this.definition(state).opaque;
+        if(opaque != null) {
+            return opaque;
+        }
         return false;
     }
 

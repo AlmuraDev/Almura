@@ -27,6 +27,7 @@ public abstract class AbstractBlockStateDefinition<B extends BlockAABB.Box, C ex
     public final OptionalDouble hardness;
     public final OptionalDouble lightEmission;
     public final OptionalInt lightOpacity;
+    public final @Nullable Boolean opaque;
     public final OptionalDouble resistance;
     @Nullable public final Delegate<BlockSoundGroup> sound;
     @Nullable public final Delegate<BlockDestroyAction> destroyAction;
@@ -41,6 +42,7 @@ public abstract class AbstractBlockStateDefinition<B extends BlockAABB.Box, C ex
         this.hardness = builder.hardness;
         this.lightEmission = builder.lightEmission;
         this.lightOpacity = builder.lightOpacity;
+        this.opaque = builder.opaque;
         this.resistance = builder.resistance;
         this.sound = builder.sound;
         this.destroyAction = builder.destroyAction;

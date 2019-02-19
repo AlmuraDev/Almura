@@ -42,6 +42,7 @@ public interface BlockConfig {
          * @see Light
          */
         String LIGHT = "light";
+        String OPAQUE = "opaque";
         String RESISTANCE = "resistance";
         /**
          * @see BlockSoundGroupConfig

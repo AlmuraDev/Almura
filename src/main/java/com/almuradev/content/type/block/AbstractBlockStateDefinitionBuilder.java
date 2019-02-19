@@ -29,6 +29,7 @@ public abstract class AbstractBlockStateDefinitionBuilder<D extends BlockStateDe
     protected OptionalDouble hardness = OptionalDouble.empty();
     protected OptionalDouble lightEmission = OptionalDouble.empty();
     protected OptionalInt lightOpacity = OptionalInt.empty();
+    protected @Nullable Boolean opaque;
     protected OptionalDouble resistance = OptionalDouble.empty();
     @Nullable protected Delegate<BlockSoundGroup> sound;
     @Nullable protected Delegate<BlockDestroyAction> destroyAction;
@@ -83,6 +84,11 @@ public abstract class AbstractBlockStateDefinitionBuilder<D extends BlockStateDe
     }
 
     @Override
+    public void opaque(final boolean opaque) {
+        this.opaque = opaque;
+    }
+
+    @Override
     public void resistance(final float resistance) {
         this.resistance = OptionalDouble.of(resistance);
     }
@@ -128,7 +134,8 @@ public abstract class AbstractBlockStateDefinitionBuilder<D extends BlockStateDe
             if (this.wireFrame != null) that.wireFrame = BlockAABB.shares(this.wireFrame, 1);
             if (this.hardness.isPresent()) that.hardness = this.hardness;
             if (this.lightEmission.isPresent()) that.lightEmission = this.lightEmission;
-            if (this.lightOpacity.isPresent())  that.lightOpacity = this.lightOpacity;
+            if (this.lightOpacity.isPresent()) that.lightOpacity = this.lightOpacity;
+            if (this.opaque != null) that.opaque = this.opaque;
             if (this.resistance.isPresent()) that.resistance = this.resistance;
             if (this.sound != null) that.sound = this.sound;
             if (this.destroyAction != null) that.destroyAction = this.destroyAction;

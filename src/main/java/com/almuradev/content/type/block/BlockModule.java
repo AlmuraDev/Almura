@@ -21,6 +21,7 @@ import com.almuradev.content.type.block.processor.ItemGroupProcessor;
 import com.almuradev.content.type.block.processor.LightProcessor;
 import com.almuradev.content.type.block.processor.MapColorProcessor;
 import com.almuradev.content.type.block.processor.MaterialProcessor;
+import com.almuradev.content.type.block.processor.OpaqueProcessor;
 import com.almuradev.content.type.block.processor.ParentProcessor;
 import com.almuradev.content.type.block.processor.RenderLayerProcessor;
 import com.almuradev.content.type.block.processor.ResistanceProcessor;
@@ -69,6 +70,7 @@ public final class BlockModule extends AbstractModule implements CoreBinder {
                         .all(LightProcessor.class)
                         .all(MapColorProcessor.class)
                         .all(MaterialProcessor.class)
+                        .all(OpaqueProcessor.class)
                         .all(ResistanceProcessor.class)
                         .all(SoundProcessor.class)
                         .all(FlammabilityProcessor.class)

@@ -33,6 +33,8 @@ public interface BlockStateDefinition {
 
         void lightOpacity(final int opacity);
 
+        void opaque(final boolean opaque);
+
         void resistance(final float resistance);
 
         void sound(final Delegate<BlockSoundGroup> sound);
