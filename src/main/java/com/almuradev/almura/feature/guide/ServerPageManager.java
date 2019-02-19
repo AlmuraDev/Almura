@@ -9,8 +9,6 @@ package com.almuradev.almura.feature.guide;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import br.net.fabiozumbi12.UltimateChat.Sponge.UCChannel;
-import br.net.fabiozumbi12.UltimateChat.Sponge.UChat;
 import com.almuradev.almura.feature.guide.network.ClientboundGuideOpenResponsePacket;
 import com.almuradev.almura.feature.guide.network.ClientboundPageListingsPacket;
 import com.almuradev.almura.feature.guide.network.GuideOpenType;
@@ -306,7 +304,6 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
             for (final Player player : this.game.getServer().getOnlinePlayers()) {
                 if (player.hasPermission("almura.guide.page." + page.getId())) {
                     manager.sendPopupNotification(player, Text.of("Guide Update"), Text.of("The Guide: (" + page.getName() + ") has been updated!"), 10);
-                    //UChat.get().getUCJDA().sendTellToDiscord(Text.of("The Guide: (" + page.getName() + ") has been updated!").toPlain());
                 }
             }
         }

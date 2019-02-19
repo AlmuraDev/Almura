@@ -88,7 +88,7 @@ repositories {
         url = 'http://repo.bstats.org/content/repositories/releases/'
     }
     maven {
-        //url = "https://raw.github.com/FabioZumbi12/UltimateChat/mvn-repo/"
+        url = "https://raw.github.com/FabioZumbi12/UltimateChat/mvn-repo/"
     }
 }
 
