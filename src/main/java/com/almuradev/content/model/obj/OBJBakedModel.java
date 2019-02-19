@@ -35,6 +35,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -47,18 +48,14 @@ import javax.vecmath.Vector4f;
 @SideOnly(Side.CLIENT)
 public class OBJBakedModel implements IBakedModel {
 
-    //private static final Object2ObjectMap<String, OBJBakedModel> STATE_MODEL_CACHE = new Object2ObjectOpenHashMap<>(2000);
-
     private final OBJModel model;
     private final IModelState state;
     private final VertexFormat format;
-
     @Nullable
     private TextureAtlasSprite spriteOverride;
     @Nullable
+    private List<BakedQuad> quadCache;
     private Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter;
-    @Nullable
-    private List<BakedQuad> quads;
     private TextureAtlasSprite particleDiffuseSprite = ModelLoader.White.INSTANCE;
 
 
@@ -85,168 +82,200 @@ public class OBJBakedModel implements IBakedModel {
 
     @Override
     public List<BakedQuad> getQuads(@Nullable final IBlockState blockState, @Nullable final EnumFacing side, final long rand) {
-
-        // Inventory
-        if (blockState == null && this.quads != null) {
-            return this.quads;
+        boolean isComplex = false;
+        for (Group group : this.model.getGroups()) {
+            if (group.getFaces().size() > 6) {
+                isComplex = true;
+                break;
+            }
         }
 
-        // Todo: disable caching to fix damage
+        if (isComplex && this.quadCache != null) {
+            // Skip re-calculating quads as they are cached.
+            return this.quadCache;
+        }
 
-        /*if (blockState != null) {
-            final OBJBakedModel model = STATE_MODEL_CACHE.get(blockState.toString());
-
-            if (model != null && model.quads != null) {
-                return model.quads;
+        if (blockState != null) {
+            if (side != null && isComplex) {
+                // Skip rendering
+                return new LinkedList<>();
             }
-        }*/
+        }
 
-        if (this.quads == null) {
-            this.quads = new LinkedList<>();
+        final List<BakedQuad> quads = new ArrayList<>();
 
-            final TRSRTransformation transformation = this.state.apply(Optional.empty()).orElse(null);
-
-            Face particleFace = null;
-            TextureAtlasSprite particleAtlasSprite = null;
-
-            for (final Group group : this.model.getGroups()) {
+        if (blockState == null || isComplex) {
+            // Complex, return all.
+            this.model.getGroups().forEach(group -> {
                 final MaterialDefinition materialDefinition = group.getMaterialDefinition().orElse(null);
+                group.getFaces().forEach(face -> this.populateQuadsByFace(materialDefinition, face, quads));
+            });
+            this.quadCache = quads;
+        } else if (side != null) {
+            final Group group = this.model.getGroups().get(0);
+            if (group != null) {
+                final MaterialDefinition materialDefinition = group.getMaterialDefinition().orElse(null);
+                int index = 0;
+                switch (side) {
+                    case DOWN:
+                        index = 5;
+                        break;
+                    case UP:
+                        index = 0;
+                        break;
+                    case NORTH:
+                        index = 2;
+                        break;
+                    case SOUTH:
+                        index = 4;
+                        break;
+                    case WEST:
+                        index = 3;
+                        break;
+                    case EAST:
+                        index = 1;
+                        break;
+                }
+                final Face face = group.getFaces().get(index);
+                if (face != null) {
+                    this.populateQuadsByFace(materialDefinition, face, quads);
+                }
+            }
+        }
+        return quads;
+    }
 
-                TextureAtlasSprite diffuseSprite = this.spriteOverride;
+    private void populateQuadsByFace(@Nullable MaterialDefinition materialDefinition, Face face, List<BakedQuad> quads) {
+        Face particleFace;
+        TextureAtlasSprite particleAtlasSprite;
 
-                if (diffuseSprite == null) {
-                    if (materialDefinition != null) {
-                        if (materialDefinition.getDiffuseTexture().isPresent()) {
-                            final ResourceLocation diffuseLocation = materialDefinition.getDiffuseTexture().orElse(null);
+        final TRSRTransformation transformation = this.state.apply(Optional.empty()).orElse(null);
 
-                            if (diffuseLocation != null) {
+        TextureAtlasSprite diffuseSprite = this.spriteOverride;
 
-                                if (diffuseLocation.getPath().endsWith(".png")) {
-                                    diffuseSprite = this.bakedTextureGetter.apply(new ResourceLocation(diffuseLocation.getNamespace(), diffuseLocation.getPath().split("\\.")[0]));
-                                } else {
-                                    diffuseSprite = this.bakedTextureGetter.apply(diffuseLocation);
-                                }
-                            }
+        if (diffuseSprite == null) {
+            if (materialDefinition != null) {
+                if (materialDefinition.getDiffuseTexture().isPresent()) {
+                    final ResourceLocation diffuseLocation = materialDefinition.getDiffuseTexture().orElse(null);
+
+                    if (diffuseLocation != null) {
+
+                        if (diffuseLocation.getPath().endsWith(".png")) {
+                            diffuseSprite = this.bakedTextureGetter.apply(new ResourceLocation(diffuseLocation.getNamespace(), diffuseLocation.getPath().split("\\.")[0]));
+                        } else {
+                            diffuseSprite = this.bakedTextureGetter.apply(diffuseLocation);
                         }
                     }
                 }
+            }
+        }
 
-                if (diffuseSprite == null) {
-                    diffuseSprite = ModelLoader.White.INSTANCE;
-                }
+        if (diffuseSprite == null) {
+            diffuseSprite = ModelLoader.White.INSTANCE;
+        }
 
-                particleAtlasSprite = diffuseSprite;
+        particleAtlasSprite = diffuseSprite;
 
-                for (final Face face : group.getFaces()) {
-                    particleFace = face;
+        particleFace = face;
 
-                    final UnpackedBakedQuad.Builder quadBuilder = new UnpackedBakedQuad.Builder(this.format);
-                    quadBuilder.setContractUVs(true);
-                    quadBuilder.setTexture(diffuseSprite);
-                    VertexNormal normal = null;
+        final UnpackedBakedQuad.Builder quadBuilder = new UnpackedBakedQuad.Builder(this.format);
+        quadBuilder.setContractUVs(true);
+        quadBuilder.setTexture(diffuseSprite);
+        VertexNormal normal = null;
 
-                    for (final VertexDefinition vertexDef : face.getVertices()) {
-                        if (normal == null) {
-                            normal = vertexDef.getNormal().orElse(null);
+        for (final VertexDefinition vertexDef : face.getVertices()) {
+            if (normal == null) {
+                normal = vertexDef.getNormal().orElse(null);
+            }
+
+            for (int e = 0; e < this.format.getElementCount(); e++) {
+                switch (this.format.getElement(e).getUsage()) {
+                    case POSITION:
+                        final Vertex vertex = vertexDef.getVertex();
+                        if (transformation != null) {
+                            final Matrix4f transform = transformation.getMatrix();
+                            final Vector4f position = new Vector4f(vertex.getX(), vertex.getY(), vertex.getZ(), 1f);
+                            final Vector4f transformed = new Vector4f();
+                            transform.transform(position, transformed);
+                            quadBuilder.put(e, transformed.getX(), transformed.getY(), transformed.getZ());
+                        } else {
+                            quadBuilder.put(e, vertex.getX(), vertex.getY(), vertex.getZ());
                         }
 
-                        for (int e = 0; e < this.format.getElementCount(); e++) {
-                            switch (this.format.getElement(e).getUsage()) {
-                                case POSITION:
-                                    final Vertex vertex = vertexDef.getVertex();
-                                    if (transformation != null) {
-                                        final Matrix4f transform = transformation.getMatrix();
-                                        final Vector4f position = new Vector4f(vertex.getX(), vertex.getY(), vertex.getZ(), 1f);
-                                        final Vector4f transformed = new Vector4f();
-                                        transform.transform(position, transformed);
-                                        quadBuilder.put(e, transformed.getX(), transformed.getY(), transformed.getZ());
-                                    } else {
-                                        quadBuilder.put(e, vertex.getX(), vertex.getY(), vertex.getZ());
-                                    }
+                        break;
+                    case UV:
+                        final float u;
+                        final float v;
 
+                        if (this.spriteOverride == null) {
+                            final VertexTextureCoordinate textureCoordinate = vertexDef.getTextureCoordinate().orElse(null);
+
+                            if (textureCoordinate != null) {
+                                u = textureCoordinate.getU();
+                                v = 1f - textureCoordinate.getV();
+                            } else {
+                                u = 0f;
+                                v = 1f;
+                            }
+
+                        } else {
+
+                            /*
+                             * 0: (0, 0)       3: (0, 1)
+                             *
+                             *
+                             * 1: (1, 0)       2: (1, 1)
+                             */
+
+                            switch (vertexDef.getIndex()) {
+                                case 1:
+                                    u = 0f;
+                                    v = 0f;
                                     break;
-                                case UV:
-                                    final float u;
-                                    final float v;
-
-                                    if (this.spriteOverride == null) {
-                                        final VertexTextureCoordinate textureCoordinate = vertexDef.getTextureCoordinate().orElse(null);
-
-                                        if (textureCoordinate != null) {
-                                            u = textureCoordinate.getU();
-                                            v = 1f - textureCoordinate.getV();
-                                        } else {
-                                            u = 0f;
-                                            v = 1f;
-                                        }
-
-                                    } else {
-
-                                        /*
-                                         * 0: (0, 0)       3: (0, 1)
-                                         *
-                                         *
-                                         * 1: (1, 0)       2: (1, 1)
-                                         */
-
-                                        switch (vertexDef.getIndex()) {
-                                            case 1:
-                                                u = 0f;
-                                                v = 0f;
-                                                break;
-                                            case 2:
-                                                u = 1f;
-                                                v = 0f;
-                                                break;
-                                            case 3:
-                                                u = 1f;
-                                                v = 1f;
-                                                break;
-                                            case 4:
-                                                u = 0f;
-                                                v = 1f;
-                                                break;
-                                            default:
-                                                u = 0f;
-                                                v = 0f;
-                                        }
-                                    }
-
-                                    quadBuilder.put(e, diffuseSprite.getInterpolatedU(u * 16f), diffuseSprite.getInterpolatedV(v * 16f));
+                                case 2:
+                                    u = 1f;
+                                    v = 0f;
                                     break;
-                                case NORMAL:
-                                    if (normal != null) {
-                                        quadBuilder.put(e, normal.getX(), normal.getY(), normal.getZ());
-                                    }
+                                case 3:
+                                    u = 1f;
+                                    v = 1f;
                                     break;
-                                case COLOR:
-                                    quadBuilder.put(e, 1f, 1f, 1f, 1f);
+                                case 4:
+                                    u = 0f;
+                                    v = 1f;
                                     break;
                                 default:
-                                    quadBuilder.put(e);
+                                    u = 0f;
+                                    v = 0f;
                             }
                         }
-                    }
 
-                    if (normal != null) {
-                        quadBuilder.setQuadOrientation(EnumFacing.getFacingFromVector(normal.getX(), normal.getY(), normal.getZ()));
-                    }
-
-                    this.quads.add(quadBuilder.build());
+                        quadBuilder.put(e, diffuseSprite.getInterpolatedU(u * 16f), diffuseSprite.getInterpolatedV(v * 16f));
+                        break;
+                    case NORMAL:
+                        if (normal != null) {
+                            quadBuilder.put(e, normal.getX(), normal.getY(), normal.getZ());
+                        }
+                        break;
+                    case COLOR:
+                        quadBuilder.put(e, 1f, 1f, 1f, 1f);
+                        break;
+                    default:
+                        quadBuilder.put(e);
                 }
-            }
-
-            if (particleFace != null && particleAtlasSprite != null) {
-                // For now, last face = particle generation
-                this.particleDiffuseSprite = this.createParticleSpriteFor(particleFace, particleAtlasSprite);
-            }
-
-            if (blockState != null) {
-                //STATE_MODEL_CACHE.put(blockState.toString(), this);
             }
         }
 
-        return this.quads;
+        if (normal != null) {
+            quadBuilder.setQuadOrientation(EnumFacing.getFacingFromVector(normal.getX(), normal.getY(), normal.getZ()));
+        }
+
+        quads.add(quadBuilder.build());
+
+        if (particleFace != null && particleAtlasSprite != null) {
+            // For now, last face = particle generation
+            this.particleDiffuseSprite = this.createParticleSpriteFor(particleFace, particleAtlasSprite);
+        }
     }
 
     public OBJBakedModel retextureQuadsFor(final TextureAtlasSprite damageSprite) {

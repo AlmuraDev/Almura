@@ -12,15 +12,17 @@ import static com.google.common.base.Preconditions.checkState;
 import com.almuradev.content.model.obj.material.MaterialDefinition;
 import com.google.common.base.MoreObjects;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Optional;
 
 public class Group {
     private final String name;
     private final MaterialDefinition materialDefinition;
-    private final LinkedHashSet<Face> faces;
+    private final List<Face> faces;
 
-    private Group(final String name, final MaterialDefinition materialDefinition, final LinkedHashSet<Face> faces) {
+    private Group(final String name, final MaterialDefinition materialDefinition, final List<Face> faces) {
         this.name = name;
         this.materialDefinition = materialDefinition;
         this.faces = faces;
@@ -38,7 +40,7 @@ public class Group {
         return Optional.ofNullable(this.materialDefinition);
     }
 
-    public LinkedHashSet<Face> getFaces() {
+    public List<Face> getFaces() {
         return this.faces;
     }
 
@@ -63,7 +65,7 @@ public class Group {
 
     public static final class Builder {
         private MaterialDefinition materialDefinition;
-        private LinkedHashSet<Face> faces = new LinkedHashSet<>();
+        private List<Face> faces = new ArrayList<>();
 
         public Builder materialDefinition(final MaterialDefinition materialDefinition) {
             this.materialDefinition = materialDefinition;

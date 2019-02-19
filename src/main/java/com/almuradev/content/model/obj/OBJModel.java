@@ -27,12 +27,14 @@ import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -46,10 +48,10 @@ public class OBJModel implements IModel {
     private final ResourceLocation source;
     private final String name;
     private final MaterialLibrary materialLibrary;
-    private final Set<Group> groups;
+    private final List<Group> groups;
     private final Set<ResourceLocation> textures;
 
-    private OBJModel(final ResourceLocation source, final String name, final MaterialLibrary materialLibrary, final Set<Group> groups) {
+    private OBJModel(final ResourceLocation source, final String name, final MaterialLibrary materialLibrary, final List<Group> groups) {
         this.source = source;
         this.name = name;
         this.materialLibrary = materialLibrary;
@@ -150,7 +152,7 @@ public class OBJModel implements IModel {
         return this.materialLibrary;
     }
 
-    public Set<Group> getGroups() {
+    public List<Group> getGroups() {
         return this.groups;
     }
 
@@ -168,7 +170,7 @@ public class OBJModel implements IModel {
         private LinkedHashMap<Vertex, Integer> vertices = new LinkedHashMap<>();
         private LinkedHashMap<VertexNormal, Integer> normals = new LinkedHashMap<>();
         private LinkedHashMap<VertexTextureCoordinate, Integer> textureCoordinates = new LinkedHashMap<>();
-        private Set<Group> groups = new LinkedHashSet<>();
+        private List<Group> groups = new ArrayList<>();
 
         public Builder materialLibrary(final MaterialLibrary materialLibrary) {
             this.materialLibrary = materialLibrary;

@@ -12,6 +12,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumBlockRenderType;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.fml.relauncher.Side;
@@ -35,7 +38,13 @@ public final class NormalBlockImpl extends Block implements NormalBlock {
     @Deprecated
     @Override
     public boolean isFullCube(final IBlockState state) {
-        return false;
+        return true;
+    }
+
+    @Override
+    public boolean isTranslucent(IBlockState state) {
+        // Todo: nothing is hitting here...
+        return this.translucent;
     }
 
     @Override
@@ -43,15 +52,22 @@ public final class NormalBlockImpl extends Block implements NormalBlock {
         return true;
     }
 
+    @Override
+    public boolean isBlockNormalCube(IBlockState state) {
+        return state.getMaterial().blocksMovement() && state.isFullCube();
+    }
+
     @Deprecated
     @Override
     public boolean isOpaqueCube(final IBlockState state) {
         return false;
+        // todo:  this needs to load from block config.
+        // note: this is false for non 100% cubes, turn to true for 100% cubes for proper block face culling.
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT_MIPPED;
+        return BlockRenderLayer.SOLID;
     }
 }
