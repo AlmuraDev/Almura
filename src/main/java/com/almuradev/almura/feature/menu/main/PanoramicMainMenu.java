@@ -9,7 +9,7 @@ package com.almuradev.almura.feature.menu.main;
 
 import com.almuradev.almura.core.client.config.ClientConfiguration;
 import com.almuradev.almura.core.client.config.category.GeneralCategory;
-import com.almuradev.almura.feature.menu.multiplayer.ServerMenu;
+import com.almuradev.almura.feature.menu.multiplayer.MultiplayerScreen;
 import com.almuradev.almura.feature.speed.FirstLaunchOptimization;
 import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.shared.client.ui.screen.PanoramicScreen;
@@ -232,7 +232,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
                 this.mc.displayGuiScreen(new GuiWorldSelection(this));
                 break;
             case "button.multiplayer":
-                new ServerMenu(this).display();
+                new MultiplayerScreen(this).display();
                 break;
             case "button.options":
                 this.mc.displayGuiScreen(new GuiOptions(this, this.mc.gameSettings));

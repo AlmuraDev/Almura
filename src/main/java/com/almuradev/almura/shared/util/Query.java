@@ -29,9 +29,10 @@ public class Query {
     private InetSocketAddress address;
     private Map<String, String> values;
     private String[] onlineUsernames;
-    private String maxPlayers, onlinePlayers = "0";
+    private String maxPlayers = "0";
+    private String onlinePlayers = "0";
     private boolean online;
-
+    private String motd;
 
     public Query(String host, int port) {
         this(new InetSocketAddress(host, port));
@@ -134,10 +135,13 @@ public class Query {
                 } else {
                     final String v = readString(receiveData, cursor);
                     if (s.equalsIgnoreCase("numplayers")) {
-                        onlinePlayers = v;
+                        this.onlinePlayers = v;
                     }
                     if (s.equalsIgnoreCase("maxplayers")) {
-                        maxPlayers = v;
+                        this.maxPlayers = v;
+                    }
+                    if (s.equalsIgnoreCase("hostname")) {
+                        this.motd = v;
                     }
                     values.put(s, v);
                 }
@@ -162,6 +166,10 @@ public class Query {
 
     public String getMaxPlayers() {
         return maxPlayers;
+    }
+
+    public String getMotd() {
+        return this.motd;
     }
 
     public boolean isOnline() {
