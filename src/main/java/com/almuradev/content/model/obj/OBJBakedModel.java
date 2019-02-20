@@ -82,10 +82,10 @@ public class OBJBakedModel implements IBakedModel {
 
     @Override
     public List<BakedQuad> getQuads(@Nullable final IBlockState blockState, @Nullable final EnumFacing side, final long rand) {
-        boolean isComplex = false;
+        boolean isComplex = true;
         for (Group group : this.model.getGroups()) {
-            if (group.getFaces().size() > 6) {
-                isComplex = true;
+            if (group.getFaces().size() == 6) {
+                isComplex = false;
                 break;
             }
         }
@@ -115,27 +115,102 @@ public class OBJBakedModel implements IBakedModel {
             final Group group = this.model.getGroups().get(0);
             if (group != null) {
                 final MaterialDefinition materialDefinition = group.getMaterialDefinition().orElse(null);
+                int meta = blockState.getBlock().getMetaFromState(blockState);
                 int index = 0;
-                switch (side) {
-                    case DOWN:
-                        index = 5;
-                        break;
-                    case UP:
-                        index = 0;
-                        break;
-                    case NORTH:
-                        index = 2;
-                        break;
-                    case SOUTH:
-                        index = 4;
-                        break;
-                    case WEST:
-                        index = 3;
-                        break;
-                    case EAST:
-                        index = 1;
-                        break;
+                // Meta values looked up because the facing direction also dictates which face gets rendered and which one doesn't.
+                // Todo: Remove this when we can figure out how to sort out this non-sense.
+                if (meta == 0) {
+                    switch (side) {
+                        case DOWN:
+                            index = 5;
+                            break;
+                        case UP:
+                            index = 0;
+                            break;
+                        case NORTH:
+                            index = 4;
+                            break;
+                        case SOUTH:
+                            index = 2;
+                            break;
+                        case WEST:
+                            index = 1;
+                            break;
+                        case EAST:
+                            index = 3;
+                            break;
+                    }
                 }
+
+                if (meta == 1) {
+                    switch (side) {
+                        case DOWN:
+                            index = 5;
+                            break;
+                        case UP:
+                            index = 0;
+                            break;
+                        case NORTH:
+                            index = 1;
+                            break;
+                        case SOUTH:
+                            index = 3;
+                            break;
+                        case WEST:
+                            index = 2;
+                            break;
+                        case EAST:
+                            index = 4;
+                            break;
+                    }
+                }
+
+                if (meta == 2) {
+                    switch (side) {
+                        case DOWN:
+                            index = 5;
+                            break;
+                        case UP:
+                            index = 0;
+                            break;
+                        case NORTH:
+                            index = 2;
+                            break;
+                        case SOUTH:
+                            index = 4;
+                            break;
+                        case WEST:
+                            index = 3;
+                            break;
+                        case EAST:
+                            index = 1;
+                            break;
+                    }
+                }
+
+                if (meta == 3) {
+                    switch (side) {
+                        case DOWN:
+                            index = 5;
+                            break;
+                        case UP:
+                            index = 0;
+                            break;
+                        case NORTH:
+                            index = 3;
+                            break;
+                        case SOUTH:
+                            index = 1;
+                            break;
+                        case WEST:
+                            index = 4;
+                            break;
+                        case EAST:
+                            index = 2;
+                            break;
+                    }
+                }
+
                 final Face face = group.getFaces().get(index);
                 if (face != null) {
                     this.populateQuadsByFace(materialDefinition, face, quads);

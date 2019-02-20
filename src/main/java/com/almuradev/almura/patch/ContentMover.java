@@ -23,7 +23,7 @@ import java.util.Map;
 public class ContentMover implements Witness {
   private static final String EXPECTED_NAMESPACE = Almura.ID;
   private static final Map<String, String> BLOCKS = ImmutableMap.<String, String>builder()
-      .put("almura:block/horizontal/ore/marbleore", "almura:block/normal/ore/marbleore")
+      //.put("almura:block/horizontal/ore/marbleore", "almura:block/normal/ore/marbleore") // this doesn't work anyways....
       .build();
 
   @SubscribeEvent
