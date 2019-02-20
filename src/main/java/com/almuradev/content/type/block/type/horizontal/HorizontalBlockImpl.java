@@ -38,6 +38,13 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
     HorizontalBlockImpl(final HorizontalBlockBuilder builder, final List<HorizontalBlockStateDefinition> states) {
         super((Material) builder.material.get());
         builder.fill(this);
+
+        // assume first state is the default
+        final Boolean opaque = states.get(0).opaque;
+        if(opaque != null) {
+            this.fullBlock = opaque;
+        }
+
         for (final HorizontalBlockStateDefinition state : states) {
             this.states.put(state.facing, state);
         }
@@ -136,10 +143,13 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
 
     @Deprecated
     @Override
+    @SuppressWarnings("ConstantConditions")
     public boolean isOpaqueCube(final IBlockState state) {
-        final Boolean opaque = this.definition(state).opaque;
-        if(opaque != null) {
-            return opaque;
+        if(this.states != null) {
+            final Boolean opaque = this.definition(state).opaque;
+            if(opaque != null) {
+                return opaque;
+            }
         }
         return false;
     }

@@ -25,6 +25,7 @@ public final class NormalBlockImpl extends Block implements NormalBlock {
         builder.fill(this);
         this.definition = builder.singleState();
         this.definition.fill(this);
+        if (this.definition.opaque != null) this.fullBlock = this.definition.opaque;
     }
 
     @Override
@@ -56,10 +57,13 @@ public final class NormalBlockImpl extends Block implements NormalBlock {
 
     @Deprecated
     @Override
+    @SuppressWarnings("ConstantConditions")
     public boolean isOpaqueCube(final IBlockState state) {
-        final Boolean opaque = this.definition(state).opaque;
-        if(opaque != null) {
-            return opaque;
+        if(this.definition != null) {
+            final Boolean opaque = this.definition.opaque;
+            if(opaque != null) {
+                return opaque;
+            }
         }
         return false;
     }
