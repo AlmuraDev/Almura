@@ -1329,7 +1329,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         try (final CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
             frame.pushCause(axs);
 
-            buyerAccount.transfer(sellerAccount, economyService.getDefaultCurrency(), price, frame.getCurrentCause());
+            buyerAccount.transfer(sellerAccount, economyService.getDefaultCurrency(), BigDecimal.valueOf(total), frame.getCurrentCause());
         }
 
         this.scheduler
