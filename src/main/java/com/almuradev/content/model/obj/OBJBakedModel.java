@@ -91,7 +91,13 @@ public class OBJBakedModel implements IBakedModel {
             }
         }
 
-        if (isComplex && this.quadCache != null) {
+        if (blockState != null && !isComplex) {
+            if (!blockState.isOpaqueCube()) { // We know that if any block is NOT complex but isOpague is FALL, then assume the model facing direction is broken...
+                fallback = true;
+            }
+        }
+
+        if ((isComplex || fallback) && this.quadCache != null) {
             // Skip re-calculating quads as they are cached.
             return this.quadCache;
         }
@@ -104,12 +110,6 @@ public class OBJBakedModel implements IBakedModel {
         }
 
         final List<BakedQuad> quads = new ArrayList<>();
-
-        if (blockState != null && !isComplex) {
-            if (!blockState.isOpaqueCube()) { // We know that if any block is NOT complex but isOpague is FALL, then assume the model facing direction is broken...
-                fallback = true;
-            }
-        }
 
         if (blockState == null || isComplex || fallback) {
             // Complex, return all.
