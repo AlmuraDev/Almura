@@ -83,6 +83,7 @@ public class OBJBakedModel implements IBakedModel {
     @Override
     public List<BakedQuad> getQuads(@Nullable final IBlockState blockState, @Nullable final EnumFacing side, final long rand) {
         boolean isComplex = true;
+        boolean fallback = false;
         for (Group group : this.model.getGroups()) {
             if (group.getFaces().size() == 6) {
                 isComplex = false;
@@ -104,7 +105,13 @@ public class OBJBakedModel implements IBakedModel {
 
         final List<BakedQuad> quads = new ArrayList<>();
 
-        if (blockState == null || isComplex) {
+        if (blockState != null && !isComplex) {
+            if (!blockState.isOpaqueCube()) { // We know that if any block is NOT complex but isOpague is FALL, then assume the model facing direction is broken...
+                fallback = true;
+            }
+        }
+
+        if (blockState == null || isComplex || fallback) {
             // Complex, return all.
             this.model.getGroups().forEach(group -> {
                 final MaterialDefinition materialDefinition = group.getMaterialDefinition().orElse(null);
