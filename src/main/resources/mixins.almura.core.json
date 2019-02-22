@@ -9,8 +9,6 @@
         "block.MixinBlockFarmland",
         "block.MixinBlockVine",
         "entity.MixinEntityList",
-        "item.MixinItemBucket",
-        "item.MixinItemBucketMilk",
         "tileentity.MixinTileEntity",
         "tileentity.MixinTileEntityFurnace",
         "util.MixinFoodStats",
