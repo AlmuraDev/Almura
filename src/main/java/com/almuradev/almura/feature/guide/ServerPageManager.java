@@ -94,7 +94,7 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
 
     @Listener(order = Order.LAST)
     public void onPlayerJoin(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
-        if (!player.hasPermission("almura.guide.open_at_login") || player.hasPermission("almura.singleplayer") && MalisisCore.isObfEnv) {
+        if (!player.hasPermission("almura.guide.open_at_login") || player.hasPermission("almura.singleplayer") && MalisisCore.isObfEnv || player.health().get() == 0) {
             return;
         }
 
