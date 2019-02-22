@@ -51,6 +51,7 @@ public final class ServerClaimManager implements Witness {
     private final ChannelBinding.IndexedMessageChannel network;
     private final ServerNotificationManager serverNotificationManager;
     private final PluginContainer container;
+    private boolean debugClaimManager = false;
 
     @Inject
     public ServerClaimManager(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network, final
@@ -224,11 +225,13 @@ public final class ServerClaimManager implements Witness {
 
     public final boolean isGPEnabled(final Player player) {
         if (GriefPreventionPlugin.instance == null) {
-            this.serverNotificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("GriefPrevention is not initialized!"), 2);
+            if (debugClaimManager)
+                this.serverNotificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("GriefPrevention is not initialized!"), 2);
             return false;
         } else {
             if (GriefPreventionPlugin.instance.permissionService == null) {
-                this.serverNotificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("GriefPrevention is not enabled!"), 2);
+                if (debugClaimManager)
+                    this.serverNotificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("GriefPrevention is not enabled!"), 2);
                 return false;
             }
         }
