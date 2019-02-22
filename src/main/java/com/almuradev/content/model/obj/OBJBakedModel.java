@@ -82,6 +82,11 @@ public class OBJBakedModel implements IBakedModel {
 
     @Override
     public List<BakedQuad> getQuads(@Nullable final IBlockState blockState, @Nullable final EnumFacing side, final long rand) {
+        // Please note that .obj's pass through [ForgeBlockModelRenderer] class which calculates the light correctly on obj's even if they are rendered in Inventory
+        // This is important to know because we are rendering the below on what is usually considered the inventory pass when side == null.
+        // Do Not use BlockModelRenderer class as a template for building how this class works!
+        // Todo:  for some reason ambient occlusion is not working properly.
+
         boolean isComplex = true;
         boolean fallback = false;
         for (Group group : this.model.getGroups()) {
