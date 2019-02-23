@@ -297,7 +297,7 @@ public class StoreScreen extends BasicScreen {
                     .text(I18n.format("almura.feature.common.button.unlist"))
                     .build("button.unlist");
 
-            this.adminListTotalLabel = new UILabel(this, TextFormatting.WHITE + "Total: "); // TODO: Translation
+            this.adminListTotalLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.total") + ": ");
             this.adminListTotalLabel.setPosition(0, -2, Anchor.BOTTOM | Anchor.RIGHT);
 
             adminContainer.add(this.typeLabel, this.locationSelect, this.adminSearchTextBox, this.adminItemList, this.buttonAdminList,
@@ -370,7 +370,8 @@ public class StoreScreen extends BasicScreen {
                     .sorted(Comparator.comparing(ItemStack::getDisplayName))
                     .collect(Collectors.toList()));
 
-            this.adminListTotalLabel.setText(TextFormatting.WHITE + "Total: " + this.adminItemList.getItems().size()); // TODO: Translation
+            this.adminListTotalLabel.setText(TextFormatting.WHITE + I18n.format("almura.feature.common.text.total") + ": "
+              + this.adminItemList.getItems().size());
         }
     }
 
@@ -387,10 +388,12 @@ public class StoreScreen extends BasicScreen {
             this.currentSide = SideType.BUY;
         }
 
-        // TODO: Translation
-        this.buyTabContainer.setTooltip(this.store.getBuyingItems().size() == 0 ? new UITooltip(this, "There are no items for sale.") : null);
-        // TODO: Translation
-        this.sellTabContainer.setTooltip(this.store.getSellingItems().size() == 0 ? new UITooltip(this, "There are no items available for purchase.") : null);
+        this.buyTabContainer.setTooltip(this.store.getBuyingItems().size() == 0
+          ? new UITooltip(this, I18n.format("almura.feature.store.text.no_items_for_sale"))
+          : null);
+        this.sellTabContainer.setTooltip(this.store.getSellingItems().size() == 0
+          ? new UITooltip(this, "almura.feature.store.text.no_items_for_purchase")
+          : null);
 
         // Store current selection
         final int currentRecord = this.itemList.getSelectedItem() != null ? this.itemList.getSelectedItem().getRecord() : -1;
@@ -625,7 +628,7 @@ public class StoreScreen extends BasicScreen {
           .filter(i -> i instanceof AdminItemComponent)
           .forEach(i -> ((AdminItemComponent) i).update());
 
-        this.adminListTotalLabel.setText(TextFormatting.WHITE + "Total: " + this.adminItemList.getItems().size()); // TODO: Translation
+        this.adminListTotalLabel.setText(TextFormatting.WHITE + I18n.format("almura.feature.common.text.total") + ": " + this.adminItemList.getItems().size());
     }
 
     public static boolean isStackEqualIgnoreSize(@Nullable final ItemStack a, @Nullable final ItemStack b) {
@@ -660,7 +663,7 @@ public class StoreScreen extends BasicScreen {
             this.soldOutContainer.setVisible(false);
 
             // Sold out label
-            this.soldOutLabel = new UILabel(this.getGui(), "Sold Out!"); // TODO: Translation
+            this.soldOutLabel = new UILabel(this.getGui(), I18n.format("almura.feature.store.text.soldout"));
             this.soldOutLabel.setFontOptions(FontColors.RED_FO.toBuilder().scale(2f).build());
             this.soldOutLabel.setPosition(0, 1, Anchor.MIDDLE | Anchor.CENTER);
             this.soldOutContainer.add(this.soldOutLabel);

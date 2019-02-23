@@ -29,6 +29,7 @@ import net.malisis.core.client.gui.component.interaction.button.builder.UIButton
 import net.malisis.core.client.gui.event.ComponentEvent;
 import net.malisis.core.renderer.font.FontOptions;
 import net.malisis.core.util.FontColors;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 
@@ -72,7 +73,7 @@ public class StoreListScreen extends BasicScreen {
     public void construct() {
         this.guiscreenBackground = false;
 
-        this.form = new BasicForm(this, 250, 130, "List"); // TODO: Translation
+        this.form = new BasicForm(this, 250, 130, I18n.format("almura.feature.common.text.list"));
         this.form.setZIndex(10); // Fixes issue overlapping draws from parent
         this.form.setBackgroundAlpha(255);
 
@@ -84,7 +85,7 @@ public class StoreListScreen extends BasicScreen {
         this.buyContainer.setBorder(FontColors.WHITE, 1, 185);
         this.buyContainer.setPadding(2);
 
-        this.buyTitleLabel = new UILabel(this, TextFormatting.WHITE + "Buy"); // TODO: Translation
+        this.buyTitleLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.button.buy"));
         this.buyTitleLabel.setPosition(0, 2, Anchor.TOP | Anchor.CENTER);
 
         final BasicLine buyLine = new BasicLine(this, getPaddedWidth(this.buyContainer) + 2);
@@ -98,7 +99,7 @@ public class StoreListScreen extends BasicScreen {
         this.buyPricePerTextBox.setFilter(s -> this.filterAndLimit(s, 2, true));
         this.buyPricePerTextBox.register(this);
 
-        this.buyPerLabel = new UILabel(this, TextFormatting.WHITE + "Price (per):"); // TODO: Translation
+        this.buyPerLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.price_per") + ":");
         this.buyPerLabel.setPosition(
           getPaddedX(this.buyPricePerTextBox, 2, Anchor.RIGHT), this.buyPricePerTextBox.getY() + 2, Anchor.TOP | Anchor.RIGHT);
 
@@ -110,11 +111,11 @@ public class StoreListScreen extends BasicScreen {
         this.buyQtyTextBox.setFilter(s -> this.filterAndLimit(s, 0, false));
         this.buyQtyTextBox.register(this);
 
-        this.buyQtyLabel = new UILabel(this, TextFormatting.WHITE + "Quantity:"); // TODO: Translation
+        this.buyQtyLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.quantity") + ":");
         this.buyQtyLabel.setPosition(
           getPaddedX(this.buyQtyTextBox, 2, Anchor.RIGHT), this.buyQtyTextBox.getY() + 2, Anchor.TOP | Anchor.RIGHT);
 
-        this.buyInfiniteCheckBox = new UICheckBox(this, TextFormatting.WHITE + "Infinite"); // TODO: Translation
+        this.buyInfiniteCheckBox = new UICheckBox(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.infinite"));
         this.buyInfiniteCheckBox.setPosition(
           this.buyContainer.componentX(this.buyQtyTextBox) - this.buyContainer.getRightPadding() - this.buyContainer.getRightBorderSize(),
           getPaddedY(this.buyQtyTextBox, 2));
@@ -128,7 +129,7 @@ public class StoreListScreen extends BasicScreen {
         this.buyTotalPriceLabel.setFontOptions(FontOptions.builder().shadow(false).color(0x999999).build());
         this.buyTotalPriceLabel.setPosition(column2X + 2, 0, Anchor.BOTTOM | Anchor.LEFT);
 
-        buyTotalLabel = new UILabel(this, TextFormatting.WHITE + "Total:"); // TODO: Translation
+        buyTotalLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.total") + ":");
         buyTotalLabel.setPosition(this.buyTotalPriceLabel.getX() - buyTotalLabel.getWidth() - 3, 0, Anchor.BOTTOM | Anchor.LEFT);
 
         this.buyContainer.add(this.buyTitleLabel, buyLine,
@@ -145,7 +146,7 @@ public class StoreListScreen extends BasicScreen {
         this.sellContainer.setPadding(2);
         this.sellContainer.setPosition(0, 0, Anchor.TOP | Anchor.RIGHT);
 
-        this.sellTitleLabel = new UILabel(this, TextFormatting.WHITE + "Sell"); // TODO: Translation
+        this.sellTitleLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.button.sell"));
         this.sellTitleLabel.setPosition(0, 2, Anchor.TOP | Anchor.CENTER);
 
         final BasicLine sellLine = new BasicLine(this, getPaddedWidth(this.sellContainer) + 2);
@@ -159,7 +160,7 @@ public class StoreListScreen extends BasicScreen {
         this.sellPricePerTextBox.setFilter(s -> this.filterAndLimit(s, 2, false));
         this.sellPricePerTextBox.register(this);
 
-        this.sellPerLabel = new UILabel(this, TextFormatting.WHITE + "Price (per):"); // TODO: Translation
+        this.sellPerLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.price_per") + ":");
         this.sellPerLabel.setPosition(
           getPaddedX(this.sellPricePerTextBox, 2, Anchor.RIGHT), this.sellPricePerTextBox.getY() + 2, Anchor.TOP | Anchor.RIGHT);
 
@@ -171,11 +172,11 @@ public class StoreListScreen extends BasicScreen {
         this.sellQtyTextBox.setFilter(s -> this.filterAndLimit(s, 0, false));
         this.sellQtyTextBox.register(this);
 
-        this.sellQtyLabel = new UILabel(this, TextFormatting.WHITE + "Quantity:"); // TODO: Translation
+        this.sellQtyLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.quantity") + ":");
         this.sellQtyLabel.setPosition(
           getPaddedX(this.sellQtyTextBox, 2, Anchor.RIGHT), this.sellQtyTextBox .getY() + 2, Anchor.TOP | Anchor.RIGHT);
 
-        this.sellInfiniteCheckBox = new UICheckBox(this, TextFormatting.WHITE + "Infinite"); // TODO: Translation
+        this.sellInfiniteCheckBox = new UICheckBox(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.infinite"));
         this.sellInfiniteCheckBox.setPosition(column2X, getPaddedY(this.sellQtyTextBox, 2));
         this.sellInfiniteCheckBox.register(this);
 
@@ -183,7 +184,7 @@ public class StoreListScreen extends BasicScreen {
         this.sellTotalPriceLabel.setFontOptions(FontOptions.builder().shadow(false).color(0x999999).build());
         this.sellTotalPriceLabel.setPosition(column2X + 2, 0, Anchor.BOTTOM | Anchor.LEFT);
 
-        sellTotalLabel = new UILabel(this, TextFormatting.WHITE + "Total:"); // TODO: Translation
+        sellTotalLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.price_per") + ":");
         sellTotalLabel.setPosition(this.sellTotalPriceLabel.getX() - sellTotalLabel.getWidth() - 3, 0, Anchor.BOTTOM | Anchor.LEFT);
 
         this.sellContainer.add(this.sellTitleLabel, sellLine,
@@ -192,8 +193,11 @@ public class StoreListScreen extends BasicScreen {
                                this.sellInfiniteCheckBox,
                                sellTotalLabel, this.sellTotalPriceLabel);
 
+
         this.buttonList = new UIButtonBuilder(this)
-          .text(this.toModifyBuy != null || this.toModifySell != null ? "Modify" : "List") // TODO: Translation
+          .text(I18n.format(this.toModifyBuy != null || this.toModifySell != null
+            ? "almura.feature.common.button.modify"
+            : "almura.feature.common.text.list"))
           .anchor(Anchor.BOTTOM | Anchor.RIGHT)
           .onClick(this::listOrModify)
           .width(50)
@@ -201,7 +205,7 @@ public class StoreListScreen extends BasicScreen {
           .build("button.list");
 
         this.buttonCancel = new UIButtonBuilder(this)
-          .text("Cancel") // TODO: Translation
+          .text(I18n.format("almura.button.cancel"))
           .anchor(Anchor.BOTTOM | Anchor.RIGHT)
           .x(getPaddedX(this.buttonList, 2, Anchor.RIGHT))
           .onClick(this::close)

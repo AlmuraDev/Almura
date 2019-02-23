@@ -135,6 +135,9 @@ almura.feature.common.text.id=ID
 almura.feature.common.text.modify_feature=Are you sure you want to modify this %s?
 almura.feature.common.text.permission=Permission
 almura.feature.common.text.quantity=Quantity
+almura.feature.common.text.infinite=Infinite
+almura.feature.common.text.list=List
+almura.feature.common.text.price_per=Price (per)
 almura.feature.common.text.title=Title
 almura.feature.common.text.total=Total
 almura.feature.common.text.unknown=Unknown
@@ -148,6 +151,9 @@ almura.feature.common.title.management=%s - Management
 almura.feature.store.name=Store
 almura.feature.store.itemfinder.store=Store
 almura.feature.store.itemfinder.inventory=Inventory
+almura.feature.store.text.soldout=Sold Out!
+almura.feature.store.text.no_items_for_sale=There are no items for sale.
+almura.feature.store.text.no_items_for_purchase=There are no items available for purchase.
 
 # ---------------
 # -- exchange ---
