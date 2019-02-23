@@ -233,6 +233,7 @@ public class StoreListScreen extends BasicScreen {
                 this.sellQtyTextBox.setText(String.valueOf(this.toModifySell.getQuantity()));
             }
         }
+        this.buyPricePerTextBox.focus();
     }
 
     @Subscribe
