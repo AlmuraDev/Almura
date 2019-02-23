@@ -111,6 +111,7 @@ public class StoreScreen extends BasicScreen {
             });
         } else {
             itemFinderRelationshipMap.replace(ItemFinders.STORE_ITEM_FINDER, this.store);
+            itemFinderRelationshipMap.replace(ItemFinders.INVENTORY_ITEM_FINDER, Minecraft.getMinecraft().player);
         }
     }
 
