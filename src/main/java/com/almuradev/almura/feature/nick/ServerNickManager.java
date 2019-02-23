@@ -49,8 +49,6 @@ public final class ServerNickManager extends Witness.Impl implements Witness.Lif
     private final Scheduler scheduler;
     private final ServiceManager serviceManager;
     private final ChannelBinding.IndexedMessageChannel network;
-    private NucleusChangeNicknameEvent.Post event;
-    private Player player;
 
     @Inject
     private ServerNickManager(final PluginContainer container, final Scheduler scheduler, final ServiceManager serviceManager, @ChannelId
@@ -127,8 +125,8 @@ public final class ServerNickManager extends Witness.Impl implements Witness.Lif
     }
 
     @Listener(order = Order.POST)
-    public void onChangeNickname(final NucleusChangeNicknameEvent.Pre event, @Getter("getTargetUser") final Player player) {
-        //System.out.println("Nickname Change Event fired");
+    // Todo: this is broke at the moment, Nucleus isn't firing the event when the /nick command is used.
+    public void onChangeNickname(final NucleusChangeNicknameEvent event, @Getter("getTargetUser") final Player player) {
         this.scheduler
             .createTaskBuilder()
             .delayTicks(1) // This is a "Pre" event, we want to get the value one tick later
@@ -138,26 +136,19 @@ public final class ServerNickManager extends Witness.Impl implements Witness.Lif
                 final String oldNick = mcPlayer.getDisplayNameString();
                 final String newNick = TextSerializers.LEGACY_FORMATTING_CODE.serialize(event.getNewNickname());
 
-                //System.out.println("Player: " + player + " old: " + oldNick + " newNick: " + newNick);
-
                 if (!oldNick.equals(newNick)) {
                     final String modNick = ForgeEventFactory.getPlayerDisplayName(mcPlayer, newNick);
                     final Text finalNick = TextSerializers.LEGACY_FORMATTING_CODE.deserialize(modNick);
-                    //System.out.println("Pass 1");
                     if (!newNick.equals(modNick)) {
-                        //System.out.println("Pass 2");
                         try {
-                            //System.out.println("Should have set nickname");
                             this.setNickname(service, player, finalNick);
                         } catch (NicknameException e) {
                             e.printStackTrace();
                             return;
                         }
-                        //System.out.println("Set Forge name");
                         this.setForgeNickname(mcPlayer, modNick);
                     }
 
-                    //System.out.println("Sending new updates to: " + player);
                     this.sendNicknameUpdate(service, player);
                 }
             }))
