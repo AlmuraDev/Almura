@@ -577,14 +577,22 @@ public class StoreScreen extends BasicScreen {
 
     @SuppressWarnings("unchecked")
     private void createAdminControls(final ItemFinder finder) {
+        // Clear the base list
         this.adminBaseList.clear();
-        this.adminBaseList.addAll((List<ItemStack>) finder.getItems(this.itemFinderRelationshipMap.get(finder))
+
+        // Set the base list to items from item finder sorted by display name
+        this.adminBaseList.addAll((List<ItemStack>) finder.getItems(itemFinderRelationshipMap.get(finder))
           .stream()
-          .filter(i -> ((ItemStack) i).getDisplayName().toLowerCase().contains(this.adminSearchTextBox.getText().toLowerCase()))
           .sorted(Comparator.comparing(ItemStack::getDisplayName))
           .collect(Collectors.toList()));
-        this.adminItemList.setItems(this.adminBaseList);
 
+        // Set the visible item list to the base list filtered by search text
+        this.adminItemList.setItems(this.adminBaseList
+          .stream()
+          .filter(i -> i.getDisplayName().toLowerCase().contains(this.adminSearchTextBox.getText().toLowerCase()))
+          .collect(Collectors.toList()));
+
+        // Attempt to select the first item
         this.adminItemList.setSelectedItem(this.adminItemList.getItems().stream().findFirst().orElse(null));
 
         this.updateAdminControls();
