@@ -136,23 +136,37 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                     .keepStatement(false)
                     .fetchOne();
 
-                  if (record != null) {
-                      final String titleId = record.getTitle();
+                  String titleId = "lostsoul";
 
+                  if (record != null) {
+                      titleId = record.getTitle();
+                  } else {
+                      // The following are setup as fallback titles when a record doesn't exist in the DB for the player.
+                      if (player.hasPermission("almura.title.soldier")) titleId = "soldier";
+                      if (player.hasPermission("almura.title.survivor")) titleId = "survivor";
+                      if (player.hasPermission("almura.title.citizen")) titleId = "citizen";
+                      if (player.hasPermission("almura.title.veteran")) titleId = "veteran";
+                      if (player.hasPermission("almura.title.commander")) titleId = "commander";
+                      if (player.hasPermission("almura.title.architect")) titleId = "architect";
+                      if (player.hasPermission("almura.title.ancient")) titleId = "ancient";
+                      // The following debug was left in place so Dockter can see how many of these are happening at the server console.
+                      System.err.println("[ServerTitleManager]: Assigning fallback title: [" + titleId + "] for player: [" + player.getName() + "].");
+                  }
+
+                  final String finalizedTitleId = titleId;
                       this.scheduler
                         .createTaskBuilder()
                         .execute(() -> {
-                            final Title selectedTitle = this.getTitle(titleId).orElse(null);
+                            final Title selectedTitle = this.getTitle(finalizedTitleId).orElse(null);
 
                             if (this.verifySelectedTitle(player, selectedTitle)) {
                                 this.selectedTitles.put(player.getUniqueId(), selectedTitle);
 
                                 // Send everyone joiner's selected title
-                                this.network.sendToAll(new ClientboundSelectedTitlePacket(player.getUniqueId(), titleId));
+                                this.network.sendToAll(new ClientboundSelectedTitlePacket(player.getUniqueId(), finalizedTitleId));
                             }
                         })
                         .submit(this.container);
-                  }
               } catch (SQLException e) {
                   e.printStackTrace();
               }
