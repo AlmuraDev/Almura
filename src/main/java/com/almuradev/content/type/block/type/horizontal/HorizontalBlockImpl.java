@@ -112,14 +112,21 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
     @Deprecated
     @Override
     public int getLightValue(final IBlockState state) {
-        final HorizontalBlockStateDefinition definition = this.definition(state);
-        return PrimitiveOptionals.mapToInt(definition.lightEmission, value -> (int) (15f * value))
-                .orElseGet(() -> super.getLightValue(state));
+        if(state != null && this.states != null) {
+            final HorizontalBlockStateDefinition definition = this.definition(state);
+            return PrimitiveOptionals.mapToInt(definition.lightEmission, value -> (int) (15f * value)).orElseGet(() -> super.getLightValue(state));
+        } else {
+            return 0;
+        }
     }
 
     @Override
     public int getLightValue(final IBlockState state, final IBlockAccess world, final BlockPos pos) {
-        return this.getLightValue(state);
+        if (state != null) {
+            return this.getLightValue(state);
+        } else {
+            return 0;
+        }
     }
 
     @Deprecated
