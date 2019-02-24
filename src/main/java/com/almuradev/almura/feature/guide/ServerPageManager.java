@@ -39,6 +39,7 @@ import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -304,7 +305,7 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
         if (notify) {
             for (final Player player : this.game.getServer().getOnlinePlayers()) {
                 if (player.hasPermission("almura.guide.page." + page.getId())) {
-                    manager.sendPopupNotification(player, Text.of("Guide Update"), Text.of("The Guide: (" + page.getName() + ") has been updated!"), 10);
+                    manager.sendPopupNotification(player, Text.of("Guide Update"), Text.of("The Guide: (" + page.getName(), Text.of(TextColors.RESET, ") has been updated!")), 10);
                     UchatUtil.relayMessageToDiscord(Text.of("The Guide: (" + page.getName() + ") has been updated!").toPlain());
                 }
             }
