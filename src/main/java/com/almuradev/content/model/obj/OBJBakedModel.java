@@ -89,6 +89,8 @@ public class OBJBakedModel implements IBakedModel {
 
         boolean isComplex = true;
         boolean fallback = false;
+        boolean cachedInventory = false;
+
         for (Group group : this.model.getGroups()) {
             if (group.getFaces().size() == 6) {
                 isComplex = false;
@@ -102,9 +104,15 @@ public class OBJBakedModel implements IBakedModel {
             }
         }
 
-        if ((isComplex || fallback) && this.quadCache != null) {
-            // Skip re-calculating quads as they are cached.
-            return this.quadCache;
+        if (blockState == null && this.quadCache != null) {
+            cachedInventory = true;
+        }
+
+        if (isComplex || fallback || cachedInventory) {
+            if (this.quadCache != null) {
+                // Skip re-calculating quads as they are cached.
+                return this.quadCache;
+            }
         }
 
         if (blockState != null) {
@@ -121,6 +129,7 @@ public class OBJBakedModel implements IBakedModel {
             this.model.getGroups().forEach(group -> {
                 final MaterialDefinition materialDefinition = group.getMaterialDefinition().orElse(null);
                 group.getFaces().forEach(face -> this.populateQuadsByFace(materialDefinition, face, quads));
+                System.out.println("Returning full lookup for: " + materialDefinition.getName());
             });
             this.quadCache = quads;
         } else if (side != null) {
