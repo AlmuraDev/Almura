@@ -39,10 +39,7 @@ public final class CacheItemRenderer extends TileEntityItemStackRenderer {
 
         final ItemStack previous = CacheBlock.getFromCache(this.tile);
         CacheBlock.addStackToCache(stack, this.tile);
-
         CacheTileEntityRenderer.INSTANCE.render(this.tile, 0, 0, 0, state);
-
-
         CacheBlock.addStackToCache(previous, this.tile);
     }
 }

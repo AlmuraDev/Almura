@@ -7,6 +7,8 @@
  */
 package com.almuradev.almura.feature.cache.client.tileentity.renderer;
 
+import com.almuradev.almura.asm.ClientStaticAccess;
+import com.almuradev.almura.core.client.config.ClientConfiguration;
 import com.almuradev.almura.feature.cache.CacheFeature;
 import com.almuradev.almura.feature.cache.block.CacheBlock;
 import com.almuradev.almura.shared.capability.ISingleSlotItemHandler;
@@ -20,6 +22,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -47,6 +50,12 @@ public final class CacheTileEntityRenderer extends TileEntitySpecialRenderer<Sin
     }
 
     void render(final SingleSlotTileEntity te, final double x, final double y, final double z, final IBlockState blockState) {
+        final ClientConfiguration configuration = ClientStaticAccess.configAdapter.get();
+        EntityLivingBase viewer = (EntityLivingBase) Minecraft.getMinecraft().getRenderViewEntity();
+        if (viewer == null) {
+            viewer = Minecraft.getMinecraft().player;
+        }
+
         final ISingleSlotItemHandler
                 itemHandler = (ISingleSlotItemHandler) te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 
@@ -111,7 +120,16 @@ public final class CacheTileEntityRenderer extends TileEntitySpecialRenderer<Sin
         GlStateManager.scale(0.5F, 0.5F, 0.5F);
 
         // FIXED is meant for ItemFrame rendering which we are mimicing
-        this.client.getRenderItem().renderItem(cache, ItemCameraTransforms.TransformType.FIXED);
+        boolean renderItem = true;
+        if (configuration.general.itemFrameRenderDistance > 0) {
+            if (viewer == null || !te.hasWorld() || te.getDistanceSq(viewer.posX, viewer.posY, viewer.posZ) >
+                (configuration.general.itemFrameRenderDistance * 16)) {
+                renderItem = false;
+            }
+        }
+        if (renderItem) {
+            this.client.getRenderItem().renderItem(cache, ItemCameraTransforms.TransformType.FIXED);
+        }
 
         // Revert lightmap texture coordinates to world values pre-render tick
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, OpenGlHelper.lastBrightnessX, OpenGlHelper.lastBrightnessY);
@@ -134,35 +152,46 @@ public final class CacheTileEntityRenderer extends TileEntitySpecialRenderer<Sin
         String displayName;
         String cacheQuantity = ZERO_QUANTITY;
 
-        boolean empty = cache.isEmpty();
+        boolean renderText = true;
 
-        if (empty) {
-            displayName = block.getLocalizedName();
-        } else {
-            cacheQuantity = CacheFeature.format.format(cache.getCount());
-            displayName = cache.getDisplayName();
-        }
-
-        final String cacheMaxQuantity = CacheFeature.format.format(itemHandler.getSlotLimit(0));
-
-        // Check if we can fit the displayname on the first line, if not then split it to two lines at most
-        if (fontRenderer.getStringWidth(displayName) > MAX_LINE_WIDTH) {
-            int firstLineLength = displayName.length();
-            while (fontRenderer.getStringWidth(displayName.substring(0, firstLineLength)) > MAX_LINE_WIDTH) {
-                firstLineLength--;
+        if (configuration.general.signTextRenderDistance > 0) {
+            if (viewer == null || !te.hasWorld() || te.getDistanceSq(viewer.posX, viewer.posY, viewer.posZ) >
+                (configuration.general.signTextRenderDistance * 16)) {
+                renderText = false;
             }
-            final String firstLine = displayName.substring(0, firstLineLength);
-            final String secondLine = displayName.substring(firstLineLength);
-            fontRenderer.drawString(firstLine, -fontRenderer.getStringWidth(firstLine) / 2, (int) y -80, 0);
-            fontRenderer.drawString(secondLine, -fontRenderer.getStringWidth(secondLine) / 2, (int) y - 70, 0);
-        } else {
-            fontRenderer.drawString(displayName, -fontRenderer.getStringWidth(displayName) / 2, (int) y - 80, 0);
         }
 
-        final int lineWidth = fontRenderer.getStringWidth(cacheMaxQuantity) / 2;
-        fontRenderer.drawString(cacheQuantity, -fontRenderer.getStringWidth(cacheQuantity) / 2, (int) y - 24, 0);
-        Gui.drawRect(-lineWidth, (int) y - 16, lineWidth, (int) y - 15, 0xFF000000);
-        fontRenderer.drawString(cacheMaxQuantity, -fontRenderer.getStringWidth(cacheMaxQuantity) / 2, (int) y - 14, 0);
+        if (renderText) {
+            boolean empty = cache.isEmpty();
+
+            if (empty) {
+                displayName = block.getLocalizedName();
+            } else {
+                cacheQuantity = CacheFeature.format.format(cache.getCount());
+                displayName = cache.getDisplayName();
+            }
+
+            final String cacheMaxQuantity = CacheFeature.format.format(itemHandler.getSlotLimit(0));
+
+            // Check if we can fit the displayname on the first line, if not then split it to two lines at most
+            if (fontRenderer.getStringWidth(displayName) > MAX_LINE_WIDTH) {
+                int firstLineLength = displayName.length();
+                while (fontRenderer.getStringWidth(displayName.substring(0, firstLineLength)) > MAX_LINE_WIDTH) {
+                    firstLineLength--;
+                }
+                final String firstLine = displayName.substring(0, firstLineLength);
+                final String secondLine = displayName.substring(firstLineLength);
+                fontRenderer.drawString(firstLine, -fontRenderer.getStringWidth(firstLine) / 2, (int) y - 80, 0);
+                fontRenderer.drawString(secondLine, -fontRenderer.getStringWidth(secondLine) / 2, (int) y - 70, 0);
+            } else {
+                fontRenderer.drawString(displayName, -fontRenderer.getStringWidth(displayName) / 2, (int) y - 80, 0);
+            }
+
+            final int lineWidth = fontRenderer.getStringWidth(cacheMaxQuantity) / 2;
+            fontRenderer.drawString(cacheQuantity, -fontRenderer.getStringWidth(cacheQuantity) / 2, (int) y - 24, 0);
+            Gui.drawRect(-lineWidth, (int) y - 16, lineWidth, (int) y - 15, 0xFF000000);
+            fontRenderer.drawString(cacheMaxQuantity, -fontRenderer.getStringWidth(cacheMaxQuantity) / 2, (int) y - 14, 0);
+        }
 
         GlStateManager.popMatrix();
     }
