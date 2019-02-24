@@ -129,7 +129,6 @@ public class OBJBakedModel implements IBakedModel {
             this.model.getGroups().forEach(group -> {
                 final MaterialDefinition materialDefinition = group.getMaterialDefinition().orElse(null);
                 group.getFaces().forEach(face -> this.populateQuadsByFace(materialDefinition, face, quads));
-                System.out.println("Returning full lookup for: " + materialDefinition.getName());
             });
             this.quadCache = quads;
         } else if (side != null) {
