@@ -23,6 +23,7 @@ import net.minecraftforge.event.ForgeEventFactory;
 import org.spongepowered.api.GameState;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
@@ -124,9 +125,16 @@ public final class ServerNickManager extends Witness.Impl implements Witness.Lif
         }
     }
 
+
+    // TODO - Update this for Nucleues' next release to use Post event
     @Listener(order = Order.POST)
-    // Todo: this is broke at the moment, Nucleus isn't firing the event when the /nick command is used.
-    public void onChangeNickname(final NucleusChangeNicknameEvent event, @Getter("getTargetUser") final Player player) {
+    public void onChangeNickname(final NucleusChangeNicknameEvent.Pre event) {
+        final Player player = event.getTargetUser().getPlayer().orElse(null);
+
+        if (player == null) {
+            return;
+        }
+
         this.scheduler
             .createTaskBuilder()
             .delayTicks(1) // This is a "Pre" event, we want to get the value one tick later
