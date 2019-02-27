@@ -305,10 +305,11 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
         if (notify) {
             for (final Player player : this.game.getServer().getOnlinePlayers()) {
                 if (player.hasPermission("almura.guide.page." + page.getId())) {
-                    manager.sendPopupNotification(player, Text.of("Guide Update"), Text.of("The Guide: (" + page.getName(), Text.of(TextColors.RESET, ") has been updated!")), 10);
-                    UchatUtil.relayMessageToDiscord(Text.of("The Guide: (" + page.getName() + ") has been updated!").toPlain());
+                    manager.sendPopupNotification(player, Text.of("Guide Update"), Text.of("The Guide: (" + page.getName(), Text.of(TextColors.WHITE, ") has been updated!")), 10);
+
                 }
             }
+            UchatUtil.relayMessageToDiscord(":regional_indicator_s:", Text.of("The Guide: (" + page.getName() + ") has been updated!").toPlain(), true);
         }
 
         try {

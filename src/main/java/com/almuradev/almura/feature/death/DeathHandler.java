@@ -11,6 +11,7 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.death.network.ClientboundPlayerDiedPacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.network.NetworkConfig;
+import com.almuradev.almura.shared.util.UchatUtil;
 import com.almuradev.core.event.Witness;
 import com.almuradev.toolbox.util.math.DoubleRange;
 import net.minecraft.util.text.TextFormatting;
@@ -105,11 +106,16 @@ public final class DeathHandler implements Witness {
                 final double finalDeathTaxAmount = deathTaxAmount;
                 final boolean finalDisplayDrops = displayDrops;
 
+                if (event.getMessage().toPlain().isEmpty()) { // Note:  noticed that sometimes, for what ever reason the message is empty... Mojang bug?
+                    UchatUtil.relayMessageToDiscord(":skull:", Text.of(player.getName() + " has died, dropped: $" + dFormat.format(finalDroppedAmount) + " and lost: $" + dFormat.format(finalDeathTaxAmount) + " to death taxes.").toPlain(), true);
+                } else {
+                    UchatUtil.relayMessageToDiscord(":skull:", Text.of(event.getMessage().toPlain() + ", dropped: $" + dFormat.format(finalDroppedAmount) + " and lost: $" + dFormat.format(finalDeathTaxAmount) + " to death taxes.").toPlain(), true );
+                }
+
                 server.getOnlinePlayers().forEach(onlinePlayer -> {
                     if (onlinePlayer.getUniqueId().equals(player.getUniqueId())) {
                         this.network.sendTo(player, new ClientboundPlayerDiedPacket(finalDroppedAmount, finalDeathTaxAmount, finalDisplayDrops, player.hasPermission(Almura.ID + ".death.revive")));
                     } else {
-                        //ToDo: broke atm.
                         serverNotificationManager.sendPopupNotification(onlinePlayer, Text.of(player.getName() + " has died!"), Text.of("Dropped: " + TextFormatting.GOLD + "$" + dFormat.format(finalDroppedAmount) + TextFormatting.RESET + " and "
                                 + "lost: "+ TextFormatting.RED + "$" + dFormat.format(finalDeathTaxAmount) + TextFormatting.RESET + " to death taxes."),5);
                     }
