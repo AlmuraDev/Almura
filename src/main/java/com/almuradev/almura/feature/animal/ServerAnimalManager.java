@@ -47,7 +47,7 @@ public final class ServerAnimalManager extends Witness.Impl  {
     private final Map<UUID, ItemStackSnapshot> usedItemCache = new HashMap<>();
 
     @Listener
-    public void onInteractEntitySecondary(final InteractEntityEvent.Secondary event) {
+    public void onInteractEntitySecondary(final InteractEntityEvent.Secondary.MainHand event) {
         if (!this.isValidEntity(event.getTargetEntity())) {
             return;
         }
@@ -70,7 +70,7 @@ public final class ServerAnimalManager extends Witness.Impl  {
 
         final ItemStackSnapshot parentASnapshot = this.usedItemCache.remove(parents.get(0).getUniqueId());
         final ItemStackSnapshot parentBSnapshot = this.usedItemCache.remove(parents.get(1).getUniqueId());
-
+        
         final Ageable child = event.getOffspringEntity();
 
         child.offer(Keys.CUSTOM_NAME_VISIBLE, true);
