@@ -11,7 +11,6 @@ import com.almuradev.almura.asm.ClientStaticAccess;
 import com.almuradev.almura.feature.hud.HeadUpDisplay;
 import com.almuradev.almura.feature.hud.screen.origin.UIAvatarImage;
 import com.almuradev.almura.feature.hud.screen.origin.component.UIXPOrbImage;
-import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.shared.client.ui.Fonts;
 import com.almuradev.almura.shared.util.MathUtil;
 import net.malisis.core.client.gui.Anchor;
@@ -33,7 +32,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.api.text.Text;
 
 import java.text.DecimalFormat;
 
@@ -41,263 +39,311 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
-public class UIUserPanel extends AbstractPanel {
+public class UIUserPanel extends AbstractPanel
+{
 
-    @Inject private static HeadUpDisplay hudData;
+	@Inject
+	private static HeadUpDisplay hudData;
 
-    private final int baseHeight;
-    private final UIImage currencyImage;
-    private final UIAvatarImage userAvatarImage;
-    private final UIXPOrbImage xpOrbImage;
-    private final UILabel currencyLabel, levelLabel, usernameLabel;
-    private final UIPropertyBar airBar, armorBar, experienceBar, healthBar, hungerBar, mountHealthBar, staminaBar;
-    private final DecimalFormat df = new DecimalFormat("0.##");
-    @Nullable private UIComponent lastVisibleComponent;
+	private final int baseHeight;
+	private final UIImage currencyImage;
+	private final UIAvatarImage userAvatarImage;
+	private final UIXPOrbImage xpOrbImage;
+	private final UILabel currencyLabel, levelLabel, usernameLabel;
+	private final UIPropertyBar airBar, armorBar, experienceBar, healthBar, hungerBar, mountHealthBar, staminaBar;
+	private final DecimalFormat df = new DecimalFormat("0.##");
+	@Nullable
+	private UIComponent lastVisibleComponent;
 
-    private int update = 1;
+	private int update = 1;
 
-    public UIUserPanel(MalisisGui gui, int width, int height) {
-        super(gui, width, height);
+	public UIUserPanel(MalisisGui gui, int width, int height)
+	{
+		super(gui, width, height);
 
-        this.baseHeight = height;
+		baseHeight = height;
 
-        // Avatar
-        this.userAvatarImage = new UIAvatarImage(gui, this.client.player.getPlayerInfo());
-        this.userAvatarImage.setPosition(2, 2);
-        this.userAvatarImage.setSize(16, 16);
+		// Avatar
+		userAvatarImage = new UIAvatarImage(gui, client.player.getPlayerInfo());
+		userAvatarImage.setPosition(2, 2);
+		userAvatarImage.setSize(16, 16);
 
-        // Username
-        this.usernameLabel = new UILabel(gui, TextFormatting.WHITE + this.client.player.getDisplayName().getFormattedText());
-        this.usernameLabel.setPosition(BasicScreen.getPaddedX(this.userAvatarImage, 3), 2);
+		// Username
+		usernameLabel = new UILabel(gui, TextFormatting.WHITE + client.player.getDisplayName().getFormattedText());
+		usernameLabel.setPosition(BasicScreen.getPaddedX(userAvatarImage, 3), 2);
 
-        // Level
-        this.levelLabel = new UILabel(gui, "");
-        this.levelLabel.setPosition(BasicScreen.getPaddedX(this.userAvatarImage, 3), BasicScreen.getPaddedY(this.usernameLabel, 0));
-        this.levelLabel.setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.7F));
+		// Level
+		levelLabel = new UILabel(gui, "");
+		levelLabel.setPosition(BasicScreen.getPaddedX(userAvatarImage, 3), BasicScreen.getPaddedY(usernameLabel, 0));
+		levelLabel.setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.7F));
 
-        // Currency
-        this.currencyImage = new UIImage(gui, MalisisGui.BLOCK_TEXTURE, Icon.from(Items.EMERALD));
-        this.currencyImage.setSize(8, 8);
-        this.currencyLabel = new UILabel(gui, "");
-        this.currencyLabel.setVisible(false);
-        this.currencyImage.setVisible(false);
+		// Currency
+		currencyImage = new UIImage(gui, MalisisGui.BLOCK_TEXTURE, Icon.from(Items.EMERALD));
+		currencyImage.setSize(8, 8);
+		currencyLabel = new UILabel(gui, "");
+		currencyLabel.setVisible(false);
+		currencyImage.setVisible(false);
 
-        // Bars
-        final int barWidth = this.width - 10;
-        final int barHeight = 9;
+		// Bars
+		int barWidth = this.width - 10;
+		int barHeight = 9;
 
-        // XP Orb Image
-        this.xpOrbImage = new UIXPOrbImage(gui);
-        this.xpOrbImage.setSize(9, 9);
-        this.xpOrbImage.setPosition(2, BasicScreen.getPaddedY(this.levelLabel, 3));
+		// XP Orb Image
+		xpOrbImage = new UIXPOrbImage(gui);
+		xpOrbImage.setSize(9, 9);
+		xpOrbImage.setPosition(2, BasicScreen.getPaddedY(levelLabel, 3));
 
-        // TODO: Toggle for font scaling? Looks horrid on GUI Size: Normal
+		// TODO: Toggle for font scaling? Looks horrid on GUI Size: Normal
 
-        // Experience
-        this.experienceBar = new UIPropertyBar(gui, barWidth - 11, 7)
-                .setPosition(6, this.xpOrbImage.getY(), Anchor.TOP | Anchor.CENTER)
-                .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
-                .setColor(org.spongepowered.api.util.Color.ofRgb(0, 150, 0).getRgb());
+		// Experience
+		experienceBar = new UIPropertyBar(gui, barWidth - 11, 7).setPosition(6, xpOrbImage.getY(), Anchor.TOP | Anchor.CENTER)
+																.setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
+																.setColor(org.spongepowered.api.util.Color.ofRgb(0, 150, 0).getRgb());
 
-        // Health
-        // TODO Show effects (or icon) for golden apple, wither, poison, etc
-        this.healthBar = new UIPropertyBar(gui, barWidth, barHeight)
-                .setColor(org.spongepowered.api.util.Color.ofRgb(187, 19, 19).getRgb())
-                .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
-                .setIcons(GuiConfig.Icon.VANILLA_HEART_BACKGROUND, GuiConfig.Icon.VANILLA_HEART_FOREGROUND);
-        this.healthBar.setTooltip("Health Value");
+		// Health
+		// TODO Show effects (or icon) for golden apple, wither, poison, etc
+		healthBar = new UIPropertyBar(gui, barWidth, barHeight).setColor(org.spongepowered.api.util.Color.ofRgb(187, 19, 19).getRgb())
+															   .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
+		//															   .setIcons(GuiConfig.Icon.VANILLA_HEART_BACKGROUND,
+		//																		 GuiConfig.Icon.VANILLA_HEART_FOREGROUND)
+		;
+		healthBar.setTooltip("Health Value");
 
-        // Armor
-        this.armorBar = new UIPropertyBar(gui, barWidth, barHeight)
-                .setColor(org.spongepowered.api.util.Color.ofRgb(102, 103, 109).getRgb())
-                .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
-                .setBackgroundIcon(GuiConfig.Icon.VANILLA_ARMOR);
-        this.armorBar.setTooltip("Armor Value");
+		// Armor
+		armorBar = new UIPropertyBar(gui, barWidth, barHeight).setColor(org.spongepowered.api.util.Color.ofRgb(102, 103, 109).getRgb())
+															  .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
+		//													  .setBackgroundIcon(GuiConfig.Icon.VANILLA_ARMOR)
+		;
+		armorBar.setTooltip("Armor Value");
 
+		// Hunger
+		hungerBar = new UIPropertyBar(gui, barWidth, barHeight).setColor(org.spongepowered.api.util.Color.ofRgb(137, 89, 47).getRgb())
+															   .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F));
+		//															   .setIcons(GuiConfig.Icon.VANILLA_HUNGER_BACKGROUND,
+		//																			  GuiConfig.Icon.VANILLA_HUNGER_FOREGROUND);
 
-        // Hunger
-        this.hungerBar = new UIPropertyBar(gui, barWidth, barHeight)
-                .setColor(org.spongepowered.api.util.Color.ofRgb(137, 89, 47).getRgb())
-                .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
-                .setIcons(GuiConfig.Icon.VANILLA_HUNGER_BACKGROUND, GuiConfig.Icon.VANILLA_HUNGER_FOREGROUND);
+		// Stamina
+		staminaBar = new UIPropertyBar(gui, barWidth, barHeight).setColor(org.spongepowered.api.util.Color.ofRgb(0, 148, 255).getRgb())
+																.setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
+		//.setBackgroundIcon(GuiConfig.Icon.STAMINA)
+		//.setSpritesheet(GuiConfig.SpriteSheet.ALMURA)
+		; // You must call this
+		// if you are loading icon within the TexturePack when in-game.
 
-        // Stamina
-        this.staminaBar = new UIPropertyBar(gui, barWidth, barHeight)
-                .setColor(org.spongepowered.api.util.Color.ofRgb(0, 148, 255).getRgb())
-                .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
-                .setBackgroundIcon(GuiConfig.Icon.STAMINA)
-                .setSpritesheet(GuiConfig.SpriteSheet.ALMURA); // You must call this if you are loading icon within the TexturePack when in-game.
+		// Air
+		airBar = new UIPropertyBar(gui, barWidth, barHeight).setColor(org.spongepowered.api.util.Color.ofRgb(0, 148, 255).getRgb())
+															.setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
+		//															.setBackgroundIcon(GuiConfig.Icon.VANILLA_AIR)
+		;
+		// Mount Health
+		mountHealthBar =
+				new UIPropertyBar(gui, barWidth, barHeight).setColor(org.spongepowered.api.util.Color.ofRgb(239, 126, 74).getRgb())
+																	.setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
+		//																	.setBackgroundIcon(GuiConfig.Icon.VANILLA_MOUNT)
+		;
 
-        // Air
-        this.airBar = new UIPropertyBar(gui, barWidth, barHeight)
-                .setColor(org.spongepowered.api.util.Color.ofRgb(0, 148, 255).getRgb())
-                .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
-                .setBackgroundIcon(GuiConfig.Icon.VANILLA_AIR);
+		add(userAvatarImage,
+			usernameLabel,
+			xpOrbImage,
+			levelLabel,
+			experienceBar,
+			currencyImage,
+			currencyLabel,
+			healthBar,
+			armorBar,
+			hungerBar,
+			staminaBar,
+			airBar,
+			mountHealthBar);
+	}
 
-        // Mount Health
-        this.mountHealthBar = new UIPropertyBar(gui, barWidth, barHeight)
-                .setColor(org.spongepowered.api.util.Color.ofRgb(239, 126, 74).getRgb())
-                .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
-                .setBackgroundIcon(GuiConfig.Icon.VANILLA_MOUNT);
+	@Override
+	public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick)
+	{
+		if (client.player == null || client.player.world == null)
+		{
+			return;
+		}
+		super.drawForeground(renderer, mouseX, mouseY, partialTick);
 
-        this.add(this.userAvatarImage, this.usernameLabel, this.xpOrbImage, this.levelLabel, this.experienceBar, this.currencyImage,
-                this.currencyLabel, this.healthBar, this.armorBar, this.hungerBar, this.staminaBar, this.airBar, this.mountHealthBar);
-    }
+		if (--update == 0)
+		{
+			// Reset variables
+			height = baseHeight;
+			lastVisibleComponent = null;
 
-    @Override
-    public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-        if (this.client.player == null || this.client.player.world == null) {
-            return;
-        }
-        super.drawForeground(renderer, mouseX, mouseY, partialTick);
+			// Update
+			updateUserImage();
+			updateDisplayName();
+			updateCurrency();
+			updateLevel();
 
-        if (--this.update == 0) {
-            // Reset variables
-            this.height = this.baseHeight;
-            this.lastVisibleComponent = null;
+			// Update property bars, call order defines visual layout
+			updateExperience();
+			updateHealth();
+			updateArmor();
+			updateHunger();
 
-            // Update
-            this.updateUserImage();
-            this.updateDisplayName();
-            this.updateCurrency();
-            this.updateLevel();
+			// Update temporary property bars, call order defines visual layout
+			updateStamina();
+			updateAir();
+			updateMountHealth();
+			update = 30;
+		}
+	}
 
-            // Update property bars, call order defines visual layout
-            this.updateExperience();
-            this.updateHealth();
-            this.updateArmor();
-            this.updateHunger();
+	private void updateDisplayName()
+	{
+		if (client.player != null)
+		{
+			usernameLabel.setText(TextFormatting.WHITE + client.player.getDisplayName().getFormattedText());
+		}
+	}
 
-            // Update temporary property bars, call order defines visual layout
-            this.updateStamina();
-            this.updateAir();
-            this.updateMountHealth();
-            this.update = 30;
-        }
-    }
+	private void updateUserImage()
+	{
+		if (client.player != null && client.player.hasPlayerInfo())
+		{
+			userAvatarImage.setPlayerInfo(client.player.getPlayerInfo());
+		}
+	}
 
-    private void updateDisplayName() {
-        if (this.client.player != null) {
-            this.usernameLabel.setText(TextFormatting.WHITE + this.client.player.getDisplayName().getFormattedText());
-        }
-    }
+	private void updateCurrency()
+	{
+		if (hudData.isEconomyPresent)
+		{
+			//this.currencyImage.setVisible(true);
+			currencyLabel.setVisible(true);
+			currencyLabel.setText("$ " + hudData.economyAmount);
+			currencyLabel.setFontOptions(Fonts.colorAndScale(FontColors.GOLD, 0.7F));
+			currencyLabel.setPosition(-4, BasicScreen.getPaddedY(usernameLabel, 1), Anchor.TOP | Anchor.RIGHT);
+			currencyImage.setPosition(-(currencyLabel.getWidth() + 10),
+									  BasicScreen.getPaddedY(usernameLabel, -1),
+									  Anchor.TOP | Anchor.RIGHT);
+			currencyImage.setVisible(false);
+		}
+	}
 
-    private void updateUserImage() {
-        if (this.client.player != null && this.client.player.hasPlayerInfo()) {
-            this.userAvatarImage.setPlayerInfo(this.client.player.getPlayerInfo());
-        }
-    }
+	private void updateLevel()
+	{
+		levelLabel.setText("Lv. " + client.player.experienceLevel);
+	}
 
-    private void updateCurrency() {
-        if (hudData.isEconomyPresent) {
-            //this.currencyImage.setVisible(true);
-            this.currencyLabel.setVisible(true);
-            this.currencyLabel.setText("$ " + hudData.economyAmount);
-            this.currencyLabel.setFontOptions(Fonts.colorAndScale(FontColors.GOLD, 0.7F));
-            this.currencyLabel.setPosition(-4, BasicScreen.getPaddedY(this.usernameLabel, 1),Anchor.TOP | Anchor.RIGHT);
-            this.currencyImage.setPosition(-(this.currencyLabel.getWidth() + 10), BasicScreen.getPaddedY(this.usernameLabel, -1), Anchor.TOP | Anchor.RIGHT);
-            this.currencyImage.setVisible(false);
-        }
-    }
+	private void updateExperience()
+	{
+		int experienceCap = client.player.xpBarCap();
+		int experience = (int) (client.player.experience * experienceCap);
 
-    private void updateLevel() {
-        this.levelLabel.setText("Lv. " + this.client.player.experienceLevel);
-    }
+		updateBarProperties(experienceBar, experience, experienceCap, false, false);
 
-    private void updateExperience() {
-        final int experienceCap = this.client.player.xpBarCap();
-        final int experience = (int) (this.client.player.experience * experienceCap);
+		xpOrbImage.setPosition(2,
+							   lastVisibleComponent != null ?
+							   BasicScreen.getPaddedY(lastVisibleComponent, 2) :
+							   BasicScreen.getPaddedY(levelLabel, 3));
+		experienceBar.setPosition(6, xpOrbImage.getY(), Anchor.TOP | Anchor.CENTER);
+		lastVisibleComponent = xpOrbImage;
+	}
 
-        this.updateBarProperties(this.experienceBar, experience, experienceCap, false, false);
+	private void updateHealth()
+	{
+		updateBarProperties(healthBar, client.player.getHealth(), client.player.getMaxHealth());
+	}
 
-        this.xpOrbImage.setPosition(2, this.lastVisibleComponent != null
-                ? BasicScreen.getPaddedY(this.lastVisibleComponent, 2)
-                : BasicScreen.getPaddedY(this.levelLabel, 3));
-        this.experienceBar.setPosition(6, this.xpOrbImage.getY(), Anchor.TOP | Anchor.CENTER);
-        this.lastVisibleComponent = this.xpOrbImage;
-    }
+	private void updateArmor()
+	{
+		int maxArmor = 0;
+		int currentDamage = 0;
+		for (EntityEquipmentSlot slot : EntityEquipmentSlot.values())
+		{
+			if (slot == EntityEquipmentSlot.MAINHAND || slot == EntityEquipmentSlot.OFFHAND)
+			{
+				continue;
+			}
+			ItemStack stack = client.player.getItemStackFromSlot(slot);
+			if (stack.getItem() instanceof ItemArmor)
+			{
+				maxArmor += ((ItemArmor) stack.getItem()).getArmorMaterial().getDurability(slot);
+				currentDamage += stack.getItem().getDamage(stack);
+			}
+		}
+		updateBarProperties(armorBar, maxArmor - currentDamage, maxArmor);
+	}
 
-    private void updateHealth() {
-        this.updateBarProperties(this.healthBar, this.client.player.getHealth(), this.client.player.getMaxHealth());
-    }
+	private void updateHunger()
+	{
+		updateBarProperties(hungerBar, client.player.getFoodStats().getFoodLevel(), 20f);
+	}
 
-    private void updateArmor() {
-        int maxArmor = 0;
-        int currentDamage = 0;
-        for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
-            if (slot == EntityEquipmentSlot.MAINHAND || slot == EntityEquipmentSlot.OFFHAND) {
-                continue;
-            }
-            final ItemStack stack = this.client.player.getItemStackFromSlot(slot);
-            if (stack.getItem() instanceof ItemArmor) {
-                maxArmor += ((ItemArmor) stack.getItem()).getArmorMaterial().getDurability(slot);
-                currentDamage += stack.getItem().getDamage(stack);
-            }
-        }
-        this.updateBarProperties(this.armorBar, maxArmor - currentDamage, maxArmor);
-    }
+	private void updateStamina()
+	{
+		float staminaLevel = client.player.getFoodStats().getSaturationLevel();
 
-    private void updateHunger() {
-        this.updateBarProperties(this.hungerBar, this.client.player.getFoodStats().getFoodLevel(), 20f);
-    }
+		staminaBar.setVisible(staminaLevel > 0);
+		if (staminaBar.isVisible())
+		{
+			updateBarProperties(staminaBar, staminaLevel, 20f);
+		}
+	}
 
-    private void updateStamina() {
-        final float staminaLevel = this.client.player.getFoodStats().getSaturationLevel();
+	private void updateAir()
+	{
+		airBar.setVisible(client.player.isInsideOfMaterial(Material.WATER));
 
-        this.staminaBar.setVisible(staminaLevel > 0);
-        if (this.staminaBar.isVisible()) {
-            this.updateBarProperties(this.staminaBar, staminaLevel, 20f);
-        }
-    }
+		// TODO Hardcoded to not care above 300, if we can do this better in the future then we should do so
+		if (airBar.isVisible())
+		{
+			int air = Math.max(client.player.getAir(), 0);
+			updateBarProperties(airBar, air, 300);
+		}
+	}
 
-    private void updateAir() {
-        this.airBar.setVisible(this.client.player.isInsideOfMaterial(Material.WATER));
+	private void updateMountHealth()
+	{
+		Entity entity = client.player.getRidingEntity();
+		boolean entityIsLiving = entity != null && entity instanceof EntityLivingBase;
+		mountHealthBar.setVisible(entityIsLiving);
+		if (entityIsLiving)
+		{
+			EntityLivingBase ridingEntityLivingBase = (EntityLivingBase) entity;
 
-        // TODO Hardcoded to not care above 300, if we can do this better in the future then we should do so
-        if (this.airBar.isVisible()) {
-            final int air = Math.max(this.client.player.getAir(), 0);
-            this.updateBarProperties(this.airBar, air, 300);
-        }
-    }
+			updateBarProperties(mountHealthBar, ridingEntityLivingBase.getHealth(), ridingEntityLivingBase.getMaxHealth());
+		}
+	}
 
-    private void updateMountHealth() {
-        final Entity entity = this.client.player.getRidingEntity();
-        final boolean entityIsLiving = entity != null && entity instanceof EntityLivingBase;
-        this.mountHealthBar.setVisible(entityIsLiving);
-        if (entityIsLiving) {
-            final EntityLivingBase ridingEntityLivingBase = (EntityLivingBase) entity;
+	private void updateBarProperties(UIPropertyBar propertyBar, float value, float maxValue)
+	{
+		updateBarProperties(propertyBar, value, maxValue, true, true);
+	}
 
-            this.updateBarProperties(this.mountHealthBar, ridingEntityLivingBase.getHealth(), ridingEntityLivingBase.getMaxHealth());
-        }
-    }
+	private void updateBarProperties(UIPropertyBar propertyBar, float value, float maxValue, boolean updatePosition,
+			boolean updateLastVisible)
+	{
+		// Update text
+		String text = ClientStaticAccess.configAdapter.get().general.displayNumericHUDValues ?
+					  df.format(value) + "/" + df.format(maxValue) :
+					  "";
+		propertyBar.setText(text);
 
-    private void updateBarProperties(UIPropertyBar propertyBar, float value, float maxValue) {
-        this.updateBarProperties(propertyBar, value, maxValue, true, true);
-    }
+		// Update amount value
+		propertyBar.setAmount(MathUtil.scalef(value, 0, maxValue, 0f, 1f));
 
-    private void updateBarProperties(UIPropertyBar propertyBar, float value, float maxValue, boolean updatePosition, boolean updateLastVisible) {
-        // Update text
-        final String text = ClientStaticAccess.configAdapter.get().general.displayNumericHUDValues
-                ? this.df.format(value) + "/" + this.df.format(maxValue)
-                : "";
-        propertyBar.setText(text);
+		// Pad against last visible component
+		if (updatePosition)
+		{
+			propertyBar.setPosition(0,
+									lastVisibleComponent != null ?
+									BasicScreen.getPaddedY(lastVisibleComponent, 1) :
+									BasicScreen.getPaddedY(levelLabel, 3),
+									Anchor.TOP | Anchor.CENTER);
+		}
 
-        // Update amount value
-        propertyBar.setAmount(MathUtil.scalef(value, 0, maxValue, 0f, 1f));
+		// Update last visible component
+		if (updateLastVisible)
+		{
+			lastVisibleComponent = propertyBar;
+		}
 
-        // Pad against last visible component
-        if (updatePosition) {
-            propertyBar.setPosition(0, this.lastVisibleComponent != null
-                    ? BasicScreen.getPaddedY(this.lastVisibleComponent, 1)
-                    : BasicScreen.getPaddedY(this.levelLabel, 3), Anchor.TOP | Anchor.CENTER);
-        }
-
-        // Update last visible component
-        if (updateLastVisible) {
-            this.lastVisibleComponent = propertyBar;
-        }
-
-        // Update height
-        this.height += 10;
-    }
+		// Update height
+		height += 10;
+	}
 }

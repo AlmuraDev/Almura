@@ -128,7 +128,7 @@ public final class ServerNickManager extends Witness.Impl implements Witness.Lif
     public void onChangeNickname(final NucleusChangeNicknameEvent event, @Getter("getTargetUser") final Player player) {
         this.scheduler
             .createTaskBuilder()
-            .delayTicks(1) // This is a "Pre" event, we want to get the value one tick later
+            .delayTicks(1) // This is a "Post" event, we want to get the value one tick later
             .execute(() -> this.serviceManager.provide(NucleusNicknameService.class).ifPresent(service -> {
 
                 final EntityPlayerMP mcPlayer = (EntityPlayerMP) player;

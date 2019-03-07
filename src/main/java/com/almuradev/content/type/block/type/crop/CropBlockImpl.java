@@ -178,7 +178,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
                 if (definition.fertilizer != null) {
                     final Fertilizer fertilizer = definition.fertilizer;
 
-                    // TODO Pre-1.13, this is just a mess...maybe need a Deprecated "LazyItemState" that checks data
+                    // TODO Post-1.13, this is just a mess...maybe need a Deprecated "LazyItemState" that checks data
                     final DoubleRange chanceRange = fertilizer.getOrLoadChanceRangeForItem(new ItemStack(Items.DYE, 1, 15));
 
                     if (chanceRange != null) {

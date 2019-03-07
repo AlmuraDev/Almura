@@ -34,7 +34,7 @@ public class UIPropertyBar extends UIComponent {
     private float amount = 1.0f;
     private String text = "";
     private FontOptions fontOptions = FontColors.WHITE_FO;
-    private GuiTexture spritesheet = GuiConfig.SpriteSheet.VANILLA_ICON;
+    private GuiTexture spritesheet = null;// GuiConfig.SpriteSheet.VANILLA_ICON;
 
     @Nullable private GuiIcon backgroundIcon, foregroundIcon;
 

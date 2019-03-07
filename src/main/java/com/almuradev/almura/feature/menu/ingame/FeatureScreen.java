@@ -112,7 +112,7 @@ public final class FeatureScreen extends BasicScreen {
         .position(0, titleButton.getY() + 18)
         .text("Accessories")
         .enabled(isAdmin)
-        //.onClick(() -> action)
+        //.click(() -> action)
         .build("button.accessories");
 
     final UISeparator functionsSeparator = new UISeparator(this);

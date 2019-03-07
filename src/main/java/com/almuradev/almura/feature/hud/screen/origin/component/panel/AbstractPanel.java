@@ -28,7 +28,7 @@ public abstract class AbstractPanel extends UIPanel {
 
     protected AbstractPanel(final MalisisGui gui, final int width, final int height) {
         super(gui, width, height);
-        this.iconProvider = new GuiIconProvider(GuiConfig.Icon.VANILLA_CONTAINER_INVENTORY_ADVANCEMENT);
+        //this.iconProvider = new GuiIconProvider(GuiConfig.Icon.VANILLA_CONTAINER_INVENTORY_ADVANCEMENT);
     }
 
     protected void drawProperty(final String key, final String value, final int x, final int y) {

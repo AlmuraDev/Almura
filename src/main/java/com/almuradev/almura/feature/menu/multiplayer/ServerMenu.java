@@ -23,6 +23,7 @@ import net.malisis.core.client.gui.component.interaction.button.builder.UIButton
 import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
@@ -62,7 +63,7 @@ public class ServerMenu extends PanoramicScreen {
 
     @Override
     public void construct() {
-        this.renderer.setDefaultTexture(GuiConfig.SpriteSheet.ALMURA);
+        this.renderer.setDefaultTexture(null /*GuiConfig.SpriteSheet.ALMURA*/);
 
         // Create the form
         final UIBackgroundContainer form = new UIBackgroundContainer(this, "", 225, 225);
@@ -70,7 +71,7 @@ public class ServerMenu extends PanoramicScreen {
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
 
         // Create the logo
-        logoImage = new UIImage(this, new GuiTexture(GuiConfig.Location.ALMURA_LOGO), null);
+        logoImage = new UIImage(this, new GuiTexture((ResourceLocation) null/*GuiConfig.Location.ALMURA_LOGO*/), null);
         logoImage.setSize(60, 99);
         logoImage.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
@@ -129,7 +130,7 @@ public class ServerMenu extends PanoramicScreen {
 
         final UIButton forumsButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
-                .icon(GuiConfig.Icon.ENJIN)
+             //   .icon(GuiConfig.Icon.ENJIN)
                 .size(UIConstants.Button.WIDTH_ICON, UIConstants.Button.HEIGHT_ICON)
                 .position(-padding, -padding)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
@@ -139,7 +140,7 @@ public class ServerMenu extends PanoramicScreen {
 
         final UIButton issuesButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
-                .icon(GuiConfig.Icon.FA_GITHUB)
+             //   .icon(GuiConfig.Icon.FA_GITHUB)
                 .size(UIConstants.Button.WIDTH_ICON, UIConstants.Button.HEIGHT_ICON)
                 .position(BasicScreen.getPaddedX(forumsButton, padding, Anchor.RIGHT), forumsButton.getY())
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
@@ -149,7 +150,7 @@ public class ServerMenu extends PanoramicScreen {
 
         final UIButton shopButton = new UIButtonBuilder(this)
                 .container(this.buttonContainer)
-                .icon(GuiConfig.Icon.FA_SHOPPING_BAG)
+               // .icon(GuiConfig.Icon.FA_SHOPPING_BAG)
                 .size(UIConstants.Button.WIDTH_ICON, UIConstants.Button.HEIGHT_ICON)
                 .position(BasicScreen.getPaddedX(issuesButton, padding, Anchor.RIGHT), issuesButton.getY())
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
