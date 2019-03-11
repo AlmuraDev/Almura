@@ -35,6 +35,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.GuiModList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GLContext;
 
 import javax.annotation.Nullable;
@@ -65,8 +66,6 @@ public class PanoramicMainMenu extends MalisisGui
 			configAdapter.save();
 		}
 
-		//		UIContainer background = new UIContainer();
-		//		background.setBackground(new PanoramicScreen(width, height));
 		UIContainer mainContainer = mainContainer();
 		UIContainer extrasContainer = extrasContainer();
 
@@ -193,6 +192,14 @@ public class PanoramicMainMenu extends MalisisGui
 		extrasContainer.add(shopButton);
 
 		return extrasContainer;
+	}
+
+	@Override
+	protected void keyTyped(char keyChar, int keyCode)
+	{
+		if(keyCode == Keyboard.KEY_ESCAPE)
+			return;
+		super.keyTyped(keyChar, keyCode);
 	}
 
 	private void setupFirstLaunchEnvironment()
