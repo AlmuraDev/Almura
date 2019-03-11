@@ -8,7 +8,6 @@
 package com.almuradev.almura.feature.menu.main;
 
 import com.almuradev.almura.shared.client.GuiConfig;
-import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
 import net.malisis.ego.gui.render.GuiRemoteTexture;
 import net.malisis.ego.gui.render.GuiTexture;
@@ -16,7 +15,6 @@ import net.minecraft.util.text.TextFormatting;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.UUID;
 
 public interface IAboutData
@@ -85,22 +83,23 @@ public interface IAboutData
 		MUMFREY("mumfrey", UUID.fromString("e8e0361e-9b3b-481a-b06a-5c314a6c1ef0"), TextFormatting.GRAY, 2),
 		BLOOD("blood", UUID.fromString("87caf570-b1fc-4100-bd95-3e7f1fa2e153"), TextFormatting.DARK_RED, 2);
 
-		private final String id;
 		private final String name;
 		private final UUID uuid;
 		private final String description;
 		private final TextFormatting color;
-		private final List<String> titles = Lists.newArrayList();
 
 		Staff(String id, UUID uuid, TextFormatting color, int titles)
 		{
-			this.id = id;
 			name = String.format("almura.menu.about.person.%s.name", id);
 			this.uuid = uuid;
-			description = String.format("almura.menu.about.person.%s.description", id);
 			this.color = color;
+			StringBuilder sb = new StringBuilder().append(String.format("{almura.menu.about.person.%s.description}\n\n", id))
+												  .append(TextFormatting.BOLD)
+												  .append("{almura.menu.about.titles}\n")
+												  .append(TextFormatting.RESET);
 			for (int i = 0; i < titles; i++)
-				this.titles.add(String.format("almura.menu.about.person.%s.titles.%d", id, i));
+				sb.append(String.format("{almura.menu.about.person.%s.titles.%d}\n", id, i));
+			description = sb.toString();
 		}
 
 		@Override

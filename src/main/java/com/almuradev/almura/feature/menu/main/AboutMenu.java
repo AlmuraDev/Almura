@@ -9,6 +9,7 @@ package com.almuradev.almura.feature.menu.main;
 
 import static net.malisis.ego.gui.element.position.Positions.middleAligned;
 import static net.malisis.ego.gui.element.position.Positions.rightOf;
+import static net.malisis.ego.gui.element.position.Positions.topAligned;
 import static net.malisis.ego.gui.element.size.Sizes.fillHeight;
 import static net.malisis.ego.gui.element.size.Sizes.fillWidth;
 
@@ -23,7 +24,6 @@ import net.malisis.ego.gui.component.decoration.UILabel;
 import net.malisis.ego.gui.component.interaction.UIButton;
 import net.malisis.ego.gui.component.interaction.UISelectableList;
 import net.malisis.ego.gui.component.interaction.builder.UIButtonBuilder;
-import net.malisis.ego.gui.component.scrolling.UIScrollBar;
 import net.malisis.ego.gui.component.scrolling.UIScrollBar.Type;
 import net.malisis.ego.gui.component.scrolling.UISlimScrollbar;
 import net.malisis.ego.gui.element.Padding;
@@ -93,15 +93,15 @@ public class AboutMenu extends MalisisGui
 		aboutList.setElements(list);
 
 		UILabel label = new UILabel(true);
-		label.setPosition(Position.rightOf(label, aboutList, 5));
+		label.setPosition(Position.of(rightOf(aboutList, 5), topAligned(label, 0)));
 		label.setSize(Size.of(fillWidth(label, 0), fillHeight(label, 0)));
 		label.setFontOptions(FontOptions.builder().color(0xFFFFFF).shadow(false).build());
 
 		aboutList.onChange((IAboutData data) -> label.setText(data.description()));//to do after label init
 		aboutList.select(IAboutData.ABOUT_ALMURA);//to do after change callback set
 
-		UIScrollBar sb = new UISlimScrollbar(aboutList, Type.VERTICAL);
-		sb.setAutoHide(true);
+		new UISlimScrollbar(aboutList, Type.VERTICAL);
+		new UISlimScrollbar(label, Type.VERTICAL);
 
 		mainContainer.add(aboutList, label);
 	}
