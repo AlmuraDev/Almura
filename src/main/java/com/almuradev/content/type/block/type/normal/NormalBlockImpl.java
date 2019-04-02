@@ -26,6 +26,12 @@ public final class NormalBlockImpl extends Block implements NormalBlock {
         this.definition = builder.singleState();
         this.definition.fill(this);
         if (this.definition.opaque != null) this.fullBlock = this.definition.opaque;
+
+        // Fix Traits
+        this.lightOpacity = 255;
+        this.translucent = false;
+        this.useNeighborBrightness = false;
+        this.fullBlock = true;
     }
 
     @Override

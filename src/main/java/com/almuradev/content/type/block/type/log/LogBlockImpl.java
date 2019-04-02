@@ -25,6 +25,12 @@ public final class LogBlockImpl extends BlockLog implements LogBlock {
         this.definition = builder.singleState();
         this.definition.fill(this);
         this.setDefaultState(this.blockState.getBaseState().withProperty(LOG_AXIS, EnumAxis.Y));
+
+        // Fix Traits
+        this.lightOpacity = 255;
+        this.translucent = false;
+        this.useNeighborBrightness = false;
+        this.fullBlock = true;
     }
 
     @Override

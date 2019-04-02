@@ -39,6 +39,12 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
         super((Material) builder.material.get());
         builder.fill(this);
 
+        // Fix Traits
+        this.lightOpacity = 255;
+        this.translucent = false;
+        this.useNeighborBrightness = false;
+        this.fullBlock = true;
+
         // assume first state is the default
         final Boolean opaque = states.get(0).opaque;
         if(opaque != null) {
