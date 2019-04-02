@@ -12,6 +12,8 @@ import static java.util.Objects.requireNonNull;
 import com.almuradev.almura.feature.complex.block.ComplexBlock;
 import com.almuradev.almura.feature.complex.block.ComplexBlocks;
 import com.almuradev.almura.feature.complex.item.almanac.item.FarmersAlmanacItem;
+import com.almuradev.almura.feature.complex.item.cruet.GlassCruetItem;
+import com.almuradev.almura.feature.complex.item.cruet.GlassWaterCruetItem;
 import com.almuradev.almura.feature.complex.item.wand.LightRepairWand;
 import com.almuradev.core.event.Witness;
 import net.minecraft.block.Block;
@@ -46,6 +48,9 @@ public final class ComplexContentFeature implements Witness {
         // Register Complex Items Here
         event.getRegistry().register(new LightRepairWand());
         event.getRegistry().register(new FarmersAlmanacItem());
+
+        event.getRegistry().register(new GlassCruetItem());
+        event.getRegistry().register(new GlassWaterCruetItem());
 
         // Register Complex Block; ItemBlocks Here
         registerItem(event.getRegistry(), ComplexBlocks.COIN_EXCHANGE);

@@ -75,7 +75,7 @@ public class ItemReturnHelper implements Witness {
             case "ITEM.ALMURA.NORMAL.INGREDIENTS.VEGETABLEOIL":
             case "ITEM.ALMURA.NORMAL.INGREDIENTS.MATERIALS_SODAWATER":
             case "ITEM.ALMURA.NORMAL.INGREDIENTS.MAYONAISE":
-                reusableItem= GameRegistry.makeItemStack("almura:normal/ingredient/glass_cruet", 0, 1, null);
+                reusableItem = GameRegistry.makeItemStack("almura:normal/ingredient/glass_cruet", 0, 1, null);
                 break;
 
             case "ITEM.ALMURA.NORMAL.INGREDIENTS.PEANUTBUTTER":
