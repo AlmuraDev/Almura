@@ -233,5 +233,12 @@ key.categories.almura.features=Almura Features Menu
 # ---------------
 almura.button.nick.remove=Remove Nickname
 
+# ---------------
+# -complex items-
+# ---------------
+
 item.farmers_almanac.name=Farmer's Almanac
 item.light_repair_wand.name=Area Light Repair Wand
+item.glass_cruet.name="Glass Cruet"
+item.glass_water_cruet.name="Water Filled Cruet
+item.glass_milk_cruet.name="Milk Filled Cruet

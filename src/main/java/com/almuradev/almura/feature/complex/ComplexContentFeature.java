@@ -13,6 +13,7 @@ import com.almuradev.almura.feature.complex.block.ComplexBlock;
 import com.almuradev.almura.feature.complex.block.ComplexBlocks;
 import com.almuradev.almura.feature.complex.item.almanac.item.FarmersAlmanacItem;
 import com.almuradev.almura.feature.complex.item.cruet.GlassCruetItem;
+import com.almuradev.almura.feature.complex.item.cruet.GlassMilkCruetItem;
 import com.almuradev.almura.feature.complex.item.cruet.GlassWaterCruetItem;
 import com.almuradev.almura.feature.complex.item.wand.LightRepairWand;
 import com.almuradev.core.event.Witness;
@@ -51,6 +52,7 @@ public final class ComplexContentFeature implements Witness {
 
         event.getRegistry().register(new GlassCruetItem());
         event.getRegistry().register(new GlassWaterCruetItem());
+        event.getRegistry().register(new GlassMilkCruetItem());
 
         // Register Complex Block; ItemBlocks Here
         registerItem(event.getRegistry(), ComplexBlocks.COIN_EXCHANGE);
