@@ -161,9 +161,6 @@ public class ItemReturnHelper implements Witness {
             case "ITEM.ALMURA.FOOD.DRINK.OTHER_GROG":
             case "ITEM.ALMURA.FOOD.DRINK.OTHER_MEAD":
             case "ITEM.ALMURA.FOOD.DRINK.OTHER_SPIDERBITE":
-                reusableItem = GameRegistry.makeItemStack("minecraft:potion", 0, 1, null);
-                break;
-
             case "ITEM.ALMURA.FOOD.DRINK.JUICE_APPLE":
             case "ITEM.ALMURA.FOOD.DRINK.JUICE_BANANA":
             case "ITEM.ALMURA.FOOD.DRINK.JUICE_BLACKBERRY":
