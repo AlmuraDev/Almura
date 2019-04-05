@@ -43,7 +43,7 @@ public class AboutMenu extends MalisisGui
 	@Override
 	public void construct()
 	{
-		setBackground(new DirtBackground(getScreen()));
+		setBackground(new DirtBackground(screen));
 
 		UILabel title = UILabel.builder()
 							   .text("almura.menu_button.about")
@@ -91,7 +91,7 @@ public class AboutMenu extends MalisisGui
 									  .position(b -> Position.bottomCenter(b)
 															 .offset(0, -15))
 									  .size(98, 20)
-									  .onClick(() -> new PanoramicMainMenu(null).display())
+									  .onClick(() -> new PanoramicMainMenu().display())
 									  .build();
 
 		addToScreen(title, mainContainer, versions, doneButton);

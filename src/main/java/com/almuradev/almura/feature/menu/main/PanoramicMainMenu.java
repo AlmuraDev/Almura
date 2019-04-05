@@ -23,9 +23,9 @@ import net.malisis.ego.gui.element.Padding;
 import net.malisis.ego.gui.element.position.Position;
 import net.malisis.ego.gui.element.position.Positions;
 import net.malisis.ego.gui.element.size.Size;
-import net.malisis.ego.gui.render.background.DirtBackground;
 import net.malisis.ego.gui.render.background.PanoramicBackground;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiWorldSelection;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -37,8 +37,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GLContext;
 
-import javax.annotation.Nullable;
-
 @SideOnly(Side.CLIENT)
 public class PanoramicMainMenu extends MalisisGui
 {
@@ -47,11 +45,9 @@ public class PanoramicMainMenu extends MalisisGui
 	@Inject
 	private static MappedConfiguration<ClientConfiguration> configAdapter = null;
 
-	public PanoramicMainMenu(@Nullable MalisisGui parent)
+	public PanoramicMainMenu()
 	{
-		super();
 		renderer.setDefaultTexture(GuiConfig.SpriteSheet.ALMURA);
-		setBackground(new DirtBackground(getScreen()));
 	}
 
 	@Override
@@ -65,6 +61,8 @@ public class PanoramicMainMenu extends MalisisGui
 			configAdapter.save();
 		}
 
+		setBackground(new PanoramicBackground(screen));
+
 		addToScreen(mainContainer());
 		addToScreen(extrasContainer());
 		addToScreen(UILabel.builder()
@@ -73,8 +71,6 @@ public class PanoramicMainMenu extends MalisisGui
 						   .position(l -> Position.bottomLeft(l)
 												  .offset(5, -5))
 						   .build());
-
-		setBackground(new PanoramicBackground(getScreen()));
 
 		// OpenGL Warning
 		if (!GLContext.getCapabilities().OpenGL20 && !OpenGlHelper.areShadersSupported())
@@ -137,7 +133,7 @@ public class PanoramicMainMenu extends MalisisGui
 										 .text("options.title")
 										 .position(b -> Position.below(b, mpButton, PADDING))
 										 .size(UIConstants.Button.SHORT)
-										 //.onClick(() -> mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings)))
+										 .onClick(() -> mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings)))
 										 .build();
 
 		//mods

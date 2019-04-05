@@ -37,7 +37,7 @@ public class MainMenuManager implements Witness {
 
             if (screen.getClass().equals(GuiMainMenu.class)) {
                 event.setCanceled(true);
-                new PanoramicMainMenu(null).display();
+                new PanoramicMainMenu().display();
             } else if (screen.getClass().equals(GuiIngameMenu.class)) {
                 event.setCanceled(true);
                 new SimpleIngameMenu().display();
