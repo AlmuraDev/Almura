@@ -21,6 +21,7 @@ import net.malisis.ego.font.FontOptions.FontOptionsBuilder;
 import net.malisis.ego.gui.MalisisGui;
 import net.malisis.ego.gui.component.container.UIContainer;
 import net.malisis.ego.gui.component.decoration.UILabel;
+import net.malisis.ego.gui.component.decoration.UITooltip;
 import net.malisis.ego.gui.component.interaction.UIButton;
 import net.malisis.ego.gui.component.interaction.UICheckBox;
 import net.malisis.ego.gui.component.interaction.UISlider;
@@ -42,6 +43,11 @@ public class AlmuraOptionsMenu extends MalisisGui
 	private static final int CONTROL_PADDING = 5;
 
 	private UISlider<Integer> sliderOriginHudOpacity;
+
+	private boolean isOrigin()
+	{
+		return configAdapter.get().general.hud.equalsIgnoreCase(HUDType.ORIGIN);
+	}
 
 	@Override
 	public void construct()
@@ -101,17 +107,20 @@ public class AlmuraOptionsMenu extends MalisisGui
 				.bind("HUD", () -> StringUtils.capitalize(general.hud))
 				.size(CONTROL_SIZE)
 				.onClick(() -> {
-					// Check if the current HUD is the Origin HUD
-					boolean isOrigin = general.hud.equalsIgnoreCase(HUDType.ORIGIN);
-					general.hud = isOrigin ? HUDType.VANILLA : HUDType.ORIGIN;
-					// Flip the boolean since we're now on the vanilla HUD
-					isOrigin = !isOrigin;
-
-					//TODO: simply hide the slider ?
-					sliderOriginHudOpacity.setAlpha(isOrigin ? 255 : 128);
-					sliderOriginHudOpacity.setTooltip(isOrigin ? "" : "Only available when Origin HUD is in use.");
-					sliderOriginHudOpacity.setEnabled(isOrigin);
-
+					if (isOrigin())
+					{
+						general.hud = HUDType.VANILLA;
+						sliderOriginHudOpacity.setAlpha(128);
+						sliderOriginHudOpacity.setTooltip("Only available when Origin HUD is in use.");
+						sliderOriginHudOpacity.setEnabled(false);
+					}
+					else
+					{
+						general.hud = HUDType.ORIGIN;
+						sliderOriginHudOpacity.setAlpha(255);
+						sliderOriginHudOpacity.setTooltip((UITooltip) null);
+						sliderOriginHudOpacity.setEnabled(true);
+					}
 					saveConfig();
 				})
 				.build();
@@ -193,7 +202,7 @@ public class AlmuraOptionsMenu extends MalisisGui
 										   .layout(c -> new RowLayout(c, CONTROL_PADDING))
 										   .build();
 
-		boolean isOrigin = general.hud.equalsIgnoreCase(HUDType.ORIGIN);
+		boolean isOrigin = isOrigin();
 		sliderOriginHudOpacity = UISlider.builder(0, 255)
 										 .parent(container)
 										 .text("HUD Opacity: {value}")
@@ -201,6 +210,7 @@ public class AlmuraOptionsMenu extends MalisisGui
 										 .size(CONTROL_SIZE)
 										 .enabled(isOrigin)
 										 .alpha(isOrigin ? 255 : 128)
+										 .tooltip(isOrigin ? null : "Only available when Origin HUD is in use.")
 										 .onChange(i -> {
 											 general.originHudOpacity = i;
 											 saveConfig();
