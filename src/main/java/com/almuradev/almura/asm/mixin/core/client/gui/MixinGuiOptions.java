@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.asm.mixin.core.client.gui;
 
-import com.almuradev.almura.feature.menu.AlmuraOptionsMenu;
+import com.almuradev.almura.feature.menu.main.OptionsMenu;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiOptionSlider;
 import net.minecraft.client.gui.GuiOptions;
@@ -51,7 +51,7 @@ public abstract class MixinGuiOptions extends GuiScreen {
     @Inject(method = "actionPerformed", at = @At("RETURN"))
     protected void actionPerformed(GuiButton button, CallbackInfo ci) throws IOException {
         if (button.enabled && button.id == 301) { // Almura button
-            new AlmuraOptionsMenu().display();
+            new OptionsMenu().display();
         }
     }
 }

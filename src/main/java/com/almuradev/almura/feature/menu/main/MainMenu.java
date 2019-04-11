@@ -9,6 +9,7 @@ package com.almuradev.almura.feature.menu.main;
 
 import com.almuradev.almura.core.client.config.ClientConfiguration;
 import com.almuradev.almura.core.client.config.category.GeneralCategory;
+import com.almuradev.almura.feature.menu.main.component.ExtrasComponent;
 import com.almuradev.almura.feature.speed.FirstLaunchOptimization;
 import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.toolbox.config.map.MappedConfiguration;
@@ -19,9 +20,6 @@ import net.malisis.ego.gui.component.container.UIContainer;
 import net.malisis.ego.gui.component.decoration.UIImage;
 import net.malisis.ego.gui.component.decoration.UILabel;
 import net.malisis.ego.gui.component.interaction.UIButton;
-import net.malisis.ego.gui.element.Padding;
-import net.malisis.ego.gui.element.position.Position;
-import net.malisis.ego.gui.element.position.Positions;
 import net.malisis.ego.gui.element.size.Size;
 import net.malisis.ego.gui.render.background.PanoramicBackground;
 import net.minecraft.client.Minecraft;
@@ -38,21 +36,19 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GLContext;
 
 @SideOnly(Side.CLIENT)
-public class PanoramicMainMenu extends MalisisGui
+public class MainMenu extends MalisisGui
 {
-	private static final int PADDING = 4;
-
 	@Inject
 	private static MappedConfiguration<ClientConfiguration> configAdapter = null;
 
-	public PanoramicMainMenu()
+	public MainMenu()
 	{
-		renderer.setDefaultTexture(GuiConfig.SpriteSheet.ALMURA);
 	}
 
 	@Override
 	public void construct()
 	{
+		renderer.setDefaultTexture(GuiConfig.SpriteSheet.ALMURA);
 		GeneralCategory general = configAdapter.get().general;
 		if (general.firstLaunch)
 		{
@@ -64,13 +60,7 @@ public class PanoramicMainMenu extends MalisisGui
 		setBackground(new PanoramicBackground(screen));
 
 		addToScreen(mainContainer());
-		addToScreen(extrasContainer());
-		addToScreen(UILabel.builder()
-						   .text("{almura.menu.main.trademark}\n{almura.menu.main.copyright}")
-						   .color(TextFormatting.YELLOW)
-						   .position(l -> Position.bottomLeft(l)
-												  .offset(5, -5))
-						   .build());
+		addToScreen(new ExtrasComponent());
 
 		// OpenGL Warning
 		if (!GLContext.getCapabilities().OpenGL20 && !OpenGlHelper.areShadersSupported())
@@ -79,8 +69,7 @@ public class PanoramicMainMenu extends MalisisGui
 							   .text("{almura.menu.main.opengl.0}\n{almura.menu.main.opengl.1}")
 							   .color(TextFormatting.DARK_RED)
 							   .bold()
-							   .position(l -> Position.topLeft(l)
-													  .offset(5, 5))
+							   .topLeft(GuiConfig.PADDING, GuiConfig.PADDING)
 							   .build());
 		}
 
@@ -94,18 +83,18 @@ public class PanoramicMainMenu extends MalisisGui
 
 	private UIContainer mainContainer()
 	{
-		UIContainer mainContainer = new UIContainer();
-		mainContainer.setPosition(Position.middleCenter(mainContainer)
-										  .offset(0, -10));
-		mainContainer.setSize(Size.sizeOfContent(mainContainer));
-		mainContainer.setPadding(Padding.of(PADDING));
-		mainContainer.setClipContent(false);
+		UIContainer mainContainer = UIContainer.builder()
+											   .middleCenter(0, -10)
+											   .size(Size::sizeOfContent)
+											   .padding(GuiConfig.PADDING)
+											   .noClipContent()
+											   .build();
 
 		// Almura header
 		UIImage almuraHeader = UIImage.builder()
 									  .parent(mainContainer)
 									  .icon(GuiConfig.Icon.ALMURA_LOGO)
-									  .position(Position::topCenter)
+									  .topCenter()
 									  .size(60, 99)
 									  .build();
 
@@ -113,7 +102,8 @@ public class PanoramicMainMenu extends MalisisGui
 		UIButton spButton = UIButton.builder()
 									.parent(mainContainer)
 									.text("menu.singleplayer")
-									.position(b -> Positions.leftAligned(b, PADDING), Positions.below(almuraHeader, PADDING))
+									.leftAligned()
+									.below(almuraHeader, GuiConfig.PADDING)
 									.size(UIConstants.Button.LONG)
 									.onClick(() -> mc.displayGuiScreen(new GuiWorldSelection(this)))
 									.build();
@@ -122,16 +112,18 @@ public class PanoramicMainMenu extends MalisisGui
 		UIButton mpButton = UIButton.builder()
 									.parent(mainContainer)
 									.text("menu.multiplayer")
-									.position(b -> Position.below(b, spButton, PADDING))
+									.leftAligned()
+									.below(spButton, GuiConfig.PADDING)
 									.size(UIConstants.Button.LONG)
-									//.onClick(() -> new ServerMenu(this).display())
+									.onClick(() -> new ServerMenu().display())
 									.build();
 
 		//options
 		UIButton optionsButton = UIButton.builder()
 										 .parent(mainContainer)
 										 .text("options.title")
-										 .position(b -> Position.below(b, mpButton, PADDING))
+										 .leftAligned()
+										 .below(mpButton, GuiConfig.PADDING)
 										 .size(UIConstants.Button.SHORT)
 										 .onClick(() -> mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings)))
 										 .build();
@@ -140,7 +132,8 @@ public class PanoramicMainMenu extends MalisisGui
 		UIButton modsButton = UIButton.builder()
 									  .parent(mainContainer)
 									  .text("almura.menu_button.mods")
-									  .position(b -> Position.rightOf(b, optionsButton, PADDING))
+									  .rightOf(optionsButton, GuiConfig.PADDING)
+									  .topAlignedTo(optionsButton)
 									  .size(UIConstants.Button.SHORT)
 									  .onClick(() -> mc.displayGuiScreen(new GuiModList(this)))
 									  .build();
@@ -149,7 +142,8 @@ public class PanoramicMainMenu extends MalisisGui
 		UIButton.builder()
 				.parent(mainContainer)
 				.text("almura.menu_button.about")
-				.position(b -> Position.rightOf(b, modsButton, PADDING))
+				.rightOf(modsButton, GuiConfig.PADDING)
+				.topAlignedTo(optionsButton)
 				.size(UIConstants.Button.SHORT)
 				.onClick(() -> new AboutMenu().display())
 				.build();
@@ -158,50 +152,13 @@ public class PanoramicMainMenu extends MalisisGui
 		UIButton.builder()
 				.parent(mainContainer)
 				.text(TextFormatting.RED + "{almura.menu_button.quit}")
-				.position(b -> Position.below(b, optionsButton, PADDING))
+				.leftAligned()
+				.below(optionsButton, GuiConfig.PADDING)
 				.size(UIConstants.Button.LONG)
 				.onClick(mc::shutdown)
 				.build();
 
 		return mainContainer;
-	}
-
-	private UIContainer extrasContainer()
-	{
-		UIContainer extrasContainer = new UIContainer();
-		extrasContainer.setPadding(Padding.of(5));
-		extrasContainer.setPosition(Position.bottomRight(extrasContainer));
-		extrasContainer.setSize(Size.sizeOfContent(extrasContainer));
-
-		//forums
-		UIButton forumsButton = UIButton.builder()
-										.parent(extrasContainer)
-										.content(new UIImage(GuiConfig.Icon.ENJIN))
-										.size(UIConstants.Button.ICON)
-										.tooltip("almura.menu_button.forums")
-										.onClick(() -> MalisisGui.openLink(GuiConfig.Url.FORUM))
-										.build();
-		//issues
-		UIButton issuesButton = UIButton.builder()
-										.parent(extrasContainer)
-										.content(new UIImage(GuiConfig.Icon.FA_GITHUB))
-										.position(b -> Position.rightOf(b, forumsButton, PADDING))
-										.size(UIConstants.Button.ICON)
-										.tooltip("almura.menu_button.issues")
-										.onClick(() -> MalisisGui.openLink(GuiConfig.Url.ISSUES))
-										.build();
-
-		//shop
-		UIButton.builder()
-				.parent(extrasContainer)
-				.content(new UIImage(GuiConfig.Icon.FA_SHOPPING_BAG))
-				.position(b -> Position.rightOf(b, issuesButton, PADDING))
-				.size(UIConstants.Button.ICON)
-				.tooltip("almura.menu_button.shop")
-				.onClick(() -> MalisisGui.openLink(GuiConfig.Url.SHOP))
-				.build();
-
-		return extrasContainer;
 	}
 
 	@Override

@@ -18,6 +18,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public interface GuiConfig
 {
+	public static int PADDING = 4;
 
 	@SideOnly(Side.CLIENT)
 	interface Icon

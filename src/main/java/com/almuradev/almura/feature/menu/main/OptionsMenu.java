@@ -6,7 +6,7 @@
  * All Rights Reserved.
  */
 
-package com.almuradev.almura.feature.menu;
+package com.almuradev.almura.feature.menu.main;
 
 import com.almuradev.almura.asm.ClientStaticAccess;
 import com.almuradev.almura.core.client.config.ClientConfiguration;
@@ -26,15 +26,13 @@ import net.malisis.ego.gui.component.interaction.UIButton;
 import net.malisis.ego.gui.component.interaction.UICheckBox;
 import net.malisis.ego.gui.component.interaction.UISlider;
 import net.malisis.ego.gui.component.layout.RowLayout;
-import net.malisis.ego.gui.element.position.Position;
-import net.malisis.ego.gui.element.position.Positions;
 import net.malisis.ego.gui.element.size.Size;
 import net.malisis.ego.gui.element.size.Size.ISize;
 import net.malisis.ego.gui.render.background.DirtBackground;
 import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.StringUtils;
 
-public class AlmuraOptionsMenu extends MalisisGui
+public class OptionsMenu extends MalisisGui
 {
 	@Inject
 	private static MappedConfiguration<ClientConfiguration> configAdapter;
@@ -52,14 +50,14 @@ public class AlmuraOptionsMenu extends MalisisGui
 	@Override
 	public void construct()
 	{
+		showParentOnClose = true;
 		ClientStaticAccess.configAdapter.load();
 		saveConfig();
 		setBackground(new DirtBackground(screen));
 
 		UILabel title = UILabel.builder()
 							   .text("almura.menu_button.options")
-							   .position(l -> Position.topCenter(l)
-													  .offset(0, 20))
+							   .topCenter(0, 20)
 							   .color(0xFFFFFF)
 							   .build();
 
@@ -69,10 +67,10 @@ public class AlmuraOptionsMenu extends MalisisGui
 
 		UIButton buttonDone = UIButton.builder()
 									  .text("gui.done")
-									  .position(b -> Positions.centered(b, 0), 220) //lazy, should be below columns
+									  .centered()
+									  .y(260) //lazy, should be below columns
 									  .size(CONTROL_SIZE)
-									  //.onClick(() -> mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings)))
-									  .onClick(this::close) //returns to main screen for now
+									  .onClick(this::close)
 									  .build();
 
 		addToScreen(buttonDone);
@@ -86,7 +84,8 @@ public class AlmuraOptionsMenu extends MalisisGui
 												  .color(0xFFFFA0);
 
 		UIContainer container = UIContainer.builder()
-										   .position(c -> Positions.leftOfCenter(c, -2), 40)
+										   .leftOfCenter(-2)
+										   .y(60)
 										   .size(Size::sizeOfContent)
 										   .layout(c -> new RowLayout(c, CONTROL_PADDING))
 										   .build();
@@ -197,7 +196,8 @@ public class AlmuraOptionsMenu extends MalisisGui
 	private UIContainer rightColumn(GeneralCategory general)
 	{
 		UIContainer container = UIContainer.builder()
-										   .position(c -> Positions.rightOfCenter(c, 2), 40)
+										   .rightOfCenter(2)
+										   .y(60)
 										   .size(Size::sizeOfContent)
 										   .layout(c -> new RowLayout(c, CONTROL_PADDING))
 										   .build();

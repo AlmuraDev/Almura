@@ -7,13 +7,11 @@
  */
 package com.almuradev.almura.feature.menu.main;
 
-import static net.malisis.ego.gui.element.position.Positions.middleAligned;
-import static net.malisis.ego.gui.element.position.Positions.rightOf;
-import static net.malisis.ego.gui.element.position.Positions.topAligned;
 import static net.malisis.ego.gui.element.size.Sizes.fillHeight;
 import static net.malisis.ego.gui.element.size.Sizes.fillWidth;
 
 import com.almuradev.almura.feature.menu.main.IAboutData.Staff;
+import com.almuradev.almura.shared.client.GuiConfig;
 import com.google.common.collect.Lists;
 import net.malisis.ego.gui.MalisisGui;
 import net.malisis.ego.gui.component.UIComponent;
@@ -24,8 +22,6 @@ import net.malisis.ego.gui.component.interaction.UIButton;
 import net.malisis.ego.gui.component.interaction.UISelectableList;
 import net.malisis.ego.gui.component.scrolling.UIScrollBar.Type;
 import net.malisis.ego.gui.component.scrolling.UISlimScrollbar;
-import net.malisis.ego.gui.element.Padding;
-import net.malisis.ego.gui.element.position.Position;
 import net.malisis.ego.gui.element.size.Size;
 import net.malisis.ego.gui.render.background.DirtBackground;
 import net.malisis.ego.gui.render.background.OptionPanel;
@@ -43,22 +39,21 @@ public class AboutMenu extends MalisisGui
 	@Override
 	public void construct()
 	{
+		showParentOnClose = true;
 		setBackground(new DirtBackground(screen));
 
 		UILabel title = UILabel.builder()
 							   .text("almura.menu_button.about")
 							   .color(TextFormatting.WHITE)
-							   .position(l -> Position.topCenter(l)
-													  .offset(0, 20))
+							   .topCenter(0, 20)
 							   .build();
 
-		UIContainer mainContainer = new UIContainer();
-		mainContainer.setBackground(new OptionPanel(mainContainer));
-		mainContainer.setPosition(Position.topLeft(mainContainer)
-										  .offset(0, 36));
-		mainContainer.setSize(Size.of(fillWidth(mainContainer, 0), fillHeight(mainContainer, -66)));
-		mainContainer.setPadding(Padding.of(4));
-
+		UIContainer mainContainer = UIContainer.builder()
+											   .background(OptionPanel::new)
+											   .topLeft(0, 36)
+											   .size(s -> fillWidth(s, 0), s -> fillHeight(s, 66))
+											   .padding(GuiConfig.PADDING)
+											   .build();
 		buildList(mainContainer);
 
 		// Versions
@@ -82,16 +77,14 @@ public class AboutMenu extends MalisisGui
 								  .bind("SPONGE", sponge)
 								  .bind("FORGE", forge)
 								  .bind("ALMURA", almura)
-								  .position(l -> (Position.bottomLeft(l)
-														  .offset(5, -5)))
+								  .bottomLeft(GuiConfig.PADDING, GuiConfig.PADDING)
 								  .build();
 
 		UIButton doneButton = UIButton.builder()
 									  .text("gui.done")
-									  .position(b -> Position.bottomCenter(b)
-															 .offset(0, -15))
+									  .bottomCenter(0, 15)
 									  .size(98, 20)
-									  .onClick(() -> new PanoramicMainMenu().display())
+									  .onClick(this::close)
 									  .build();
 
 		addToScreen(title, mainContainer, versions, doneButton);
@@ -109,22 +102,21 @@ public class AboutMenu extends MalisisGui
 		aboutList.select(IAboutData.ABOUT_ALMURA);//to do after change callback set
 
 		UILabel label = UILabel.builder()
-							   .position(l -> Position.of(rightOf(aboutList, 5), topAligned(l, 0)))
+							   .parent(mainContainer)
 							   .text(() -> aboutList.selected() != null ?
 										   aboutList.selected()
 													.description() :
 										   "")
+							   .rightOf(aboutList, GuiConfig.PADDING)
+							   .topAligned()
 							   .size(Size::fill)
 							   .color(TextFormatting.WHITE)
 							   .build();
 
-		//handled by the label directly
-		//aboutList.select(IAboutData.ABOUT_ALMURA);//to do after change callback set
-
 		new UISlimScrollbar(aboutList, Type.VERTICAL);
 		new UISlimScrollbar(label, Type.VERTICAL);
 
-		mainContainer.add(aboutList, label);
+		mainContainer.add(aboutList);
 	}
 
 	private class AboutDataComponent extends UIComponent
@@ -136,8 +128,7 @@ public class AboutMenu extends MalisisGui
 			UIImage image = UIImage.builder()
 								   .parent(this)//required for correct positioning
 								   .texture(data.texture())
-								   .position(i -> Position.middleLeft(i)
-														  .offset(4, 0))
+								   .middleLeft(GuiConfig.PADDING, 0)
 								   .size(isAlmura ? 23 : 32, 32)
 								   .build();
 
@@ -145,10 +136,11 @@ public class AboutMenu extends MalisisGui
 								   .parent(this)//required for correct positioning
 								   .text(data.title())
 								   .color(data.color())
-								   .position(l -> rightOf(image, isAlmura ? 13 : 4), l -> middleAligned(l, 0))
+								   .rightOf(image, isAlmura ? 13 : 4)
+								   .middleAligned()
 								   .build();
 
-			setSize(Size.of(fillWidth(this, -4), 38));
+			setSize(Size.of(fillWidth(this, GuiConfig.PADDING), 38));
 
 			GuiShape shape = GuiShape.builder(this)
 									 .color(0x414141)

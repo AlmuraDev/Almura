@@ -9,7 +9,7 @@ package com.almuradev.almura.feature.menu;
 
 import com.almuradev.almura.feature.death.client.gui.PlayerDiedGUI;
 import com.almuradev.almura.feature.menu.game.SimpleIngameMenu;
-import com.almuradev.almura.feature.menu.main.PanoramicMainMenu;
+import com.almuradev.almura.feature.menu.main.MainMenu;
 import com.almuradev.core.event.Witness;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGameOver;
@@ -37,7 +37,7 @@ public class MainMenuManager implements Witness {
 
             if (screen.getClass().equals(GuiMainMenu.class)) {
                 event.setCanceled(true);
-                new PanoramicMainMenu().display();
+                new MainMenu().display();
             } else if (screen.getClass().equals(GuiIngameMenu.class)) {
                 event.setCanceled(true);
                 new SimpleIngameMenu().display();

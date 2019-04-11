@@ -39,7 +39,7 @@ public interface IAboutData
 		{
 			try
 			{
-				return Resources.toString(AboutConfig.class.getResource("/assets/almura/text/about/story.txt"), StandardCharsets.UTF_8);
+				return Resources.toString(IAboutData.class.getResource("/assets/almura/text/about/story.txt"), StandardCharsets.UTF_8);
 			}
 			catch (IOException e)
 			{
