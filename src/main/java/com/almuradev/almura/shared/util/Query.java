@@ -21,111 +21,111 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * TODO When AlmuraSDK is a Sponge plugin, use the Query event and remove this
- */
 public class Query {
 
     private InetSocketAddress address;
     private Map<String, String> values;
     private String[] onlineUsernames;
-    private String maxPlayers, onlinePlayers = "0";
+    private String maxPlayers = "0";
+    private String players = "0";
     private boolean online;
+    private String motd;
 
-
-    public Query(String host, int port) {
+    public Query(final String host, final int port) {
         this(new InetSocketAddress(host, port));
     }
 
-    public Query(InetSocketAddress address) {
+    public Query(final InetSocketAddress address) {
         this.address = address;
     }
 
-    public Query(ServerData template, int port) {
-        this(template.serverIP, port);
+    public Query(final ServerData template) {
+        // Split on the colon, if a port is specified it'll follow: 127.0.0.1:25565
+        final String[] splitValues = template.serverIP.split(":");
+
+        // Determine if we're specifying a port or not, if not then default to the Minecraft standard
+        final int port = splitValues.length == 1 ? 25565 : Integer.valueOf(splitValues[1]);
+        this.address = new InetSocketAddress(splitValues[0], port);
     }
 
-    private static void sendPacket(DatagramSocket socket, InetSocketAddress targetAddress, byte... data) throws IOException {
-        DatagramPacket sendPacket = new DatagramPacket(data, data.length, targetAddress.getAddress(), targetAddress.getPort());
+    private static void sendPacket(final DatagramSocket socket, final InetSocketAddress targetAddress, final byte... data) throws IOException {
+        final DatagramPacket sendPacket = new DatagramPacket(data, data.length, targetAddress.getAddress(), targetAddress.getPort());
         socket.send(sendPacket);
     }
 
-    private static void sendPacket(DatagramSocket socket, InetSocketAddress targetAddress, int... data) throws IOException {
+    private static void sendPacket(final DatagramSocket socket, final InetSocketAddress targetAddress, final int... data) throws IOException {
         final byte[] d = new byte[data.length];
         int i = 0;
-        for (int j : data) {
+        for (final int j : data) {
             d[i++] = (byte) (j & 0xff);
         }
         sendPacket(socket, targetAddress, d);
     }
 
-    private static DatagramPacket receivePacket(DatagramSocket socket, byte[] buffer) throws IOException {
+    private static DatagramPacket receivePacket(final DatagramSocket socket, final byte[] buffer) throws IOException {
         final DatagramPacket dp = new DatagramPacket(buffer, buffer.length);
         socket.receive(dp);
         return dp;
     }
 
-    private static String readString(byte[] array, AtomicInteger cursor) {
+    private static String readString(final byte[] array, final AtomicInteger cursor) {
         final int startPosition = cursor.incrementAndGet();
-        for (; cursor.get() < array.length && array[cursor.get()] != 0; cursor.incrementAndGet()) {
-            ;
-        }
+        for (; cursor.get() < array.length && array[cursor.get()] != 0; cursor.incrementAndGet()) {}
         return new String(Arrays.copyOfRange(array, startPosition, cursor.get()));
     }
 
-    public void sendQuery() throws IOException {
+    public void sendQuery() {
         sendQueryRequest();
     }
 
     public boolean pingServer() {
         try {
             final Socket socket = new Socket();
-            socket.connect(address, 1000);
+            socket.connect(this.address, 1000);
             socket.close();
-            online = true;
-            return true;
-        } catch (IOException ignored) {
+            this.online = true;
+        } catch (final IOException ignored) {
+            this.online = false;
         }
-        online = false;
-        return false;
+        return this.online;
     }
 
     public Map<String, String> getValues() {
-        if (values == null) {
+        if (this.values == null) {
             throw new IllegalStateException("Query has not been sent yet!");
         } else {
-            return values;
+            return this.values;
         }
     }
 
     public String[] getOnlineUsernames() {
-        if (onlineUsernames == null) {
+        if (this.onlineUsernames == null) {
             throw new IllegalStateException("Query has not been sent yet!");
         } else {
-            return onlineUsernames;
+            return this.onlineUsernames;
         }
     }
 
-    private void sendQueryRequest() throws IOException {
-        try (DatagramSocket socket = new DatagramSocket()) {
+    private void sendQueryRequest() {
+        try (final DatagramSocket socket = new DatagramSocket()) {
             final byte[] receiveData = new byte[10240];
             socket.setSoTimeout(1000);
-            sendPacket(socket, address, 0xFE, 0xFD, 0x09, 0x01, 0x01, 0x01, 0x01);
+            sendPacket(socket, this.address, 0xFE, 0xFD, 0x09, 0x01, 0x01, 0x01, 0x01);
             final int challengeInteger;
             {
                 receivePacket(socket, receiveData);
                 byte byte1;
                 int i = 0;
-                byte[] buffer = new byte[8];
+                final byte[] buffer = new byte[8];
                 for (int count = 5; (byte1 = receiveData[count++]) != 0; ) {
                     buffer[i++] = byte1;
                 }
                 challengeInteger = Integer.parseInt(new String(buffer).trim());
             }
-            sendPacket(socket, address, 0xFE, 0xFD, 0x00, 0x01, 0x01, 0x01, 0x01, challengeInteger >> 24, challengeInteger >> 16,
-                    challengeInteger >> 8, challengeInteger, 0x00, 0x00, 0x00, 0x00);
+            sendPacket(socket, this.address, 0xFE, 0xFD, 0x00, 0x01, 0x01, 0x01, 0x01, challengeInteger >> 24, challengeInteger >> 16,
+                       challengeInteger >> 8, challengeInteger, 0x00, 0x00, 0x00, 0x00);
             final int length = receivePacket(socket, receiveData).getLength();
-            values = new HashMap<>();
+            this.values = new HashMap<>();
             final AtomicInteger cursor = new AtomicInteger(5);
             while (cursor.get() < length) {
                 final String s = readString(receiveData, cursor);
@@ -134,12 +134,15 @@ public class Query {
                 } else {
                     final String v = readString(receiveData, cursor);
                     if (s.equalsIgnoreCase("numplayers")) {
-                        onlinePlayers = v;
+                        this.players = v;
                     }
                     if (s.equalsIgnoreCase("maxplayers")) {
-                        maxPlayers = v;
+                        this.maxPlayers = v;
                     }
-                    values.put(s, v);
+                    if (s.equalsIgnoreCase("hostname")) {
+                        this.motd = v;
+                    }
+                    this.values.put(s, v);
                 }
             }
             readString(receiveData, cursor);
@@ -150,21 +153,24 @@ public class Query {
                     players.add(name);
                 }
             }
-            onlineUsernames = players.toArray(new String[players.size()]);
-        } catch (IOException e) {
-            System.out.println("Exception: " + e);
+            this.onlineUsernames = players.toArray(new String[0]);
+        } catch (final IOException ignored) {
         }
     }
 
     public String getPlayers() {
-        return onlinePlayers;
+        return this.players;
     }
 
     public String getMaxPlayers() {
-        return maxPlayers;
+        return this.maxPlayers;
+    }
+
+    public String getMotd() {
+        return this.motd;
     }
 
     public boolean isOnline() {
-        return online;
+        return this.online;
     }
 }

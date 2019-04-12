@@ -43,8 +43,8 @@ almura.menu.main.opengl.0=Warning! This graphics card does not support OpenGL 2.
 almura.menu.main.opengl.1=Future versions of Minecraft may not be compatible.
 almura.menu.main.trademark=Minecraft is a registered trademark of Mojang AB
 
-almura.menu.server.dev.title=Almura 3.0 - Developer Server
-almura.menu.server.public.title=Almura 3.0 - Live Server
+almura.menu.server.dev.name=Development
+almura.menu.server.live.name=Live
 
 # ----------------------
 # ---- menu buttons ----
@@ -60,6 +60,8 @@ almura.menu_button.ok=OK
 almura.menu_button.options=Almura - Options
 almura.menu_button.quit=Quit
 almura.menu_button.shop=Shop
+almura.menu_button.join=Join
+almura.menu_button.other=Other
 
 # ----------------------
 # ----    caches    ----
@@ -82,7 +84,7 @@ tile.storage.oak_storage_crate.name=Oak Storage Crate
 tile.storage.spruce_storage_crate.name=Spruce Storage Crate
 
 # ---------------
-# ---- gui ----
+# ----  gui  ----
 # ---------------
 
 almura.button.add=Add
@@ -94,6 +96,15 @@ almura.button.reset=Reset
 almura.button.save=Save
 almura.button.search=Search
 almura.button.open=Open
+
+# ---------------------
+# ---- multiplayer ----
+# ---------------------
+
+almura.multiplayer.status.offline=Offline
+almura.multiplayer.status.online=Online
+almura.multiplayer.status.restarting=Restarting
+almura.multiplayer.status.updating=Updating
 
 # --------------------
 # -- feature.common --
