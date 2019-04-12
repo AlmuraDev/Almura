@@ -14,6 +14,7 @@ import com.almuradev.almura.feature.menu.main.IAboutData.Staff;
 import com.almuradev.almura.shared.client.GuiConfig;
 import com.google.common.collect.Lists;
 import net.malisis.ego.gui.MalisisGui;
+import net.malisis.ego.gui.UIConstants.Button;
 import net.malisis.ego.gui.component.UIComponent;
 import net.malisis.ego.gui.component.container.UIContainer;
 import net.malisis.ego.gui.component.decoration.UIImage;
@@ -83,7 +84,7 @@ public class AboutMenu extends MalisisGui
 		UIButton doneButton = UIButton.builder()
 									  .text("gui.done")
 									  .bottomCenter(0, 15)
-									  .size(98, 20)
+									  .size(Button.HALF)
 									  .onClick(this::close)
 									  .build();
 
@@ -99,7 +100,7 @@ public class AboutMenu extends MalisisGui
 		aboutList.setComponentFactory(AboutDataComponent::new);
 		aboutList.setSize(Size.of(125, fillHeight(aboutList, 0)));
 		aboutList.setElements(list);
-		aboutList.select(IAboutData.ABOUT_ALMURA);//to do after change callback set
+		aboutList.select(IAboutData.ABOUT_ALMURA);
 
 		UILabel label = UILabel.builder()
 							   .parent(mainContainer)

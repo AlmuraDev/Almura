@@ -104,7 +104,7 @@ public class MainMenu extends MalisisGui
 									.text("menu.singleplayer")
 									.leftAligned()
 									.below(almuraHeader, GuiConfig.PADDING)
-									.size(UIConstants.Button.LONG)
+									.size(UIConstants.Button.DEFAULT)
 									.onClick(() -> mc.displayGuiScreen(new GuiWorldSelection(this)))
 									.build();
 
@@ -114,7 +114,7 @@ public class MainMenu extends MalisisGui
 									.text("menu.multiplayer")
 									.leftAligned()
 									.below(spButton, GuiConfig.PADDING)
-									.size(UIConstants.Button.LONG)
+									.size(UIConstants.Button.DEFAULT)
 									.onClick(() -> new ServerMenu().display())
 									.build();
 
@@ -124,7 +124,7 @@ public class MainMenu extends MalisisGui
 										 .text("options.title")
 										 .leftAligned()
 										 .below(mpButton, GuiConfig.PADDING)
-										 .size(UIConstants.Button.SHORT)
+										 .size(UIConstants.Button.THIRD)
 										 .onClick(() -> mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings)))
 										 .build();
 
@@ -134,7 +134,7 @@ public class MainMenu extends MalisisGui
 									  .text("almura.menu_button.mods")
 									  .rightOf(optionsButton, GuiConfig.PADDING)
 									  .topAlignedTo(optionsButton)
-									  .size(UIConstants.Button.SHORT)
+									  .size(UIConstants.Button.THIRD)
 									  .onClick(() -> mc.displayGuiScreen(new GuiModList(this)))
 									  .build();
 
@@ -144,7 +144,7 @@ public class MainMenu extends MalisisGui
 				.text("almura.menu_button.about")
 				.rightOf(modsButton, GuiConfig.PADDING)
 				.topAlignedTo(optionsButton)
-				.size(UIConstants.Button.SHORT)
+				.size(UIConstants.Button.THIRD)
 				.onClick(() -> new AboutMenu().display())
 				.build();
 
@@ -154,7 +154,7 @@ public class MainMenu extends MalisisGui
 				.text(TextFormatting.RED + "{almura.menu_button.quit}")
 				.leftAligned()
 				.below(optionsButton, GuiConfig.PADDING)
-				.size(UIConstants.Button.LONG)
+				.size(UIConstants.Button.DEFAULT)
 				.onClick(mc::shutdown)
 				.build();
 

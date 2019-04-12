@@ -1,158 +1,182 @@
 package com.almuradev.almura.feature.menu.main.component;
 
+import com.almuradev.almura.feature.menu.main.ServerMenu;
+import com.almuradev.almura.feature.menu.main.ServerMenu.Server;
 import com.almuradev.almura.shared.util.Query;
 import net.malisis.ego.gui.MalisisGui;
+import net.malisis.ego.gui.component.UIComponent;
 import net.malisis.ego.gui.component.UIComponentBuilder;
-import net.malisis.ego.gui.component.container.UIContainer;
 import net.malisis.ego.gui.component.decoration.UILabel;
-import net.malisis.ego.gui.component.interaction.UIButton;
+import net.malisis.ego.gui.component.decoration.UITooltip;
 import net.malisis.ego.gui.element.size.Size;
+import net.malisis.ego.gui.render.shape.GuiShape;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
-import java.io.IOException;
-
-public class ServerComponent extends UIContainer
+public class ServerComponent extends UIComponent
 {
-	private UILabel titleLabel;
 	private UILabel statusLabel;
-	private UIButton joinButton;
 	private UILabel playersLabel;
-	private UILabel ping;
 
-	private final ServerData serverConnect;
+	private final ServerMenu menu;
+	private final Server server;
 	private final Query query;
 
-	private String status = TextFormatting.YELLOW + "Updating...";
+	private ServerStatus status = ServerStatus.UPDATING;
 	private int playerCount = 0;
 	private int maxPlayers = 0;
 
-	protected ServerComponent(String name, String address, int port)
+	public ServerComponent(ServerMenu gui, Server server)
 	{
-		serverConnect = new ServerData(name, address + ":" + port, false);
-		query = new Query(new ServerData(name, address, false), port);
+		menu = gui;
+		this.server = server;
+		query = new Query(server.address, server.port);
 
-		setSize(Size.of(240, 16));
+		setSize(Size.of(196, 24));
+
+		setBackground(GuiShape.builder(this)
+							  .border(1, 0x808080)
+							  .build());
 
 		int y = 4;
-		titleLabel = UILabel.builder()
-							.parent(this)
-							.text(name + " :")
-							.position(0, y)
-							.color(TextFormatting.WHITE)
-							.shadow()
-							.build();
+		UILabel titleLabel = UILabel.builder()
+									.parent(this)
+									.text(server.name)
+									.middleLeft(4, 0)
+									.color(TextFormatting.WHITE)
+									.shadow()
+									.build();
 
 		statusLabel = UILabel.builder()
 							 .parent(this)
-							 .text(() -> status)
+							 .text(() -> status == ServerStatus.ONLINE ? "(" + playerCount + "/" + maxPlayers + ")" : status.toString())
+							 .color(TextFormatting.WHITE)
 							 .shadow()
-							 .position(90, y)
+							 .middleRight(9, 0)
 							 .build();
 
-		joinButton = UIButton.builder()
-							 .parent(this)
-							 .text("Join")
-							 .position(150, 0)
-							 .size(40, 16)
-							 .onClick(this::connect)
-							 .visible(false)
-							 .build();
+		GuiShape indicator = GuiShape.builder(this)
+									 .rightAligned(1)
+									 .y(1)
+									 .size(5, 22)
+									 .color(() -> status.color)
+									 .build();
 
-		playersLabel = UILabel.builder()
-							  .parent(this)
-							  .text("({PLAYER_COUNT}/{MAX_PLAYERS})")
-							  .color(TextFormatting.DARK_BLUE)
-							  .bind("PLAYER_COUNT", () -> playerCount)
-							  .bind("MAX_PLAYERS", () -> maxPlayers)
-							  .position(200, y)
-							  .visible(false)
-							  .build();
+		setForeground(titleLabel.and(statusLabel)
+								.and(indicator));
 
-		statusLabel.setTooltip((String) null);
-
+		onLeftClick(e -> {
+			menu.select(this);
+			return true;
+		});
+		onDoubleClick(e -> {
+			connect();
+			return true;
+		});
 	}
 
-	public void deactivate()
+	public boolean isOnline()
 	{
-		playerCount = 0;
-		maxPlayers = 0;
-		joinButton.setVisible(false);
-		playersLabel.setVisible(false);
+		return status == ServerStatus.ONLINE;
+	}
+
+	@Override
+	public int getColor()
+	{
+		if (menu.isSelected(this))
+			return 0x414141;
+		return isHovered() ? 0x282828 : 0x000000;
 	}
 
 	public void connect()
 	{
+		if (!isOnline())
+			return;
+
+		ServerData data = new ServerData(name, server.address + ":" + server.port, false);
 		FMLClientHandler.instance()
 						.setupServerList();
 		FMLClientHandler.instance()
-						.connectToServer(MalisisGui.current(), serverConnect);
+						.connectToServer(MalisisGui.current(), data);
 	}
 
 	public void query()
 	{
-		statusLabel.setTooltip((String) null);
-
 		if (!query.pingServer())
 		{
-			status = TextFormatting.RED + "Offline";
-			deactivate();
+			status = ServerStatus.OFFLINE;
+			playerCount = 0;
+			maxPlayers = 0;
+			setTooltip((UITooltip) null);
 			return;
 		}
 
-		try
-		{
-			query.sendQuery();
-		}
-		catch (IOException e)
-		{
-			status = TextFormatting.ITALIC + (TextFormatting.RED + "Query failed");
-			statusLabel.setTooltip(e.getMessage());
-			deactivate();
-			return;
-		}
+		query.sendQuery();
 
 		if (query.getPlayers() == null || query.getMaxPlayers() == null)
 		{
-			status = TextFormatting.YELLOW + "Restarting...";
-			deactivate();
+			status = ServerStatus.RESTARTING;
+			playerCount = 0;
+			maxPlayers = 0;
+			setTooltip((UITooltip) null);
 			return;
 		}
 
-		status = TextFormatting.GREEN + "Online";
+		status = ServerStatus.ONLINE;
 		playerCount = Integer.valueOf(query.getPlayers());
 		maxPlayers = Integer.valueOf(query.getMaxPlayers());
-		joinButton.setVisible(true);
-		playersLabel.setVisible(true);
+		setTooltip(query.getMotd());
+		if (menu.isSelected(this))
+			menu.select(this);
 	}
 
-	public static ServerComponentBuilder builder(String name)
+	public static ServerComponentBuilder builder(ServerMenu gui, Server server)
 	{
-		return new ServerComponentBuilder().name(name);
+		return new ServerComponentBuilder(gui, server);
 	}
 
 	public static class ServerComponentBuilder extends UIComponentBuilder<ServerComponentBuilder, ServerComponent>
 	{
-		private String address;
-		private int port;
+		private final ServerMenu gui;
+		private final Server server;
 
-		public ServerComponentBuilder address(String address)
+		public ServerComponentBuilder(ServerMenu gui, Server server)
 		{
-			this.address = address;
-			return this;
-		}
-
-		public ServerComponentBuilder port(int port)
-		{
-			this.port = port;
-			return this;
+			this.gui = gui;
+			this.server = server;
+			name(server.name);
 		}
 
 		@Override
 		public ServerComponent build()
 		{
-			return build(new ServerComponent(name, address, port));
+			return build(new ServerComponent(gui, server));
+		}
+	}
+
+	private enum ServerStatus
+	{
+		OFFLINE("almura.multiplayer.status.offline", TextFormatting.RED, 0xFF5555),
+		ONLINE("almura.multiplayer.status.online", TextFormatting.GREEN, 0x055FF55),
+		RESTARTING("almura.multiplayer.status.restarting", TextFormatting.YELLOW, 0xFFFFAA),
+		UPDATING("almura.multiplayer.status.updating", TextFormatting.DARK_PURPLE, 0xAA00AA);
+
+		private final String translationKey;
+		private final TextFormatting textFormatting;
+		private final int color;
+
+		ServerStatus(String translationKey, TextFormatting textFormatting, int color)
+		{
+			this.translationKey = translationKey;
+			this.textFormatting = textFormatting;
+			this.color = color;
+		}
+
+		@Override
+		public String toString()
+		{
+			return textFormatting + "{" + translationKey + "}";
 		}
 	}
 }

@@ -11,6 +11,7 @@ import com.almuradev.almura.feature.menu.main.component.ExtrasComponent;
 import com.almuradev.almura.feature.menu.main.component.ServerComponent;
 import com.almuradev.almura.shared.client.GuiConfig;
 import net.malisis.ego.gui.MalisisGui;
+import net.malisis.ego.gui.UIConstants;
 import net.malisis.ego.gui.UIConstants.Button;
 import net.malisis.ego.gui.component.container.UIContainer;
 import net.malisis.ego.gui.component.decoration.UIImage;
@@ -18,25 +19,43 @@ import net.malisis.ego.gui.component.interaction.UIButton;
 import net.malisis.ego.gui.element.position.Position;
 import net.malisis.ego.gui.element.size.Size;
 import net.malisis.ego.gui.render.background.PanoramicBackground;
+import net.malisis.ego.gui.render.shape.GuiShape;
 import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @SideOnly(Side.CLIENT)
 public class ServerMenu extends MalisisGui
 {
-	private ScheduledFuture<?> future;
+
+	public enum Server
+	{
+		LIVE("almura.menu.server.live.name", "srv1.almuramc.com", 25566),
+		DEV("almura.menu.server.dev.name", "dev.almuramc.com", 25566);
+
+		public String name;
+		public String address;
+		public int port;
+
+		Server(String name, String address, int port)
+		{
+			this.name = name;
+			this.address = address;
+			this.port = port;
+		}
+	}
+
+	private UIButton joinButton;
+	private ScheduledExecutorService executor;
+	private ServerComponent selected;
 
 	@Override
 	public void construct()
 	{
-		//if reconstructed
-		if (future != null)
-			future.cancel(true);
 		showParentOnClose = true;
 		renderer.setDefaultTexture(GuiConfig.SpriteSheet.ALMURA);
 		setBackground(new PanoramicBackground(screen));
@@ -56,55 +75,90 @@ public class ServerMenu extends MalisisGui
 									  .size(60, 99)
 									  .build();
 
-		ServerComponent publicServer = ServerComponent.builder("Public server")
-													  .address("srv1.almuramc.com")
-													  .port(25566)
-													  .parent(mainContainer)
-													  .leftAligned()
-													  .below(almuraHeader, GuiConfig.PADDING * 2)
+		UIContainer servers = UIContainer.builder()
+										 .parent(mainContainer)
+										 .leftAligned()
+										 .below(almuraHeader, GuiConfig.PADDING)
+										 .size(UIConstants.Button.WIDTH, 53)
+										 .padding(2)
+										 .background((UIContainer c) -> GuiShape.builder(c)
+																				.color(0x000000)
+																				.alpha(185)
+																				.border(1, 0xFFFFFF, 185)
+																				.build())
+										 .build();
+
+		ServerComponent publicServer = ServerComponent.builder(this, Server.LIVE)
+													  .parent(servers)
+													  .topLeft()
 													  .build();
 
-		ServerComponent devServer = ServerComponent.builder("Dev server")
-												   .address("dev.almuramc.com")
-												   .port(25566)
-												   .parent(mainContainer)
+		ServerComponent devServer = ServerComponent.builder(this, Server.DEV)
+												   .parent(servers)
 												   .leftAligned()
-												   .below(publicServer, GuiConfig.PADDING)
+												   .below(publicServer, 1)
 												   .build();
 
-		UIButton otherMP = UIButton.builder()
-								   .parent(mainContainer)
-								   .text("Other servers")
-								   .centered()
-								   .below(devServer, GuiConfig.PADDING * 2)
-								   .size(Button.LONG)
-								   .onClick(() -> mc.displayGuiScreen(new GuiMultiplayer(this)))
-								   .build();
+		joinButton = UIButton.builder()
+							 .parent(mainContainer)
+							 .text("almura.menu_button.join")
+							 .leftAligned()
+							 .below(servers, GuiConfig.PADDING)
+							 .size(Button.DEFAULT)
+							 .enabled(false)
+							 .onClick(() -> {
+								 if (selected != null)
+									 selected.connect();
+							 })
+							 .build();
 
 		UIButton back = UIButton.builder()
 								.parent(mainContainer)
-								.text("Back")
-								.centered()
-								.below(otherMP, GuiConfig.PADDING)
-								.size(Button.LONG)
+								.text("gui.back")
+								.leftAligned()
+								.below(joinButton, GuiConfig.PADDING)
+								.size(Button.HALF)
 								.onClick(this::close)
 								.build();
+
+		UIButton.builder()
+				.parent(mainContainer)
+				.text("almura.menu_button.other")
+				.rightOf(back, GuiConfig.PADDING)
+				.below(joinButton, GuiConfig.PADDING)
+				.size(Button.HALF)
+				.onClick(() -> mc.displayGuiScreen(new GuiMultiplayer(this)))
+				.build();
 
 		addToScreen(mainContainer);
 		addToScreen(new ExtrasComponent());
 
-		future = Executors.newSingleThreadScheduledExecutor()
-						  .scheduleAtFixedRate(() -> {
-							  publicServer.query();
-							  devServer.query();
-						  }, 0, 3, TimeUnit.SECONDS);
+		if (executor != null)//reconstructed
+			executor.shutdown();
+		executor = Executors.newSingleThreadScheduledExecutor();
+		executor.scheduleAtFixedRate(() -> {
+			publicServer.query();
+			devServer.query();
+		}, 0, 3, TimeUnit.SECONDS);
+
+		select(publicServer);
+	}
+
+	public void select(ServerComponent component)
+	{
+		selected = component;
+		joinButton.setEnabled(component.isOnline());
+	}
+
+	public boolean isSelected(ServerComponent component)
+	{
+		return component == selected;
 	}
 
 	@Override
 	public void close()
 	{
-		if (future != null)
-			future.cancel(true);
+		executor.shutdown();
 		super.close();
 	}
 }

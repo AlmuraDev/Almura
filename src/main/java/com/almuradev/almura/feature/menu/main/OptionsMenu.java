@@ -19,6 +19,7 @@ import com.google.inject.Inject;
 import net.malisis.ego.font.FontOptions;
 import net.malisis.ego.font.FontOptions.FontOptionsBuilder;
 import net.malisis.ego.gui.MalisisGui;
+import net.malisis.ego.gui.UIConstants.Button;
 import net.malisis.ego.gui.component.container.UIContainer;
 import net.malisis.ego.gui.component.decoration.UILabel;
 import net.malisis.ego.gui.component.decoration.UITooltip;
@@ -35,7 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 public class OptionsMenu extends MalisisGui
 {
 	@Inject
-	private static MappedConfiguration<ClientConfiguration> configAdapter;
+	private static MappedConfiguration<ClientConfiguration> configAdapter = null;
 
 	private static final ISize CONTROL_SIZE = Size.of(150, 20);
 	private static final int CONTROL_PADDING = 5;
@@ -69,7 +70,7 @@ public class OptionsMenu extends MalisisGui
 									  .text("gui.done")
 									  .centered()
 									  .y(260) //lazy, should be below columns
-									  .size(CONTROL_SIZE)
+									  .size(Button.DEFAULT)
 									  .onClick(this::close)
 									  .build();
 
