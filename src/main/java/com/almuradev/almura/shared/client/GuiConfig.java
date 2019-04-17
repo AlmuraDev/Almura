@@ -39,8 +39,8 @@ public interface GuiConfig
 		GuiIcon FA_COG = new GuiIcon(SpriteSheet.ALMURA, 32, 90, 15, 15);
 		GuiIcon FA_SITEMAP = new GuiIcon(SpriteSheet.ALMURA, 48, 90, 16, 14);
 		GuiIcon FA_MAP = new GuiIcon(SpriteSheet.ALMURA, 64, 90, 16, 15);
-		GuiIcon FA_PIE_CHART = null;// SpriteSheet.ALMURA.getIcon(80, 90, 15, 15);
-		GuiIcon FA_TROPHY = null;// SpriteSheet.ALMURA.getIcon(96, 90, 16, 14);
+		GuiIcon FA_PIE_CHART = new GuiIcon(SpriteSheet.ALMURA, 80, 90, 15, 15);
+		GuiIcon FA_TROPHY = new GuiIcon(SpriteSheet.ALMURA, 96, 90, 16, 14);
 		GuiIcon FA_BOOK = new GuiIcon(SpriteSheet.ALMURA, 112, 90, 16, 14);
 		GuiIcon FA_SHOPPING_BAG = new GuiIcon(SpriteSheet.ALMURA, 128, 90, 14, 14);
 		GuiIcon STAMINA = new GuiIcon(SpriteSheet.ALMURA, 132, 65, 9, 9);

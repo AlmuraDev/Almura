@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.menu.main;
 
+import com.almuradev.almura.feature.menu.component.CommonComponents;
 import com.almuradev.almura.feature.menu.main.component.ExtrasComponent;
 import com.almuradev.almura.feature.menu.main.component.ServerComponent;
 import com.almuradev.almura.shared.client.GuiConfig;
@@ -16,7 +17,6 @@ import net.malisis.ego.gui.UIConstants.Button;
 import net.malisis.ego.gui.component.container.UIContainer;
 import net.malisis.ego.gui.component.decoration.UIImage;
 import net.malisis.ego.gui.component.interaction.UIButton;
-import net.malisis.ego.gui.element.position.Position;
 import net.malisis.ego.gui.element.size.Size;
 import net.malisis.ego.gui.render.background.PanoramicBackground;
 import net.malisis.ego.gui.render.shape.GuiShape;
@@ -68,12 +68,8 @@ public class ServerMenu extends MalisisGui
 											   .noClipContent()
 											   .build();
 
-		UIImage almuraHeader = UIImage.builder()
-									  .parent(mainContainer)
-									  .icon(GuiConfig.Icon.ALMURA_LOGO)
-									  .position(Position::topCenter)
-									  .size(60, 99)
-									  .build();
+		UIImage almuraHeader = CommonComponents.almuraHeader(mainContainer)
+											   .build();
 
 		UIContainer servers = UIContainer.builder()
 										 .parent(mainContainer)

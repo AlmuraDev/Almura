@@ -50,7 +50,7 @@ public class ServerComponent extends UIComponent
 
 		statusLabel = UILabel.builder()
 							 .parent(this)
-							 .text(() -> status == ServerStatus.ONLINE ? "(" + playerCount + "/" + maxPlayers + ")" : status.toString())
+							 .text(() -> status == ServerStatus.ONLINE ? playerCount + "/" + maxPlayers : status.toString())
 							 .color(TextFormatting.WHITE)
 							 .shadow()
 							 .middleRight(9, 0)

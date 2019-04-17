@@ -9,6 +9,7 @@ package com.almuradev.almura.feature.menu.main;
 
 import com.almuradev.almura.core.client.config.ClientConfiguration;
 import com.almuradev.almura.core.client.config.category.GeneralCategory;
+import com.almuradev.almura.feature.menu.component.CommonComponents;
 import com.almuradev.almura.feature.menu.main.component.ExtrasComponent;
 import com.almuradev.almura.feature.speed.FirstLaunchOptimization;
 import com.almuradev.almura.shared.client.GuiConfig;
@@ -91,12 +92,8 @@ public class MainMenu extends MalisisGui
 											   .build();
 
 		// Almura header
-		UIImage almuraHeader = UIImage.builder()
-									  .parent(mainContainer)
-									  .icon(GuiConfig.Icon.ALMURA_LOGO)
-									  .topCenter()
-									  .size(60, 99)
-									  .build();
+		UIImage almuraHeader = CommonComponents.almuraHeader(mainContainer)
+											   .build();
 
 		//singleplayer
 		UIButton spButton = UIButton.builder()
