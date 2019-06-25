@@ -17,13 +17,12 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.common.interfaces.server.management.IMixinPlayerChunkMap;
 
 import java.util.Iterator;
 import java.util.List;
 
 @Mixin(PlayerChunkMap.class)
-public abstract class MixinPlayerChunkMap implements IMixinPlayerChunkMap {
+public abstract class MixinPlayerChunkMap {
 
     @Shadow @Final private WorldServer world;
     @Shadow private final List<PlayerChunkMapEntry> entries = Lists.<PlayerChunkMapEntry>newArrayList();
