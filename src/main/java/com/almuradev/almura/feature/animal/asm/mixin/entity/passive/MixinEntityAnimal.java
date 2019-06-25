@@ -14,6 +14,7 @@ import net.minecraft.entity.passive.EntityCow;
 import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.passive.EntityRabbit;
+import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
@@ -87,6 +88,18 @@ public abstract class MixinEntityAnimal extends EntityAgeable implements IAnimal
                 case "ITEM.ALMURA.FOOD.FOOD.CORN":
                 case "ITEM.ALMURA.FOOD.FOOD.SOYBEAN":
                 case "ITEM.CARROT":
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
+        if (animal instanceof EntitySheep) {
+            switch (itemName.toUpperCase()) {
+                case "ITEM.ALMURA.FOOD.FOOD.CORN":
+                case "ITEM.ALMURA.FOOD.FOOD.SOYBEAN":
+                case "ITEM.WHEAT":
                     return true;
 
                 default:

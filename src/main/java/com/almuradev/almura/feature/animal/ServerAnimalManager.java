@@ -106,6 +106,7 @@ public final class ServerAnimalManager extends Witness.Impl  {
     public void onBreedEntityReadyToMate(final BreedEntityEvent.ReadyToMate event) {
         // Change Name to White when we are ready to mate
         final Animal animal = event.getTargetEntity();
+
         if (animal instanceof EntityCow || animal instanceof EntityChicken || animal instanceof EntityHorse || animal instanceof EntityPig || animal instanceof EntitySheep) {
             animal.offer(Keys.DISPLAY_NAME, Text.of(TextColors.WHITE, LegacyTexts.stripAll(((net.minecraft.entity.Entity) animal).getName(), SpongeTexts.COLOR_CHAR)));
         }
@@ -122,6 +123,7 @@ public final class ServerAnimalManager extends Witness.Impl  {
     }
 
     private boolean isValidEntity(final Entity entity) {
+        System.out.println("Valid: " + entity);
         return entity instanceof Cow || entity instanceof Chicken || entity instanceof Horse || entity instanceof Pig || entity instanceof Sheep;
     }
 
@@ -177,6 +179,19 @@ public final class ServerAnimalManager extends Witness.Impl  {
             if (parentBItemName.equalsIgnoreCase("almura:food/food/soybean") || parentBItemName.equalsIgnoreCase("almura:food/food/corn")) {
                 additionalSpawnCount += 2;
                 spawnChance += 15;
+            }
+        }
+
+        // Sheep
+        if (baby.getType() == EntityTypes.SHEEP) {
+            if (parentAItemName.equalsIgnoreCase("almura:food/food/soybean") || parentAItemName.equalsIgnoreCase("almura:food/food/corn")) {
+                additionalSpawnCount += 1;
+                spawnChance += 10;
+            }
+
+            if (parentBItemName.equalsIgnoreCase("almura:food/food/soybean") || parentBItemName.equalsIgnoreCase("almura:food/food/corn")) {
+                additionalSpawnCount += 1;
+                spawnChance += 10;
             }
         }
 
