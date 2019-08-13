@@ -13,6 +13,8 @@ import org.spongepowered.api.Sponge;
 public final class UchatUtil {
     public static void relayMessageToDiscord(String icon, String message, boolean bold) {
         if (Sponge.getPluginManager().isLoaded("ultimatechat")) {
+            // This is broken at the moment....
+            /*
             if (UChat.get().getUCJDA().JDAAvailable()) {
                 if (bold) {
                     UChat.get().getUCJDA().sendRawToDiscord(icon + " " + "**" + message + "**");
@@ -21,7 +23,7 @@ public final class UchatUtil {
                 }
             } else {
                 System.err.println("UChat JDA not available!");
-            }
+            } */
         } else {
             System.out.println("UltimateChat not loaded!");
         }
