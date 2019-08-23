@@ -69,6 +69,7 @@ public abstract class MixinEntityAnimal extends EntityAgeable implements IAnimal
 
     private boolean isCustomBreedingItem(ItemStack stack) {
         final String itemName = stack.getTranslationKey();
+        //System.out.println("Breed Item: " + itemName);
         final Entity animal = this;
 
         if (animal instanceof EntityCow) {
@@ -111,10 +112,10 @@ public abstract class MixinEntityAnimal extends EntityAgeable implements IAnimal
             switch (itemName.toUpperCase()) {
                 case "ITEM.ALMURA.FOOD.FOOD.CORN":
                 case "ITEM.ALMURA.FOOD.FOOD.SOYBEAN":
-                case "ITEM.WHEAT_SEEDS":
-                case "ITEM.MELON_SEEDS":
+                case "ITEM.SEEDS":
+                case "ITEM.SEEDS_MELON":
                 case "ITEM.BEETROOT_SEEDS":
-                case "ITEM.PUMPKIN_SEEDS":
+                case "ITEM.SEEDS_PUMPKIN":
                     return true;
 
                 default:
