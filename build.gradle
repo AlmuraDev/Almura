@@ -114,7 +114,7 @@ dependencies {
     compile 'org.spongepowered:configurate-json:3.5'
     compile 'org.inspirenxe:skills:1.0.0-SNAPSHOT:api'
     compile 'com.almuradev:toolbox:1.0.0-SNAPSHOT'
-    compile 'io.github.nucleuspowered:nucleus-api:1.8.3-S7.1'
+    compile 'io.github.nucleuspowered:nucleus-api:1.13.2-S7.1'
     compile 'me.lucko.luckperms:luckperms-api:4.2'
     compile 'me.ryanhamshire:griefprevention:1.12.2-4.3.0.646'
     compile "org.jooq:jooq:${project.jooqVersion}"
