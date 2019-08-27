@@ -23,14 +23,15 @@ public class ExtrasComponent extends UIContainer
 			   .parent(this)
 			   .text("{almura.menu.main.trademark}\n{almura.menu.main.copyright}")
 			   .position(Position::bottomLeft)
-			   .color(TextFormatting.YELLOW)
+			   .textColor(TextFormatting.YELLOW)
 			   .build();
 
 		//right to left
 		//shop
 		UIButton shopButton = CommonComponents.shopButton(this, true)
-											  .position(Position::bottomRight)
+											  .bottomRight()
 											  .build();
+
 		//issues
 		UIButton issuesButton = CommonComponents.issuesButton(this, true)
 												.leftOf(shopButton, GuiConfig.PADDING)

@@ -8,7 +8,6 @@ import net.malisis.ego.gui.component.UIComponent;
 import net.malisis.ego.gui.component.UIComponentBuilder;
 import net.malisis.ego.gui.component.decoration.UILabel;
 import net.malisis.ego.gui.component.decoration.UITooltip;
-import net.malisis.ego.gui.element.size.Size;
 import net.malisis.ego.gui.render.shape.GuiShape;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.util.text.TextFormatting;
@@ -33,8 +32,6 @@ public class ServerComponent extends UIComponent
 		this.server = server;
 		query = new Query(server.address, server.port);
 
-		setSize(Size.of(196, 24));
-
 		setBackground(GuiShape.builder(this)
 							  .border(1, 0x808080)
 							  .build());
@@ -44,14 +41,14 @@ public class ServerComponent extends UIComponent
 									.parent(this)
 									.text(server.name)
 									.middleLeft(4, 0)
-									.color(TextFormatting.WHITE)
+									.textColor(TextFormatting.WHITE)
 									.shadow()
 									.build();
 
 		statusLabel = UILabel.builder()
 							 .parent(this)
 							 .text(() -> status == ServerStatus.ONLINE ? playerCount + "/" + maxPlayers : status.toString())
-							 .color(TextFormatting.WHITE)
+							 .textColor(TextFormatting.WHITE)
 							 .shadow()
 							 .middleRight(9, 0)
 							 .build();
@@ -146,6 +143,8 @@ public class ServerComponent extends UIComponent
 			this.gui = gui;
 			this.server = server;
 			name(server.name);
+			width(196);
+			height(24);
 		}
 
 		@Override

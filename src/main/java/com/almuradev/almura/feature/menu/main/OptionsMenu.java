@@ -59,7 +59,7 @@ public class OptionsMenu extends MalisisGui
 		UILabel title = UILabel.builder()
 							   .text("almura.menu_button.options")
 							   .topCenter(0, 20)
-							   .color(0xFFFFFF)
+							   .textColor(0xFFFFFF)
 							   .build();
 
 		addToScreen(title);
@@ -113,6 +113,7 @@ public class OptionsMenu extends MalisisGui
 						sliderOriginHudOpacity.setAlpha(128);
 						sliderOriginHudOpacity.setTooltip("Only available when Origin HUD is in use.");
 						sliderOriginHudOpacity.setEnabled(false);
+					//	sliderOriginHudOpacity.setVisible(false);
 					}
 					else
 					{
@@ -120,6 +121,7 @@ public class OptionsMenu extends MalisisGui
 						sliderOriginHudOpacity.setAlpha(255);
 						sliderOriginHudOpacity.setTooltip((UITooltip) null);
 						sliderOriginHudOpacity.setEnabled(true);
+					//	sliderOriginHudOpacity.setVisible(true);
 					}
 					saveConfig();
 				})

@@ -45,14 +45,16 @@ public class AboutMenu extends MalisisGui
 
 		UILabel title = UILabel.builder()
 							   .text("almura.menu_button.about")
-							   .color(TextFormatting.WHITE)
+							   .textColor(TextFormatting.WHITE)
 							   .topCenter(0, 20)
 							   .build();
 
 		UIContainer mainContainer = UIContainer.builder()
+											   .name("main container")
 											   .background(OptionPanel::new)
 											   .topLeft(0, 36)
-											   .size(s -> fillWidth(s, 0), s -> fillHeight(s, 66))
+											   .fillWidth()
+											   .fillHeight(66)
 											   .padding(GuiConfig.PADDING)
 											   .build();
 		buildList(mainContainer);
@@ -74,7 +76,7 @@ public class AboutMenu extends MalisisGui
 
 		UILabel versions = UILabel.builder()
 								  .text("SpongeForge: {SPONGE}\nForge: {FORGE}\nAlmura: {ALMURA}")
-								  .color(TextFormatting.WHITE)
+								  .textColor(TextFormatting.WHITE)
 								  .bind("SPONGE", sponge)
 								  .bind("FORGE", forge)
 								  .bind("ALMURA", almura)
@@ -83,7 +85,7 @@ public class AboutMenu extends MalisisGui
 
 		UIButton doneButton = UIButton.builder()
 									  .text("gui.done")
-									  .bottomCenter(0, 15)
+									  .bottomCenter(0, 25)
 									  .size(Button.HALF)
 									  .onClick(this::close)
 									  .build();
@@ -111,7 +113,7 @@ public class AboutMenu extends MalisisGui
 							   .rightOf(aboutList, GuiConfig.PADDING)
 							   .topAligned()
 							   .size(Size::fill)
-							   .color(TextFormatting.WHITE)
+							   .textColor(TextFormatting.WHITE)
 							   .build();
 
 		new UISlimScrollbar(aboutList, Type.VERTICAL);
@@ -136,7 +138,7 @@ public class AboutMenu extends MalisisGui
 			UILabel label = UILabel.builder()
 								   .parent(this)//required for correct positioning
 								   .text(data.title())
-								   .color(data.color())
+								   .textColor(data.color())
 								   .rightOf(image, isAlmura ? 13 : 4)
 								   .middleAligned()
 								   .build();

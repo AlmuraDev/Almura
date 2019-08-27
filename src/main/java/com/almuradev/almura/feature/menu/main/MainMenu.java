@@ -68,7 +68,7 @@ public class MainMenu extends MalisisGui
 		{
 			addToScreen(UILabel.builder()
 							   .text("{almura.menu.main.opengl.0}\n{almura.menu.main.opengl.1}")
-							   .color(TextFormatting.DARK_RED)
+							   .textColor(TextFormatting.DARK_RED)
 							   .bold()
 							   .topLeft(GuiConfig.PADDING, GuiConfig.PADDING)
 							   .build());

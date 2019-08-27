@@ -2,6 +2,7 @@ package com.almuradev.almura.feature.menu.ingame;
 
 import com.almuradev.almura.feature.menu.component.CommonComponents;
 import com.almuradev.almura.shared.client.GuiConfig;
+import com.almuradev.almura.shared.client.GuiConfig.Url;
 import net.malisis.ego.gui.MalisisGui;
 import net.malisis.ego.gui.UIConstants.Button;
 import net.malisis.ego.gui.component.container.UIContainer;
@@ -55,7 +56,7 @@ public class IngameMenu extends MalisisGui
 									 .below(backButton, GuiConfig.PADDING)
 									 .size(Button.ICON)
 									 .tooltip("item.map.name")
-									 //.onClick()
+									 .link(Url.MAP)
 									 .build();
 
 		UIButton statisticsButton = UIButton.builder()
@@ -113,7 +114,7 @@ public class IngameMenu extends MalisisGui
 				.text("almura.menu_button.quit")
 				.below(shopButton, GuiConfig.PADDING)
 				.size(192, 20)
-				.color(TextFormatting.RED)
+				.textColor(TextFormatting.RED)
 				.shadow(true)
 				.onClick(() -> {
 					close();
