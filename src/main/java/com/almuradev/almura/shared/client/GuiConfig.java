@@ -67,14 +67,13 @@ public interface GuiConfig
 		ResourceLocation ALMURA_LOCATION = new ResourceLocation(Almura.ID, "textures/gui/gui.png");
 		GuiTexture ALMURA = new GuiTexture(ALMURA_LOCATION, 284, 106);
 		GuiTexture VANILLA_ICON = new GuiTexture(MalisisGui.ICONS, 256, 256);
-		ResourceLocation VANILLA_CONTAINER_INVENTORY_LOCATION = new ResourceLocation("textures/gui/parent/inventory.png");
+		ResourceLocation VANILLA_CONTAINER_INVENTORY_LOCATION = new ResourceLocation("textures/gui/container/inventory.png");
 		GuiTexture VANILLA_CONTAINER_INVENTORY = new GuiTexture(VANILLA_CONTAINER_INVENTORY_LOCATION, 256, 256);
 	}
 
 	@SideOnly(Side.CLIENT)
 	interface Url
 	{
-
 		String FORUM = "https://almura.enjin.com/forum";
 		String ISSUES = "https://github.com/AlmuraDev/Almura/issues";
 		String MAP = "http://srv1.almuramc.com:8123";
