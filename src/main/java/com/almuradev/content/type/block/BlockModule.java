@@ -17,6 +17,9 @@ import com.almuradev.content.type.block.processor.EffectiveToolsProcessor;
 import com.almuradev.content.type.block.processor.FireSpreadSpeedProcessor;
 import com.almuradev.content.type.block.processor.FlammabilityProcessor;
 import com.almuradev.content.type.block.processor.HardnessProcessor;
+import com.almuradev.content.type.block.processor.IsFullBlockProcessor;
+import com.almuradev.content.type.block.processor.IsNormalCubeProcessor;
+import com.almuradev.content.type.block.processor.IsTopSolidProcessor;
 import com.almuradev.content.type.block.processor.ItemGroupProcessor;
 import com.almuradev.content.type.block.processor.LightProcessor;
 import com.almuradev.content.type.block.processor.MapColorProcessor;
@@ -66,6 +69,9 @@ public final class BlockModule extends AbstractModule implements CoreBinder {
                         .all(EffectiveToolsProcessor.class)
                         .all(BlockFaceShapeProcessor.class)
                         .all(HardnessProcessor.class)
+                        .all(IsFullBlockProcessor.class)
+                        .all(IsNormalCubeProcessor.class)
+                        .all(IsTopSolidProcessor.class)
                         .all(ItemGroupProcessor.class)
                         .all(LightProcessor.class)
                         .all(MapColorProcessor.class)

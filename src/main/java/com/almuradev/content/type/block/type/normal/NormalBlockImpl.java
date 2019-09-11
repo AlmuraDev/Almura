@@ -7,7 +7,9 @@
  */
 package com.almuradev.content.type.block.type.normal;
 
+import com.almuradev.content.type.block.ContentBlockImplSetters;
 import com.almuradev.content.type.block.type.normal.state.NormalBlockStateDefinition;
+import net.kyori.mu.Maybe;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -25,7 +27,12 @@ public final class NormalBlockImpl extends Block implements NormalBlock {
         builder.fill(this);
         this.definition = builder.singleState();
         this.definition.fill(this);
-        if (this.definition.opaque != null) this.fullBlock = this.definition.opaque;
+        if (this.definition.opaque != null) {
+            this.fullBlock = this.definition.opaque;
+            if((Object) this instanceof ContentBlockImplSetters) {
+                ((ContentBlockImplSetters) (Object) this).cl_fullBlock(Maybe.just(this.fullBlock));
+            }
+        }
 
         // Fix Traits
         this.lightOpacity = 255;

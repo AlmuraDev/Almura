@@ -106,6 +106,7 @@ dependencies {
     compile 'net.kyori:indigo:1.0.0-SNAPSHOT'
     compile 'net.kyori:lunar:1.0.5-SNAPSHOT'
     compile 'net.kyori:membrane:1.0.5'
+    compile 'net.kyori:mu:1.0.0-SNAPSHOT'
     compile 'net.kyori:violet:1.0.0'
     deobfCompile ('com.almuradev:malisiscore:1.12.2-6.5.0-SNAPSHOT') {
         transitive = false
@@ -230,9 +231,11 @@ shadowJar {
         include dependency('com.google.inject.extensions:guice-assistedinject')
         include dependency('com.google.inject.extensions:guice-multibindings')
         include dependency('io.github.nucleuspowered:nucleus-api')
+        include dependency('net.kyori:examination-api')
         include dependency('net.kyori:indigo')
         include dependency('net.kyori:lunar')
         include dependency('net.kyori:membrane')
+        include dependency('net.kyori:mu')
         include dependency('net.kyori:violet')
         include dependency('ninja.leaping.configurate:configurate-json')
         include dependency('io.github.nucleuspowered:nucleus-api')

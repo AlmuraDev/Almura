@@ -7,8 +7,10 @@
  */
 package com.almuradev.content.type.block.type.horizontal;
 
+import com.almuradev.content.type.block.ContentBlockImplSetters;
 import com.almuradev.content.type.block.type.horizontal.state.HorizontalBlockStateDefinition;
 import net.kyori.lunar.PrimitiveOptionals;
+import net.kyori.mu.Maybe;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
@@ -49,6 +51,9 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
         final Boolean opaque = states.get(0).opaque;
         if(opaque != null) {
             this.fullBlock = opaque;
+            if((Object) this instanceof ContentBlockImplSetters) {
+                ((ContentBlockImplSetters) (Object) this).cl_fullBlock(Maybe.just(this.fullBlock));
+            }
         }
 
         for (final HorizontalBlockStateDefinition state : states) {

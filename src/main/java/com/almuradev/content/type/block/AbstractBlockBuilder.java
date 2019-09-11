@@ -16,6 +16,7 @@ import com.almuradev.content.type.itemgroup.ItemGroup;
 import com.almuradev.content.type.itemgroup.mixin.iface.IMixinLazyItemGroup;
 import com.almuradev.content.type.mapcolor.MapColor;
 import com.almuradev.content.type.material.Material;
+import net.kyori.mu.Maybe;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.util.BlockRenderLayer;
@@ -26,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nullable;
+import org.spongepowered.api.util.Tristate;
 
 public abstract class AbstractBlockBuilder<C extends ContentBlock, D extends BlockStateDefinition, B extends BlockStateDefinition.Builder<D>> extends ContentBuilder.Impl<C> implements ContentBlock.Builder<C, D, B> {
     private final Map<String, B> stateBuilders = new HashMap<>();
@@ -35,6 +37,9 @@ public abstract class AbstractBlockBuilder<C extends ContentBlock, D extends Blo
     private Delegate<ItemGroup> itemGroup;
     private BlockRenderLayer renderLayer = BlockRenderLayer.CUTOUT_MIPPED;
     private @Nullable DelegateSet<ItemType, Item> effectiveTools;
+    private Maybe<Boolean> topSolid = Maybe.nothing();
+    private Maybe<Boolean> fullBlock = Maybe.nothing();
+    private Maybe<Boolean> normalCube = Maybe.nothing();
 
     public AbstractBlockBuilder(final BlockGenre genre) {
         this.genre = genre;
@@ -71,6 +76,21 @@ public abstract class AbstractBlockBuilder<C extends ContentBlock, D extends Blo
     }
 
     @Override
+    public void topSolid(final boolean topSolid) {
+        this.topSolid = Maybe.just(topSolid);
+    }
+
+    @Override
+    public void fullBlock(final boolean fullBlock) {
+        this.fullBlock = Maybe.just(fullBlock);
+    }
+
+    @Override
+    public void normalCube(final boolean normalCube) {
+        this.normalCube = Maybe.just(normalCube);
+    }
+
+    @Override
     public Map<String, B> stateBuilders() {
         return this.stateBuilders;
     }
@@ -88,6 +108,9 @@ public abstract class AbstractBlockBuilder<C extends ContentBlock, D extends Blo
         ((Block) entry).setTranslationKey(this.string(StringType.TRANSLATION).replace('/', '.'));
         ((IMixinLazyItemGroup) entry).itemGroup(this.itemGroup);
         ((IMixinContentBlock) entry).setRenderLayer(this.renderLayer);
+        ((IMixinContentBlock) entry).cl_topSolid(this.topSolid);
+        ((IMixinContentBlock) entry).cl_fullBlock(this.fullBlock);
+        ((IMixinContentBlock) entry).cl_normalCube(this.normalCube);
         ((EffectiveOn) entry).effectiveTools(this.effectiveTools);
     }
 }

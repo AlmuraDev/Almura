@@ -23,6 +23,10 @@ public interface BlockConfig {
     String ITEM_GROUP = "item_group";
     String RENDER_LAYER = "render_layer";
 
+    String IS_FULL_BLOCK = "is_full_block";
+    String IS_NORMAL_CUBE = "is_normal_cube";
+    String IS_TOP_SOLID = "is_top_solid";
+
     interface State {
         String PARENT = "parent";
 

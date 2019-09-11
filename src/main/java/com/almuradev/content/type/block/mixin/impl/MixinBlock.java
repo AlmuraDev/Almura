@@ -50,6 +50,9 @@ public abstract class MixinBlock implements ContentBlock, IMixinBlock {
     @Shadow(remap = false) public abstract int getFireSpreadSpeed(IBlockAccess world, BlockPos pos, EnumFacing face);
     @SideOnly(Side.CLIENT)
     @Shadow public abstract BlockRenderLayer getRenderLayer();
+    @Shadow public boolean isTopSolid(final IBlockState state) { throw new UnsupportedOperationException(); };
+    @Shadow public boolean isFullBlock(final IBlockState state) { throw new UnsupportedOperationException(); };
+    @Shadow public boolean isNormalCube(final IBlockState state) { throw new UnsupportedOperationException(); };
 
     @Override
     public Optional<ItemGroup> itemGroup() {

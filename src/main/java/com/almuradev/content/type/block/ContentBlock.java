@@ -74,6 +74,12 @@ public interface ContentBlock extends CatalogedContent, ItemGrouped {
 
         void effectiveTools(final DelegateSet<ItemType, Item> effectiveTools);
 
+        void topSolid(final boolean topSolid);
+
+        void fullBlock(final boolean fullBlock);
+
+        void normalCube(final boolean normalCube);
+
         // Definitions
 
         Map<String, B> stateBuilders();

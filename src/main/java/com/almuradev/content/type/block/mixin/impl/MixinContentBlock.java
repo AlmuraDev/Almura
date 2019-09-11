@@ -27,6 +27,7 @@ import com.almuradev.content.type.blocksoundgroup.BlockSoundGroup;
 import com.almuradev.content.type.item.mixin.EffectiveOn;
 import com.almuradev.content.type.itemgroup.ItemGroup;
 import com.almuradev.content.type.itemgroup.mixin.iface.IMixinLazyItemGroup;
+import net.kyori.mu.Maybe;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
@@ -65,6 +66,9 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
     @Nullable private Delegate<ItemGroup> lazyItemGroup;
     private BlockRenderLayer renderLayer = BlockRenderLayer.CUTOUT_MIPPED;
     private @Nullable DelegateSet<ItemType, Item> effectiveTools;
+    private Maybe<Boolean> cl_topSolid = Maybe.nothing();
+    private Maybe<Boolean> cl_fullBlock = Maybe.nothing();
+    private Maybe<Boolean> cl_normalCube = Maybe.nothing();
 
     @Override
     public Optional<ItemGroup> itemGroup() {
@@ -145,6 +149,45 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
     @Override
     public void effectiveTools(final DelegateSet<ItemType, Item> effectiveTools) {
         this.effectiveTools = effectiveTools;
+    }
+
+    @Override
+    public void cl_topSolid(final Maybe<Boolean> topSolid) {
+        this.cl_topSolid = topSolid;
+    }
+
+    @Override
+    public void cl_fullBlock(final Maybe<Boolean> fullBlock) {
+        this.cl_fullBlock = fullBlock;
+    }
+
+    @Override
+    public void cl_normalCube(final Maybe<Boolean> normalCube) {
+        this.cl_normalCube = normalCube;
+    }
+
+    @Override
+    public boolean isTopSolid(final IBlockState state) {
+        if(this.cl_topSolid.isJust()) {
+            return this.cl_topSolid.orGet(() -> super.isTopSolid(state));
+        }
+        return super.isTopSolid(state);
+    }
+
+    @Override
+    public boolean isFullBlock(final IBlockState state) {
+        if(this.cl_fullBlock.isJust()) {
+            return this.cl_fullBlock.orGet(() -> super.isFullBlock(state));
+        }
+        return super.isFullBlock(state);
+    }
+
+    @Override
+    public boolean isNormalCube(final IBlockState state) {
+        if(this.cl_normalCube.isJust()) {
+            return this.cl_normalCube.orGet(() -> super.isNormalCube(state));
+        }
+        return super.isNormalCube(state);
     }
 
     // Almura Start - Handle drops
