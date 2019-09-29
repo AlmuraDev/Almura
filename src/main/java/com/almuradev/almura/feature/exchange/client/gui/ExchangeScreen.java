@@ -44,7 +44,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.slf4j.Logger;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -62,15 +61,15 @@ public final class ExchangeScreen extends BasicScreen {
     private static final int minScreenHeight = 370;
     private static final int innerPadding = 2;
 
-    @Inject private static Logger logger;
     @Inject private static ClientNotificationManager notificationManager;
     @Inject private static ClientExchangeManager exchangeManager;
 
     private final Exchange axs;
+    private final boolean isAdmin;
     public final int limit;
 
-    private UIButton buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage, buttonBuyStack, buttonBuyOne,
-    buttonBuyAll, buttonBuyQuantity, buttonList;
+    private UIButton buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage, buttonBuyStack, buttonBuyOne, buttonBuyAll, buttonList,
+      buttonBuyQuantity, buttonModifyItem;
     private UILabel labelSearchPage, labelLimit, noResultsLabel;
     private UISelect<SortType> comboBoxSortType;
     private BasicTextBox displayNameSearchTextBox, sellerSearchTextBox;
@@ -80,9 +79,10 @@ public final class ExchangeScreen extends BasicScreen {
     public BasicList<ListItem> listItemList;
     public BasicList<ForSaleItem> forSaleList;
 
-    public ExchangeScreen(final Exchange axs, final int limit) {
+    public ExchangeScreen(final Exchange axs, final int limit, final boolean isAdmin) {
         this.axs = axs;
         this.limit = limit;
+        this.isAdmin = isAdmin;
     }
 
     @Override
@@ -91,17 +91,17 @@ public final class ExchangeScreen extends BasicScreen {
 
         // Detect if screen area is large enough to display.
         if (minScreenWidth > this.resolution.getScaledWidth() || minScreenHeight > this.resolution.getScaledHeight()) {
-            notificationManager.handlePopup(new PopupNotification("Exchange Error", "Screen area of: " + minScreenHeight + " x " +
-                minScreenWidth + " required.", 5));
+            notificationManager.handlePopup(new PopupNotification("Exchange Error",
+              String.format("Screen area of: %d x %d is required.", minScreenHeight, minScreenWidth), 5));
             this.close();
             return;
         }
 
         // Main Panel
-        final BasicForm form = new BasicForm(this, minScreenWidth, minScreenHeight, this.getExchange().getName());
+        final BasicForm form = new BasicForm(this, 620, minScreenHeight, this.getExchange().getName());
 
         // Search section
-        final BasicContainer<?> searchContainer = new BasicContainer<>(this, 295, 322);
+        final BasicContainer<?> searchContainer = new BasicContainer<>(this, 315, 322);
         searchContainer.setPosition(0, 0, Anchor.LEFT | Anchor.TOP);
         searchContainer.setColor(0);
         searchContainer.setBorder(FontColors.WHITE, 1, 185);
@@ -117,7 +117,7 @@ public final class ExchangeScreen extends BasicScreen {
         this.displayNameSearchTextBox.setAcceptsTab(false);
         this.displayNameSearchTextBox.setTabIndex(0);
         this.displayNameSearchTextBox.setOnEnter((tb) -> this.search());
-        this.displayNameSearchTextBox.setSize(145, 0);
+        this.displayNameSearchTextBox.setSize(165, 0);
         this.displayNameSearchTextBox.setPosition(itemSearchLabel.getWidth() + innerPadding, 2, Anchor.LEFT | Anchor.TOP);
         this.displayNameSearchTextBox.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
@@ -131,7 +131,7 @@ public final class ExchangeScreen extends BasicScreen {
         this.sellerSearchTextBox.setAcceptsTab(false);
         this.sellerSearchTextBox.setTabIndex(1);
         this.sellerSearchTextBox.setOnEnter(tb -> this.search());
-        this.sellerSearchTextBox.setSize(145, 0);
+        this.sellerSearchTextBox.setSize(165, 0);
         this.sellerSearchTextBox.setPosition(this.displayNameSearchTextBox.getX(), getPaddedY(this.displayNameSearchTextBox, 4), Anchor.LEFT | Anchor.TOP);
         this.sellerSearchTextBox.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
@@ -222,7 +222,7 @@ public final class ExchangeScreen extends BasicScreen {
                 this.noResultsLabel, this.labelSearchPage, forSaleTopLine, forSaleBottomLine);
 
         // Buy container
-        final BasicContainer<?> buyContainer = new BasicContainer(this, 295, 21);
+        final BasicContainer<?> buyContainer = new BasicContainer(this, 315, 21);
         buyContainer.setPosition(0, getPaddedY(searchContainer, innerPadding), Anchor.LEFT | Anchor.TOP);
         buyContainer.setColor(0);
         buyContainer.setBorder(FontColors.WHITE, 1, 185);
@@ -230,57 +230,66 @@ public final class ExchangeScreen extends BasicScreen {
         buyContainer.setPadding(3, 0);
 
         this.buttonBuyOne = new UIButtonBuilder(this)
-                .width(60)
-                .anchor(Anchor.LEFT | Anchor.MIDDLE)
-                .position(0, 0)
-                .text(I18n.format("almura.feature.common.button.buy.one"))
-                .enabled(false)
-                .onClick(() -> this.buy(1))
-                .build("button.buy.single");
+            .width(60)
+            .anchor(Anchor.LEFT | Anchor.MIDDLE)
+            .position(0, 0)
+            .text(I18n.format("almura.feature.common.button.buy.one"))
+            .enabled(false)
+            .onClick(() -> this.buy(1))
+            .build("button.buy.single");
 
         this.buttonBuyStack = new UIButtonBuilder(this)
-                .width(60)
-                .anchor(Anchor.LEFT | Anchor.MIDDLE)
-                .position(BasicScreen.getPaddedX(this.buttonBuyOne, 10), 0)
-                .text(I18n.format("almura.feature.common.button.buy.stack", 0))
-                .enabled(false)
-                .onClick(() -> {
-                    final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
-                    if (forSaleItem != null) {
-                        this.buy(forSaleItem.asRealStack().getMaxStackSize());
-                    }
-                })
-                .build("button.buy.stack");
+            .width(60)
+            .anchor(Anchor.LEFT | Anchor.MIDDLE)
+            .position(BasicScreen.getPaddedX(this.buttonBuyOne, 2), 0)
+            .text(I18n.format("almura.feature.common.button.buy.stack", 0))
+            .enabled(false)
+            .onClick(() -> {
+                final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
+                if (forSaleItem != null) {
+                    this.buy(forSaleItem.asRealStack().getMaxStackSize());
+                }
+            })
+            .build("button.buy.stack");
+
+        this.buttonModifyItem = new UIButtonBuilder(this)
+            .width(50)
+            .anchor(Anchor.CENTER | Anchor.MIDDLE)
+            .text(I18n.format("almura.feature.common.button.modify"))
+            .visible(this.isAdmin)
+            .enabled(false)
+            .onClick(this::modifyForSaleItem)
+            .build("button.modify");
 
         this.buttonBuyAll = new UIButtonBuilder(this)
-                .width(50)
-                .anchor(Anchor.RIGHT | Anchor.MIDDLE)
-                .position(0, 0)
-                .text(I18n.format("almura.feature.common.button.buy.all"))
-                .enabled(false)
-                .onClick(() -> {
-                    final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
-                    if (forSaleItem != null) {
-                        this.buy(forSaleItem.getQuantity());
-                    }
-                })
-                .build("button.buy.all");
+            .width(60)
+            .anchor(Anchor.RIGHT | Anchor.MIDDLE)
+            .position(0, 0)
+            .text(I18n.format("almura.feature.common.button.buy.all"))
+            .enabled(false)
+            .onClick(() -> {
+                final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
+                if (forSaleItem != null) {
+                    this.buy(forSaleItem.getQuantity());
+                }
+            })
+            .build("button.buy.all");
 
         this.buttonBuyQuantity = new UIButtonBuilder(this)
-                .width(60)
-                .anchor(Anchor.RIGHT | Anchor.MIDDLE)
-                .position(BasicScreen.getPaddedX(this.buttonBuyAll, 10, Anchor.RIGHT), 0)
-                .text(I18n.format("almura.feature.common.button.buy.quantity"))
-                .enabled(false)
-                .onClick(() -> {
-                    final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
-                    if (forSaleItem != null) {
-                        new ExchangeBuyQuantityScreen(this, this.axs, forSaleItem).display();
-                    }
-                })
-                .build("button.buy.quantity");
+            .width(60)
+            .anchor(Anchor.RIGHT | Anchor.MIDDLE)
+            .position(BasicScreen.getPaddedX(this.buttonBuyAll, 2, Anchor.RIGHT), 0)
+            .text(I18n.format("almura.feature.common.button.buy.quantity"))
+            .enabled(false)
+            .onClick(() -> {
+                final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
+                if (forSaleItem != null) {
+                    new ExchangeBuyQuantityScreen(this, this.axs, forSaleItem).display();
+                }
+            })
+            .build("button.buy.quantity");
 
-        buyContainer.add(this.buttonBuyOne, this.buttonBuyStack, this.buttonBuyQuantity, this.buttonBuyAll);
+        buyContainer.add(this.buttonBuyOne, this.buttonBuyStack, this.buttonModifyItem, this.buttonBuyQuantity, this.buttonBuyAll);
 
         // Listable Items section
         final BasicContainer<?> listableItemsContainer = new BasicContainer(this, 295, 345);
@@ -405,8 +414,15 @@ public final class ExchangeScreen extends BasicScreen {
             if (de_list) {
                 exchangeManager.modifyListStatus(ListStatusType.DE_LIST, this.axs.getId(), item.getRecord(), null);
             } else {
-                new ExchangeListPriceScreen(this, this.axs, item).display();
+                new ExchangeListPriceScreen(this, this.axs, item, false).display();
             }
+        }
+    }
+
+    private void modifyForSaleItem() {
+        final ForSaleItem item = this.forSaleList.getSelectedItem();
+        if (item != null) {
+            new ExchangeListPriceScreen(this, this.axs, item.getListItem(), true).display();
         }
     }
 
@@ -415,6 +431,7 @@ public final class ExchangeScreen extends BasicScreen {
         // Results list
         final ForSaleItem currentForSaleItem = this.forSaleList.getSelectedItem();
         final boolean isResultSelected = currentForSaleItem != null;
+        this.buttonModifyItem.setEnabled(isResultSelected);
         this.buttonBuyOne.setEnabled(isResultSelected);
         this.buttonBuyQuantity.setEnabled(isResultSelected && currentForSaleItem.getQuantity() > 1);
 

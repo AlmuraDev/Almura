@@ -44,7 +44,7 @@ public final class ClientboundExchangeGuiResponsePacketHandler implements Messag
                     this.exchangeManager.handleExchangeManage();
                     break;
                 case SPECIFIC:
-                    this.exchangeManager.handleExchangeSpecific(message.id, message.limit);
+                    this.exchangeManager.handleExchangeSpecific(message.id, message.limit, message.isAdmin);
                     break;
                 case SPECIFIC_OFFER:
                     this.exchangeManager.handleExchangeSpecificOffer(message.id);

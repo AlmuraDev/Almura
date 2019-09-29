@@ -22,6 +22,7 @@ public final class ClientboundExchangeGuiResponsePacket implements Message {
     @Nullable public ExchangeGuiType type;
     @Nullable public String id;
     public int limit;
+    public boolean isAdmin;
 
     public ClientboundExchangeGuiResponsePacket() {
 
@@ -32,10 +33,10 @@ public final class ClientboundExchangeGuiResponsePacket implements Message {
     }
 
     public ClientboundExchangeGuiResponsePacket(final ExchangeGuiType type, @Nullable final String id) {
-        this(type, id, -2); // This constructor should never be called for SPECIFIC_OFFER so pass -2 to intentionally fail
+        this(type, id, -2, false); // This constructor should never be called for SPECIFIC_OFFER so pass -2 to intentionally fail
     }
 
-    public ClientboundExchangeGuiResponsePacket(final ExchangeGuiType type, @Nullable final String id, final int limit) {
+    public ClientboundExchangeGuiResponsePacket(final ExchangeGuiType type, @Nullable final String id, final int limit, final boolean isAdmin) {
         checkNotNull(type);
 
         this.type = type;
@@ -48,6 +49,7 @@ public final class ClientboundExchangeGuiResponsePacket implements Message {
         if (this.type == ExchangeGuiType.SPECIFIC) {
             checkState(limit >= FeatureConstants.UNLIMITED);
             this.limit = limit;
+            this.isAdmin = isAdmin;
         }
     }
 
@@ -61,6 +63,7 @@ public final class ClientboundExchangeGuiResponsePacket implements Message {
 
         if (this.type == ExchangeGuiType.SPECIFIC) {
             this.limit = buf.readInteger();
+            this.isAdmin = buf.readBoolean();
         }
     }
 
@@ -78,6 +81,7 @@ public final class ClientboundExchangeGuiResponsePacket implements Message {
 
         if (this.type == ExchangeGuiType.SPECIFIC) {
             buf.writeInteger(this.limit);
+            buf.writeBoolean(this.isAdmin);
         }
     }
 }

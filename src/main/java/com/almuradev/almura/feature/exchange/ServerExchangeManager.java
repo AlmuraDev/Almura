@@ -82,6 +82,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -241,7 +242,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             return;
         }
 
-        this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.SPECIFIC, axs.getId(), this.getListingsLimit(player)));
+        this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.SPECIFIC, axs.getId(), this.getListingsLimit(player),
+          player.hasPermission(Almura.ID + ".exchange.admin")));
 
         if (!axs.isLoaded()) {
             this.playerSpecificInitiatorIds.add(player.getUniqueId());
@@ -1133,7 +1135,10 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             return;
         }
 
-        final List<ListItem> listItems = axs.getListItemsFor(player.getUniqueId()).orElse(null);
+        // If the player is an admin then that means we may be trying to manipulate another player's listed item
+        final List<ListItem> listItems = player.hasPermission(Almura.ID + ".exchange.admin")
+          ? new ArrayList<>(axs.getListItems().values().stream().flatMap(Collection::stream).collect(Collectors.toList()))
+          : axs.getListItemsFor(player.getUniqueId()).orElse(null);
         if (listItems == null) {
             this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical error encountered, check the "
               + "server console for more details!"));

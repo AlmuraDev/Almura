@@ -191,13 +191,13 @@ public final class ClientExchangeManager implements Witness {
         new ExchangeManagementScreen().display();
     }
 
-    public void handleExchangeSpecific(final String id, final int limit) {
+    public void handleExchangeSpecific(final String id, final int limit, final boolean isAdmin) {
         checkState(limit >= FeatureConstants.UNLIMITED);
         final Exchange axs = this.getExchange(id);
 
         if (axs != null) {
             this.clearFilterCache();
-            new ExchangeScreen(axs, limit).display();
+            new ExchangeScreen(axs, limit, isAdmin).display();
         }
     }
 

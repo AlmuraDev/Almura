@@ -26,17 +26,11 @@ public final class ExchangeManagementScreen extends IngameFeatureManagementScree
         super(I18n.format("almura.feature.common.title.management", I18n.format("almura.feature.exchange.name")),
                 I18n.format("almura.feature.exchange.name"),
                 // onRefresh
-                screen -> {
-                    screen.setItems(Collections.unmodifiableList(exchangeManager.getExchanges()));
-                },
+                screen -> screen.setItems(Collections.unmodifiableList(exchangeManager.getExchanges())),
                 // onDelete
-                (screen, feature) -> {
-                    feature.ifPresent(f -> exchangeManager.deleteExchange(f.getId()));
-                },
+                (screen, feature) -> feature.ifPresent(f -> exchangeManager.deleteExchange(f.getId())),
                 // onOpen
-                (screen, feature) -> {
-                    feature.ifPresent(f -> exchangeManager.requestExchangeSpecificGui(f.getId()));
-                },
+                (screen, feature) -> feature.ifPresent(f -> exchangeManager.requestExchangeSpecificGui(f.getId())),
                 // onSave
                 (screen, feature) -> {
                     if (feature.isPresent()) { // It's an existing listing if true

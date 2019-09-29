@@ -40,17 +40,19 @@ public class ExchangeListPriceScreen extends BasicScreen {
 
     private final Exchange axs;
     private final ListItem toList;
+    private final boolean isModifying;
 
     private UIButton buttonList, buttonCancel;
     private UILabel eaLabel;
     private BasicTextBox pricePerTextBox;
     private BasicForm form;
 
-    public ExchangeListPriceScreen(ExchangeScreen parent, Exchange axs, ListItem toList) {
+    public ExchangeListPriceScreen(ExchangeScreen parent, Exchange axs, ListItem toList, boolean isModifying) {
         super(parent, true);
 
         this.axs = axs;
         this.toList = toList;
+        this.isModifying = isModifying;
     }
 
     @Override
@@ -61,7 +63,10 @@ public class ExchangeListPriceScreen extends BasicScreen {
         this.form.setZIndex(10); // Fixes issue overlapping draws from parent
         this.form.setBackgroundAlpha(255);
 
-        this.pricePerTextBox = new BasicTextBox(this, this.toList.getLastKnownPrice().orElse(BigDecimal.ZERO).toString());
+        final BigDecimal initialPrice = this.isModifying
+          ? this.toList.getForSaleItem().get().getPrice()
+          : this.toList.getLastKnownPrice().orElse(BigDecimal.ZERO);
+        this.pricePerTextBox = new BasicTextBox(this, initialPrice.toString());
         this.pricePerTextBox.setSize(65, 0);
         this.pricePerTextBox.setFilter(s -> {
             // TODO: Maybe make a fancy regex for some of this
@@ -148,8 +153,9 @@ public class ExchangeListPriceScreen extends BasicScreen {
         if (!this.buttonList.isEnabled()) {
             return;
         }
-        exchangeManager.modifyListStatus(ListStatusType.LIST, this.axs.getId(), toList.getRecord(),
-                new BigDecimal(this.pricePerTextBox.getText()));
+
+        final ListStatusType type = this.isModifying ? ListStatusType.ADJUST_PRICE : ListStatusType.LIST;
+        exchangeManager.modifyListStatus(type, this.axs.getId(), toList.getRecord(), new BigDecimal(this.pricePerTextBox.getText()));
         ((ExchangeScreen) this.parent).refreshListItems();
         this.close();
     }
