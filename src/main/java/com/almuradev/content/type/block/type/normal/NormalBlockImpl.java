@@ -30,7 +30,7 @@ public final class NormalBlockImpl extends Block implements NormalBlock {
         // Fix Traits
         this.lightOpacity = 255;
         this.translucent = false;
-        this.useNeighborBrightness = false;
+        this.useNeighborBrightness = true;
         this.fullBlock = true;
     }
 

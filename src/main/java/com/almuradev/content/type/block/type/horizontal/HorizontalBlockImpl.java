@@ -9,6 +9,7 @@ package com.almuradev.content.type.block.type.horizontal;
 
 import com.almuradev.content.type.block.type.horizontal.state.HorizontalBlockStateDefinition;
 import net.kyori.lunar.PrimitiveOptionals;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
@@ -42,7 +43,7 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
         // Fix Traits
         this.lightOpacity = 255;
         this.translucent = false;
-        this.useNeighborBrightness = false;
+        this.useNeighborBrightness = true;
         this.fullBlock = true;
 
         // assume first state is the default
@@ -164,6 +165,7 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
                 return opaque;
             }
         }
+
         return false;
     }
 
