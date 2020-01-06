@@ -13,9 +13,9 @@ import com.almuradev.almura.feature.title.network.ClientboundAvailableTitlesResp
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
 import io.github.nucleuspowered.nucleus.api.service.NucleusNicknameService;
-import me.lucko.luckperms.api.LuckPermsApi;
-import me.lucko.luckperms.api.User;
-import me.lucko.luckperms.api.event.user.track.UserTrackEvent;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.event.user.track.UserTrackEvent;
+import net.luckperms.api.model.user.User;
 import org.apache.commons.lang3.text.WordUtils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;
@@ -45,7 +45,7 @@ public final class PermissionsManager implements Witness {
     private final ServerNotificationManager notificationManager;
     private final ServerTitleManager titleManager;
 
-    private LuckPermsApi permApi;
+    private LuckPerms permApi;
     private NucleusNicknameService nickApi;
 
     @Inject
@@ -65,12 +65,12 @@ public final class PermissionsManager implements Witness {
     public void onServiceChange(ChangeServiceProviderEvent event) {
         if (event.getNewProviderRegistration().getService().equals(NucleusNicknameService.class)) {
             this.nickApi = (NucleusNicknameService) event.getNewProviderRegistration().getProvider();
-        } else if (event.getNewProviderRegistration().getService().equals(LuckPermsApi.class)) {
-            this.permApi = (LuckPermsApi) event.getNewProviderRegistration().getProvider();
+        } else if (event.getNewProviderRegistration().getService().equals(LuckPerms.class)) {
+            this.permApi = (LuckPerms) event.getNewProviderRegistration().getProvider();
 
             this.permApi.getEventBus().subscribe(UserTrackEvent.class, e -> {
 
-                final UUID targetUniqueId = e.getUser().getUuid();
+                final UUID targetUniqueId = e.getUser().getUniqueId();
                 final Player target = Sponge.getServer().getPlayer(targetUniqueId).orElse(null);
                 final String toGroup = e.getGroupTo().orElse(null);
 
@@ -120,7 +120,7 @@ public final class PermissionsManager implements Witness {
     @Listener(order = Order.LAST)
     public void onMovePlayerTeleport(final MoveEntityEvent.Teleport event, @Getter("getTargetEntity") final Player player) {
         if (this.permApi != null && differentExtent(event.getFromTransform(), event.getToTransform())) {
-            final User user = this.permApi.getUser(player.getUniqueId());
+            final User user = this.permApi.getUserManager().getUser(player.getUniqueId());
             if (user != null && user.getPrimaryGroup().equalsIgnoreCase(LUCK_PERMS_DEFAULT_GROUP)) {
                 final String command = "lp user " + player.getName() + " promote members";
                 this.commandManager.process(Sponge.getServer().getConsole(), command);

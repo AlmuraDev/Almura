@@ -13,19 +13,14 @@ import com.almuradev.almura.feature.claim.network.ClientboundClaimGuiResponsePac
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
-import me.ryanhamshire.griefprevention.GPPlayerData;
-import me.ryanhamshire.griefprevention.GriefPrevention;
-import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
-import me.ryanhamshire.griefprevention.api.claim.Claim;
-import me.ryanhamshire.griefprevention.api.event.BorderClaimEvent;
-import me.ryanhamshire.griefprevention.api.event.ChangeClaimEvent;
-import me.ryanhamshire.griefprevention.api.event.CreateClaimEvent;
-import me.ryanhamshire.griefprevention.api.event.DeleteClaimEvent;
-import me.ryanhamshire.griefprevention.api.event.FlagClaimEvent;
-import me.ryanhamshire.griefprevention.api.event.TaxClaimEvent;
-import me.ryanhamshire.griefprevention.configuration.GriefPreventionConfig;
-import me.ryanhamshire.griefprevention.permission.GPOptionHandler;
-import me.ryanhamshire.griefprevention.permission.GPOptions;
+import com.griefdefender.GriefDefenderPlugin;
+import com.griefdefender.api.GriefDefender;
+import com.griefdefender.api.claim.Claim;
+import com.griefdefender.api.event.BorderClaimEvent;
+import com.griefdefender.api.event.ChangeClaimEvent;
+import com.griefdefender.api.event.CreateClaimEvent;
+import com.griefdefender.api.event.TaxClaimEvent;
+import com.griefdefender.configuration.GriefDefenderConfig;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -62,8 +57,8 @@ public final class ServerClaimManager implements Witness {
     }
 
     public void sendUpdate(final Player player, final Claim claim, boolean everyone) {
-        if (GriefPreventionPlugin.instance != null) {
-            if (GriefPreventionPlugin.instance.permissionService != null) {
+        if (GriefDefenderPlugin.getInstance() != null) {
+            if (GriefDefenderPlugin.getInstance().getPermissionProvider() != null) {
                 if (claim != null) {
                     boolean isClaim = true;
                     boolean hasWECUI = false;
@@ -95,24 +90,24 @@ public final class ServerClaimManager implements Witness {
                         showWarnings = claim.getData().allowDenyMessages();
                     }
 
-                    if (player != null && GriefPreventionPlugin.instance.worldEditProvider != null) {
-                        hasWECUI = GriefPreventionPlugin.instance.worldEditProvider.hasCUISupport(player);
+                    if (player != null && GriefDefenderPlugin.getInstance().getWorldEditProvider() != null) {
+                        hasWECUI = GriefDefenderPlugin.getInstance().getWorldEditProvider().hasCUISupport(player);
                     }
 
                     if (claim.getOwnerName() != null) {
-                        claimOwner = claim.getOwnerName().toPlain();
+                        claimOwner = claim.getOwnerName().toString();
                     }
 
                     if (claim.getData() != null && claim.getData().getGreeting().isPresent()) {
-                        claimGreeting = claim.getData().getGreeting().get().toPlain();
+                        claimGreeting = claim.getData().getGreeting().get().toString();
                     }
 
                     if (claim.getData() != null &&claim.getData().getFarewell().isPresent()) {
-                        claimFarewell = claim.getData().getFarewell().get().toPlain();
+                        claimFarewell = claim.getData().getFarewell().get().toString();
                     }
 
                     if (claim.getName().isPresent()) {
-                        claimName = claim.getName().get().toPlain();
+                        claimName = claim.getName().get().toString();
 
                         final EconomyService service = Sponge.getServiceManager().provide(EconomyService.class).orElse(null);
                         if (service != null && player != null) {
@@ -132,7 +127,7 @@ public final class ServerClaimManager implements Witness {
                     }
 
                     // Set custom Claim Name for Protected Area's
-                    if (claim.isWilderness() && (claim.getWorld().getName().equalsIgnoreCase("orilla") || claim.getWorld().getName().equalsIgnoreCase("asgard"))) {
+                    if (claim.isWilderness() && (claim.getData().getWorld().getName().equalsIgnoreCase("orilla") || claim.getWorld().getName().equalsIgnoreCase("asgard"))) {
                         claimName = "Server Protected Area";
                     }
 
@@ -158,7 +153,7 @@ public final class ServerClaimManager implements Witness {
         if (player != null && this.isGPEnabled(player)) {
             Task.builder()
                 .delayTicks(20) // Give GP time to register the user as its not at tick zero.
-                .execute(t -> this.sendUpdate(player, GriefPrevention.getApi().getClaimManager(player.getWorld()).getClaimAt(player.getLocation()), false))
+                .execute(t -> this.sendUpdate(player, GriefDefender.getCore().getClaimManager(player.getWorld()).getClaimAt(player.getLocation()), false))
                 .submit(this.container);
         }
     }
@@ -218,18 +213,18 @@ public final class ServerClaimManager implements Witness {
         for (final Player players : event.getClaim().getPlayers()) {
             Task.builder()
                 .delayTicks(10) // Give GP time to finish event
-                .execute(t -> this.sendUpdate(players, GriefPrevention.getApi().getClaimManager(players.getWorld()).getClaimAt(players.getLocation()), false))
+                .execute(t -> this.sendUpdate(players, GriefDefender.getCore().getClaimManager(players.getWorld()).getClaimAt(players.getLocation()), false))
                 .submit(this.container);
         }
     }
 
     public final boolean isGPEnabled(final Player player) {
-        if (GriefPreventionPlugin.instance == null) {
+        if (GriefDefenderPlugin.getInstance() == null) {
             if (debugClaimManager)
                 this.serverNotificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("GriefPrevention is not initialized!"), 2);
             return false;
         } else {
-            if (GriefPreventionPlugin.instance.permissionService == null) {
+            if (GriefDefenderPlugin.getInstance().getPermissionProvider() == null) {
                 if (debugClaimManager)
                     this.serverNotificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("GriefPrevention is not enabled!"), 2);
                 return false;
@@ -243,16 +238,16 @@ public final class ServerClaimManager implements Witness {
             return;
         }
 
-        if (!GriefPreventionPlugin.instance.worldEditProvider.hasCUISupport(player)) {
+        if (!GriefDefenderPlugin.getInstance().getPermissionProvider().hasCUISupport(player)) {
             this.serverNotificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("WECUI Mod not loaded!"), 2);
         }
 
-        GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
+        GPPlayerData playerData = GriefDefenderPlugin.getInstance().dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
         // The below is tested and verified working!
         if (value && !claim.isWilderness()) {
-            GriefPreventionPlugin.instance.worldEditProvider.visualizeClaim(claim, player, playerData, false);
+            GriefDefenderPlugin.getInstance().getWorldEditProvider().visualizeClaim(claim, player, playerData, false);
         } else {
-            GriefPreventionPlugin.instance.worldEditProvider.revertVisuals(player, playerData, null);
+            GriefDefenderPlugin.getInstance().getWorldEditProvider().revertVisuals(player, playerData, null);
         }
     }
 
@@ -292,7 +287,7 @@ public final class ServerClaimManager implements Witness {
             this.serverNotificationManager
                 .sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Invalid location sent to server.  Changes not saved!"), 5);
         } else {
-            final Claim claim = GriefPrevention.getApi().getClaimManager(player.getWorld()).getClaimAt(location);
+            final Claim claim = GriefDefender.getCore().getClaimManager(player.getWorld()).getClaimAt(location);
             if (claim != null) {
                 return claim;
             }
@@ -302,7 +297,7 @@ public final class ServerClaimManager implements Witness {
 
     public final double claimTaxes(final Player player, final Claim claim) {
         if (claim != null && player != null) {
-            GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
+            GPPlayerData playerData = GriefDefenderPlugin.getInstance().dataStore.getOrCreatePlayerData(player.getWorld(), player.getUniqueId());
             final Subject subject = playerData.getPlayerSubject();
             final Account claimAccount = claim.getEconomyAccount().orElse(null);
             final double taxRate = GPOptionHandler.getClaimOptionDouble(subject, claim, GPOptions.Type.TAX_RATE, playerData);
@@ -315,8 +310,9 @@ public final class ServerClaimManager implements Witness {
 
     public final double claimBlockCost(final Player player, final Claim claim) {
         if (claim != null && player != null) {
-            GriefPreventionPlugin.instance.economyService.get().getOrCreateAccount(player.getUniqueId());
-            GriefPreventionConfig<?> activeConfig = GriefPreventionPlugin.getActiveConfig(player.getWorld().getProperties());
+            // Broken
+            GriefDefenderPlugin.getInstance().isEconomyModeEnabled().getOrCreateAccount(player.getUniqueId());
+            GriefDefenderConfig<?> activeConfig = GriefDefenderPlugin.getActiveConfig(player.getWorld().getProperties());
             return activeConfig.getConfig().economy.economyClaimBlockCost;
         } else {
             return 0.0;
@@ -325,8 +321,8 @@ public final class ServerClaimManager implements Witness {
 
     public final double claimBlockSell(final Player player, final Claim claim) {
         if (claim != null && player != null) {
-            GriefPreventionPlugin.instance.economyService.get().getOrCreateAccount(player.getUniqueId());
-            GriefPreventionConfig<?> activeConfig = GriefPreventionPlugin.getActiveConfig(player.getWorld().getProperties());
+            GriefDefenderPlugin.getInstance().economyService.get().getOrCreateAccount(player.getUniqueId());
+            GriefDefenderConfig<?> activeConfig = GriefDefenderPlugin.getActiveConfig(player.getWorld().getProperties());
             return activeConfig.getConfig().economy.economyClaimBlockSell;
         } else {
             return 0.0;
@@ -355,7 +351,7 @@ public final class ServerClaimManager implements Witness {
             return;
         }
 
-        final Claim claim = GriefPrevention.getApi().getClaimManager(player.getWorld()).getClaimAt(player.getLocation());
+        final Claim claim = GriefDefender.getCore().getClaimManager(player.getWorld()).getClaimAt(player.getLocation());
         if (claim != null) { // if GP is loaded, claim should never be null.
             final boolean isOwner = (claim.getOwnerUniqueId().equals(player.getUniqueId()));
             final boolean isTrusted = claim.isTrusted(player.getUniqueId());

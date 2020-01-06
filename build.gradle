@@ -83,9 +83,21 @@ repositories {
         name = 'sponge'
         url = 'http://repo.spongepowered.org/maven'
     }
+    //maven {
+    //    name = 'bstats'
+    //    url = 'http://repo.bstats.org/content/repositories/releases/'
+    //}
     maven {
-        name = 'bstats'
-        url = 'http://repo.bstats.org/content/repositories/releases/'
+        name = "LuckPerms"
+        url = "https://repo.lucko.me/"
+    }
+    maven {
+        name = 'jitpack'
+        url = 'https://jitpack.io'
+    }
+    maven {
+        name = 'glare'
+        url = 'https://repo.glaremasters.me/repository/bloodshot'
     }
     maven {
         url = "https://raw.github.com/FabioZumbi12/UltimateChat/mvn-repo/"
@@ -115,8 +127,10 @@ dependencies {
     compile 'org.inspirenxe:skills:1.0.0-SNAPSHOT:api'
     compile 'com.almuradev:toolbox:1.0.0-SNAPSHOT'
     compile 'io.github.nucleuspowered:nucleus-api:1.13.2-S7.1'
-    compile 'me.lucko.luckperms:luckperms-api:4.2'
-    compile 'me.ryanhamshire:griefprevention:1.12.2-4.3.0.646'
+    //compile 'me.lucko.luckperms:luckperms-api:4.2'
+    //compile 'me.ryanhamshire:griefprevention:1.12.2-4.3.0.646'
+    compile "net.luckperms:api:5.0"
+    compile "com.github.bloodmc:GriefDefender:master-SNAPSHOT"
     compile "org.jooq:jooq:${project.jooqVersion}"
     compile "org.jooq:jooq-meta:${project.jooqVersion}"
     compile "org.jooq:jooq-codegen:${project.jooqVersion}"

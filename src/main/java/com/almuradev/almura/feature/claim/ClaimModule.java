@@ -40,7 +40,7 @@ public final class ClaimModule extends AbstractModule implements CommonBinder {
         if (SpongeImplHooks.isDeobfuscatedEnvironment()) {
             loadServerModules();
         } else {
-            if (Sponge.getPluginManager().isLoaded("griefprevention")) {
+            if (Sponge.getPluginManager().isLoaded("griefdefender")) {
                 loadServerModules();
             }
         }
