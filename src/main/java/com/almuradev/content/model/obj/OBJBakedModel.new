@@ -86,7 +86,6 @@ public class OBJBakedModel implements IBakedModel {
         // This is important to know because we are rendering the below on what is usually considered the inventory pass when side == null.
         // Do Not use BlockModelRenderer class as a template for building how this class works!
         // Todo:  for some reason ambient occlusion is not working properly.
-        // Note: this method is called 7 times per block.  Side == null, down, up north, south, west, east.
 
         boolean isComplex = true;
         boolean fallback = false;
@@ -110,11 +109,8 @@ public class OBJBakedModel implements IBakedModel {
         }
 
         if (isComplex || fallback || cachedInventory) {
-            //System.out.println("Checking cache for: " + blockState);
             if (this.quadCache != null) {
                 // Skip re-calculating quads as they are cached.
-                //System.out.println("Found cache for state: " + blockState + " face: " + side);
-                //Thread.dumpStack();
                 return this.quadCache;
             }
         }
@@ -126,14 +122,21 @@ public class OBJBakedModel implements IBakedModel {
             }
         }
 
+        //System.out.println("getQuads for side: " + side + " group size: " + this.model.getGroups().size());
+        //Thread.dumpStack();
+
         final List<BakedQuad> quads = new ArrayList<>();
+
+        if (blockState == null) {
+           // return new LinkedList<>();
+        }
+
 
         if (blockState == null || isComplex || fallback) {
             // Complex, return all.
-            System.out.println("Complex, return all faces");
             this.model.getGroups().forEach(group -> {
                 final MaterialDefinition materialDefinition = group.getMaterialDefinition().orElse(null);
-                group.getFaces().forEach(face -> this.populateQuadsByFace(materialDefinition, face, quads));
+                group.getFaces().forEach(face -> this.populateQuadsByFace(materialDefinition, face, quads, side));
             });
             this.quadCache = quads;
         } else if (side != null) {
@@ -141,10 +144,12 @@ public class OBJBakedModel implements IBakedModel {
             if (group != null) {
                 final MaterialDefinition materialDefinition = group.getMaterialDefinition().orElse(null);
                 int meta = blockState.getBlock().getMetaFromState(blockState);
+                //System.out.println("Meta: " + meta + " side: " + side);
                 int index = 0;
+                // Order is:  down, up, north, south, west, east
                 // Meta values looked up because the facing direction also dictates which face gets rendered and which one doesn't.
                 // Todo: Remove this when we can figure out how to sort out this non-sense.
-                if (meta == 0) {
+                if (meta == 0) { // Facing North when placed
                     switch (side) {
                         case DOWN:
                             index = 5;
@@ -167,7 +172,7 @@ public class OBJBakedModel implements IBakedModel {
                     }
                 }
 
-                if (meta == 1) {
+                if (meta == 1) { // Facing East when placed
                     switch (side) {
                         case DOWN:
                             index = 5;
@@ -190,7 +195,7 @@ public class OBJBakedModel implements IBakedModel {
                     }
                 }
 
-                if (meta == 2) {
+                if (meta == 2) {  //Facing South when placed.
                     switch (side) {
                         case DOWN:
                             index = 5;
@@ -213,7 +218,7 @@ public class OBJBakedModel implements IBakedModel {
                     }
                 }
 
-                if (meta == 3) {
+                if (meta == 3) { // Facing West when placed
                     switch (side) {
                         case DOWN:
                             index = 5;
@@ -238,14 +243,14 @@ public class OBJBakedModel implements IBakedModel {
 
                 final Face face = group.getFaces().get(index);
                 if (face != null) {
-                    this.populateQuadsByFace(materialDefinition, face, quads);
+                    this.populateQuadsByFace(materialDefinition, face, quads, side);
                 }
             }
         }
         return quads;
     }
 
-    private void populateQuadsByFace(@Nullable MaterialDefinition materialDefinition, Face face, List<BakedQuad> quads) {
+    private void populateQuadsByFace(@Nullable MaterialDefinition materialDefinition, Face face, List<BakedQuad> quads, final EnumFacing side) {
         Face particleFace;
         TextureAtlasSprite particleAtlasSprite;
 
@@ -297,6 +302,7 @@ public class OBJBakedModel implements IBakedModel {
                             final Vector4f position = new Vector4f(vertex.getX(), vertex.getY(), vertex.getZ(), 1f);
                             final Vector4f transformed = new Vector4f();
                             transform.transform(position, transformed);
+                            System.out.println("Transformed X: " + transformed.getX() + " y: " + transformed.getY() + " z: " + transformed.getZ());
                             quadBuilder.put(e, transformed.getX(), transformed.getY(), transformed.getZ());
                         } else {
                             quadBuilder.put(e, vertex.getX(), vertex.getY(), vertex.getZ());
@@ -354,7 +360,9 @@ public class OBJBakedModel implements IBakedModel {
                         break;
                     case NORMAL:
                         if (normal != null) {
-                            quadBuilder.put(e, normal.getX(), normal.getY(), normal.getZ());
+                            //System.out.println("Normal X: " + normal.getX() + " y: " + normal.getY() + " z: " + normal.getZ());
+                            final Vertex vertex1 = vertexDef.getVertex();
+                            quadBuilder.put(e, vertex1.getX(), vertex1.getY(), vertex1.getZ());
                         }
                         break;
                     case COLOR:
@@ -367,7 +375,9 @@ public class OBJBakedModel implements IBakedModel {
         }
 
         if (normal != null) {
-            quadBuilder.setQuadOrientation(EnumFacing.getFacingFromVector(normal.getX(), normal.getY(), normal.getZ()));
+           //quadBuilder.setQuadOrientation(EnumFacing.getFacingFromVector(normal.getX(), normal.getY(), normal.getZ()));
+            System.out.println("Side: " + side + " getFacingFromVector:  " + EnumFacing.getFacingFromVector(normal.getX(), normal.getY(), normal.getZ()));
+            //quadBuilder.setQuadOrientation(side);
         }
 
         quads.add(quadBuilder.build());
@@ -428,7 +438,7 @@ public class OBJBakedModel implements IBakedModel {
 
     @Override
     public boolean isAmbientOcclusion() {
-        return false;
+        return true;
     }
 
     @Override
