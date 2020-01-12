@@ -41,10 +41,10 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
         builder.fill(this);
 
         // Fix Traits
-        this.lightOpacity = 255;
+        this.lightOpacity = 0;  // 0 = will not decrease neighbor or skylight values, 255, means absolute darkness, act as a full block essentially to block light.
         this.translucent = false;
-        this.useNeighborBrightness = true;
-        this.fullBlock = true;
+        this.useNeighborBrightness = false;
+        this.fullBlock = false;
 
         // assume first state is the default
         final Boolean opaque = states.get(0).opaque;
@@ -113,7 +113,9 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
     @Override
     public int getLightOpacity(final IBlockState state) {
         final HorizontalBlockStateDefinition definition = this.definition(state);
-        return definition.lightOpacity.orElseGet(() -> super.getLightOpacity(state));
+        int lightOpacity = definition.lightOpacity.orElseGet(() -> super.getLightOpacity(state));
+        //System.out.println("getLightOpacity = " + lightOpacity);
+        return lightOpacity;
     }
 
     @Deprecated
@@ -121,8 +123,11 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
     public int getLightValue(final IBlockState state) {
         if(state != null && this.states != null) {
             final HorizontalBlockStateDefinition definition = this.definition(state);
-            return PrimitiveOptionals.mapToInt(definition.lightEmission, value -> (int) (15f * value)).orElseGet(() -> super.getLightValue(state));
+            int lightValue = PrimitiveOptionals.mapToInt(definition.lightEmission, value -> (int) (15f * value)).orElseGet(() -> super.getLightValue(state));
+            //System.out.println("getLightValue (state) = " + lightValue);
+            return lightValue;
         } else {
+            //System.out.println("getLightValue (fallback) = 0");
             return 0;
         }
     }
@@ -132,6 +137,7 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
         if (state != null) {
             return this.getLightValue(state);
         } else {
+            //System.out.println("getLightValue Fallback2 = 0");
             return 0;
         }
     }
@@ -162,10 +168,11 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
         if(this.states != null) {
             final Boolean opaque = this.definition(state).opaque;
             if(opaque != null) {
+                //System.out.println("isOpaqueCube 1 = " + opaque);
                 return opaque;
             }
         }
-
+        //System.out.println("isOpaqueCube 2 = false");
         return false;
     }
 

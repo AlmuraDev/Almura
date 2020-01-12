@@ -23,6 +23,7 @@ public final class StairBlockImpl extends BlockStairs implements StairBlock {
         builder.fill(this);
         this.definition = builder.singleState();
         this.definition.fill(this);
+        this.useNeighborBrightness = true;
         this.block = builder.block;
     }
 

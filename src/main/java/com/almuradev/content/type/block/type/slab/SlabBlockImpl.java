@@ -34,6 +34,7 @@ public final class SlabBlockImpl extends BlockSlab implements SlabBlock {
         this.definition.fill(this);
         this.isDouble = builder.isDouble;
         this.fullBlock = this.isDouble;
+        this.useNeighborBrightness = true;
         this.single = builder.single;
 
         if (!this.isDouble()) {
