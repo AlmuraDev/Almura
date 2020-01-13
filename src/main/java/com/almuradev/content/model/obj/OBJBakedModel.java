@@ -15,8 +15,6 @@ import com.almuradev.content.model.obj.geometry.VertexDefinition;
 import com.almuradev.content.model.obj.geometry.VertexNormal;
 import com.almuradev.content.model.obj.geometry.VertexTextureCoordinate;
 import com.almuradev.content.model.obj.material.MaterialDefinition;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -36,13 +34,14 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
 import javax.annotation.Nullable;
 import javax.vecmath.Matrix4f;
+import javax.vecmath.Vector3f;
 import javax.vecmath.Vector4f;
 
 @SideOnly(Side.CLIENT)
@@ -53,8 +52,7 @@ public class OBJBakedModel implements IBakedModel {
     private final VertexFormat format;
     @Nullable
     private TextureAtlasSprite spriteOverride;
-    @Nullable
-    private List<BakedQuad> quadCache;
+    private EnumMap<EnumFacing, List<BakedQuad>> quadsByFace;
     private Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter;
     private TextureAtlasSprite particleDiffuseSprite = ModelLoader.White.INSTANCE;
 
@@ -63,6 +61,7 @@ public class OBJBakedModel implements IBakedModel {
         this.model = model;
         this.state = state;
         this.format = format;
+        this.quadsByFace = new EnumMap<>(EnumFacing.class);
         this.bakedTextureGetter = bakedTextureGetter;
         this.spriteOverride = null;
     }
@@ -71,6 +70,7 @@ public class OBJBakedModel implements IBakedModel {
         this.model = mode;
         this.state = state;
         this.format = format;
+        this.quadsByFace = new EnumMap<>(EnumFacing.class);
         this.bakedTextureGetter = resourceLocation -> sprite;
         this.spriteOverride = sprite;
     }
@@ -82,170 +82,33 @@ public class OBJBakedModel implements IBakedModel {
 
     @Override
     public List<BakedQuad> getQuads(@Nullable final IBlockState blockState, @Nullable final EnumFacing side, final long rand) {
-        // Please note that .obj's pass through [ForgeBlockModelRenderer] class which calculates the light correctly on obj's even if they are rendered in Inventory
-        // This is important to know because we are rendering the below on what is usually considered the inventory pass when side == null.
-        // Do Not use BlockModelRenderer class as a template for building how this class works!
-        // Todo:  for some reason ambient occlusion is not working properly.
-        // Note: this method is called 7 times per block.  Side == null, down, up north, south, west, east.
+        List<BakedQuad> quads = null;
 
-        boolean isComplex = true;
-        boolean fallback = false;
-        boolean cachedInventory = false;
+        if (blockState != null && side != null) {
+            quads = this.quadsByFace.get(side);
 
-        for (Group group : this.model.getGroups()) {
-            if (group.getFaces().size() == 6) {
-                isComplex = false;
-                break;
-            }
-        }
+            if (quads == null) {
 
-        if (blockState != null && !isComplex) {
-            if (!blockState.isOpaqueCube()) { // We know that if any block is NOT complex but isOpague is FALL, then assume the model facing direction is broken...
-                fallback = true;
-            }
-        }
+                final Group group = this.model.getGroups().get(0);
+                if (group != null) {
+                    final MaterialDefinition materialDefinition = group.getMaterialDefinition().orElse(null);
+                    final int meta = blockState.getBlock().getMetaFromState(blockState);
 
-        if (blockState == null && this.quadCache != null) {
-            cachedInventory = true;
-        }
-
-        if (isComplex || fallback || cachedInventory) {
-            //System.out.println("Checking cache for: " + blockState);
-            if (this.quadCache != null) {
-                // Skip re-calculating quads as they are cached.
-                //System.out.println("Found cache for state: " + blockState + " face: " + side);
-                //Thread.dumpStack();
-                return this.quadCache;
-            }
-        }
-
-        if (blockState != null) {
-            if (side != null && isComplex) {
-                // Skip rendering
-                return new LinkedList<>();
-            }
-        }
-
-        final List<BakedQuad> quads = new ArrayList<>();
-
-        if (blockState == null || isComplex || fallback) {
-            // Complex, return all.
-            System.out.println("Complex, return all faces");
-            this.model.getGroups().forEach(group -> {
-                final MaterialDefinition materialDefinition = group.getMaterialDefinition().orElse(null);
-                group.getFaces().forEach(face -> this.populateQuadsByFace(materialDefinition, face, quads));
-            });
-            this.quadCache = quads;
-        } else if (side != null) {
-            final Group group = this.model.getGroups().get(0);
-            if (group != null) {
-                final MaterialDefinition materialDefinition = group.getMaterialDefinition().orElse(null);
-                int meta = blockState.getBlock().getMetaFromState(blockState);
-                int index = 0;
-                // Meta values looked up because the facing direction also dictates which face gets rendered and which one doesn't.
-                // Todo: Remove this when we can figure out how to sort out this non-sense.
-                if (meta == 0) {
-                    switch (side) {
-                        case DOWN:
-                            index = 5;
-                            break;
-                        case UP:
-                            index = 0;
-                            break;
-                        case NORTH:
-                            index = 4;
-                            break;
-                        case SOUTH:
-                            index = 2;
-                            break;
-                        case WEST:
-                            index = 1;
-                            break;
-                        case EAST:
-                            index = 3;
-                            break;
+                    for (final Face face : group.getFaces()) {
+                        this.populateQuads(materialDefinition, meta, face);
                     }
                 }
-
-                if (meta == 1) {
-                    switch (side) {
-                        case DOWN:
-                            index = 5;
-                            break;
-                        case UP:
-                            index = 0;
-                            break;
-                        case NORTH:
-                            index = 1;
-                            break;
-                        case SOUTH:
-                            index = 3;
-                            break;
-                        case WEST:
-                            index = 2;
-                            break;
-                        case EAST:
-                            index = 4;
-                            break;
-                    }
-                }
-
-                if (meta == 2) {
-                    switch (side) {
-                        case DOWN:
-                            index = 5;
-                            break;
-                        case UP:
-                            index = 0;
-                            break;
-                        case NORTH:
-                            index = 2;
-                            break;
-                        case SOUTH:
-                            index = 4;
-                            break;
-                        case WEST:
-                            index = 3;
-                            break;
-                        case EAST:
-                            index = 1;
-                            break;
-                    }
-                }
-
-                if (meta == 3) {
-                    switch (side) {
-                        case DOWN:
-                            index = 5;
-                            break;
-                        case UP:
-                            index = 0;
-                            break;
-                        case NORTH:
-                            index = 3;
-                            break;
-                        case SOUTH:
-                            index = 1;
-                            break;
-                        case WEST:
-                            index = 4;
-                            break;
-                        case EAST:
-                            index = 2;
-                            break;
-                    }
-                }
-
-                final Face face = group.getFaces().get(index);
-                if (face != null) {
-                    this.populateQuadsByFace(materialDefinition, face, quads);
-                }
             }
         }
+
+        if (quads == null) {
+            quads = new ArrayList<>();
+        }
+
         return quads;
     }
 
-    private void populateQuadsByFace(@Nullable MaterialDefinition materialDefinition, Face face, List<BakedQuad> quads) {
+    private void populateQuads(@Nullable MaterialDefinition materialDefinition, int meta, Face face) {
         Face particleFace;
         TextureAtlasSprite particleAtlasSprite;
 
@@ -353,9 +216,9 @@ public class OBJBakedModel implements IBakedModel {
                         quadBuilder.put(e, diffuseSprite.getInterpolatedU(u * 16f), diffuseSprite.getInterpolatedV(v * 16f));
                         break;
                     case NORMAL:
-                        if (normal != null) {
-                            quadBuilder.put(e, normal.getX(), normal.getY(), normal.getZ());
-                        }
+                        final Vector3f vNormal = new Vector3f(normal.getX(), normal.getY(), normal.getZ());
+                        transformation.transformNormal(vNormal);
+                        quadBuilder.put(e, vNormal.x, vNormal.y, vNormal.z);
                         break;
                     case COLOR:
                         quadBuilder.put(e, 1f, 1f, 1f, 1f);
@@ -366,11 +229,14 @@ public class OBJBakedModel implements IBakedModel {
             }
         }
 
-        if (normal != null) {
-            quadBuilder.setQuadOrientation(EnumFacing.getFacingFromVector(normal.getX(), normal.getY(), normal.getZ()));
-        }
+        EnumFacing facing = EnumFacing.getFacingFromVector(normal.getX(), normal.getY(), normal.getZ());
+        //facing = this.getCorrectedFacingForFacing(meta, facing);
+
+        final List<BakedQuad> quads = this.quadsByFace.computeIfAbsent(facing, k -> new ArrayList<>());
 
         quads.add(quadBuilder.build());
+
+        quadBuilder.setQuadOrientation(facing);
 
         if (particleFace != null && particleAtlasSprite != null) {
             // For now, last face = particle generation
@@ -426,9 +292,92 @@ public class OBJBakedModel implements IBakedModel {
         return particleSprite;
     }
 
+    private EnumFacing getCorrectedFacingForFacing(int meta, EnumFacing side) {
+        EnumFacing facing = EnumFacing.UP;
+
+        if (meta == 0) {
+            switch (side) {
+                case DOWN:
+                    facing = EnumFacing.EAST;
+                    break;
+                case NORTH:
+                    facing = EnumFacing.WEST;
+                    break;
+                case SOUTH:
+                    facing = EnumFacing.NORTH;
+                    break;
+                case EAST:
+                    facing = EnumFacing.SOUTH;
+                    break;
+            }
+        }
+
+        if (meta == 1) {
+            switch (side) {
+                case DOWN:
+                    facing = EnumFacing.EAST;
+                    break;
+                case UP:
+                    facing = EnumFacing.DOWN;
+                    break;
+                case SOUTH:
+                    facing = EnumFacing.SOUTH;
+                    break;
+                case WEST:
+                    facing = EnumFacing.NORTH;
+                    break;
+                case EAST:
+                    facing = EnumFacing.WEST;
+                    break;
+            }
+        }
+
+        if (meta == 2) {
+            switch (side) {
+                case DOWN:
+                    facing = EnumFacing.EAST;
+                    break;
+                case UP:
+                    facing = EnumFacing.DOWN;
+                    break;
+                case NORTH:
+                    facing = EnumFacing.NORTH;
+                    break;
+                case SOUTH:
+                    facing = EnumFacing.WEST;
+                    break;
+                case WEST:
+                    facing = EnumFacing.SOUTH;
+                    break;
+            }
+        }
+
+        if (meta == 3) {
+            switch (side) {
+                case DOWN:
+                    facing = EnumFacing.EAST;
+                    break;
+                case UP:
+                    facing = EnumFacing.DOWN;
+                    break;
+                case NORTH:
+                    facing = EnumFacing.SOUTH;
+                    break;
+                case WEST:
+                    facing = EnumFacing.WEST;
+                    break;
+                case EAST:
+                    facing = EnumFacing.NORTH;
+                    break;
+            }
+        }
+
+        return facing;
+    }
+
     @Override
     public boolean isAmbientOcclusion() {
-        return false;
+        return true;
     }
 
     @Override
