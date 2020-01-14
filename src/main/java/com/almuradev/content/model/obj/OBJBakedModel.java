@@ -130,7 +130,7 @@ public class OBJBakedModel implements IBakedModel {
 
         if (blockState == null || isComplex || fallback) {
             // Complex, return all.
-            System.out.println("Complex, return all faces");
+            //System.out.println("Complex, return all faces");
             this.model.getGroups().forEach(group -> {
                 final MaterialDefinition materialDefinition = group.getMaterialDefinition().orElse(null);
                 group.getFaces().forEach(face -> this.populateQuadsByFace(materialDefinition, face, quads));

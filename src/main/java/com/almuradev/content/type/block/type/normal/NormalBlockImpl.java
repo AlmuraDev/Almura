@@ -7,6 +7,7 @@
  */
 package com.almuradev.content.type.block.type.normal;
 
+import com.almuradev.content.type.block.type.horizontal.state.HorizontalBlockStateDefinition;
 import com.almuradev.content.type.block.type.normal.state.NormalBlockStateDefinition;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -28,9 +29,9 @@ public final class NormalBlockImpl extends Block implements NormalBlock {
         if (this.definition.opaque != null) this.fullBlock = this.definition.opaque;
 
         // Fix Traits
-        this.lightOpacity = 255;
+        this.lightOpacity = 0;
         this.translucent = false;
-        this.useNeighborBrightness = true;
+        this.useNeighborBrightness = false;
         this.fullBlock = true;
     }
 
@@ -59,6 +60,15 @@ public final class NormalBlockImpl extends Block implements NormalBlock {
     @Override
     public boolean isBlockNormalCube(IBlockState state) {
         return state.getMaterial().blocksMovement() && state.isFullCube();
+    }
+
+    @Deprecated
+    @Override
+    public int getLightOpacity(final IBlockState state) {
+        final NormalBlockStateDefinition definition = this.definition(state);
+        int lightOpacity = definition.lightOpacity.orElseGet(() -> super.getLightOpacity(state));
+        //System.out.println("getLightOpacity = " + lightOpacity);
+        return lightOpacity;
     }
 
     @Deprecated
