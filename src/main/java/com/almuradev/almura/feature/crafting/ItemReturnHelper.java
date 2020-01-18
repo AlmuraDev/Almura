@@ -14,6 +14,13 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.storage.loot.LootEntry;
+import net.minecraft.world.storage.loot.LootEntryItem;
+import net.minecraft.world.storage.loot.LootPool;
+import net.minecraft.world.storage.loot.RandomValueRange;
+import net.minecraft.world.storage.loot.conditions.LootCondition;
+import net.minecraft.world.storage.loot.functions.LootFunction;
+import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
@@ -23,6 +30,34 @@ public class ItemReturnHelper implements Witness {
 
     private boolean debug = false;
 
+    @SubscribeEvent
+    public void lootLoad(LootTableLoadEvent lootTableEvent) {
+        if (lootTableEvent.getName().toString().equals("minecraft:entities/chicken")) {
+            LootEntry chicken_entry = new LootEntryItem(GameRegistry.makeItemStack("almura:normal/ingredient/chickenleg_raw", 0, 1, null).item, 100, 1, new LootFunction[0], new LootCondition[0], "chickenleg_raw");
+            LootPool chicken_pool = new LootPool(new LootEntry[]{chicken_entry}, new LootCondition[0], new RandomValueRange(2), new RandomValueRange(0,1), "chicken_table");
+            lootTableEvent.getTable().addPool(chicken_pool);
+        }
+        if (lootTableEvent.getName().toString().equals("minecraft:entities/cow")) {
+            LootEntry cow_entry = new LootEntryItem(GameRegistry.makeItemStack("almura:normal/ingredient/roastbeef_raw", 0, 1, null).item, 100, 1, new LootFunction[0], new LootCondition[0], "roastbeef_raw");
+            LootPool cow_pool = new LootPool(new LootEntry[]{cow_entry}, new LootCondition[0], new RandomValueRange(2), new RandomValueRange(0,1), "cow_table");
+            lootTableEvent.getTable().addPool(cow_pool);
+        }
+        if (lootTableEvent.getName().toString().equals("minecraft:entities/pig")) {
+            LootEntry pig0_entry = new LootEntryItem(GameRegistry.makeItemStack("almura:normal/ingredient/porkbelly_raw", 0, 1, null).item, 100, 1, new LootFunction[0], new LootCondition[0], "porkbelly_raw");
+            LootPool pig0_pool = new LootPool(new LootEntry[]{pig0_entry}, new LootCondition[0], new RandomValueRange(1), new RandomValueRange(0,1), "pig_table");
+            lootTableEvent.getTable().addPool(pig0_pool);
+
+            LootEntry pig1_entry = new LootEntryItem(GameRegistry.makeItemStack("almura:normal/ingredient/hamshank", 0, 1, null).item, 100, 1, new LootFunction[0], new LootCondition[0], "hamshank");
+            LootPool pig1_pool = new LootPool(new LootEntry[]{pig1_entry}, new LootCondition[0], new RandomValueRange(2), new RandomValueRange(0,1), "pig_table");
+            lootTableEvent.getTable().addPool(pig1_pool);
+        }
+        if (lootTableEvent.getName().toString().equals("minecraft:entities/sheep")) {
+            LootEntry sheep_entry = new LootEntryItem(GameRegistry.makeItemStack("almura:normal/ingredient/lambchop_raw", 0, 1, null).item, 100, 1, new LootFunction[0], new LootCondition[0], "lambchop_raw");
+            LootPool sheep_pool = new LootPool(new LootEntry[]{sheep_entry}, new LootCondition[0], new RandomValueRange(2), new RandomValueRange(0,1), "sheep_table");
+            lootTableEvent.getTable().addPool(sheep_pool);
+        }
+    }
+    
     // Sunflower Destroy Action Modifier.
     @SubscribeEvent
     public void onHarvestBlock(BlockEvent.HarvestDropsEvent event) {
