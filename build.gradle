@@ -102,6 +102,9 @@ repositories {
     maven {
         url = "https://raw.github.com/FabioZumbi12/UltimateChat/mvn-repo/"
     }
+    flatDir {
+        dirs "lib"
+    }
 }
 
 configurations.all {
@@ -130,7 +133,9 @@ dependencies {
     //compile 'me.lucko.luckperms:luckperms-api:4.2'
     //compile 'me.ryanhamshire:griefprevention:1.12.2-4.3.0.646'
     compile "net.luckperms:api:5.0"
-    compile "com.github.bloodmc:GriefDefender:master-SNAPSHOT"
+    compile "com.github.bloodmc:GriefDefenderAPI:master-SNAPSHOT"
+    //compile "com.github.bloodmc:GriefDefender:griefdefender-sponge-1.2.6-B1"
+    compile files('lib/griefdefender-sponge-1.2.6-B1.jar')
     compile "org.jooq:jooq:${project.jooqVersion}"
     compile "org.jooq:jooq-meta:${project.jooqVersion}"
     compile "org.jooq:jooq-codegen:${project.jooqVersion}"
