@@ -47,6 +47,7 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -313,7 +314,7 @@ public class StoreScreen extends BasicScreen {
     }
 
     @Override
-    protected void mouseClicked(final int x, final int y, final int button) {
+    protected void mouseClicked(final int x, final int y, final int button) throws IOException {
         this.getTabContainer(x, y).ifPresent(tab -> {
             final SideType targetSide = (SideType) tab.getData();;
 

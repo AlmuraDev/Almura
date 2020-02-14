@@ -49,6 +49,7 @@ import org.spongepowered.api.text.Text;
 
 import javax.inject.Inject;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Random;
 import java.util.function.Consumer;
@@ -234,7 +235,7 @@ public final class PlayerDiedGUI extends BasicScreen {
     }
 
     @Override
-    protected void keyTyped(char keyChar, int keyCode) {
+    protected void keyTyped(char keyChar, int keyCode) throws IOException {
         if (keyCode == Keyboard.KEY_ESCAPE) {
             if (this.player.isDead) {
                 return;
@@ -248,7 +249,7 @@ public final class PlayerDiedGUI extends BasicScreen {
     }
 
     @Override
-    protected void mouseClicked(int x, int y, int button) {
+    protected void mouseClicked(int x, int y, int button) throws IOException {
         super.mouseClicked(x, y, button);
         this.lastUpdate = 0; // Reset the timer when mouse is pressed.
     }

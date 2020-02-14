@@ -44,11 +44,11 @@ public class ItemReturnHelper implements Witness {
         }
         if (lootTableEvent.getName().toString().equals("minecraft:entities/pig")) {
             LootEntry pig0_entry = new LootEntryItem(GameRegistry.makeItemStack("almura:normal/ingredient/porkbelly_raw", 0, 1, null).item, 100, 1, new LootFunction[0], new LootCondition[0], "porkbelly_raw");
-            LootPool pig0_pool = new LootPool(new LootEntry[]{pig0_entry}, new LootCondition[0], new RandomValueRange(1), new RandomValueRange(0,1), "pig_table");
+            LootPool pig0_pool = new LootPool(new LootEntry[]{pig0_entry}, new LootCondition[0], new RandomValueRange(1), new RandomValueRange(0,1), "pig_table0");
             lootTableEvent.getTable().addPool(pig0_pool);
 
             LootEntry pig1_entry = new LootEntryItem(GameRegistry.makeItemStack("almura:normal/ingredient/hamshank", 0, 1, null).item, 100, 1, new LootFunction[0], new LootCondition[0], "hamshank");
-            LootPool pig1_pool = new LootPool(new LootEntry[]{pig1_entry}, new LootCondition[0], new RandomValueRange(2), new RandomValueRange(0,1), "pig_table");
+            LootPool pig1_pool = new LootPool(new LootEntry[]{pig1_entry}, new LootCondition[0], new RandomValueRange(2), new RandomValueRange(0,1), "pig_table1");
             lootTableEvent.getTable().addPool(pig1_pool);
         }
         if (lootTableEvent.getName().toString().equals("minecraft:entities/sheep")) {
@@ -57,7 +57,7 @@ public class ItemReturnHelper implements Witness {
             lootTableEvent.getTable().addPool(sheep_pool);
         }
     }
-    
+
     // Sunflower Destroy Action Modifier.
     @SubscribeEvent
     public void onHarvestBlock(BlockEvent.HarvestDropsEvent event) {

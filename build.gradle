@@ -90,6 +90,9 @@ repositories {
     maven {
         url = "https://raw.github.com/FabioZumbi12/UltimateChat/mvn-repo/"
     }
+    flatDir {
+        dirs "lib"
+    }
 }
 
 configurations.all {
@@ -107,7 +110,7 @@ dependencies {
     compile 'net.kyori:lunar:1.0.5-SNAPSHOT'
     compile 'net.kyori:membrane:1.0.5'
     compile 'net.kyori:violet:1.0.0'
-    deobfCompile ('com.almuradev:malisiscore:1.12.2-6.5.0-SNAPSHOT') {
+    deobfCompile ('com.almuradev:malisiscore:1.12.2-6.5.2-SNAPSHOT') {
         transitive = false
     }
     compile 'br.net.fabiozumbi12.UltimateChat:UltimateChat-Sponge-7:1.8.9'
@@ -116,7 +119,7 @@ dependencies {
     compile 'com.almuradev:toolbox:1.0.0-SNAPSHOT'
     compile 'io.github.nucleuspowered:nucleus-api:1.13.2-S7.1'
     compile 'me.lucko.luckperms:luckperms-api:4.2'
-    compile 'me.ryanhamshire:griefprevention:1.12.2-4.3.0.646'
+    compile 'me.ryanhamshire:griefprevention:1.12.2-4.3.0.692'
     compile "org.jooq:jooq:${project.jooqVersion}"
     compile "org.jooq:jooq-meta:${project.jooqVersion}"
     compile "org.jooq:jooq-codegen:${project.jooqVersion}"
