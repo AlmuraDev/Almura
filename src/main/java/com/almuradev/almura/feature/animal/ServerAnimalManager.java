@@ -60,15 +60,15 @@ public final class ServerAnimalManager extends Witness.Impl  {
         final ItemStackSnapshot snapshot = event.getContext().get(EventContextKeys.USED_ITEM).orElse(null);
 
         // Cheat and grow an animal!
-        if (snapshot != null && event.getTargetEntity() instanceof EntityAnimal) {
-            EntityAnimal animal = (EntityAnimal) event.getTargetEntity();
+        //if (snapshot != null && event.getTargetEntity() instanceof EntityAnimal) {
+          //  EntityAnimal animal = (EntityAnimal) event.getTargetEntity();
 
-            if (animal != null && animal.getGrowingAge() < 0 && canGrowEntityWithItem(event.getTargetEntity(),snapshot.getType().getName())) {
-                int age = (-animal.getGrowingAge()) / 2;
-                int bumpAge = age / 20;
-                animal.addGrowth(bumpAge);
-            }
-        }
+            //if (animal != null && animal.getGrowingAge() < 0 && canGrowEntityWithItem(event.getTargetEntity(),snapshot.getType().getName())) {
+              //  int age = (-animal.getGrowingAge()) / 2;
+               // int bumpAge = age / 20;
+               // animal.addGrowth(bumpAge);
+            //}
+        //}
 
         if (snapshot == null || snapshot.getType() == ItemTypes.NONE) {
             if (snapshot == null) {

@@ -24,6 +24,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -59,7 +60,10 @@ public abstract class MixinEntityAnimal extends EntityAgeable implements IAnimal
 
             if (this.isChild() && this.isCustomBreedingItem(itemstack)){
                 this.consumeItemFromStack(player, itemstack);
-                this.ageUp((int)((float)(-this.getGrowingAge() / 20) * 0.1F), true);
+                this.world.spawnParticle(EnumParticleTypes.VILLAGER_HAPPY, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + 0.5D + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, 0.0D, 0.0D, 0.0D);
+                int age = (-this.getGrowingAge()) / 2;
+                int bumpAge = age / 20;
+                this.addGrowth(bumpAge);
                 return true;
             }
         }
