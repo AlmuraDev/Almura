@@ -76,6 +76,7 @@ public abstract class MixinEntityAnimal extends EntityAgeable implements IAnimal
             switch (itemName.toUpperCase()) {
                 case "ITEM.ALMURA.FOOD.FOOD.CORN":
                 case "ITEM.ALMURA.FOOD.FOOD.SOYBEAN":
+                case "ITEM.ALMURA.NORMAL.CROP.ALFALFA_ITEM":
                 case "ITEM.WHEAT":
                     return true;
 

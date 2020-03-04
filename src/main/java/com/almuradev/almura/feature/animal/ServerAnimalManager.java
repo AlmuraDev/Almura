@@ -10,11 +10,14 @@ package com.almuradev.almura.feature.animal;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.core.event.Witness;
+import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.passive.EntityCow;
 import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.passive.EntitySheep;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
@@ -26,6 +29,7 @@ import org.spongepowered.api.entity.living.animal.Horse;
 import org.spongepowered.api.entity.living.animal.Pig;
 import org.spongepowered.api.entity.living.animal.Sheep;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.cause.EventContextKey;
 import org.spongepowered.api.event.cause.EventContextKeys;
 import org.spongepowered.api.event.entity.BreedEntityEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
@@ -41,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 public final class ServerAnimalManager extends Witness.Impl  {
     private static final Random RANDOM = new Random();
@@ -53,6 +58,18 @@ public final class ServerAnimalManager extends Witness.Impl  {
         }
 
         final ItemStackSnapshot snapshot = event.getContext().get(EventContextKeys.USED_ITEM).orElse(null);
+
+        // Cheat and grow an animal!
+        if (snapshot != null && event.getTargetEntity() instanceof EntityAnimal) {
+            EntityAnimal animal = (EntityAnimal) event.getTargetEntity();
+
+            if (animal != null && animal.getGrowingAge() < 0 && canGrowEntityWithItem(event.getTargetEntity(),snapshot.getType().getName())) {
+                int age = (-animal.getGrowingAge()) / 2;
+                int bumpAge = age / 20;
+                animal.addGrowth(bumpAge);
+            }
+        }
+
         if (snapshot == null || snapshot.getType() == ItemTypes.NONE) {
             if (snapshot == null) {
                 //System.out.println("onInteract: snapshot is null");
@@ -168,24 +185,32 @@ public final class ServerAnimalManager extends Witness.Impl  {
 
         // Cows
         if (baby.getType() == EntityTypes.COW) {
-            if (parentAItemName.equalsIgnoreCase("almura:food/food/soybean") || parentAItemName.equalsIgnoreCase("almura:food/food/corn")) {
+            if (Stream.of("almura:food/food/soybean", "almura:food/food/corn", "almura:normal/crop/alfalfa_item").anyMatch(parentAItemName::equalsIgnoreCase)) {
                 additionalSpawnCount = 1; // This is specifically NOT +=
-                spawnChance += 20;
+                spawnChance += 15;
             }
-            if (parentBItemName.equalsIgnoreCase("almura:food/food/soybean") || parentBItemName.equalsIgnoreCase("almura:food/food/corn")) {
+            if (Stream.of("almura:food/food/soybean", "almura:food/food/corn", "almura:normal/crop/alfalfa_item").anyMatch(parentBItemName::equalsIgnoreCase)) {
                 additionalSpawnCount = 1; // This is specifically NOT +=
-                spawnChance += 20;
+                spawnChance += 15;
+            }
+            if (Stream.of("almura:normal/crop/alfalfa_item").anyMatch(parentAItemName::equalsIgnoreCase)) {
+                additionalSpawnCount = 1; // This is specifically NOT +=
+                spawnChance += 25;
+            }
+            if (Stream.of("almura:normal/crop/alfalfa_item").anyMatch(parentBItemName::equalsIgnoreCase)) {
+                additionalSpawnCount = 1; // This is specifically NOT +=
+                spawnChance += 25;
             }
         }
 
         // Pigs
         if (baby.getType() == EntityTypes.PIG) {
-            if (parentAItemName.equalsIgnoreCase("almura:food/food/soybean") || parentAItemName.equalsIgnoreCase("almura:food/food/corn")) {
+            if (Stream.of("almura:food/food/soybean", "almura:food/food/corn").anyMatch(parentAItemName::equalsIgnoreCase)) {
                 additionalSpawnCount += 1;
                 spawnChance += 20;
             }
 
-            if (parentBItemName.equalsIgnoreCase("almura:food/food/soybean") || parentBItemName.equalsIgnoreCase("almura:food/food/corn")) {
+            if (Stream.of("almura:food/food/soybean", "almura:food/food/corn").anyMatch(parentBItemName::equalsIgnoreCase)) {
                 additionalSpawnCount += 1;
                 spawnChance += 20;
             }
@@ -193,12 +218,12 @@ public final class ServerAnimalManager extends Witness.Impl  {
 
         // Chickens
         if (baby.getType() == EntityTypes.CHICKEN) {
-            if (parentAItemName.equalsIgnoreCase("almura:food/food/soybean") || parentAItemName.equalsIgnoreCase("almura:food/food/corn")) {
+            if (Stream.of("almura:food/food/soybean", "almura:food/food/corn").anyMatch(parentAItemName::equalsIgnoreCase)) {
                 additionalSpawnCount += 2;
                 spawnChance += 25;
             }
 
-            if (parentBItemName.equalsIgnoreCase("almura:food/food/soybean") || parentBItemName.equalsIgnoreCase("almura:food/food/corn")) {
+            if (Stream.of("almura:food/food/soybean", "almura:food/food/corn").anyMatch(parentBItemName::equalsIgnoreCase)) {
                 additionalSpawnCount += 2;
                 spawnChance += 25;
             }
@@ -206,12 +231,12 @@ public final class ServerAnimalManager extends Witness.Impl  {
 
         // Sheep
         if (baby.getType() == EntityTypes.SHEEP) {
-            if (parentAItemName.equalsIgnoreCase("almura:food/food/soybean") || parentAItemName.equalsIgnoreCase("almura:food/food/corn")) {
+            if (Stream.of("almura:food/food/soybean", "almura:food/food/corn").anyMatch(parentAItemName::equalsIgnoreCase)) {
                 additionalSpawnCount += 1;
                 spawnChance += 20;
             }
 
-            if (parentBItemName.equalsIgnoreCase("almura:food/food/soybean") || parentBItemName.equalsIgnoreCase("almura:food/food/corn")) {
+            if (Stream.of("almura:food/food/soybean", "almura:food/food/corn").anyMatch(parentBItemName::equalsIgnoreCase)) {
                 additionalSpawnCount += 1;
                 spawnChance += 20;
             }
@@ -222,5 +247,19 @@ public final class ServerAnimalManager extends Witness.Impl  {
         }
 
         return 0;
+    }
+
+    public boolean canGrowEntityWithItem(Entity entity, String itemName) {
+        if (entity.getType() == EntityTypes.PIG || entity.getType() == EntityTypes.CHICKEN || entity.getType() == EntityTypes.SHEEP) {
+            if (itemName.equalsIgnoreCase("almura:food/food/soybean") || itemName.equalsIgnoreCase("almura:food/food/corn")) {
+                return true;
+            }
+        }
+        if (entity.getType() == EntityTypes.COW) {
+            if (itemName.equalsIgnoreCase("almura:food/food/soybean") || itemName.equalsIgnoreCase("almura:food/food/corn") || itemName.equalsIgnoreCase("almura:normal/crop/alfalfa_item")) {
+                return true;
+            }
+        }
+        return false;
     }
 }
