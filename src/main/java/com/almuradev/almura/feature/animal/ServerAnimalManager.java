@@ -54,6 +54,15 @@ public final class ServerAnimalManager extends Witness.Impl  {
 
         final ItemStackSnapshot snapshot = event.getContext().get(EventContextKeys.USED_ITEM).orElse(null);
         if (snapshot == null || snapshot.getType() == ItemTypes.NONE) {
+            if (snapshot == null) {
+                //System.out.println("onInteract: snapshot is null");
+                // Expected with no item in hand
+            } else {
+                if (snapshot.getType() == ItemTypes.NONE) {
+                    //System.out.println("onInteract: ItemTypes.NONE");
+                }
+            }
+
             return;
         }
 
@@ -68,8 +77,13 @@ public final class ServerAnimalManager extends Witness.Impl  {
             return;
         }
 
-        final ItemStackSnapshot parentASnapshot = this.usedItemCache.remove(parents.get(0).getUniqueId());
-        final ItemStackSnapshot parentBSnapshot = this.usedItemCache.remove(parents.get(1).getUniqueId());
+        final ItemStackSnapshot parentASnapshot = this.usedItemCache.get(parents.get(0).getUniqueId());
+        final ItemStackSnapshot parentBSnapshot = this.usedItemCache.get(parents.get(1).getUniqueId());
+
+        if (parentBSnapshot == null) {
+            System.out.println("onBreedEntity:  parentBSnapshot NULL");
+            System.out.println("Value: " + parents.get(1));
+        }
         
         final Ageable child = event.getOffspringEntity();
 
@@ -80,6 +94,7 @@ public final class ServerAnimalManager extends Witness.Impl  {
         }
 
         final int additionalSpawnCount = this.getAdditionalSpawnCount(child, parentASnapshot, parentBSnapshot);
+        //System.out.println("onBreedEntity: additionalSpawnCount: " + additionalSpawnCount);
 
         for (int i = 0; i < additionalSpawnCount; i++) {
             final Ageable other = (Ageable) child.getWorld().createEntity(child.getType(), child.getLocation().getPosition());
@@ -90,7 +105,7 @@ public final class ServerAnimalManager extends Witness.Impl  {
             if (this.colorifyNameplate(other)) {
                 other.offer(Keys.DISPLAY_NAME, Text.of(TextColors.AQUA, child.getType().getTranslation().get()));
             }
-
+            System.out.println("Spawned Twin!: " + other);
             child.getWorld().spawnEntity(other);
         }
 
@@ -100,6 +115,10 @@ public final class ServerAnimalManager extends Witness.Impl  {
                     SpongeTexts.COLOR_CHAR)));
             }
         });
+
+        //Clean up:
+        this.usedItemCache.remove(parents.get(0));
+        this.usedItemCache.remove(parents.get(1));
     }
 
     @Listener
@@ -123,7 +142,6 @@ public final class ServerAnimalManager extends Witness.Impl  {
     }
 
     private boolean isValidEntity(final Entity entity) {
-        System.out.println("Valid: " + entity);
         return entity instanceof Cow || entity instanceof Chicken || entity instanceof Horse || entity instanceof Pig || entity instanceof Sheep;
     }
 
@@ -134,7 +152,11 @@ public final class ServerAnimalManager extends Witness.Impl  {
     private int getAdditionalSpawnCount(final Ageable baby, final ItemStackSnapshot parentAItem, final ItemStackSnapshot parentBItem) {
         checkNotNull(baby);
         checkNotNull(parentAItem);
-        checkNotNull(parentBItem);
+        //checkNotNull(parentBItem);
+        if (parentBItem == null) {
+            //System.out.println("Almura: SpongeForge bug, parentBItem NULL");
+            return 0;
+        }
 
         final int randomChance = RANDOM.nextInt(100);
         int additionalSpawnCount = 0;  //Physical count of additional spawn besides the original within the event.
@@ -148,11 +170,11 @@ public final class ServerAnimalManager extends Witness.Impl  {
         if (baby.getType() == EntityTypes.COW) {
             if (parentAItemName.equalsIgnoreCase("almura:food/food/soybean") || parentAItemName.equalsIgnoreCase("almura:food/food/corn")) {
                 additionalSpawnCount = 1; // This is specifically NOT +=
-                spawnChance += 10;
+                spawnChance += 20;
             }
             if (parentBItemName.equalsIgnoreCase("almura:food/food/soybean") || parentBItemName.equalsIgnoreCase("almura:food/food/corn")) {
                 additionalSpawnCount = 1; // This is specifically NOT +=
-                spawnChance += 10;
+                spawnChance += 20;
             }
         }
 
@@ -160,12 +182,12 @@ public final class ServerAnimalManager extends Witness.Impl  {
         if (baby.getType() == EntityTypes.PIG) {
             if (parentAItemName.equalsIgnoreCase("almura:food/food/soybean") || parentAItemName.equalsIgnoreCase("almura:food/food/corn")) {
                 additionalSpawnCount += 1;
-                spawnChance += 10;
+                spawnChance += 20;
             }
 
             if (parentBItemName.equalsIgnoreCase("almura:food/food/soybean") || parentBItemName.equalsIgnoreCase("almura:food/food/corn")) {
                 additionalSpawnCount += 1;
-                spawnChance += 10;
+                spawnChance += 20;
             }
         }
 
@@ -178,7 +200,7 @@ public final class ServerAnimalManager extends Witness.Impl  {
 
             if (parentBItemName.equalsIgnoreCase("almura:food/food/soybean") || parentBItemName.equalsIgnoreCase("almura:food/food/corn")) {
                 additionalSpawnCount += 2;
-                spawnChance += 15;
+                spawnChance += 25;
             }
         }
 
@@ -186,12 +208,12 @@ public final class ServerAnimalManager extends Witness.Impl  {
         if (baby.getType() == EntityTypes.SHEEP) {
             if (parentAItemName.equalsIgnoreCase("almura:food/food/soybean") || parentAItemName.equalsIgnoreCase("almura:food/food/corn")) {
                 additionalSpawnCount += 1;
-                spawnChance += 10;
+                spawnChance += 20;
             }
 
             if (parentBItemName.equalsIgnoreCase("almura:food/food/soybean") || parentBItemName.equalsIgnoreCase("almura:food/food/corn")) {
                 additionalSpawnCount += 1;
-                spawnChance += 10;
+                spawnChance += 20;
             }
         }
 
