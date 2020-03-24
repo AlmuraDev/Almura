@@ -184,15 +184,16 @@ public class MultiplayerScreen extends PanoramicScreen {
         e.query.sendQuery();
 
         // Determine if it is in the process of restarting
-        if (e.query.getPlayers() == null || e.query.getMaxPlayers() == null) {
+        if (e.query.getMaxPlayers().equalsIgnoreCase("-1")) {
           e.status = ServerStatus.RESTARTING;
-          return;
+          e.players = 0;
+          e.maxPlayers = 0;
+        } else {
+          // Update player counts
+          e.players = Integer.valueOf(e.query.getPlayers());
+          e.maxPlayers = Integer.valueOf(e.query.getMaxPlayers());
+          e.motd = e.query.getMotd();
         }
-
-        // Update player counts
-        e.players = Integer.valueOf(e.query.getPlayers());
-        e.maxPlayers = Integer.valueOf(e.query.getMaxPlayers());
-        e.motd = e.query.getMotd();
       }
     });
   }
@@ -258,6 +259,7 @@ public class MultiplayerScreen extends PanoramicScreen {
       } else {
         this.serverStatusLabel.setText(this.item.status.getFormattedName());
       }
+
 
       // Update MOTD tooltip
       this.setTooltip((this.item.motd == null || this.item.motd.isEmpty()) ? null : new UITooltip(this.getGui(), this.item.motd));

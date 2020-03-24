@@ -123,7 +123,7 @@ public class Query {
         challengeInteger = Integer.parseInt(new String(buffer).trim());
       }
       sendPacket(socket, this.address, 0xFE, 0xFD, 0x00, 0x01, 0x01, 0x01, 0x01, challengeInteger >> 24, challengeInteger >> 16,
-        challengeInteger >> 8, challengeInteger, 0x00, 0x00, 0x00, 0x00);
+          challengeInteger >> 8, challengeInteger, 0x00, 0x00, 0x00, 0x00);
       final int length = receivePacket(socket, receiveData).getLength();
       this.values = new HashMap<>();
       final AtomicInteger cursor = new AtomicInteger(5);
@@ -145,6 +145,7 @@ public class Query {
           this.values.put(s, v);
         }
       }
+
       readString(receiveData, cursor);
       final Set<String> players = new HashSet<>();
       while (cursor.get() < length) {
@@ -155,6 +156,8 @@ public class Query {
       }
       this.onlineUsernames = players.toArray(new String[0]);
     } catch (final IOException ignored) {
+      // Threw exception during query which means server is restarting...
+      this.maxPlayers = "-1";
     }
   }
 
