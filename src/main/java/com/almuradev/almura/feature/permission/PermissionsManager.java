@@ -11,11 +11,12 @@ import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.feature.title.ServerTitleManager;
 import com.almuradev.almura.feature.title.network.ClientboundAvailableTitlesResponsePacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
+import com.almuradev.almura.shared.util.UchatUtil;
 import com.almuradev.core.event.Witness;
 import io.github.nucleuspowered.nucleus.api.service.NucleusNicknameService;
-import me.lucko.luckperms.api.LuckPermsApi;
-import me.lucko.luckperms.api.User;
-import me.lucko.luckperms.api.event.user.track.UserTrackEvent;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.event.user.track.UserTrackEvent;
+import net.luckperms.api.model.user.User;
 import org.apache.commons.lang3.text.WordUtils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;
@@ -45,7 +46,7 @@ public final class PermissionsManager implements Witness {
     private final ServerNotificationManager notificationManager;
     private final ServerTitleManager titleManager;
 
-    private LuckPermsApi permApi;
+    private LuckPerms permApi;
     private NucleusNicknameService nickApi;
 
     @Inject
@@ -65,19 +66,27 @@ public final class PermissionsManager implements Witness {
     public void onServiceChange(ChangeServiceProviderEvent event) {
         if (event.getNewProviderRegistration().getService().equals(NucleusNicknameService.class)) {
             this.nickApi = (NucleusNicknameService) event.getNewProviderRegistration().getProvider();
-        } else if (event.getNewProviderRegistration().getService().equals(LuckPermsApi.class)) {
-            this.permApi = (LuckPermsApi) event.getNewProviderRegistration().getProvider();
+        } else if (event.getNewProviderRegistration().getService().equals(LuckPerms.class)) {
+            this.permApi = (LuckPerms) event.getNewProviderRegistration().getProvider();
 
             this.permApi.getEventBus().subscribe(UserTrackEvent.class, e -> {
-
-                final UUID targetUniqueId = e.getUser().getUuid();
+                final UUID targetUniqueId = e.getUser().getUniqueId();
                 final Player target = Sponge.getServer().getPlayer(targetUniqueId).orElse(null);
                 final String toGroup = e.getGroupTo().orElse(null);
 
-                if (target != null && toGroup != null && this.nickApi != null) {
-                    final Text nick = this.nickApi.getNickname(target).orElse(Text.of(target.getName()));
+                if (targetUniqueId != null && toGroup != null && this.nickApi != null) {
+                    Text nick = Text.of("");
+                    // Note: target is null when player is offline.
+                    if (target != null) {
+                        nick = this.nickApi.getNickname(target).orElse(Text.of(target.getName()));
+                    } else {
+                        nick = Text.of(WordUtils.capitalize(e.getUser().getUsername().toLowerCase()));
+                    }
                     final String fancyGroupName = WordUtils.capitalize(toGroup.toLowerCase());
                     if (e.getAction().name().equalsIgnoreCase("promotion")) {
+                        // Broadcast Promotion to Discord
+                        UchatUtil.relayMessageToDiscord(":military_medal:", Text.of(TextColors.AQUA, nick.toPlain(), TextColors.WHITE, " has been promoted to: ", TextColors.GOLD, fancyGroupName).toPlain(), true);
+
                         for (final Player onlinePlayer : Sponge.getServer().getOnlinePlayers()) {
                             if (!onlinePlayer.getUniqueId().equals(targetUniqueId)) {
                                 this.notificationManager
@@ -92,6 +101,9 @@ public final class PermissionsManager implements Witness {
                     }
 
                     if (e.getAction().name().equalsIgnoreCase("demotion")) {
+                        // Broadcast demotion to Discord
+                        UchatUtil.relayMessageToDiscord(":violin:", Text.of(TextColors.AQUA, nick.toPlain(), TextColors.WHITE, " has been demoted to: ", TextColors.GOLD, fancyGroupName).toPlain(), true);
+
                         for (final Player onlinePlayer : Sponge.getServer().getOnlinePlayers()) {
                             if (!onlinePlayer.getUniqueId().equals(targetUniqueId)) {
                                 this.notificationManager
@@ -105,13 +117,14 @@ public final class PermissionsManager implements Witness {
                         }
                     }
 
-                    this.titleManager.calculateAvailableTitlesFor(target);
+                    if (target != null) {
+                        this.titleManager.calculateAvailableTitlesFor(target);
 
-                    // Just in-case the GUI is open currently, send this down. If it isn't, the data will be overriden by a request anyways..
-                    this.titleManager.getAvailableTitlesFor(target)
-                        .ifPresent(availableTitles -> this.network.sendTo(target, new ClientboundAvailableTitlesResponsePacket(availableTitles)));
+                        // Just in-case the GUI is open currently, send this down. If it isn't, the data will be overriden by a request anyways..
+                        this.titleManager.getAvailableTitlesFor(target).ifPresent(availableTitles -> this.network.sendTo(target, new ClientboundAvailableTitlesResponsePacket(availableTitles)));
 
-                    this.titleManager.verifySelectedTitle(target, null);
+                        this.titleManager.verifySelectedTitle(target, null);
+                    }
                 }
             });
         }
@@ -120,7 +133,8 @@ public final class PermissionsManager implements Witness {
     @Listener(order = Order.LAST)
     public void onMovePlayerTeleport(final MoveEntityEvent.Teleport event, @Getter("getTargetEntity") final Player player) {
         if (this.permApi != null && differentExtent(event.getFromTransform(), event.getToTransform())) {
-            final User user = this.permApi.getUser(player.getUniqueId());
+            final User user = this.permApi.getUserManager().getUser(player.getUniqueId());
+            // The purpose of this method is to upgrade people out of the default permissions group once they teleport off of Asgard (starting world).
             if (user != null && user.getPrimaryGroup().equalsIgnoreCase(LUCK_PERMS_DEFAULT_GROUP)) {
                 final String command = "lp user " + player.getName() + " promote members";
                 this.commandManager.process(Sponge.getServer().getConsole(), command);

@@ -26,7 +26,6 @@ import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
-import org.spongepowered.common.text.SpongeTexts;
 
 import java.util.HashMap;
 import java.util.Map;
