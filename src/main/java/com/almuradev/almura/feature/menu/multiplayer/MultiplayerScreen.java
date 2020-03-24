@@ -49,6 +49,7 @@ public class MultiplayerScreen extends PanoramicScreen {
   }
 
   private final Timer queryTimer = new Timer();
+  private boolean timerRunning = false;
   private BasicList<ServerEntry> serverList;
   private UIButton joinButton;
 
@@ -124,30 +125,37 @@ public class MultiplayerScreen extends PanoramicScreen {
     // Bake that cake
     this.addToScreen(screenContainer);
 
-    // Start the timer
-    this.queryTimer.schedule(new TimerTask() {
-      @Override
-      public void run() {
-        queryServers();
-        serverList.getComponents()
-          .stream()
-          .filter(i -> i instanceof ServerEntryItemComponent)
-          .forEach(i -> ((ServerEntryItemComponent) i).update());
-        updateButtons();
-      }
-    }, 0L, 3000L);
-
     // Select the first entry
     this.serverList.setSelectedItem(serverEntries.stream().findFirst().orElse(null));
+  }
+
+  public void startTimer() {
+    if (!timerRunning) {
+      this.queryTimer.schedule(new TimerTask() {
+        @Override public void run() {
+          queryServers();
+          serverList.getComponents().stream().filter(i -> i instanceof ServerEntryItemComponent).forEach(i -> ((ServerEntryItemComponent) i).update());
+          updateButtons();
+          timerRunning = true;
+        }
+      }, 0L, 3000L);
+    }
   }
 
   @Override
   public void onClose() {
     // Cancel the timer
+    timerRunning = false;
     this.queryTimer.cancel();
 
     // Proceed with closing
     super.onClose();
+  }
+
+  @Override
+  public void display() {
+    super.display();
+    this.startTimer();
   }
 
   private void updateButtons() {
@@ -244,7 +252,6 @@ public class MultiplayerScreen extends PanoramicScreen {
     public void update() {
       // Update status indicator
       this.statusIndicatorContainer.setColor(this.item.status.color);
-
       // Update server status label
       if (this.item.status == ServerStatus.ONLINE) {
         this.serverStatusLabel.setText(TextFormatting.WHITE + "" + this.item.players + "/" + this.item.maxPlayers);
