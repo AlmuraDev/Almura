@@ -10,7 +10,7 @@ package com.almuradev.almura.feature.exchange.client.gui;
 import com.almuradev.almura.feature.exchange.Exchange;
 import com.almuradev.almura.feature.exchange.ListStatusType;
 import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
-import com.almuradev.almura.feature.exchange.listing.ListItem;
+import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
 import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
@@ -32,36 +32,36 @@ import net.minecraft.client.resources.I18n;
 import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
 
-public class ExchangeListPriceScreen extends BasicScreen {
+public class ExchangeModifyListingScreen extends BasicScreen {
 
     private static final int maxTrailingDigits = 2;
 
     @Inject private static ClientExchangeManager exchangeManager;
 
     private final Exchange axs;
-    private final ListItem toList;
+    private final ForSaleItem item;
 
-    private UIButton buttonList, buttonCancel;
+    private UIButton buttonList, buttonUnlist, buttonCancel;
     private UILabel eaLabel;
     private BasicTextBox pricePerTextBox;
     private BasicForm form;
 
-    public ExchangeListPriceScreen(ExchangeScreen parent, Exchange axs, ListItem toList) {
+    public ExchangeModifyListingScreen(ExchangeScreen parent, Exchange axs, ForSaleItem item) {
         super(parent, true);
 
         this.axs = axs;
-        this.toList = toList;
+        this.item = item;
     }
 
     @Override
     public void construct() {
         this.guiscreenBackground = false;
 
-        this.form = new BasicForm(this, 120, 65, I18n.format("almura.feature.exchange.title.enter_a_price"));
+        this.form = new BasicForm(this, 160, 65, I18n.format("almura.feature.exchange.title.enter_a_price"));
         this.form.setZIndex(10); // Fixes issue overlapping draws from parent
         this.form.setBackgroundAlpha(255);
 
-        this.pricePerTextBox = new BasicTextBox(this, this.toList.getLastKnownPrice().orElse(BigDecimal.ZERO).toString());
+        this.pricePerTextBox = new BasicTextBox(this, this.item.getPrice().toString());
         this.pricePerTextBox.setSize(65, 0);
         this.pricePerTextBox.setFilter(s -> {
             // TODO: Maybe make a fancy regex for some of this
@@ -103,23 +103,30 @@ public class ExchangeListPriceScreen extends BasicScreen {
         this.eaLabel.setPosition(BasicScreen.getPaddedX(this.pricePerTextBox, 2), 1, Anchor.MIDDLE | Anchor.LEFT);
 
         this.buttonList = new UIButtonBuilder(this)
-                .text(I18n.format("almura.feature.common.button.list"))
-                .width(40)
-                .position(-2, -2)
-                .anchor(Anchor.RIGHT | Anchor.BOTTOM)
-                .enabled(this.toList.getLastKnownPrice().isPresent())
-                .onClick(this::list)
-                .build("button.list");
+            .text(I18n.format("almura.feature.common.button.list"))
+            .width(40)
+            .position(-2, -2)
+            .anchor(Anchor.RIGHT | Anchor.BOTTOM)
+            .onClick(this::list)
+            .build("button.list");
+
+        this.buttonUnlist = new UIButtonBuilder(this)
+            .text(I18n.format("almura.feature.common.button.unlist"))
+            .width(40)
+            .position(BasicScreen.getPaddedX(this.buttonList, 2, Anchor.RIGHT), -2)
+            .anchor(Anchor.RIGHT | Anchor.BOTTOM)
+            .onClick(this::unlist)
+            .build("button.delist");
 
         this.buttonCancel = new UIButtonBuilder(this)
-                .text(I18n.format("almura.button.cancel"))
-                .width(40)
-                .position(BasicScreen.getPaddedX(this.buttonList, 2, Anchor.RIGHT), -2)
-                .anchor(Anchor.RIGHT | Anchor.BOTTOM)
-                .onClick(this::close)
-                .build("button.cancel");
+            .text(I18n.format("almura.button.cancel"))
+            .width(40)
+            .position(BasicScreen.getPaddedX(this.buttonUnlist, 2, Anchor.RIGHT), -2)
+            .anchor(Anchor.RIGHT | Anchor.BOTTOM)
+            .onClick(this::close)
+            .build("button.cancel");
 
-        this.form.add(this.pricePerTextBox, this.eaLabel, this.buttonCancel, this.buttonList);
+        this.form.add(this.pricePerTextBox, this.eaLabel, this.buttonCancel, this.buttonUnlist, this.buttonList);
         this.addToScreen(this.form);
 
         this.pricePerTextBox.focus();
@@ -149,8 +156,14 @@ public class ExchangeListPriceScreen extends BasicScreen {
             return;
         }
 
-        exchangeManager.modifyListStatus(ListStatusType.LIST, this.axs.getId(), this.toList.getRecord(),
+        exchangeManager.modifyListStatus(ListStatusType.ADJUST_PRICE, this.axs.getId(), item.getListItem().getRecord(),
           new BigDecimal(this.pricePerTextBox.getText()));
+        ((ExchangeScreen) this.parent).refreshListItems();
+        this.close();
+    }
+
+    private void unlist() {
+        exchangeManager.modifyListStatus(ListStatusType.DE_LIST, this.axs.getId(), this.item.getListItem().getRecord(), null);
         ((ExchangeScreen) this.parent).refreshListItems();
         this.close();
     }

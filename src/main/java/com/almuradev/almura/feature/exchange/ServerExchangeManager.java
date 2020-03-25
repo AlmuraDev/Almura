@@ -886,10 +886,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             return;
         }
 
-        Stream<ForSaleItem> stream = axs.getForSaleItems().entrySet()
-            .stream()
-            .map(Map.Entry::getValue)
-            .flatMap(List::stream);
+        Stream<ForSaleItem> stream = axs.getForSaleItems().values().stream().flatMap(List::stream);
 
         if (filter != null) {
             final List<FilterRegistry.FilterElement<ListItem>> elements = FilterRegistry.instance.getFilterElements(filter);
@@ -903,7 +900,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             final List<FilterRegistry.SorterElement<ListItem>> elements = FilterRegistry.instance.getSortingElements(sorter);
             final Comparator<ListItem> comparator = FilterRegistry.instance.buildSortingComparator(elements).orElse(null);
             if (comparator != null) {
-                stream = stream.map(ForSaleItem::getListItem).sorted(comparator).map(k -> k.getForSaleItem().orElse(null));
+                stream = stream.map(ForSaleItem::getListItem).sorted(comparator).map(k -> k.getForSaleItem().get());
             }
         }
 
@@ -1018,60 +1015,66 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             .submit(this.container);
     }
 
-    public void handleDelistForSaleItem(final Player player, final String id, final int listItemRecNo) {
-        checkNotNull(player);
+    public void handleDelistForSaleItem(final Player initializingPlayer, final Player targetPlayer, final String id, final int listItemRecNo) {
+        checkNotNull(initializingPlayer);
+        checkNotNull(targetPlayer);
         checkNotNull(id);
         checkState(listItemRecNo >= 0);
 
         final Exchange axs = this.getExchange(id).orElse(null);
         if (axs == null) {
-            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical error encountered, check the "
+            this.notificationManager.sendWindowMessage(initializingPlayer, Text.of("Exchange"), Text.of("Critical error encountered, check the "
                 + "server console for more details!"));
             this.logger.error("Player '{}' attempted to de-list list item '{}' for exchange '{}' but the server has no knowledge of it. Syncing "
-                + "exchange registry...", player.getName(), listItemRecNo, id);
-            this.syncExchangeRegistryTo(player);
+                + "exchange registry...", initializingPlayer.getName(), listItemRecNo, id);
+            this.syncExchangeRegistryTo(initializingPlayer);
             return;
         }
 
-        final List<ListItem> listItems = axs.getListItemsFor(player.getUniqueId()).orElse(null);
+        List<ListItem> listItems = null;
+        if (initializingPlayer == targetPlayer || initializingPlayer.hasPermission(Almura.ID + ".exchange.admin")) {
+            listItems = axs.getListItemsFor(targetPlayer.getUniqueId()).orElse(null);
+        }
         if (listItems == null || listItems.isEmpty()) {
-            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical error encountered, check the "
+            this.notificationManager.sendWindowMessage(initializingPlayer, Text.of("Exchange"), Text.of("Critical error encountered, check the "
               + "server console for more details!"));
             this.logger.error("Player '{}' attempted to de-list list item '{}' for exchange '{}' but the server has no record of any list items for "
-              + "that player. Syncing list items...", player.getName(), listItemRecNo, id);
-            this.network.sendTo(player, new ClientboundListItemsResponsePacket(id, listItems));
+              + "the target player '{}'. Syncing list items...", initializingPlayer.getName(), listItemRecNo, id, targetPlayer.getName());
+            this.network.sendTo(initializingPlayer, new ClientboundListItemsResponsePacket(id, listItems));
             return;
         }
 
         final ListItem found = listItems.stream().filter(item -> item.getRecord() == listItemRecNo).findAny().orElse(null);
-
         if (found == null) {
-            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical error encountered, check the "
+            this.notificationManager.sendWindowMessage(initializingPlayer, Text.of("Exchange"), Text.of("Critical error encountered, check the "
               + "server console for more details!"));
             this.logger.error("Player '{}' attempted to de-list list item '{}' for exchange '{}' but the server has no record of the listing. "
-              + "Syncing list items...", player.getName(), listItemRecNo, id);
+              + "Syncing list items...", initializingPlayer.getName(), listItemRecNo, id);
             this.network.sendTo(player, new ClientboundListItemsResponsePacket(id, listItems));
             return;
         }
 
         final ForSaleItem forSaleItem = found.getForSaleItem().orElse(null);
 
-        final List<ForSaleItem> forSaleItems = axs.getForSaleItemsFor(player.getUniqueId()).orElse(null);
+        List<ForSaleItem> forSaleItems = null;
+        if (initializingPlayer == targetPlayer || initializingPlayer.hasPermission(Almura.ID + ".exchange.admin")) {
+            forSaleItems = axs.getForSaleItemsFor(targetPlayer.getUniqueId()).orElse(null);
+        }
         if (forSaleItem == null) {
-            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical error encountered, check the "
+            this.notificationManager.sendWindowMessage(initializingPlayer, Text.of("Exchange"), Text.of("Critical error encountered, check the "
               + "server console for more details!"));
             this.logger.error("Player '{}' attempted to de-list list item '{}' for exchange '{}' but the server doesn't have a listing for "
-              + "that item. Syncing list items sale status...", player.getName(), listItemRecNo, id);
-            this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(id, forSaleItems, null));
+              + "that item. Syncing list items sale status...", initializingPlayer.getName(), listItemRecNo, id);
+            this.network.sendTo(initializingPlayer, new ClientboundListItemsSaleStatusPacket(id, forSaleItems, null));
             return;
         }
 
         if (forSaleItems == null) {
-            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical error encountered, check the "
+            this.notificationManager.sendWindowMessage(initializingPlayer, Text.of("Exchange"), Text.of("Critical error encountered, check the "
               + "server console for more details!"));
             this.logger.error("Player '{}' attempted to de-list list item '{}' for exchange '{}' but the server has no record of any listings for "
-              + "that player. Syncing list items sale status...", player.getName(), listItemRecNo, id);
-            this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(id, null, null));
+              + "the target player '{}'. Syncing list items sale status...", initializingPlayer.getName(), listItemRecNo, id, targetPlayer.getName());
+            this.network.sendTo(initializingPlayer, new ClientboundListItemsSaleStatusPacket(id, null, null));
             return;
         }
 
@@ -1088,7 +1091,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
                     if (result == 0) {
                         this.logger.error("Player '{}' attempted to de-list list item '{}' for exchange '{}' to the database but it failed. "
-                            + "Discarding changes...", player.getName(), listItemRecNo, id);
+                            + "Discarding changes...", initializingPlayer.getName(), listItemRecNo, id);
                         return;
                     }
 
@@ -1106,7 +1109,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
                             found.setForSaleItem(null);
 
-                            this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems, Lists.newArrayList(found)));
+                            this.network.sendTo(initializingPlayer, new ClientboundListItemsSaleStatusPacket(axs.getId(), forSaleItems, Lists.newArrayList(found)));
 
                             this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(axs.getId()));
                         })
@@ -1137,8 +1140,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
 
         // If the player is an admin then that means we may be trying to manipulate another player's listed item
         final List<ListItem> listItems = player.hasPermission(Almura.ID + ".exchange.admin")
-          ? new ArrayList<>(axs.getListItems().values().stream().flatMap(Collection::stream).collect(Collectors.toList()))
-          : axs.getListItemsFor(player.getUniqueId()).orElse(null);
+            ? new ArrayList<>(axs.getListItems().values().stream().flatMap(Collection::stream).collect(Collectors.toList()))
+            : axs.getListItemsFor(player.getUniqueId()).orElse(null);
         if (listItems == null) {
             this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical error encountered, check the "
               + "server console for more details!"));

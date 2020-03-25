@@ -11,6 +11,7 @@ import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeBuyQuantityScreen;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeListPriceScreen;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeManagementScreen;
+import com.almuradev.almura.feature.exchange.client.gui.ExchangeModifyListingScreen;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeOfferScreen;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeGuiResponsePacket;
@@ -136,6 +137,7 @@ public final class ExchangeModule extends AbstractModule implements CommonBinder
 
                     this.requestStaticInjection(ExchangeBuyQuantityScreen.class);
                     this.requestStaticInjection(ExchangeListPriceScreen.class);
+                    this.requestStaticInjection(ExchangeModifyListingScreen.class);
                     this.requestStaticInjection(ExchangeOfferScreen.class);
                     this.requestStaticInjection(ExchangeManagementScreen.class);
                     this.requestStaticInjection(ExchangeScreen.class);

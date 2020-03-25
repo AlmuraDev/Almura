@@ -414,7 +414,7 @@ public final class ExchangeScreen extends BasicScreen {
             if (de_list) {
                 exchangeManager.modifyListStatus(ListStatusType.DE_LIST, this.axs.getId(), item.getRecord(), null);
             } else {
-                new ExchangeListPriceScreen(this, this.axs, item, false).display();
+                new ExchangeListPriceScreen(this, this.axs, item).display();
             }
         }
     }
@@ -422,7 +422,7 @@ public final class ExchangeScreen extends BasicScreen {
     private void modifyForSaleItem() {
         final ForSaleItem item = this.forSaleList.getSelectedItem();
         if (item != null) {
-            new ExchangeListPriceScreen(this, this.axs, item.getListItem(), true).display();
+            new ExchangeModifyListingScreen(this, this.axs, item).display();
         }
     }
 
