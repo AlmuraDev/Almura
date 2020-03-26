@@ -24,6 +24,7 @@ import com.almuradev.almura.feature.guide.network.handler.ClientboundPageOpenRes
 import com.almuradev.almura.feature.guide.network.handler.ServerboundGuideOpenRequestPacketHandler;
 import com.almuradev.almura.feature.guide.network.handler.ServerboundPageChangeRequestPacketHandler;
 import com.almuradev.almura.feature.guide.network.handler.ServerboundPageOpenRequestPacketHandler;
+import com.almuradev.almura.feature.menu.SimpleOptionsMenu;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
@@ -55,6 +56,8 @@ public final class GuideModule extends AbstractModule implements CommonBinder {
         this.facet().add(ServerPageManager.class);
         this.requestStaticInjection(GuideCommands.class);
         this.requestStaticInjection(ServerPageManager.class);
+        this.requestStaticInjection(ClientboundGuideOpenResponsePacketHandler.class);
+        
         this.on(Platform.Type.CLIENT, () -> {
             @SideOnly(Side.CLIENT)
             final class ClientModule extends AbstractModule implements ClientBinder {

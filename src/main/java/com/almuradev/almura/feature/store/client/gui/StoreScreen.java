@@ -314,7 +314,7 @@ public class StoreScreen extends BasicScreen {
     }
 
     @Override
-    protected void mouseClicked(final int x, final int y, final int button) throws IOException {
+    protected void mouseClicked(final int x, final int y, final int button) {
         this.getTabContainer(x, y).ifPresent(tab -> {
             final SideType targetSide = (SideType) tab.getData();;
 

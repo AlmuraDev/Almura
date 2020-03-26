@@ -74,7 +74,8 @@ public final class ServerboundGuideOpenRequestPacketHandler implements MessageHa
                         GuideOpenType.PLAYER_INVOKED_KEYBIND,
                         player.hasPermission("almura.guide.add"),
                         player.hasPermission("almura.guide.remove"),
-                        player.hasPermission("almura.guide.modify")));
+                        player.hasPermission("almura.guide.modify"),
+                        true));
 
                 final Map<String, Page> pagesToSend = this.manager.getAvailablePagesFor(player);
                 if (pagesToSend.size() > 0) {

@@ -18,15 +18,17 @@ public final class ClientboundGuideOpenResponsePacket implements Message {
     public boolean canAdd;
     public boolean canRemove;
     public boolean canModify;
+    public boolean requestedFromClient;
 
     public ClientboundGuideOpenResponsePacket() {
     }
 
-    public ClientboundGuideOpenResponsePacket(GuideOpenType type, final boolean canAdd, final boolean canRemove, final boolean canModify) {
+    public ClientboundGuideOpenResponsePacket(GuideOpenType type, final boolean canAdd, final boolean canRemove, final boolean canModify, final boolean requestedFromClient) {
         this.type = type;
         this.canAdd = canAdd;
         this.canRemove = canRemove;
         this.canModify = canModify;
+        this.requestedFromClient = requestedFromClient;
     }
 
     @Override
@@ -35,6 +37,7 @@ public final class ClientboundGuideOpenResponsePacket implements Message {
         this.canAdd = buf.readBoolean();
         this.canRemove = buf.readBoolean();
         this.canModify = buf.readBoolean();
+        this.requestedFromClient = buf.readBoolean();
     }
 
     @Override
@@ -43,5 +46,6 @@ public final class ClientboundGuideOpenResponsePacket implements Message {
         buf.writeBoolean(this.canAdd);
         buf.writeBoolean(this.canRemove);
         buf.writeBoolean(this.canModify);
+        buf.writeBoolean(this.requestedFromClient);
     }
 }

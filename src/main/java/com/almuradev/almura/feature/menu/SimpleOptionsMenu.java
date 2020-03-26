@@ -136,6 +136,14 @@ public final class SimpleOptionsMenu extends BasicScreen {
         checkboxDisableOffhandTorchPlacement.register(this);
         this.updatePosition(checkboxDisableOffhandTorchPlacement, Anchor.LEFT);
 
+        final boolean displayGuideOnLogin = general.displayGuideOnLogin;
+        final UICheckBox checkboxDisplayGuideOnLogin = new UICheckBox(this);
+        checkboxDisplayGuideOnLogin.setText(TextFormatting.WHITE + "Display Guide upon Login");
+        checkboxDisplayGuideOnLogin.setChecked(displayGuideOnLogin);
+        checkboxDisplayGuideOnLogin.setName("checkbox.display_guide_on_login");
+        checkboxDisplayGuideOnLogin.register(this);
+        this.updatePosition(checkboxDisplayGuideOnLogin, Anchor.LEFT);
+
         // Reset for new column
         this.lastComponent = null;
 
@@ -229,7 +237,7 @@ public final class SimpleOptionsMenu extends BasicScreen {
                 .build("button.done");
 
         optionsContainer.add(this.buttonOptimized, this.buttonHudType, this.sliderOriginHudOpacity, checkboxWorldCompassWidget, checkboxLocationWidget,
-                checkboxNumericHUDValues, checkboxDisplayNames, checkboxDisplayHealthbars, checkboxDisableOffhandTorchPlacement,
+                checkboxNumericHUDValues, checkboxDisplayNames, checkboxDisplayHealthbars, checkboxDisableOffhandTorchPlacement, checkboxDisplayGuideOnLogin,
                 sliderChestDistance, sliderSignTextDistance, sliderItemFrameDistance, sliderPlayerNameRenderDistance,
                 sliderEnemyNameRenderDistance, sliderAnimalNameRenderDistance, buttonDone);
         addToScreen(optionsContainer);
@@ -330,6 +338,10 @@ public final class SimpleOptionsMenu extends BasicScreen {
             case "checkbox.disable_offhand_torch_placement":
                 configuration.general.disableOffhandTorchPlacement = (boolean) event.getNewValue();
                 break;
+            case "checkbox.display_guide_on_login":
+                configuration.general.displayGuideOnLogin = (boolean) event.getNewValue();
+                break;
+
         }
 
         saveAndLoad();

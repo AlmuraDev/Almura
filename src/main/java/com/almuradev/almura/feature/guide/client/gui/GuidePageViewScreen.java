@@ -138,15 +138,15 @@ public class GuidePageViewScreen extends BasicScreen {
                     })
                     .build("button.save");
 
-            final UIButton buttonCancel = new UIButtonBuilder(this)
+            final UIButton buttonClose = new UIButtonBuilder(this)
                     .width(50)
                     .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                     .position(BasicScreen.getPaddedX(buttonSave, 2, Anchor.RIGHT), 0)
-                    .text(I18n.format("almura.button.cancel"))
+                    .text(I18n.format("almura.button.close"))
                     .onClick(this::close)
-                    .build("button.cancel");
+                    .build("button.close");
 
-            form.add(buttonSave, buttonCancel);
+            form.add(buttonSave, buttonClose);
         }
 
         form.add(this.pagesList, this.tbContent, this.buttonAdd, buttonRemove, buttonDetails);

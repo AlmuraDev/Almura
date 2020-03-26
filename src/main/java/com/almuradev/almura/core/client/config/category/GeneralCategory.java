@@ -67,4 +67,7 @@ public final class GeneralCategory {
 
     @Setting(value = "disable-offhand-torch-placement", comment = "When enabled the player is unable to place torches with their offhand.")
     public boolean disableOffhandTorchPlacement = false;
+
+    @Setting(value = "display-guide-on-login", comment = "When enabled the Guide window will open automatically upon server login.")
+    public boolean displayGuideOnLogin = true;
 }

@@ -110,7 +110,8 @@ public final class ServerPageManager extends Witness.Impl implements Witness.Lif
             type, // Specifies what called the open request.
             player.hasPermission("almura.guide.add"),
             player.hasPermission("almura.guide.remove"),
-            player.hasPermission("almura.guide.modify")));
+            player.hasPermission("almura.guide.modify"),
+                false));
 
         final Map<String, Page> pagesToSend = this.getAvailablePagesFor(player);
         if (pagesToSend.size() > 0) {
