@@ -75,3 +75,5 @@ Advanced Logging -> Program Arguments: -Dlog4j.configurationFile=/path/to/log4j2
 
 Disable Stupid Gradle Daemon:  [run this in cmd.exe]
 (if not exist "%USERPROFILE%/.gradle" mkdir "%USERPROFILE%/.gradle") && (echo. >> "%USERPROFILE%/.gradle/gradle.properties" && echo org.gradle.daemon=false >> "%USERPROFILE%/.gradle/gradle.properties")
+
+* Note; make sure IntelliJ is set to use itself for Compiling and not Gradle.  File > Settings > Build and run using, Run tests using.
