@@ -120,36 +120,36 @@ public class GuidePageViewScreen extends BasicScreen {
             this.tbContent.hideToolbar();
         }
 
+        final UIButton buttonClose = new UIButtonBuilder(this)
+            .width(50)
+            .anchor(Anchor.BOTTOM | Anchor.RIGHT)
+
+            .text(I18n.format("almura.button.close"))
+            .onClick(this::close)
+            .build("button.close");
+
+        form.add(this.pagesList, this.tbContent, this.buttonAdd, buttonRemove, buttonDetails, buttonClose);
+
         if (this.canModify) {
             this.tbContent.setHeight(BasicScreen.getPaddedHeight(form) - 17);
 
             this.buttonSave = new UIButtonBuilder(this)
-                    .width(50)
-                    .anchor(Anchor.RIGHT | Anchor.BOTTOM)
-                    .position(0, 0)
-                    .text(I18n.format("almura.button.save"))
-                    .onClick(() -> {
-                        if (manager.getPage() != null) {
-                            if (!manager.preSnapshot.equalsIgnoreCase(this.tbContent.getTextBox().getText())) {
-                                manager.getPage().setContent(this.tbContent.getTextBox().getText());
-                                manager.requestSavePage();
-                            }
+                .width(50)
+                .anchor(Anchor.RIGHT | Anchor.BOTTOM)
+                .position(BasicScreen.getPaddedX(buttonClose, 2, Anchor.RIGHT), 0)
+                //.position(-20,0)
+                .text(I18n.format("almura.button.save"))
+                .onClick(() -> {
+                    if (manager.getPage() != null) {
+                        if (!manager.preSnapshot.equalsIgnoreCase(this.tbContent.getTextBox().getText())) {
+                            manager.getPage().setContent(this.tbContent.getTextBox().getText());
+                            manager.requestSavePage();
                         }
-                    })
-                    .build("button.save");
-
-            final UIButton buttonClose = new UIButtonBuilder(this)
-                    .width(50)
-                    .anchor(Anchor.BOTTOM | Anchor.RIGHT)
-                    .position(BasicScreen.getPaddedX(buttonSave, 2, Anchor.RIGHT), 0)
-                    .text(I18n.format("almura.button.close"))
-                    .onClick(this::close)
-                    .build("button.close");
-
-            form.add(buttonSave, buttonClose);
+                    }
+                })
+                .build("button.save");
+            form.add(buttonSave);
         }
-
-        form.add(this.pagesList, this.tbContent, this.buttonAdd, buttonRemove, buttonDetails);
 
         this.addToScreen(form);
     }
