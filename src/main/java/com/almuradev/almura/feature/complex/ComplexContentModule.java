@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.complex;
 
 import com.almuradev.almura.feature.complex.block.coinexchange.CoinExchange;
+import com.almuradev.almura.feature.complex.block.membershipexchange.MembershipExchange;
 import com.almuradev.almura.feature.complex.item.almanac.item.FarmersAlmanacItem;
 import com.almuradev.almura.feature.complex.item.almanac.network.ClientboundWorldPositionInformationPacket;
 import com.almuradev.almura.feature.complex.item.almanac.network.ClientboundWorldPositionInformationPacketHandler;
@@ -25,5 +26,6 @@ public final class ComplexContentModule extends AbstractModule implements Common
 
         this.requestStaticInjection(FarmersAlmanacItem.class);
         this.requestStaticInjection(CoinExchange.class);
+        this.requestStaticInjection(MembershipExchange.class);
     }
 }

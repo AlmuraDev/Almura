@@ -56,6 +56,7 @@ public final class ComplexContentFeature implements Witness {
 
         // Register Complex Block; ItemBlocks Here
         registerItem(event.getRegistry(), ComplexBlocks.COIN_EXCHANGE);
+        registerItem(event.getRegistry(), ComplexBlocks.MEMBERSHIP_EXCHANGE);
     }
 
     @SubscribeEvent
@@ -64,6 +65,7 @@ public final class ComplexContentFeature implements Witness {
         // Register Complex Block Models
         // Note: Complex Item Models register within their creation class because their registration order isn't important.
         registerModel(Item.getItemFromBlock(ComplexBlocks.COIN_EXCHANGE));
+        registerModel(Item.getItemFromBlock(ComplexBlocks.MEMBERSHIP_EXCHANGE));
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)

@@ -13,4 +13,5 @@ import net.minecraft.util.ResourceLocation;
 
 public class ComplexBlocks {
     public static ComplexBlock COIN_EXCHANGE = new CoinExchange(new ResourceLocation(Almura.ID, "machine/coin_exchange"), 3F, 1000F);
+    public static ComplexBlock MEMBERSHIP_EXCHANGE = new CoinExchange(new ResourceLocation(Almura.ID, "machine/coin_exchange"), 3F, 1000F);
 }
