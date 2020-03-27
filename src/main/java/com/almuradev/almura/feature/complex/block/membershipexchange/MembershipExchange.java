@@ -50,9 +50,8 @@ import javax.inject.Inject;
 
 public final class MembershipExchange extends ComplexBlock {
 
-    @Inject
-    private static ServerNotificationManager serverNotificationManager;
-    private static MembershipHandler membershipHandler;
+    @Inject private static ServerNotificationManager serverNotificationManager;
+    @Inject private static MembershipHandler membershipHandler;
 
     public MembershipExchange(ResourceLocation registryName, float hardness, float resistance) {
         super(Material.GROUND);

@@ -17,6 +17,7 @@ import com.almuradev.almura.feature.death.DeathModule;
 import com.almuradev.almura.feature.exchange.ExchangeModule;
 import com.almuradev.almura.feature.guide.GuideModule;
 import com.almuradev.almura.feature.hud.HeadUpDisplayModule;
+import com.almuradev.almura.feature.membership.MembershipModule;
 import com.almuradev.almura.feature.menu.ingame.FeaturesModule;
 import com.almuradev.almura.feature.nick.NickModule;
 import com.almuradev.almura.feature.notification.NotificationModule;
@@ -59,6 +60,7 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.facet().add(ItemReturnHelper.class);
         this.nerfVanillaFood();
         this.install(new ClaimModule());
+        this.install(new MembershipModule());
 
         if (SpongeImplHooks.isDeobfuscatedEnvironment()) {
             this.loadServerSideModules(); // Force loading this because it will fail the Platform.Type checks below during normal startup.

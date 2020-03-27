@@ -61,7 +61,10 @@ public final class MembershipGUI extends BasicScreen {
     private boolean update = true;
     private UILabel messageLabel, droppedLabel, deathTaxLabel;
     private BasicForm form;
-    private UIButton buttonRespawn, buttonRevive, buttonRagequit;
+    private UIButton buttonRespawn, buttonRevive, buttonClose;
+    private UIButton citizen_donation_button, citizen_purchase_button, citizen_skills_button;
+    private UIButton explorer_donation_button, explorer_purchase_button, explorer_skills_button;
+    private UIButton pioneer_donation_button, pioneer_purchase_button, pioneer_skills_button;
 
     private EntityPlayer player;
     private boolean isAdmin;
@@ -69,10 +72,8 @@ public final class MembershipGUI extends BasicScreen {
     @Inject
     @ChannelId(NetworkConfig.CHANNEL)
     private static ChannelBinding.IndexedMessageChannel network;
-    @Inject
-    private static ClientNotificationManager clientNotificationManager;
-    @Inject
-    private static PluginContainer container;
+    @Inject private static ClientNotificationManager clientNotificationManager;
+    @Inject private static PluginContainer container;
 
     public MembershipGUI(EntityPlayer player, boolean isAdmin) {
         this.player = player;
@@ -84,10 +85,10 @@ public final class MembershipGUI extends BasicScreen {
         this.guiscreenBackground = true;
         Keyboard.enableRepeatEvents(true);
 
-        this.form = new BasicForm(this, 50, 200, "Almura Memberships");
+        this.form = new BasicForm(this, 310, 250, "Almura Memberships");
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
-        this.form.setMovable(false);
-        this.form.setClosable(false);
+        this.form.setMovable(true);
+        this.form.setClosable(true);
         this.form.setBorder(FontColors.WHITE, 1, 185);
         this.form.setBackgroundAlpha(215);
         this.form.setBottomPadding(3);
@@ -95,45 +96,174 @@ public final class MembershipGUI extends BasicScreen {
         this.form.setTopPadding(20);
         this.form.setLeftPadding(3);
 
-        // Almura header
-        final UIImage almuraHeader = new UIImage(this, new GuiTexture(GuiConfig.Location.DEAD_STEVE), null);
-        almuraHeader.setSize(99, 99);
-        almuraHeader.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
+        final BasicForm citizenArea = new BasicForm(this, 100, 200, "");
+        citizenArea.setPosition(0, 0, Anchor.LEFT | Anchor.TOP);
+        citizenArea.setMovable(false);
+        citizenArea.setClosable(false);
+        citizenArea.setBorder(FontColors.WHITE, 1, 185);
+        citizenArea.setBackgroundAlpha(215);
+        citizenArea.setBottomPadding(3);
+        citizenArea.setRightPadding(3);
+        citizenArea.setTopPadding(3);
+        citizenArea.setLeftPadding(3);
 
-        this.messageLabel = new UILabel(this, "HELLO WORLD");
-        this.messageLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        this.messageLabel.setPosition(0, 102, Anchor.CENTER | Anchor.TOP);
+        final UIImage citizenLogo = new UIImage(this, new GuiTexture(GuiConfig.Location.citizen_logo), null);
+        citizenLogo.setSize(99, 99);
+        citizenLogo.setPosition(0, -3, Anchor.TOP | Anchor.CENTER);
+
+        final UILabel citizenLabel0 = new UILabel(this, "Chose One");
+        citizenLabel0.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).underline(true).shadow(true).scale(0.8F).build());
+        citizenLabel0.setPosition(0, 125, Anchor.CENTER | Anchor.TOP);
+
+        this.citizen_donation_button = new UIButtonBuilder(this)
+                .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
+                .hoverFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
+                .width(40)
+                .anchor(Anchor.TOP | Anchor.CENTER)
+                .position(0, citizenLabel0.getY() + 10)
+                .text("$25.00 Donation")
+                .listener(this)
+                .enabled(true)
+                .build("button.citizen_donation");
+
+        this.citizen_purchase_button = new UIButtonBuilder(this)
+                .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
+                .hoverFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
+                .width(40)
+                .anchor(Anchor.TOP | Anchor.CENTER)
+                .position(0, citizen_donation_button.getY() + 18)
+                .text("$2.5 million in-game")
+                .listener(this)
+                .enabled(true)
+                .build("button.citizen_purchase");
+
+        this.citizen_skills_button = new UIButtonBuilder(this)
+                .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
+                .hoverFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
+                .width(40)
+                .anchor(Anchor.TOP | Anchor.CENTER)
+                .position(0, citizen_purchase_button.getY() + 18)
+                .text("Skills at Level 250+")
+                .listener(this)
+                .enabled(true)
+                .build("button.citizen_skills");
+
+        citizenArea.add(citizenLogo, citizenLabel0, citizen_donation_button, citizen_skills_button, citizen_purchase_button);
+
+        final BasicForm explorerArea = new BasicForm(this, 100, 200, "");
+        explorerArea.setPosition(0, 0, Anchor.CENTER | Anchor.TOP);
+        explorerArea.setMovable(false);
+        explorerArea.setClosable(false);
+        explorerArea.setBorder(FontColors.WHITE, 1, 185);
+        explorerArea.setBackgroundAlpha(215);
+        explorerArea.setBottomPadding(3);
+        explorerArea.setRightPadding(3);
+        explorerArea.setTopPadding(3);
+        explorerArea.setLeftPadding(3);
+
+        final UIImage explorerLogo = new UIImage(this, new GuiTexture(GuiConfig.Location.explorer_logo), null);
+        explorerLogo.setSize(99, 99);
+        explorerLogo.setPosition(0, -3, Anchor.TOP | Anchor.CENTER);
+
+        final UILabel explorerLabel0 = new UILabel(this, "Chose One");
+        explorerLabel0.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).underline(true).shadow(true).scale(0.8F).build());
+        explorerLabel0.setPosition(0, 125, Anchor.CENTER | Anchor.TOP);
+
+        this.explorer_donation_button = new UIButtonBuilder(this)
+                .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
+                .hoverFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
+                .width(40)
+                .anchor(Anchor.TOP | Anchor.CENTER)
+                .position(0, explorerLabel0.getY() + 10)
+                .text("$50.00 Donation")
+                .listener(this)
+                .enabled(true)
+                .build("button.explorer_donation");
+
+        this.explorer_purchase_button = new UIButtonBuilder(this)
+                .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
+                .hoverFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
+                .width(40)
+                .anchor(Anchor.TOP | Anchor.CENTER)
+                .position(0, explorer_donation_button.getY() + 18)
+                .text("$5 million in-game")
+                .listener(this)
+                .enabled(true)
+                .build("button.explorer_purchase");
+
+        this.explorer_skills_button = new UIButtonBuilder(this)
+                .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
+                .hoverFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
+                .width(40)
+                .anchor(Anchor.TOP | Anchor.CENTER)
+                .position(0, explorer_purchase_button.getY() + 18)
+                .text("Skills at Level 375+")
+                .listener(this)
+                .enabled(true)
+                .build("button.explorer_skills");
+
+        explorerArea.add(explorerLogo, explorerLabel0, explorer_donation_button, explorer_skills_button, explorer_purchase_button);
+
+        final BasicForm pioneerArea = new BasicForm(this, 100, 200, "");
+        pioneerArea.setPosition(0, 0, Anchor.RIGHT | Anchor.TOP);
+        pioneerArea.setMovable(false);
+        pioneerArea.setClosable(false);
+        pioneerArea.setBorder(FontColors.WHITE, 1, 185);
+        pioneerArea.setBackgroundAlpha(215);
+        pioneerArea.setBottomPadding(3);
+        pioneerArea.setRightPadding(3);
+        pioneerArea.setTopPadding(3);
+        pioneerArea.setLeftPadding(3);
+
+        final UIImage pioneerLogo = new UIImage(this, new GuiTexture(GuiConfig.Location.pioneer_logo), null);
+        pioneerLogo.setSize(99, 99);
+        pioneerLogo.setPosition(0, -3, Anchor.TOP | Anchor.CENTER);
+
+        final UILabel pioneerLabel0 = new UILabel(this, "Chose One");
+        pioneerLabel0.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).underline(true).shadow(true).scale(0.8F).build());
+        pioneerLabel0.setPosition(0, 125, Anchor.CENTER | Anchor.TOP);
+
+        this.pioneer_donation_button = new UIButtonBuilder(this)
+                .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
+                .hoverFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
+                .width(40)
+                .anchor(Anchor.TOP | Anchor.CENTER)
+                .position(0, pioneerLabel0.getY() + 10)
+                .text("$100.00 Donation")
+                .listener(this)
+                .enabled(true)
+                .build("button.pioneer_donation");
+
+        this.pioneer_purchase_button = new UIButtonBuilder(this)
+                .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
+                .hoverFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
+                .width(40)
+                .anchor(Anchor.TOP | Anchor.CENTER)
+                .position(0, pioneer_donation_button.getY() + 18)
+                .text("$10 million in-game")
+                .listener(this)
+                .enabled(true)
+                .build("button.pioneer_purchase");
+
+        this.pioneer_skills_button = new UIButtonBuilder(this)
+                .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
+                .hoverFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
+                .width(40)
+                .anchor(Anchor.TOP | Anchor.CENTER)
+                .position(0, pioneer_purchase_button.getY() + 18)
+                .text("Skills at Level 400+")
+                .listener(this)
+                .enabled(true)
+                .build("button.pioneer_skills");
+
+        pioneerArea.add(pioneerLogo, pioneerLabel0, pioneer_donation_button, pioneer_skills_button, pioneer_purchase_button);
 
         final DecimalFormat dFormat = new DecimalFormat("###,###,###,###.00");
 
-        this.droppedLabel = new UILabel(this, "You dropped: " + TextFormatting.GOLD + "$" + TextFormatting.RESET + ".");
-        //this.droppedLabel.setVisible(this.dropCoins);
-        this.droppedLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        this.droppedLabel.setPosition(0, -40, Anchor.CENTER | Anchor.BOTTOM);
-
-        this.deathTaxLabel = new UILabel(this, "You lost: " + TextFormatting.RED + "$" + TextFormatting.RESET + " to death taxes.");
-        //this.deathTaxLabel.setVisible(this.dropCoins);
-        this.deathTaxLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        this.deathTaxLabel.setPosition(0, -26, Anchor.CENTER | Anchor.BOTTOM);
-
-        this.form.setSize(this.messageLabel.getWidth() + 30, this.form.getHeight());
-
-        if (this.form.getWidth() < this.droppedLabel.getWidth() + 30) {
-            this.form.setSize(this.droppedLabel.getWidth() + 20, this.form.getHeight()); // Account for the width possibly being too small.
-        }
-
-        if (this.form.getWidth() < this.deathTaxLabel.getWidth() + 30) {
-            this.form.setSize(this.deathTaxLabel.getWidth() + 20, this.form.getHeight()); // Account for the width possibly being too small.
-        }
-
-        //if (!this.dropCoins) {
-        //    this.form.setSize(this.form.getWidth(), 160);
-        //}
-
         final UISeparator topWindowTitleSeparator = new UISeparator(this);
-        topWindowTitleSeparator.setSize(this.form.getWidth() -5, 1);
+        topWindowTitleSeparator.setSize(this.form.getWidth() , 1);
         topWindowTitleSeparator.setPosition(0, -5, Anchor.TOP | Anchor.CENTER);
-        this.form.add(topWindowTitleSeparator);
+        //this.form.add(topWindowTitleSeparator);
 
         final UISeparator aboveButtonsSeparator = new UISeparator(this);
         aboveButtonsSeparator.setSize(this.form.getWidth() -5, 1);
@@ -144,36 +274,18 @@ public final class MembershipGUI extends BasicScreen {
         belowMessageSeparator.setSize(form.getWidth() -5, 1);
         belowMessageSeparator.setPosition(0, 40, Anchor.CENTER | Anchor.MIDDLE);
         //belowMessageSeparator.setVisible(this.dropCoins);
-        this.form.add(belowMessageSeparator);
-
-        // Revive button
-        this.buttonRevive = new UIButtonBuilder(this)
-                .width(40)
-                .anchor(Anchor.BOTTOM | Anchor.LEFT)
-                .text("Revive")
-                .listener(this)
-                .enabled(true)
-                .build("button.revive");
-
-        // Respawn button
-        this.buttonRespawn = new UIButtonBuilder(this)
-                .width(40)
-                .anchor(Anchor.BOTTOM | Anchor.CENTER)
-                .position(0, 0)
-                .text("Respawn")
-                .listener(this)
-                .build("button.respawn");
+        //this.form.add(belowMessageSeparator);
 
         // Rage Quit button
-        this.buttonRagequit = new UIButtonBuilder(this)
+        this.buttonClose = new UIButtonBuilder(this)
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
-                .text(I18n.format("almura.menu_button.quit"))
-                .fontOptions(FontOptions.builder().from(FontColors.RED_FO).shadow(true).build())
+                .text(I18n.format("almura.menu_button.close"))
+                //.fontOptions(FontOptions.builder().from(FontColors.RED_FO).shadow(true).build())
                 .listener(this)
-                .build("button.ragequit");
+                .build("button.close");
 
-        this.form.add(almuraHeader, this.messageLabel, this.droppedLabel, this.deathTaxLabel, this.buttonRespawn, this.buttonRevive, this.buttonRagequit);
+        this.form.add(citizenArea, explorerArea, pioneerArea, this.buttonClose);
 
         addToScreen(this.form);
     }
@@ -195,13 +307,8 @@ public final class MembershipGUI extends BasicScreen {
                 this.mc.player.respawnPlayer();
                 break;
 
-            case "button.ragequit":
-                if (this.mc.world != null) {
-                    this.mc.world.sendQuittingDisconnectingPacket();
-                }
-
-                this.mc.loadWorld((WorldClient) null);
-                this.mc.displayGuiScreen(new GuiMainMenu());
+            case "button.close":
+                this.close();
                 break;
         }
     }

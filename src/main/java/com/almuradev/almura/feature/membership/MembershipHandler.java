@@ -57,7 +57,7 @@ public final class MembershipHandler implements Witness {
     }
 
     public void requestClientGui(Player player) {
-        this.network.sendTo(player, new ClientboundMembershipGuiOpenPacket());
+        this.network.sendTo(player, new ClientboundMembershipGuiOpenPacket(true));
     }
 
     // Start of methods
