@@ -42,6 +42,7 @@ public final class ComplexContentFeature implements Witness {
     public void onRegisterBlocks(RegistryEvent.Register<Block> event) {
         // Register Complex Blocks Here
         event.getRegistry().register(ComplexBlocks.COIN_EXCHANGE);
+        event.getRegistry().register(ComplexBlocks.MEMBERSHIP_EXCHANGE);
     }
 
     @SubscribeEvent

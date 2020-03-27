@@ -24,6 +24,7 @@ public final class ClientboundMembershipGuiOpenPacketHandler implements MessageH
     public void handleMessage(ClientboundMembershipGuiOpenPacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isClient()) {
             final Minecraft client = Minecraft.getMinecraft();
+            System.out.println("Received client membership packet");
             if (PacketUtil.checkThreadAndEnqueue(client, message, this, connection, side)) {
 
                 final EntityPlayerSP player = client.player;
