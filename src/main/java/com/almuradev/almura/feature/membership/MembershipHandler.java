@@ -11,6 +11,7 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.death.network.ClientboundPlayerDiedPacket;
 import com.almuradev.almura.feature.membership.network.ClientboundMembershipGuiOpenPacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
+import com.almuradev.almura.feature.skills.SkillsHandler;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.UchatUtil;
 import com.almuradev.core.event.Witness;
@@ -51,20 +52,19 @@ public final class MembershipHandler implements Witness {
 
     private final ServerNotificationManager serverNotificationManager;
     private final ChannelBinding.IndexedMessageChannel network;
+    private final SkillsHandler skillsManager;
 
     @Inject
-    public MembershipHandler(final ServerNotificationManager serverNotificationManager, final @ChannelId(NetworkConfig.CHANNEL) ChannelBinding.IndexedMessageChannel network) {
+    public MembershipHandler(final ServerNotificationManager serverNotificationManager, final @ChannelId(NetworkConfig.CHANNEL) ChannelBinding.IndexedMessageChannel network, final SkillsHandler skillHandler) {
         this.serverNotificationManager = serverNotificationManager;
         this.network = network;
+        this.skillsManager = skillHandler;
     }
 
     public void requestClientGui(Player player) {
-
-        final SkillService service = Sponge.getServiceManager().provide(SkillService.class).orElse(null);
-
-        //service.createContainer("d").getHolder(player.getUniqueId()).get().;
-        //Sponge.getRegistry().getType(SkillType, "farming");
-        this.network.sendTo(player, new ClientboundMembershipGuiOpenPacket(true));
+        this.network.sendTo(player, new ClientboundMembershipGuiOpenPacket(player.hasPermission("almura.membership.gui.open"),
+                skillsManager.getTotalSkillLevel(player),
+                5000000));
     }
 
     // Start of methods

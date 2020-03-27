@@ -30,7 +30,7 @@ public final class ClientboundMembershipGuiOpenPacketHandler implements MessageH
                 final EntityPlayerSP player = client.player;
                 final WorldClient world = client.world;
 
-                new MembershipGUI(player, message.isAdmin).display();
+                new MembershipGUI(player, message.isAdmin, message.skillLevel, message.availableFunds).display();
             }
         }
     }

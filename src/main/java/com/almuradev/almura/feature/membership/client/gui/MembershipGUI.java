@@ -46,6 +46,10 @@ import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.util.Random;
 import java.util.function.Consumer;
@@ -68,6 +72,8 @@ public final class MembershipGUI extends BasicScreen {
 
     private EntityPlayer player;
     private boolean isAdmin;
+    private int skillsLevel;
+    private double availableFunds;
 
     @Inject
     @ChannelId(NetworkConfig.CHANNEL)
@@ -75,9 +81,11 @@ public final class MembershipGUI extends BasicScreen {
     @Inject private static ClientNotificationManager clientNotificationManager;
     @Inject private static PluginContainer container;
 
-    public MembershipGUI(EntityPlayer player, boolean isAdmin) {
+    public MembershipGUI(EntityPlayer player, boolean isAdmin, int skillsLevel, double availableFunds) {
         this.player = player;
         this.isAdmin = isAdmin;
+        this.skillsLevel = skillsLevel;
+        this.availableFunds = availableFunds;
     }
 
     @Override
@@ -134,7 +142,7 @@ public final class MembershipGUI extends BasicScreen {
                 .position(0, citizen_donation_button.getY() + 18)
                 .text("$2.5 million in-game")
                 .listener(this)
-                .enabled(true)
+                .enabled(availableFunds >= 2500000)
                 .build("button.citizen_purchase");
 
         this.citizen_skills_button = new UIButtonBuilder(this)
@@ -145,7 +153,7 @@ public final class MembershipGUI extends BasicScreen {
                 .position(0, citizen_purchase_button.getY() + 18)
                 .text("Skills at Level 250+")
                 .listener(this)
-                .enabled(true)
+                .enabled(skillsLevel >= 250)
                 .build("button.citizen_skills");
 
         citizenArea.add(citizenLogo, citizenLabel0, citizen_donation_button, citizen_skills_button, citizen_purchase_button);
@@ -188,7 +196,7 @@ public final class MembershipGUI extends BasicScreen {
                 .position(0, explorer_donation_button.getY() + 18)
                 .text("$5 million in-game")
                 .listener(this)
-                .enabled(true)
+                .enabled(availableFunds >=5000000)
                 .build("button.explorer_purchase");
 
         this.explorer_skills_button = new UIButtonBuilder(this)
@@ -199,7 +207,7 @@ public final class MembershipGUI extends BasicScreen {
                 .position(0, explorer_purchase_button.getY() + 18)
                 .text("Skills at Level 375+")
                 .listener(this)
-                .enabled(true)
+                .enabled(skillsLevel >= 375)
                 .build("button.explorer_skills");
 
         explorerArea.add(explorerLogo, explorerLabel0, explorer_donation_button, explorer_skills_button, explorer_purchase_button);
@@ -230,6 +238,7 @@ public final class MembershipGUI extends BasicScreen {
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .position(0, pioneerLabel0.getY() + 10)
                 .text("$100.00 Donation")
+                .tooltip("Hi")
                 .listener(this)
                 .enabled(true)
                 .build("button.pioneer_donation");
@@ -242,7 +251,7 @@ public final class MembershipGUI extends BasicScreen {
                 .position(0, pioneer_donation_button.getY() + 18)
                 .text("$10 million in-game")
                 .listener(this)
-                .enabled(true)
+                .enabled(availableFunds >= 10000000)
                 .build("button.pioneer_purchase");
 
         this.pioneer_skills_button = new UIButtonBuilder(this)
@@ -253,12 +262,20 @@ public final class MembershipGUI extends BasicScreen {
                 .position(0, pioneer_purchase_button.getY() + 18)
                 .text("Skills at Level 400+")
                 .listener(this)
-                .enabled(true)
+                .enabled(skillsLevel >= 400)
                 .build("button.pioneer_skills");
 
         pioneerArea.add(pioneerLogo, pioneerLabel0, pioneer_donation_button, pioneer_skills_button, pioneer_purchase_button);
 
         final DecimalFormat dFormat = new DecimalFormat("###,###,###,###.00");
+
+        final UILabel skillsLabel = new UILabel(this, "Current Skills Level: ");
+        skillsLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build());
+        skillsLabel.setPosition(10, -5, Anchor.LEFT | Anchor.BOTTOM);
+
+        final UILabel skillsLevelLabel = new UILabel(this, "" + skillsLevel);
+        skillsLevelLabel.setFontOptions(FontOptions.builder().from(FontColors.BLUE_FO).shadow(true).scale(0.8F).build());
+        skillsLevelLabel.setPosition(skillsLabel.getX() + skillsLabel.getWidth(), -5, Anchor.LEFT | Anchor.BOTTOM);
 
         final UISeparator topWindowTitleSeparator = new UISeparator(this);
         topWindowTitleSeparator.setSize(this.form.getWidth() , 1);
@@ -285,13 +302,13 @@ public final class MembershipGUI extends BasicScreen {
                 .listener(this)
                 .build("button.close");
 
-        this.form.add(citizenArea, explorerArea, pioneerArea, this.buttonClose);
+        this.form.add(citizenArea, explorerArea, pioneerArea, skillsLabel, skillsLevelLabel, this.buttonClose);
 
         addToScreen(this.form);
     }
 
     @Subscribe
-    public void onUIButtonClickEvent(UIButton.ClickEvent event) {
+    public void onUIButtonClickEvent(UIButton.ClickEvent event) throws IOException, URISyntaxException {
 
         switch (event.getComponent().getName().toLowerCase()) {
             // Note: you have the schedule the close() otherwise for some reason its ignored during respawn.
@@ -301,10 +318,10 @@ public final class MembershipGUI extends BasicScreen {
                 this.mc.player.respawnPlayer();
                 break;
 
-            case "button.revive":
-                Sponge.getScheduler().createTaskBuilder().delayTicks(30).execute(delayedTask("revivePlayer", this.mc.player.getEntityWorld().provider.getDimension(), this.player.posX, this.player.posY, this.player.posZ)).submit(container); // delay
-                // the close call.
-                this.mc.player.respawnPlayer();
+            case "button.citizen_donation":
+            case "button.explorer_donation":
+            case "button.pioneer_donation":
+                Desktop.getDesktop().browse(new URI(GuiConfig.Url.SHOP));
                 break;
 
             case "button.close":
