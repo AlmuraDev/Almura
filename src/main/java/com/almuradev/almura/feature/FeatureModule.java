@@ -24,6 +24,7 @@ import com.almuradev.almura.feature.notification.NotificationModule;
 import com.almuradev.almura.feature.offhand.OffHandListener;
 import com.almuradev.almura.feature.permission.PermissionsModule;
 import com.almuradev.almura.feature.sign.SignEditFeature;
+import com.almuradev.almura.feature.skills.SkillsModule;
 import com.almuradev.almura.feature.storage.StorageModule;
 import com.almuradev.almura.feature.store.StoreModule;
 import com.almuradev.almura.feature.title.TitleModule;
@@ -61,6 +62,7 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.nerfVanillaFood();
         this.install(new ClaimModule());
         this.install(new MembershipModule());
+        this.install(new SkillsModule());
 
         if (SpongeImplHooks.isDeobfuscatedEnvironment()) {
             this.loadServerSideModules(); // Force loading this because it will fail the Platform.Type checks below during normal startup.

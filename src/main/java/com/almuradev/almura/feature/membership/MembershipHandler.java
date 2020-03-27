@@ -16,6 +16,8 @@ import com.almuradev.almura.shared.util.UchatUtil;
 import com.almuradev.core.event.Witness;
 import com.almuradev.toolbox.util.math.DoubleRange;
 import net.minecraft.util.text.TextFormatting;
+import org.inspirenxe.skills.api.Skill;
+import org.inspirenxe.skills.api.SkillService;
 import org.spongepowered.api.GameRegistry;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
@@ -57,6 +59,11 @@ public final class MembershipHandler implements Witness {
     }
 
     public void requestClientGui(Player player) {
+
+        final SkillService service = Sponge.getServiceManager().provide(SkillService.class).orElse(null);
+
+        //service.createContainer("d").getHolder(player.getUniqueId()).get().;
+        //Sponge.getRegistry().getType(SkillType, "farming");
         this.network.sendTo(player, new ClientboundMembershipGuiOpenPacket(true));
     }
 
