@@ -7,8 +7,7 @@
  */
 package com.almuradev.almura.feature.membership.network.handler;
 
-import com.almuradev.almura.feature.death.client.gui.PlayerDiedGUI;
-import com.almuradev.almura.feature.membership.client.gui.MembershipGUI;
+import com.almuradev.almura.feature.membership.client.gui.MembershipGui;
 import com.almuradev.almura.feature.membership.network.ClientboundMembershipGuiOpenPacket;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
@@ -30,7 +29,7 @@ public final class ClientboundMembershipGuiOpenPacketHandler implements MessageH
                 final EntityPlayerSP player = client.player;
                 final WorldClient world = client.world;
 
-                new MembershipGUI(player, message.isAdmin, message.skillLevel, message.availableFunds).display();
+                new MembershipGui(player, message.isAdmin, message.skillLevel, message.availableFunds).display();
             }
         }
     }

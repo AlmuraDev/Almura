@@ -1,11 +1,9 @@
 package com.almuradev.almura.feature.membership;
 
 import com.almuradev.almura.feature.complex.block.membershipexchange.MembershipExchange;
-import com.almuradev.almura.feature.membership.client.gui.MembershipGUI;
+import com.almuradev.almura.feature.membership.client.gui.MembershipGui;
 import com.almuradev.almura.feature.membership.network.ClientboundMembershipGuiOpenPacket;
-import com.almuradev.almura.feature.membership.network.ServerboundMembershipGuiOpenRequestPacket;
 import com.almuradev.almura.feature.membership.network.handler.ClientboundMembershipGuiOpenPacketHandler;
-import com.almuradev.almura.feature.membership.network.handler.ServerboundMembershipGuiOpenRequestPacketHandler;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
@@ -26,7 +24,7 @@ public final class MembershipModule extends AbstractModule implements CommonBind
                 @Override
                 @SuppressWarnings("UnnecessaryStaticInjection") // HACK: inject into required mixin target classes
                 protected void configure() {
-                    this.requestStaticInjection(MembershipGUI.class);
+                    this.requestStaticInjection(MembershipGui.class);
                 }
             }
             this.install(new ClientModule());

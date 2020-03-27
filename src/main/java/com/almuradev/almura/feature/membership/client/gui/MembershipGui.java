@@ -15,7 +15,6 @@ package com.almuradev.almura.feature.membership.client.gui;
  * All Rights Reserved.
  */
 
-import com.almuradev.almura.feature.death.network.ServerboundReviveRequestPacket;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.shared.network.NetworkConfig;
@@ -31,33 +30,25 @@ import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
 import net.malisis.core.renderer.font.FontOptions;
 import net.malisis.core.util.FontColors;
-import net.minecraft.client.gui.GuiMainMenu;
-import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.scheduler.Task;
 
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.DecimalFormat;
-import java.util.Random;
-import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
-public final class MembershipGUI extends BasicScreen {
+public final class MembershipGui extends BasicScreen {
 
     private static final int innerPadding = 2;
     private int lastUpdate = 0;
@@ -81,7 +72,7 @@ public final class MembershipGUI extends BasicScreen {
     @Inject private static ClientNotificationManager clientNotificationManager;
     @Inject private static PluginContainer container;
 
-    public MembershipGUI(EntityPlayer player, boolean isAdmin, int skillsLevel, double availableFunds) {
+    public MembershipGui(EntityPlayer player, boolean isAdmin, int skillsLevel, double availableFunds) {
         this.player = player;
         this.isAdmin = isAdmin;
         this.skillsLevel = skillsLevel;
@@ -151,7 +142,7 @@ public final class MembershipGUI extends BasicScreen {
                 .width(40)
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .position(0, citizen_purchase_button.getY() + 18)
-                .text("Skills at Level 250+")
+                .text("Skills total at 250+")
                 .listener(this)
                 .enabled(skillsLevel >= 250)
                 .build("button.citizen_skills");
@@ -205,7 +196,7 @@ public final class MembershipGUI extends BasicScreen {
                 .width(40)
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .position(0, explorer_purchase_button.getY() + 18)
-                .text("Skills at Level 375+")
+                .text("Skills total at 375+")
                 .listener(this)
                 .enabled(skillsLevel >= 375)
                 .build("button.explorer_skills");
@@ -260,16 +251,14 @@ public final class MembershipGUI extends BasicScreen {
                 .width(40)
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .position(0, pioneer_purchase_button.getY() + 18)
-                .text("Skills at Level 400+")
+                .text("Skills total at 400+")
                 .listener(this)
                 .enabled(skillsLevel >= 400)
                 .build("button.pioneer_skills");
 
         pioneerArea.add(pioneerLogo, pioneerLabel0, pioneer_donation_button, pioneer_skills_button, pioneer_purchase_button);
 
-        final DecimalFormat dFormat = new DecimalFormat("###,###,###,###.00");
-
-        final UILabel skillsLabel = new UILabel(this, "Current Skills Level: ");
+        final UILabel skillsLabel = new UILabel(this, "Current Skills Total: ");
         skillsLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build());
         skillsLabel.setPosition(10, -5, Anchor.LEFT | Anchor.BOTTOM);
 
@@ -280,20 +269,13 @@ public final class MembershipGUI extends BasicScreen {
         final UISeparator topWindowTitleSeparator = new UISeparator(this);
         topWindowTitleSeparator.setSize(this.form.getWidth() , 1);
         topWindowTitleSeparator.setPosition(0, -5, Anchor.TOP | Anchor.CENTER);
-        //this.form.add(topWindowTitleSeparator);
+        this.form.add(topWindowTitleSeparator);
 
         final UISeparator aboveButtonsSeparator = new UISeparator(this);
         aboveButtonsSeparator.setSize(this.form.getWidth() -5, 1);
         aboveButtonsSeparator.setPosition(0, -20, Anchor.BOTTOM | Anchor.CENTER);
         this.form.add(aboveButtonsSeparator);
 
-        final UISeparator belowMessageSeparator = new UISeparator(this);
-        belowMessageSeparator.setSize(form.getWidth() -5, 1);
-        belowMessageSeparator.setPosition(0, 40, Anchor.CENTER | Anchor.MIDDLE);
-        //belowMessageSeparator.setVisible(this.dropCoins);
-        //this.form.add(belowMessageSeparator);
-
-        // Rage Quit button
         this.buttonClose = new UIButtonBuilder(this)
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
@@ -309,13 +291,17 @@ public final class MembershipGUI extends BasicScreen {
 
     @Subscribe
     public void onUIButtonClickEvent(UIButton.ClickEvent event) throws IOException, URISyntaxException {
-
         switch (event.getComponent().getName().toLowerCase()) {
-            // Note: you have the schedule the close() otherwise for some reason its ignored during respawn.
-            case "button.respawn":
-                Sponge.getScheduler().createTaskBuilder().delayTicks(30).execute(delayedTask("respawnPlayer", this.mc.player.getEntityWorld().provider.getDimension(), this.player.posX, this.player.posY, this.player.posZ)).submit(container); //
-                // delay the close call.
-                this.mc.player.respawnPlayer();
+            case "button.citizen_purchase":
+                new PurchaseConfirmGui(this,"Citizen", "$2,500,000",1).display();
+                break;
+
+            case "button.explorer_purchase":
+                new PurchaseConfirmGui(this,"Explorer", "$5,000,000",2).display();
+                break;
+
+            case "button.pioneer_purchase":
+                new PurchaseConfirmGui(this, "Pioneer", "$10,000,000",3).display();
                 break;
 
             case "button.citizen_donation":
@@ -328,18 +314,6 @@ public final class MembershipGUI extends BasicScreen {
                 this.close();
                 break;
         }
-    }
-
-    protected Consumer<Task> delayedTask(final String details, final int dimID, final double x, final double y, final double z) {  // Scheduler
-        return task -> {
-            if (details.equalsIgnoreCase("revivePlayer")) {
-                //this.network.sendToServer(new ServerboundReviveRequestPacket(dimID, x, y, z));
-                close();
-            }
-            if (details.equalsIgnoreCase("respawnPlayer")) {
-                close();
-            }
-        };
     }
 
     @Override
@@ -376,6 +350,4 @@ public final class MembershipGUI extends BasicScreen {
     public boolean doesGuiPauseGame() {
         return false; // Can't stop the game otherwise the Sponge Scheduler also stops.
     }
-
-
 }

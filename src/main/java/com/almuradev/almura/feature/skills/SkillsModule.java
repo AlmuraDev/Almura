@@ -1,9 +1,5 @@
 package com.almuradev.almura.feature.skills;
 
-import com.almuradev.almura.feature.complex.block.membershipexchange.MembershipExchange;
-import com.almuradev.almura.feature.membership.client.gui.MembershipGUI;
-import com.almuradev.almura.feature.membership.network.ClientboundMembershipGuiOpenPacket;
-import com.almuradev.almura.feature.membership.network.handler.ClientboundMembershipGuiOpenPacketHandler;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
