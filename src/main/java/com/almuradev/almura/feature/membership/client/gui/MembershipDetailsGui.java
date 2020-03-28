@@ -23,17 +23,13 @@ import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
 public class MembershipDetailsGui extends BasicScreen {
 
     private static final int padding = 4;
-    @Inject private static ClientMembershipManager membershipManager;
     private String membership, value;
     private int membershipLevel;
 
