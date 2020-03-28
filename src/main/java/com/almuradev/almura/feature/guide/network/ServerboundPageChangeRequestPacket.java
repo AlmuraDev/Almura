@@ -49,7 +49,11 @@ public final class ServerboundPageChangeRequestPacket implements Message {
             if (this.changeType != PageChangeType.REMOVE) {
                 this.index = buf.readInteger();
                 this.name = buf.readString();
-                this.content = buf.readString();
+                String StrPacket1 = buf.readString();
+                String StrPacket2 = buf.readString();
+                String StrPacket3 = buf.readString();
+                String StrPacket4 = buf.readString();
+                this.content = StrPacket1 + StrPacket2 + StrPacket3 + StrPacket4;
             }
         }
     }
@@ -61,7 +65,34 @@ public final class ServerboundPageChangeRequestPacket implements Message {
         if (this.changeType != PageChangeType.REMOVE) {
             buf.writeInteger(this.index);
             buf.writeString(this.name);
-            buf.writeString(this.content);
+
+            if (this.content.length() <= 8190) {
+                buf.writeString(this.content);
+                buf.writeString("");
+                buf.writeString("");
+                buf.writeString("");
+            }
+
+            if (this.content.length() > 8190 && this.content.length() <= 16382) {
+                buf.writeString(this.content.substring(0, 8190));
+                buf.writeString(this.content.substring(8191, this.content.length()));
+                buf.writeString("");
+                buf.writeString("");
+            }
+
+            if (this.content.length() > 16382 && this.content.length() <= 24572) {
+                buf.writeString(this.content.substring(0, 8190));
+                buf.writeString(this.content.substring(8191, 16382));
+                buf.writeString(this.content.substring(16383, this.content.length()));
+                buf.writeString("");
+            }
+
+            if (this.content.length() > 24572 && this.content.length() <= 32762) {
+                buf.writeString(this.content.substring(0, 8190));
+                buf.writeString(this.content.substring(8191, 16382));
+                buf.writeString(this.content.substring(16383, 24572));
+                buf.writeString(this.content.substring(24573, this.content.length()));
+            }
         }
     }
 }

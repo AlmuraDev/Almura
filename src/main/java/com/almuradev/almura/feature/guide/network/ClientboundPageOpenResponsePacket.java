@@ -36,7 +36,11 @@ public final class ClientboundPageOpenResponsePacket implements Message {
         final Instant created = Instant.parse(buf.readString());
         final UUID lastModifier = buf.readUniqueId();
         final Instant lastModified = Instant.parse(buf.readString());
-        final String content = buf.readString();
+        String StrPacket1 = buf.readString();
+        String StrPacket2 = buf.readString();
+        String StrPacket3 = buf.readString();
+        String StrPacket4 = buf.readString();
+        final String content = StrPacket1 + StrPacket2 + StrPacket3 + StrPacket4;
 
         this.page = new Page(id, creator, created);
         this.page.setIndex(index);
@@ -56,6 +60,33 @@ public final class ClientboundPageOpenResponsePacket implements Message {
         buf.writeString(page.getCreated().toString());
         buf.writeUniqueId(page.getLastModifier());
         buf.writeString(page.getLastModified().toString());
-        buf.writeString(TextUtil.asUglyText(page.getContent()));
+
+        if (TextUtil.asUglyText(page.getContent()).length() <= 8190) {
+            buf.writeString(TextUtil.asUglyText(page.getContent()));
+            buf.writeString("");
+            buf.writeString("");
+            buf.writeString("");
+        }
+
+        if (TextUtil.asUglyText(page.getContent()).length() > 8190 && TextUtil.asUglyText(page.getContent()).length() <= 16382) {
+            buf.writeString(TextUtil.asUglyText(page.getContent()).substring(0, 8190));
+            buf.writeString(TextUtil.asUglyText(page.getContent()).substring(8191, page.getContent().length()));
+            buf.writeString("");
+            buf.writeString("");
+        }
+
+        if (TextUtil.asUglyText(page.getContent()).length() > 16382 && TextUtil.asUglyText(page.getContent()).length() <= 24572) {
+            buf.writeString(TextUtil.asUglyText(page.getContent()).substring(0, 8190));
+            buf.writeString(TextUtil.asUglyText(page.getContent()).substring(8191, 16382));
+            buf.writeString(TextUtil.asUglyText(page.getContent()).substring(16383, page.getContent().length()));
+            buf.writeString("");
+        }
+
+        if (TextUtil.asUglyText(page.getContent()).length() > 24572 && TextUtil.asUglyText(page.getContent()).length() <= 32762) {
+            buf.writeString(TextUtil.asUglyText(page.getContent()).substring(0, 8190));
+            buf.writeString(TextUtil.asUglyText(page.getContent()).substring(8191, 16382));
+            buf.writeString(TextUtil.asUglyText(page.getContent()).substring(16383, 24572));
+            buf.writeString(TextUtil.asUglyText(page.getContent()).substring(24573, page.getContent().length()));
+        }
     }
 }

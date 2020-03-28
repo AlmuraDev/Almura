@@ -104,7 +104,7 @@ public final class ClientPageManager implements Witness {
     }
 
     public void requestSavePage() {
-        if (this.page.getContent().length() > 8190) {
+        if (this.page.getContent().length() > 32762) {
             this.clientNotificationManager.handlePopup(new PopupNotification("Error", "Guide too long to save!",5));
         } else {
             this.network.sendToServer(new ServerboundPageChangeRequestPacket(this.page));
