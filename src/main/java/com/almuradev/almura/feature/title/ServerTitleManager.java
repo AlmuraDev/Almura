@@ -64,7 +64,7 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
 
     private final Map<String, Title> titles = new HashMap<>();
     private final Map<UUID, Set<Title>> availableTitles = new HashMap<>();
-    private final Map<UUID, Title> selectedTitles = new HashMap<>();
+    public final Map<UUID, Title> selectedTitles = new HashMap<>();
 
     @Inject
     public ServerTitleManager(final PluginContainer container, final Scheduler scheduler, final Logger logger, @ChannelId(NetworkConfig.CHANNEL)
@@ -145,8 +145,8 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
                       if (player.hasPermission("almura.title.soldier")) titleId = "soldier";
                       if (player.hasPermission("almura.title.survivor")) titleId = "survivor";
                       if (player.hasPermission("almura.title.citizen")) titleId = "citizen";
-                      if (player.hasPermission("almura.title.veteran")) titleId = "veteran";
-                      if (player.hasPermission("almura.title.commander")) titleId = "commander";
+                      if (player.hasPermission("almura.title.explorer")) titleId = "explorer";
+                      if (player.hasPermission("almura.title.pioneer")) titleId = "pioneer";
                       if (player.hasPermission("almura.title.architect")) titleId = "architect";
                       if (player.hasPermission("almura.title.ancient")) titleId = "ancient";
                       // The following debug was left in place so Dockter can see how many of these are happening at the server console.

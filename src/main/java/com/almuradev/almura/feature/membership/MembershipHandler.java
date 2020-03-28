@@ -127,24 +127,34 @@ public final class MembershipHandler implements Witness {
                 BigDecimal deduct = new BigDecimal(fee);
 
                 if (newMembershipLevel == 1 && currentGroup.equalsIgnoreCase("survivor")) {
-                    final String command = "lp user " + player.getName() + " parent set citizen";
+                    final String command = "lp user " + player.getName() + " promote members";
                     this.commandManager.process(Sponge.getServer().getConsole(), command);
                     account.withdraw(currency, deduct, Sponge.getCauseStackManager().getCurrentCause());
-                    serverNotificationManager.sendPopupNotification(player, Text.of("Membership Purchase"), Text.of("You've been upgraded to: Citizen!"), 5);
                     return;
                 }
                 if (newMembershipLevel == 2 && (currentGroup.equalsIgnoreCase("survivor") || currentGroup.equalsIgnoreCase("citizen"))) {
-                    final String command = "lp user " + player.getName() + " parent set explorer";
+                    if (currentGroup.equalsIgnoreCase("survivor")) {
+                        final String command = "lp user " + player.getName() + " promote members";
+                        this.commandManager.process(Sponge.getServer().getConsole(), command);
+                    }
+                    final String command = "lp user " + player.getName() + " promote members";
                     this.commandManager.process(Sponge.getServer().getConsole(), command);
                     account.withdraw(currency, deduct, Sponge.getCauseStackManager().getCurrentCause());
-                    serverNotificationManager.sendPopupNotification(player, Text.of("Membership Purchase"), Text.of("You've been upgraded to: Explorer!"), 5);
                     return;
                 }
                 if (newMembershipLevel == 3 && (currentGroup.equalsIgnoreCase("survivor") || currentGroup.equalsIgnoreCase("citizen") || currentGroup.equalsIgnoreCase("explorer"))) {
-                    final String command = "lp user " + player.getName() + " parent set pioneer";
+                    if (currentGroup.equalsIgnoreCase("survivor")) {
+                        final String command = "lp user " + player.getName() + " promote members";
+                        this.commandManager.process(Sponge.getServer().getConsole(), command);
+                        this.commandManager.process(Sponge.getServer().getConsole(), command);
+                    }
+                    if (currentGroup.equalsIgnoreCase("citizen")) {
+                        final String command = "lp user " + player.getName() + " promote members";
+                        this.commandManager.process(Sponge.getServer().getConsole(), command);
+                    }
+                    final String command = "lp user " + player.getName() + " promote members";
                     this.commandManager.process(Sponge.getServer().getConsole(), command);
                     account.withdraw(currency, deduct, Sponge.getCauseStackManager().getCurrentCause());
-                    serverNotificationManager.sendPopupNotification(player, Text.of("Membership Purchase"), Text.of("You've been upgraded to: Pioneer!"), 5);
                     return;
                 }
 

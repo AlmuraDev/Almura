@@ -115,6 +115,7 @@ public final class DisconnectedGui extends BasicScreen {
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.CENTER)
                 //.text(I18n.format("almura.menu_button.quit"))
+                .position(0,-1)
                 .text("Return to Server Menu")
                 .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).build())
                 .listener(this)
