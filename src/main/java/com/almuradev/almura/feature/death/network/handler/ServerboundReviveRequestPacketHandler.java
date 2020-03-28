@@ -54,7 +54,7 @@ public final class ServerboundReviveRequestPacketHandler implements MessageHandl
                 final PlayerConnection playerConnection = (PlayerConnection) connection;
                 final Player player = playerConnection.getPlayer();
 
-                if (!player.hasPermission(Almura.ID + "death.revive")) {
+                if (!player.hasPermission(Almura.ID + ".death.revive")) {
                     player.sendMessage(Text.of(TextColors.WHITE, "Access denied, missing permission: ", TextColors.AQUA, "almura.death.revive", TextColors.WHITE, "."));
                     return;
                 }
