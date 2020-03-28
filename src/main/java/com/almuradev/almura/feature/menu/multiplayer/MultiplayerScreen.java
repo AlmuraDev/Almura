@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.menu.multiplayer;
 
+import com.almuradev.almura.feature.menu.main.ConnectingGui;
 import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.shared.client.ui.component.UIExpandingLabel;
 import com.almuradev.almura.shared.client.ui.screen.PanoramicScreen;
@@ -171,7 +172,8 @@ public class MultiplayerScreen extends PanoramicScreen {
     }
 
     FMLClientHandler.instance().setupServerList();
-    FMLClientHandler.instance().connectToServer(this, new ServerData(entry.name, entry.address + ":" + entry.port, false));
+    //FMLClientHandler.instance().connectToServer(this, new ServerData(entry.name, entry.address + ":" + entry.port, false));
+    new ConnectingGui(this, new ServerData(entry.name, entry.address + ":" + entry.port, false)).display();
   }
 
   private void queryServers() {

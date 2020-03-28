@@ -9,9 +9,11 @@ package com.almuradev.almura.feature.menu;
 
 import com.almuradev.almura.feature.death.client.gui.PlayerDiedGUI;
 import com.almuradev.almura.feature.menu.game.SimpleIngameMenu;
+import com.almuradev.almura.feature.menu.main.DisconnectedGui;
 import com.almuradev.almura.feature.menu.main.PanoramicMainMenu;
 import com.almuradev.core.event.Witness;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiDisconnected;
 import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiMainMenu;
@@ -24,7 +26,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class MainMenuManager implements Witness {
 
-    boolean debug = false;
+    boolean debug = true;
 
     @SubscribeEvent
     public void onGuiOpen(final GuiOpenEvent event) {
@@ -43,13 +45,10 @@ public class MainMenuManager implements Witness {
                 new SimpleIngameMenu().display();
             } else if (screen.getClass().equals(GuiGameOver.class)) {
                 event.setCanceled(true);
-                if (currentScreen == null ||(currentScreen != null && !currentScreen.getClass().equals(PlayerDiedGUI.class))) {
-                    // Handled within a listener in DeathHandler.class
-                    //new PlayerDiedGUI(Minecraft.getMinecraft().player).display();
-                }
-                if (currentScreen != null && currentScreen.getClass().equals(PlayerDiedGUI.class)) {
-                    // Ignore request, something internally tries to fire this more than once.
-                }
+               // Cancel this, packet sent to client opens the DeathGUI
+            } else if (screen.getClass().equals(GuiDisconnected.class)) {
+                event.setCanceled(true);
+                new DisconnectedGui("").display();
             }
         }
     }
