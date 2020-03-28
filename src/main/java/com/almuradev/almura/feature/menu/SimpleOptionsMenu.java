@@ -32,11 +32,14 @@ import net.malisis.core.util.FontColors;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Arrays;
 
 import javax.annotation.Nullable;
 
+@SideOnly(Side.CLIENT)
 public final class SimpleOptionsMenu extends BasicScreen {
 
     @Inject private static MappedConfiguration<ClientConfiguration> configAdapter;

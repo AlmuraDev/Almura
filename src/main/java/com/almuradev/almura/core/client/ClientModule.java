@@ -11,7 +11,6 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.asm.ClientStaticAccess;
 import com.almuradev.almura.core.client.config.ClientConfigurationModule;
 import com.almuradev.almura.core.common.CommonModule;
-import com.almuradev.almura.feature.menu.MainMenuManager;
 import com.almuradev.almura.feature.menu.MainMenuModule;
 import com.almuradev.almura.feature.menu.SimpleOptionsMenu;
 import com.almuradev.almura.feature.menu.main.PanoramicMainMenu;
