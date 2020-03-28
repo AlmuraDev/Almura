@@ -10,6 +10,7 @@ package com.almuradev.almura.feature.menu.ingame;
 import com.almuradev.almura.feature.claim.ClientClaimManager;
 import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.feature.guide.ClientPageManager;
+import com.almuradev.almura.feature.membership.ClientMembershipManager;
 import com.almuradev.almura.feature.nick.ClientNickManager;
 import com.almuradev.almura.feature.store.client.ClientStoreManager;
 import com.almuradev.almura.feature.title.ClientTitleManager;
@@ -29,9 +30,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.spongepowered.api.text.Text;
-
-import java.io.IOException;
 
 import javax.inject.Inject;
 
@@ -41,7 +39,7 @@ public final class FeatureScreen extends BasicScreen {
   private int lastUpdate = 0;
   private boolean unlockMouse = true;
   private boolean isAdmin;
-  private UIButton guideButton, titleButton, nicknameButton, manageExchangeButton, manageStoreButton, accessoriesButton, claimButton;
+  private UIButton guideButton, titleButton, nicknameButton, manageExchangeButton, manageStoreButton, accessoriesButton, claimButton, membershipButton;
 
   private World world;
   private EntityPlayerSP player;
@@ -52,6 +50,7 @@ public final class FeatureScreen extends BasicScreen {
   @Inject private static ClientTitleManager titleManager;
   @Inject private static ClientClaimManager claimManager;
   @Inject private static ClientStoreManager storeManager;
+  @Inject private static ClientMembershipManager membershipManager;
 
   public FeatureScreen(EntityPlayerSP player, World worldIn, boolean isAdmin) {
     this.player = player;
@@ -114,12 +113,21 @@ public final class FeatureScreen extends BasicScreen {
         .position(0, titleButton.getY() + 18)
         .text("Accessories")
         .enabled(isAdmin)
-        //.onClick(() -> action)
+        .onClick(() -> {})
         .build("button.accessories");
+
+    // Accessories button
+    membershipButton = new UIButtonBuilder(this)
+        .width(100)
+        .anchor(Anchor.TOP | Anchor.CENTER)
+        .position(0, accessoriesButton.getY() + 18)
+        .text("Memberships")
+        .onClick(() -> membershipManager.requestMembershipGUI())
+        .build("button.memberships");
 
     final UISeparator functionsSeparator = new UISeparator(this);
     functionsSeparator.setSize(form.getWidth(), 1);
-    functionsSeparator.setPosition(0, accessoriesButton.getY() + 22, Anchor.TOP | Anchor.CENTER);
+    functionsSeparator.setPosition(0, membershipButton.getY() + 22, Anchor.TOP | Anchor.CENTER);
     functionsSeparator.setVisible(isAdmin);
 
     final UILabel adminLabel = new UILabel(this, "Administrator");
@@ -129,7 +137,7 @@ public final class FeatureScreen extends BasicScreen {
 
     final UISeparator functionsSeparator2 = new UISeparator(this);
     functionsSeparator2.setSize(form.getWidth(), 1);
-    functionsSeparator2.setPosition(0, accessoriesButton.getY() + 37, Anchor.TOP | Anchor.CENTER);
+    functionsSeparator2.setPosition(0, membershipButton.getY() + 37, Anchor.TOP | Anchor.CENTER);
     functionsSeparator2.setVisible(isAdmin);
 
     // Manage Exchange button
@@ -160,7 +168,7 @@ public final class FeatureScreen extends BasicScreen {
         .onClick(this::close)
         .build("button.close");
 
-    form.add(guideButton, manageExchangeButton, titleButton, nicknameButton, functionsSeparator, adminLabel, functionsSeparator2, accessoriesButton, manageStoreButton, claimButton, buttonClose);
+    form.add(guideButton, manageExchangeButton, titleButton, nicknameButton, functionsSeparator, adminLabel, functionsSeparator2, accessoriesButton, membershipButton, manageStoreButton, claimButton, buttonClose);
 
     addToScreen(form);
   }

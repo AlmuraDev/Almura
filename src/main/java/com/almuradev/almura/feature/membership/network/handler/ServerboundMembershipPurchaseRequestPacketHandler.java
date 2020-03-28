@@ -9,6 +9,7 @@ package com.almuradev.almura.feature.membership.network.handler;
 
 import com.almuradev.almura.feature.membership.MembershipHandler;
 import com.almuradev.almura.feature.membership.network.ServerboundMembershipGuiOpenRequestPacket;
+import com.almuradev.almura.feature.membership.network.ServerboundMembershipPurchaseRequestPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.server.MinecraftServer;
@@ -25,7 +26,7 @@ import org.spongepowered.api.scheduler.Scheduler;
 
 import javax.inject.Inject;
 
-public final class ServerboundMembershipGuiOpenRequestPacketHandler implements MessageHandler<ServerboundMembershipGuiOpenRequestPacket> {
+public final class ServerboundMembershipPurchaseRequestPacketHandler implements MessageHandler<ServerboundMembershipPurchaseRequestPacket> {
 
     @Inject private static MembershipHandler membershipHandler;
     private final Scheduler scheduler;
@@ -33,7 +34,7 @@ public final class ServerboundMembershipGuiOpenRequestPacketHandler implements M
     private final ChannelBinding.IndexedMessageChannel network;
 
     @Inject
-    public ServerboundMembershipGuiOpenRequestPacketHandler(final Scheduler scheduler, final PluginContainer container, final @ChannelId(NetworkConfig
+    public ServerboundMembershipPurchaseRequestPacketHandler(final Scheduler scheduler, final PluginContainer container, final @ChannelId(NetworkConfig
             .CHANNEL) ChannelBinding.IndexedMessageChannel network, MembershipHandler membershipHandler) {
         this.scheduler = scheduler;
         this.container = container;
@@ -42,7 +43,7 @@ public final class ServerboundMembershipGuiOpenRequestPacketHandler implements M
     }
 
     @Override
-    public void handleMessage(ServerboundMembershipGuiOpenRequestPacket message, RemoteConnection connection, Platform.Type side) {
+    public void handleMessage(ServerboundMembershipPurchaseRequestPacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isServer() && connection instanceof PlayerConnection && Sponge.isServerAvailable()) {
 
             final MinecraftServer server = (MinecraftServer) Sponge.getServer();
@@ -50,7 +51,7 @@ public final class ServerboundMembershipGuiOpenRequestPacketHandler implements M
                 final PlayerConnection playerConnection = (PlayerConnection) connection;
                 final Player player = playerConnection.getPlayer();
 
-                membershipHandler.requestClientGui(player);
+                membershipHandler.handleMembershipPurchase(player, message.membershipLevel);
             }
         }
     }

@@ -65,6 +65,7 @@ public final class MembershipGui extends BasicScreen {
     private boolean isAdmin;
     private int skillsLevel;
     private double availableFunds;
+    private int currentMembershipLevel;
 
     @Inject
     @ChannelId(NetworkConfig.CHANNEL)
@@ -72,11 +73,12 @@ public final class MembershipGui extends BasicScreen {
     @Inject private static ClientNotificationManager clientNotificationManager;
     @Inject private static PluginContainer container;
 
-    public MembershipGui(EntityPlayer player, boolean isAdmin, int skillsLevel, double availableFunds) {
+    public MembershipGui(EntityPlayer player, boolean isAdmin, int skillsLevel, double availableFunds, int currentMembershipLevel) {
         this.player = player;
         this.isAdmin = isAdmin;
         this.skillsLevel = skillsLevel;
         this.availableFunds = availableFunds;
+        this.currentMembershipLevel = currentMembershipLevel;
     }
 
     @Override
@@ -122,7 +124,7 @@ public final class MembershipGui extends BasicScreen {
                 .position(0, citizenLabel0.getY() + 10)
                 .text("$25.00 Donation")
                 .listener(this)
-                .enabled(true)
+                .enabled(currentMembershipLevel == 0)
                 .build("button.citizen_donation");
 
         this.citizen_purchase_button = new UIButtonBuilder(this)
@@ -133,7 +135,7 @@ public final class MembershipGui extends BasicScreen {
                 .position(0, citizen_donation_button.getY() + 18)
                 .text("$2.5 million in-game")
                 .listener(this)
-                .enabled(availableFunds >= 2500000)
+                .enabled(availableFunds >= 2500000 && currentMembershipLevel == 0)
                 .build("button.citizen_purchase");
 
         this.citizen_skills_button = new UIButtonBuilder(this)
@@ -144,7 +146,7 @@ public final class MembershipGui extends BasicScreen {
                 .position(0, citizen_purchase_button.getY() + 18)
                 .text("Skills total at 250+")
                 .listener(this)
-                .enabled(skillsLevel >= 250)
+                .enabled(skillsLevel >= 250 && currentMembershipLevel == 0)
                 .build("button.citizen_skills");
 
         citizenArea.add(citizenLogo, citizenLabel0, citizen_donation_button, citizen_skills_button, citizen_purchase_button);
@@ -176,7 +178,7 @@ public final class MembershipGui extends BasicScreen {
                 .position(0, explorerLabel0.getY() + 10)
                 .text("$50.00 Donation")
                 .listener(this)
-                .enabled(true)
+                .enabled(currentMembershipLevel == 0 || currentMembershipLevel == 1)
                 .build("button.explorer_donation");
 
         this.explorer_purchase_button = new UIButtonBuilder(this)
@@ -187,7 +189,7 @@ public final class MembershipGui extends BasicScreen {
                 .position(0, explorer_donation_button.getY() + 18)
                 .text("$5 million in-game")
                 .listener(this)
-                .enabled(availableFunds >=5000000)
+                .enabled(availableFunds >=5000000 && (currentMembershipLevel == 0 || currentMembershipLevel == 1))
                 .build("button.explorer_purchase");
 
         this.explorer_skills_button = new UIButtonBuilder(this)
@@ -198,7 +200,7 @@ public final class MembershipGui extends BasicScreen {
                 .position(0, explorer_purchase_button.getY() + 18)
                 .text("Skills total at 375+")
                 .listener(this)
-                .enabled(skillsLevel >= 375)
+                .enabled(skillsLevel >= 375 && (currentMembershipLevel == 0 || currentMembershipLevel ==1))
                 .build("button.explorer_skills");
 
         explorerArea.add(explorerLogo, explorerLabel0, explorer_donation_button, explorer_skills_button, explorer_purchase_button);
@@ -231,7 +233,7 @@ public final class MembershipGui extends BasicScreen {
                 .text("$100.00 Donation")
                 .tooltip("Hi")
                 .listener(this)
-                .enabled(true)
+                .enabled(currentMembershipLevel == 0 || currentMembershipLevel == 1 || currentMembershipLevel == 2)
                 .build("button.pioneer_donation");
 
         this.pioneer_purchase_button = new UIButtonBuilder(this)
@@ -242,7 +244,7 @@ public final class MembershipGui extends BasicScreen {
                 .position(0, pioneer_donation_button.getY() + 18)
                 .text("$10 million in-game")
                 .listener(this)
-                .enabled(availableFunds >= 10000000)
+                .enabled(availableFunds >= 10000000 && (currentMembershipLevel == 0 || currentMembershipLevel == 1 || currentMembershipLevel == 2))
                 .build("button.pioneer_purchase");
 
         this.pioneer_skills_button = new UIButtonBuilder(this)
@@ -253,7 +255,7 @@ public final class MembershipGui extends BasicScreen {
                 .position(0, pioneer_purchase_button.getY() + 18)
                 .text("Skills total at 400+")
                 .listener(this)
-                .enabled(skillsLevel >= 400)
+                .enabled(skillsLevel >= 400 && (currentMembershipLevel == 0 || currentMembershipLevel == 1 || currentMembershipLevel == 2))
                 .build("button.pioneer_skills");
 
         pioneerArea.add(pioneerLogo, pioneerLabel0, pioneer_donation_button, pioneer_skills_button, pioneer_purchase_button);

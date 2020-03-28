@@ -7,17 +7,13 @@
  */
 package com.almuradev.almura.feature.membership.client.gui;
 
-import com.almuradev.almura.feature.guide.ClientPageManager;
-import com.almuradev.almura.shared.client.GuiConfig;
+import com.almuradev.almura.feature.membership.ClientMembershipManager;
 import com.google.common.eventbus.Subscribe;
-import com.google.inject.internal.cglib.reflect.$FastMember;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.decoration.UISeparator;
-import net.malisis.core.client.gui.component.interaction.BasicTextBox;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
 import net.malisis.core.renderer.font.FontOptions;
@@ -30,22 +26,18 @@ import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.awt.*;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 @SideOnly(Side.CLIENT)
 public class PurchaseConfirmGui extends BasicScreen {
 
     private static final int padding = 4;
-
+    @Inject private static ClientMembershipManager membershipManager;
     private String membership, value;
-    private int function;
+    private int membershipLevel;
 
-    public PurchaseConfirmGui(@Nullable GuiScreen parent, String membership, String value, int function) {
+    public PurchaseConfirmGui(@Nullable GuiScreen parent, String membership, String value, int membershipLevel) {
         super(parent, true);
-        this.function = function;
+        this.membershipLevel = membershipLevel;
         this.membership = membership;
         this.value = value;
     }
@@ -85,7 +77,7 @@ public class PurchaseConfirmGui extends BasicScreen {
                 .anchor(Anchor.BOTTOM | Anchor.CENTER)
                 .position(0, -25)
                 .width(40)
-                .onClick(this::close)
+                .listener(this)
                 .build("button.purchase");
 
         final UISeparator aboveCloseSeparator = new UISeparator(this);
@@ -97,8 +89,8 @@ public class PurchaseConfirmGui extends BasicScreen {
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .position(0, 0)
                 .width(40)
-                .onClick(this::close)
-                .build("button.cancel");
+                .listener(this)
+                .build("button.close");
 
         form.add(buttonClose, label0, membershipLabel, amountLabel, valueLabel, aboveCloseSeparator, buttonPurchase, belowAmountSeparator);
 
@@ -108,6 +100,11 @@ public class PurchaseConfirmGui extends BasicScreen {
     @Subscribe
     public void onUIButtonClickEvent(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
+            case "button.purchase":
+                membershipManager.requestMembershipPurchase(membershipLevel);
+                this.close();
+                break;
+
             case "button.close":
                 this.close();
                 break;
@@ -118,5 +115,4 @@ public class PurchaseConfirmGui extends BasicScreen {
     public boolean doesGuiPauseGame() {
         return false;
     }
-
 }

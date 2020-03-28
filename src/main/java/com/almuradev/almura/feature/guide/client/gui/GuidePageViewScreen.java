@@ -130,9 +130,8 @@ public class GuidePageViewScreen extends BasicScreen {
 
         form.add(this.pagesList, this.tbContent, this.buttonAdd, buttonRemove, buttonDetails, buttonClose);
 
+        this.tbContent.setHeight(BasicScreen.getPaddedHeight(form) - 17);
         if (this.canModify) {
-            this.tbContent.setHeight(BasicScreen.getPaddedHeight(form) - 17);
-
             this.buttonSave = new UIButtonBuilder(this)
                 .width(50)
                 .anchor(Anchor.RIGHT | Anchor.BOTTOM)

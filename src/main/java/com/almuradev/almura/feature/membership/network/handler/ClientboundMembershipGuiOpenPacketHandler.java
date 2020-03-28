@@ -12,7 +12,6 @@ import com.almuradev.almura.feature.membership.network.ClientboundMembershipGuiO
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.multiplayer.WorldClient;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.network.MessageHandler;
 import org.spongepowered.api.network.RemoteConnection;
@@ -23,13 +22,11 @@ public final class ClientboundMembershipGuiOpenPacketHandler implements MessageH
     public void handleMessage(ClientboundMembershipGuiOpenPacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isClient()) {
             final Minecraft client = Minecraft.getMinecraft();
-            System.out.println("Received client membership packet");
             if (PacketUtil.checkThreadAndEnqueue(client, message, this, connection, side)) {
 
                 final EntityPlayerSP player = client.player;
-                final WorldClient world = client.world;
 
-                new MembershipGui(player, message.isAdmin, message.skillLevel, message.availableFunds).display();
+                new MembershipGui(player, message.isAdmin, message.skillLevel, message.availableFunds, message.currentMembershipLevel).display();
             }
         }
     }

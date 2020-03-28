@@ -15,14 +15,16 @@ public final class ClientboundMembershipGuiOpenPacket implements Message {
     public boolean isAdmin;
     public int skillLevel;
     public double availableFunds;
+    public int currentMembershipLevel;
 
     public ClientboundMembershipGuiOpenPacket(){
     }
 
-    public ClientboundMembershipGuiOpenPacket(boolean isAdmin, int skillLevel, double availableFunds) {
+    public ClientboundMembershipGuiOpenPacket(boolean isAdmin, int skillLevel, double availableFunds, int currentMembershipLevel) {
         this.isAdmin = isAdmin;
         this.skillLevel = skillLevel;
         this.availableFunds = availableFunds;
+        this.currentMembershipLevel = currentMembershipLevel;
     }
 
     @Override
@@ -30,6 +32,7 @@ public final class ClientboundMembershipGuiOpenPacket implements Message {
         this.isAdmin = buf.readBoolean();
         this.skillLevel = buf.readInteger();
         this.availableFunds = buf.readDouble();
+        this.currentMembershipLevel = buf.readInteger();
     }
 
     @Override
@@ -37,5 +40,6 @@ public final class ClientboundMembershipGuiOpenPacket implements Message {
         buf.writeBoolean(this.isAdmin);
         buf.writeInteger(this.skillLevel);
         buf.writeDouble(this.availableFunds);
+        buf.writeInteger(this.currentMembershipLevel);
     }
 }

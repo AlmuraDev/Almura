@@ -9,11 +9,8 @@ package com.almuradev.almura.feature.complex.block.membershipexchange;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.complex.block.ComplexBlock;
-import com.almuradev.almura.feature.death.network.ClientboundPlayerDiedPacket;
 import com.almuradev.almura.feature.membership.MembershipHandler;
-import com.almuradev.almura.feature.membership.network.ClientboundMembershipGuiOpenPacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
-import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.content.type.itemgroup.ItemGroup;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
@@ -34,17 +31,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.network.ChannelBinding;
-import org.spongepowered.api.network.ChannelId;
-import org.spongepowered.api.service.economy.Currency;
-import org.spongepowered.api.service.economy.EconomyService;
-import org.spongepowered.api.service.economy.account.Account;
-import org.spongepowered.api.text.Text;
-
-import java.lang.reflect.Member;
-import java.math.BigDecimal;
 
 import javax.inject.Inject;
 
@@ -114,14 +101,9 @@ public final class MembershipExchange extends ComplexBlock {
         if (world.isRemote) {
             return true;
         }
-        final Player player = (Player) mcPlayer;
 
-        if (mcPlayer.getHeldItemMainhand().isEmpty()) {
-            serverNotificationManager.sendPopupNotification(player, Text.of("Coin Exchange"), Text.of("Place coins in hand prior to clicking on Coin Exchange"),5);
-            System.out.println("Debug here");
-            membershipHandler.requestClientGui(player);
-            return true;
-        }
+        final Player player = (Player) mcPlayer;
+        membershipHandler.requestClientGui(player);
 
        return true;
     }
