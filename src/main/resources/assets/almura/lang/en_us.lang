@@ -64,6 +64,13 @@ almura.menu_button.join=Join
 almura.menu_button.other=Other
 
 # ----------------------
+# ----    omplex    ----
+# ----------------------
+
+tile.machine.membership_exchange.name=Membership Exchange
+tile.machine.coin_exchange.name=Coin Exchange
+
+# ----------------------
 # ----    caches    ----
 # ----------------------
 
