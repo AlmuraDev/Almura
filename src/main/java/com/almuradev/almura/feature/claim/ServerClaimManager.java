@@ -239,7 +239,7 @@ public final class ServerClaimManager implements Witness {
     }
 
     public void toggleVisuals(final Player player, final Claim claim, final boolean value) {
-        if (!isGPEnabled(player)) {
+        if (!isGPEnabled(player) || GriefPreventionPlugin.instance.worldEditProvider == null) {
             return;
         }
 

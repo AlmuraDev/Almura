@@ -57,6 +57,7 @@ public final class MembershipGui extends BasicScreen {
     private UILabel messageLabel, droppedLabel, deathTaxLabel;
     private BasicForm form;
     private UIButton buttonRespawn, buttonRevive, buttonClose;
+    private UIButton citizen_details_button, explorer_details_button, pioneer_details_button;
     private UIButton citizen_donation_button, citizen_purchase_button, citizen_skills_button;
     private UIButton explorer_donation_button, explorer_purchase_button, explorer_skills_button;
     private UIButton pioneer_donation_button, pioneer_purchase_button, pioneer_skills_button;
@@ -112,6 +113,17 @@ public final class MembershipGui extends BasicScreen {
         citizenLogo.setSize(99, 99);
         citizenLogo.setPosition(0, -3, Anchor.TOP | Anchor.CENTER);
 
+        this.citizen_details_button = new UIButtonBuilder(this)
+            .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
+            .hoverFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
+            .width(40)
+            .anchor(Anchor.TOP | Anchor.CENTER)
+            .position(0, citizenLogo.getY() + 100)
+            .text("Details")
+            .listener(this)
+            .enabled(true)
+            .build("button.citizen_details");
+
         final UILabel citizenLabel0 = new UILabel(this, "Chose One");
         citizenLabel0.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).underline(true).shadow(true).scale(0.8F).build());
         citizenLabel0.setPosition(0, 125, Anchor.CENTER | Anchor.TOP);
@@ -149,7 +161,7 @@ public final class MembershipGui extends BasicScreen {
                 .enabled(skillsLevel >= 250 && currentMembershipLevel == 0)
                 .build("button.citizen_skills");
 
-        citizenArea.add(citizenLogo, citizenLabel0, citizen_donation_button, citizen_skills_button, citizen_purchase_button);
+        citizenArea.add(citizenLogo,citizen_details_button, citizenLabel0, citizen_donation_button, citizen_skills_button, citizen_purchase_button);
 
         final BasicForm explorerArea = new BasicForm(this, 100, 200, "");
         explorerArea.setPosition(0, 0, Anchor.CENTER | Anchor.TOP);
@@ -165,6 +177,17 @@ public final class MembershipGui extends BasicScreen {
         final UIImage explorerLogo = new UIImage(this, new GuiTexture(GuiConfig.Location.explorer_logo), null);
         explorerLogo.setSize(99, 99);
         explorerLogo.setPosition(0, -3, Anchor.TOP | Anchor.CENTER);
+
+        this.explorer_details_button = new UIButtonBuilder(this)
+            .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
+            .hoverFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
+            .width(40)
+            .anchor(Anchor.TOP | Anchor.CENTER)
+            .position(0, explorerLogo.getY() + 100)
+            .text("Details")
+            .listener(this)
+            .enabled(true)
+            .build("button.explorer_details");
 
         final UILabel explorerLabel0 = new UILabel(this, "Chose One");
         explorerLabel0.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).underline(true).shadow(true).scale(0.8F).build());
@@ -203,7 +226,7 @@ public final class MembershipGui extends BasicScreen {
                 .enabled(skillsLevel >= 375 && (currentMembershipLevel == 0 || currentMembershipLevel ==1))
                 .build("button.explorer_skills");
 
-        explorerArea.add(explorerLogo, explorerLabel0, explorer_donation_button, explorer_skills_button, explorer_purchase_button);
+        explorerArea.add(explorerLogo, explorer_details_button, explorerLabel0, explorer_donation_button, explorer_skills_button, explorer_purchase_button);
 
         final BasicForm pioneerArea = new BasicForm(this, 100, 200, "");
         pioneerArea.setPosition(0, 0, Anchor.RIGHT | Anchor.TOP);
@@ -219,6 +242,17 @@ public final class MembershipGui extends BasicScreen {
         final UIImage pioneerLogo = new UIImage(this, new GuiTexture(GuiConfig.Location.pioneer_logo), null);
         pioneerLogo.setSize(99, 99);
         pioneerLogo.setPosition(0, -3, Anchor.TOP | Anchor.CENTER);
+
+        this.pioneer_details_button = new UIButtonBuilder(this)
+            .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
+            .hoverFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
+            .width(40)
+            .anchor(Anchor.TOP | Anchor.CENTER)
+            .position(0, pioneerLogo.getY() + 100)
+            .text("Details")
+            .listener(this)
+            .enabled(true)
+            .build("button.pioneer_details");
 
         final UILabel pioneerLabel0 = new UILabel(this, "Chose One");
         pioneerLabel0.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).underline(true).shadow(true).scale(0.8F).build());
@@ -258,7 +292,7 @@ public final class MembershipGui extends BasicScreen {
                 .enabled(skillsLevel >= 400 && (currentMembershipLevel == 0 || currentMembershipLevel == 1 || currentMembershipLevel == 2))
                 .build("button.pioneer_skills");
 
-        pioneerArea.add(pioneerLogo, pioneerLabel0, pioneer_donation_button, pioneer_skills_button, pioneer_purchase_button);
+        pioneerArea.add(pioneerLogo, pioneer_details_button, pioneerLabel0, pioneer_donation_button, pioneer_skills_button, pioneer_purchase_button);
 
         final UILabel skillsLabel = new UILabel(this, "Current Skills Total: ");
         skillsLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build());
@@ -294,6 +328,18 @@ public final class MembershipGui extends BasicScreen {
     @Subscribe
     public void onUIButtonClickEvent(UIButton.ClickEvent event) throws IOException, URISyntaxException {
         switch (event.getComponent().getName().toLowerCase()) {
+            case "button.citizen_details":
+                new MembershipDetailsGui(this,"Citizen", "$2,500,000",1).display();
+                break;
+
+            case "button.explorer_details":
+                new MembershipDetailsGui(this,"Explorer", "$5,000,000",2).display();
+                break;
+
+            case "button.pioneer_details":
+                new MembershipDetailsGui(this, "Pioneer", "$10,000,000",3).display();
+                break;
+
             case "button.citizen_purchase":
                 new PurchaseConfirmGui(this,"Citizen", "$2,500,000",1).display();
                 break;
