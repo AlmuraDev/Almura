@@ -114,7 +114,7 @@ dependencies {
     compile 'net.kyori:lunar:1.0.5-SNAPSHOT'
     compile 'net.kyori:membrane:1.0.5'
     compile 'net.kyori:violet:1.0.0'
-    deobfCompile ('com.almuradev:malisiscore:1.12.2-6.5.3-SNAPSHOT') {
+    deobfCompile ('com.almuradev:malisiscore:1.12.2-6.5.3-SNAPSHOT-dev') {
         transitive = false
     }
     compile 'br.net.fabiozumbi12.UltimateChat:UltimateChat-Sponge-7:1.8.9'

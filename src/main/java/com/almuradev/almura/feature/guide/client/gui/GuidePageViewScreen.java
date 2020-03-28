@@ -106,10 +106,10 @@ public class GuidePageViewScreen extends BasicScreen {
                     .text(TextFormatting.YELLOW + "?")
                     .onClick(() -> this.runScheduledTask("details"))
                     .anchor(Anchor.BOTTOM | Anchor.LEFT)
+                    .position(BasicScreen.getPaddedX(this.buttonRemove, 2), 0)
                     .visible(this.canModify)
                     .tooltip(I18n.format("almura.guide.view.button.details.tooltip"))
                     .build("button.details");
-            this.buttonDetails.setPosition(BasicScreen.getPaddedX(this.pagesList, -this.buttonDetails.getWidth()) + 1, 0);
         }
 
         this.tbContent = new WYSIWYGTextBox(this, BasicScreen.getPaddedHeight(form), "");
