@@ -12,7 +12,7 @@ import org.spongepowered.api.Sponge;
 
 public final class UchatUtil {
     public static void relayMessageToDiscord(String icon, String message, boolean bold) {
-        if (Sponge.getPluginManager().isLoaded("ultimatechat")) {
+        if (Sponge.getPluginManager().isLoaded("ultimatechat") && UChat.get().getUCJDA() != null) {
             if (UChat.get().getUCJDA().JDAAvailable()) {
                 if (bold) {
                     UChat.get().getUCJDA().sendRawToDiscord(icon + " " + "**" + message + "**");
