@@ -40,6 +40,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.handshake.client.C00Handshake;
 import net.minecraft.network.login.client.CPacketLoginStart;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.fml.client.config.GuiConfigEntries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
@@ -62,7 +63,7 @@ public final class ConnectingGui extends BasicScreen {
     private int lastUpdate = 0;
     private boolean unlockMouse = true;
     private boolean update = true;
-    private UILabel messageLabel;
+    private UILabel messageLabel, messageLabel2, magic;
     private BasicForm form;
     private UIButton buttonClose;
 
@@ -90,7 +91,7 @@ public final class ConnectingGui extends BasicScreen {
         this.guiscreenBackground = true;
         Keyboard.enableRepeatEvents(true);
 
-        this.form = new BasicForm(this, 170, 170, "Server Status");
+        this.form = new BasicForm(this, 200, 200, "Server Status");
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(false);
         this.form.setClosable(false);
@@ -106,9 +107,25 @@ public final class ConnectingGui extends BasicScreen {
         almuraHeader.setSize(60, 99);
         almuraHeader.setPosition(0, 5, Anchor.TOP | Anchor.CENTER);
 
+        final UISeparator aboveLogoSeparator = new UISeparator(this);
+        aboveLogoSeparator.setSize(this.form.getWidth() -5, 1);
+        aboveLogoSeparator.setPosition(0, 107, Anchor.TOP | Anchor.CENTER);
+        this.form.add(aboveLogoSeparator);
+
         this.messageLabel = new UILabel(this, "Connecting from Server...");
         this.messageLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        this.messageLabel.setPosition(0, 112, Anchor.CENTER | Anchor.TOP);
+        this.messageLabel.setPosition(0, 115, Anchor.CENTER | Anchor.TOP);
+        this.form.add(this.messageLabel);
+
+        this.messageLabel2 = new UILabel(this, "Synchronizing data...");
+        this.messageLabel2.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
+        this.messageLabel2.setPosition(0, 128, Anchor.CENTER | Anchor.TOP);
+        this.form.add(this.messageLabel2);
+
+        this.magic = new UILabel(this, "valuesvalues");
+        magic.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).obfuscated(true).scale(1.0F).build());
+        magic.setPosition(0, -25, Anchor.CENTER | Anchor.BOTTOM);
+        this.form.add(magic);
 
         final UISeparator aboveButtonsSeparator = new UISeparator(this);
         aboveButtonsSeparator.setSize(this.form.getWidth() -5, 1);
@@ -125,7 +142,7 @@ public final class ConnectingGui extends BasicScreen {
                 .listener(this)
                 .build("button.return");
 
-        this.form.add(almuraHeader, this.messageLabel, this.buttonClose);
+        this.form.add(almuraHeader, this.buttonClose);
 
         addToScreen(this.form);
     }
@@ -142,6 +159,22 @@ public final class ConnectingGui extends BasicScreen {
                 new MultiplayerScreen(null).display();
                 break;
         }
+    }
+
+    @Override
+    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
+        if (this.networkManager == null) {
+            this.messageLabel.setText("Connecting to server...");
+            this.messageLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
+            this.messageLabel2.setVisible(false);
+            this.form.setSize(200, 190);
+        } else {
+            this.messageLabel.setText("Connected.");
+            this.messageLabel.setFontOptions(FontOptions.builder().from(FontColors.GREEN_FO).shadow(true).scale(1.1F).build());
+            this.messageLabel2.setVisible(true);
+            this.form.setSize(200, 200);
+        }
+        super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
     @Override
