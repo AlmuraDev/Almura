@@ -198,4 +198,10 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
     public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT_MIPPED;
     }
+
+    @Deprecated
+    @Override
+    public boolean isTopSolid(IBlockState state) {
+        return true;
+    }
 }
