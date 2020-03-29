@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.membership;
 
 import com.almuradev.almura.feature.membership.network.ClientboundMembershipGuiOpenPacket;
+import com.almuradev.almura.feature.membership.network.ClientboundMembershipSuccessPacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.feature.skills.SkillsHandler;
 import com.almuradev.almura.shared.network.NetworkConfig;
@@ -124,12 +125,20 @@ public final class MembershipHandler implements Witness {
                 }
 
                 String currentGroup = permService.getUserManager().getUser(player.getUniqueId()).getPrimaryGroup();
+                String newMembership = "";
+                if (newMembershipLevel == 1)
+                    newMembership = "Citizen";
+                if (newMembershipLevel == 2)
+                    newMembership = "Explorer";
+                if (newMembershipLevel == 3)
+                    newMembership = "Pioneer";
                 BigDecimal deduct = new BigDecimal(fee);
 
                 if (newMembershipLevel == 1 && currentGroup.equalsIgnoreCase("survivor")) {
                     final String command = "lp user " + player.getName() + " promote members";
                     this.commandManager.process(Sponge.getServer().getConsole(), command);
                     account.withdraw(currency, deduct, Sponge.getCauseStackManager().getCurrentCause());
+                    this.network.sendTo(player, new ClientboundMembershipSuccessPacket(newMembership));
                     return;
                 }
                 if (newMembershipLevel == 2 && (currentGroup.equalsIgnoreCase("survivor") || currentGroup.equalsIgnoreCase("citizen"))) {
@@ -140,6 +149,7 @@ public final class MembershipHandler implements Witness {
                     final String command = "lp user " + player.getName() + " promote members";
                     this.commandManager.process(Sponge.getServer().getConsole(), command);
                     account.withdraw(currency, deduct, Sponge.getCauseStackManager().getCurrentCause());
+                    this.network.sendTo(player, new ClientboundMembershipSuccessPacket(newMembership));
                     return;
                 }
                 if (newMembershipLevel == 3 && (currentGroup.equalsIgnoreCase("survivor") || currentGroup.equalsIgnoreCase("citizen") || currentGroup.equalsIgnoreCase("explorer"))) {
@@ -155,6 +165,7 @@ public final class MembershipHandler implements Witness {
                     final String command = "lp user " + player.getName() + " promote members";
                     this.commandManager.process(Sponge.getServer().getConsole(), command);
                     account.withdraw(currency, deduct, Sponge.getCauseStackManager().getCurrentCause());
+                    this.network.sendTo(player, new ClientboundMembershipSuccessPacket(newMembership));
                     return;
                 }
 

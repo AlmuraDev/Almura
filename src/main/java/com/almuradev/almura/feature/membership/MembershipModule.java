@@ -11,9 +11,11 @@ import com.almuradev.almura.feature.complex.block.membershipexchange.MembershipE
 import com.almuradev.almura.feature.membership.client.gui.MembershipGui;
 import com.almuradev.almura.feature.membership.client.gui.PurchaseConfirmGui;
 import com.almuradev.almura.feature.membership.network.ClientboundMembershipGuiOpenPacket;
+import com.almuradev.almura.feature.membership.network.ClientboundMembershipSuccessPacket;
 import com.almuradev.almura.feature.membership.network.ServerboundMembershipGuiOpenRequestPacket;
 import com.almuradev.almura.feature.membership.network.ServerboundMembershipPurchaseRequestPacket;
 import com.almuradev.almura.feature.membership.network.handler.ClientboundMembershipGuiOpenPacketHandler;
+import com.almuradev.almura.feature.membership.network.handler.ClientboundMembershipSuccessPacketHandler;
 import com.almuradev.almura.feature.membership.network.handler.ServerboundMembershipGuiOpenRequestPacketHandler;
 import com.almuradev.almura.feature.membership.network.handler.ServerboundMembershipPurchaseRequestPacketHandler;
 import com.almuradev.almura.shared.inject.ClientBinder;
@@ -30,6 +32,7 @@ public final class MembershipModule extends AbstractModule implements CommonBind
         this.packet().bind(ServerboundMembershipPurchaseRequestPacket.class, binder -> binder.handler(ServerboundMembershipPurchaseRequestPacketHandler.class, Platform.Type.SERVER));
 
         this.packet().bind(ClientboundMembershipGuiOpenPacket.class, binder -> binder.handler(ClientboundMembershipGuiOpenPacketHandler.class, Platform.Type.CLIENT));
+        this.packet().bind(ClientboundMembershipSuccessPacket.class, binder -> binder.handler(ClientboundMembershipSuccessPacketHandler.class, Platform.Type.CLIENT));
 
         this.requestStaticInjection(MembershipExchange.class);
 
