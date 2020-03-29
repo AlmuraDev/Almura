@@ -87,7 +87,7 @@ public class MembershipDetailsGui extends BasicScreen {
         featuresLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.0F).build());
         if (membershipLevel == 1) {
             featuresLabel.setPosition(25, 25, Anchor.LEFT | Anchor.TOP);
-            form.setSize(form.getWidth(), 140);
+            form.setSize(form.getWidth(), 150);
         }
         if (membershipLevel == 2) {
             featuresLabel.setPosition(25, 45, Anchor.LEFT | Anchor.TOP);
@@ -129,6 +129,13 @@ public class MembershipDetailsGui extends BasicScreen {
         earlyAccessToNewContentLabel.setFontOptions(FontOptions.builder().from(FontColors.GRAY_FO).shadow(true).scale(1.0F).build());
         earlyAccessToNewContentLabel.setPosition(keepInventoryOnDeathLabel.getX(), priorityPlayerTechnicalSupportLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
         form.add(earlyAccessToNewContentLabel);
+
+        if (membershipLevel == 1) {
+            final UILabel citizenItemSlotsLabel = new UILabel(this, "- 100 item slots on Exchange");
+            citizenItemSlotsLabel.setFontOptions(FontOptions.builder().from(FontColors.GRAY_FO).shadow(true).scale(1.0F).build());
+            citizenItemSlotsLabel.setPosition(keepInventoryOnDeathLabel.getX(), earlyAccessToNewContentLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
+            form.add(citizenItemSlotsLabel);
+        }
 
         if (membershipLevel >= 2) {
             final UILabel abilityToFlyLabel = new UILabel(this, "- Ability to Fly!");

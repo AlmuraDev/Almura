@@ -26,7 +26,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class MainMenuManager implements Witness {
 
-    boolean debug = true;
+    boolean debug = false;
 
     @SubscribeEvent
     public void onGuiOpen(final GuiOpenEvent event) {
