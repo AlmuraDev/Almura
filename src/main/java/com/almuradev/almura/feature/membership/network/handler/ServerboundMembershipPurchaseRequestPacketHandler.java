@@ -51,7 +51,11 @@ public final class ServerboundMembershipPurchaseRequestPacketHandler implements 
                 final PlayerConnection playerConnection = (PlayerConnection) connection;
                 final Player player = playerConnection.getPlayer();
 
-                membershipHandler.handleMembershipPurchase(player, message.membershipLevel);
+                if (message.type == 1) {
+                    membershipHandler.handleMembershipPurchase(player, message.membershipLevel);
+                } else if (message.type == 2) {
+                    membershipHandler.handleMembershipSkills(player, message.membershipLevel);
+                }
             }
         }
     }

@@ -352,6 +352,18 @@ public final class MembershipGui extends BasicScreen {
                 new PurchaseConfirmGui(this, "Pioneer", "$10,000,000",3).display();
                 break;
 
+            case "button.citizen_skills":
+                new SkillsUpgradeConfirmGui(this,"Citizen", "0",1).display();
+                break;
+
+            case "button.explorer_skills":
+                new SkillsUpgradeConfirmGui(this,"Explorer", "0",2).display();
+                break;
+
+            case "button.pioneer_skills":
+                new SkillsUpgradeConfirmGui(this, "Pioneer", "0",3).display();
+                break;
+
             case "button.citizen_donation":
             case "button.explorer_donation":
             case "button.pioneer_donation":
@@ -382,7 +394,6 @@ public final class MembershipGui extends BasicScreen {
             } else {
                 this.close();
             }
-
         }
         super.keyTyped(keyChar, keyCode);
         this.lastUpdate = 0; // Reset the timer when key is typed.

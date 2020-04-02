@@ -12,22 +12,24 @@ import org.spongepowered.api.network.Message;
 
 public final class ServerboundMembershipPurchaseRequestPacket implements Message {
 
-    public int membershipLevel;
+    public int membershipLevel, type;
 
     public ServerboundMembershipPurchaseRequestPacket(){}
 
-    public ServerboundMembershipPurchaseRequestPacket(int membershipLevel) {
+    public ServerboundMembershipPurchaseRequestPacket(int membershipLevel, int type) {
         this.membershipLevel = membershipLevel;
-        System.out.println("test");
+        this.type = type;
     }
 
     @Override
     public void readFrom(ChannelBuf buf) {
         this.membershipLevel = buf.readInteger();
+        this.type = buf.readInteger();
     }
 
     @Override
     public void writeTo(ChannelBuf buf) {
        buf.writeInteger(this.membershipLevel);
+       buf.writeInteger(this.type);
     }
 }

@@ -167,7 +167,7 @@ public class MultiplayerScreen extends PanoramicScreen {
   private void join() {
     // If we don't have a selected server or the server isn't online then don't continue
     final ServerEntry entry = this.serverList.getSelectedItem();
-    if (entry == null || entry.status != ServerStatus.ONLINE) {
+    if (entry == null || entry.status == ServerStatus.OFFLINE || entry.status == ServerStatus.RESTARTING) {
       return;
     }
 
@@ -180,7 +180,6 @@ public class MultiplayerScreen extends PanoramicScreen {
     serverEntries.forEach(e -> {
       // Determine the online status
       e.status = e.query.pingServer() ? ServerStatus.ONLINE : ServerStatus.OFFLINE;
-
       if (e.status == ServerStatus.ONLINE) {
         // Query the server
         e.query.sendQuery();

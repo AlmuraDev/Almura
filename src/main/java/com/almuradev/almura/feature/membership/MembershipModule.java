@@ -10,6 +10,7 @@ package com.almuradev.almura.feature.membership;
 import com.almuradev.almura.feature.complex.block.membershipexchange.MembershipExchange;
 import com.almuradev.almura.feature.membership.client.gui.MembershipGui;
 import com.almuradev.almura.feature.membership.client.gui.PurchaseConfirmGui;
+import com.almuradev.almura.feature.membership.client.gui.SkillsUpgradeConfirmGui;
 import com.almuradev.almura.feature.membership.network.ClientboundMembershipGuiOpenPacket;
 import com.almuradev.almura.feature.membership.network.ClientboundMembershipSuccessPacket;
 import com.almuradev.almura.feature.membership.network.ServerboundMembershipGuiOpenRequestPacket;
@@ -45,6 +46,7 @@ public final class MembershipModule extends AbstractModule implements CommonBind
                 protected void configure() {
                     this.requestStaticInjection(MembershipGui.class);
                     this.requestStaticInjection(PurchaseConfirmGui.class);
+                    this.requestStaticInjection(SkillsUpgradeConfirmGui.class);
                 }
             }
             this.install(new ClientModule());

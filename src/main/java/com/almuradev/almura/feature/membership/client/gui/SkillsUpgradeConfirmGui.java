@@ -28,14 +28,14 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
-public class PurchaseConfirmGui extends BasicScreen {
+public class SkillsUpgradeConfirmGui extends BasicScreen {
 
     private static final int padding = 4;
     @Inject private static ClientMembershipManager membershipManager;
     private String membership, value;
     private int membershipLevel;
 
-    public PurchaseConfirmGui(@Nullable GuiScreen parent, String membership, String value, int membershipLevel) {
+    public SkillsUpgradeConfirmGui(@Nullable GuiScreen parent, String membership, String value, int membershipLevel) {
         super(parent, true);
         this.membershipLevel = membershipLevel;
         this.membership = membership;
@@ -51,7 +51,7 @@ public class PurchaseConfirmGui extends BasicScreen {
         form.setZIndex(10);
         form.setBackgroundAlpha(255);
 
-        final UILabel label0 = new UILabel(this, "Do you wish to purchase:");
+        final UILabel label0 = new UILabel(this, "Do you wish to upgrade to:");
         label0.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.0F).build());
         label0.setPosition(0, 10, Anchor.CENTER | Anchor.TOP);
 
@@ -59,26 +59,18 @@ public class PurchaseConfirmGui extends BasicScreen {
         membershipLabel.setFontOptions(FontOptions.builder().from(FontColors.GOLD_FO).shadow(true).scale(1.0F).build());
         membershipLabel.setPosition(0, label0.getY() + 15, Anchor.CENTER | Anchor.TOP);
 
-        final UILabel amountLabel = new UILabel(this, "Amount: ");
-        amountLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.0F).build());
-        amountLabel.setPosition(-25, membershipLabel.getY() + 15, Anchor.CENTER | Anchor.TOP);
-
-        final UILabel valueLabel = new UILabel(this, value);
-        valueLabel.setFontOptions(FontOptions.builder().from(FontColors.GREEN_FO).shadow(true).scale(1.0F).build());
-        valueLabel.setPosition(amountLabel.getX() + amountLabel.getWidth() + 5, membershipLabel.getY() + 15, Anchor.CENTER | Anchor.TOP);
-
         final UISeparator belowAmountSeparator = new UISeparator(this);
         belowAmountSeparator.setSize(form.getWidth() -5, 1);
         belowAmountSeparator.setPosition(0, -45, Anchor.BOTTOM | Anchor.CENTER);
 
         final UIButton buttonPurchase = new UIButtonBuilder(this)
                 //.text(I18n.format("almura.button.close"))
-                .text("Purchase")
+                .text("Upgrade Me!")
                 .anchor(Anchor.BOTTOM | Anchor.CENTER)
                 .position(0, -25)
                 .width(40)
                 .listener(this)
-                .build("button.purchase");
+                .build("button.upgrade");
 
         final UISeparator aboveCloseSeparator = new UISeparator(this);
         aboveCloseSeparator.setSize(form.getWidth() -5, 1);
@@ -92,7 +84,7 @@ public class PurchaseConfirmGui extends BasicScreen {
                 .listener(this)
                 .build("button.close");
 
-        form.add(buttonClose, label0, membershipLabel, amountLabel, valueLabel, aboveCloseSeparator, buttonPurchase, belowAmountSeparator);
+        form.add(buttonClose, label0, membershipLabel, aboveCloseSeparator, buttonPurchase, belowAmountSeparator);
 
         addToScreen(form);
     }
@@ -100,8 +92,8 @@ public class PurchaseConfirmGui extends BasicScreen {
     @Subscribe
     public void onUIButtonClickEvent(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
-            case "button.purchase":
-                membershipManager.requestMembershipPurchase(membershipLevel, 1);
+            case "button.upgrade":
+                membershipManager.requestMembershipPurchase(membershipLevel, 2);
                 this.close();
                 break;
 

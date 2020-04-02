@@ -133,9 +133,9 @@ public final class MembershipHandler implements Witness {
                 if (newMembershipLevel == 3)
                     newMembership = "Pioneer";
                 BigDecimal deduct = new BigDecimal(fee);
+                final String command = "lp user " + player.getName() + " promote members";
 
                 if (newMembershipLevel == 1 && currentGroup.equalsIgnoreCase("survivor")) {
-                    final String command = "lp user " + player.getName() + " promote members";
                     this.commandManager.process(Sponge.getServer().getConsole(), command);
                     account.withdraw(currency, deduct, Sponge.getCauseStackManager().getCurrentCause());
                     this.network.sendTo(player, new ClientboundMembershipSuccessPacket(newMembership));
@@ -143,10 +143,9 @@ public final class MembershipHandler implements Witness {
                 }
                 if (newMembershipLevel == 2 && (currentGroup.equalsIgnoreCase("survivor") || currentGroup.equalsIgnoreCase("citizen"))) {
                     if (currentGroup.equalsIgnoreCase("survivor")) {
-                        final String command = "lp user " + player.getName() + " promote members";
                         this.commandManager.process(Sponge.getServer().getConsole(), command);
                     }
-                    final String command = "lp user " + player.getName() + " promote members";
+
                     this.commandManager.process(Sponge.getServer().getConsole(), command);
                     account.withdraw(currency, deduct, Sponge.getCauseStackManager().getCurrentCause());
                     this.network.sendTo(player, new ClientboundMembershipSuccessPacket(newMembership));
@@ -154,15 +153,13 @@ public final class MembershipHandler implements Witness {
                 }
                 if (newMembershipLevel == 3 && (currentGroup.equalsIgnoreCase("survivor") || currentGroup.equalsIgnoreCase("citizen") || currentGroup.equalsIgnoreCase("explorer"))) {
                     if (currentGroup.equalsIgnoreCase("survivor")) {
-                        final String command = "lp user " + player.getName() + " promote members";
                         this.commandManager.process(Sponge.getServer().getConsole(), command);
                         this.commandManager.process(Sponge.getServer().getConsole(), command);
                     }
                     if (currentGroup.equalsIgnoreCase("citizen")) {
-                        final String command = "lp user " + player.getName() + " promote members";
                         this.commandManager.process(Sponge.getServer().getConsole(), command);
                     }
-                    final String command = "lp user " + player.getName() + " promote members";
+
                     this.commandManager.process(Sponge.getServer().getConsole(), command);
                     account.withdraw(currency, deduct, Sponge.getCauseStackManager().getCurrentCause());
                     this.network.sendTo(player, new ClientboundMembershipSuccessPacket(newMembership));
@@ -183,32 +180,41 @@ public final class MembershipHandler implements Witness {
         }
 
         int currentSkillLevel = skillsManager.getTotalSkillLevel(player);
-
         final LuckPerms permService = Sponge.getServiceManager().provide(LuckPerms.class).orElse(null);
 
         if (permService == null) {
             return;
         }
         final String currentGroup = permService.getUserManager().getUser(player.getUniqueId()).getPrimaryGroup();
+        final String command = "lp user " + player.getName() + " promote members";
 
         if (newMembershipLevel == 1 && currentSkillLevel > 275 && currentGroup.equalsIgnoreCase("survivor")) {
-            final String command = "lp user " + player.getName() + " parent set citizen";
             this.commandManager.process(Sponge.getServer().getConsole(), command);
             serverNotificationManager.sendPopupNotification(player, Text.of("Membership Upgrade"), Text.of("You've been upgraded to: Citizen!"), 5);
             return;
         }
         if (newMembershipLevel == 2 && currentSkillLevel > 375 && (currentGroup.equalsIgnoreCase("survivor") || currentGroup.equalsIgnoreCase("citizen"))) {
-            final String command = "lp user " + player.getName() + " parent set explorer";
+            if (currentGroup.equalsIgnoreCase("survivor")) {
+                this.commandManager.process(Sponge.getServer().getConsole(), command);
+            }
+
             this.commandManager.process(Sponge.getServer().getConsole(), command);
             serverNotificationManager.sendPopupNotification(player, Text.of("Membership Upgrade"), Text.of("You've been upgraded to: Explorer!"), 5);
             return;
         }
         if (newMembershipLevel == 3 && currentSkillLevel > 400 && (currentGroup.equalsIgnoreCase("survivor") || currentGroup.equalsIgnoreCase("citizen") || currentGroup.equalsIgnoreCase("explorer"))) {
-            final String command = "lp user " + player.getName() + " parent set pioneer";
+            if (currentGroup.equalsIgnoreCase("survivor")) {
+                this.commandManager.process(Sponge.getServer().getConsole(), command);
+                this.commandManager.process(Sponge.getServer().getConsole(), command);
+            }
+            if (currentGroup.equalsIgnoreCase("citizen")) {
+                this.commandManager.process(Sponge.getServer().getConsole(), command);
+            }
+
             this.commandManager.process(Sponge.getServer().getConsole(), command);
             serverNotificationManager.sendPopupNotification(player, Text.of("Membership Upgrade"), Text.of("You've been upgraded to: Pioneer!"), 5);
             return;
         }
-
+        System.out.println("Exception: skills level check failed.  Player not upgraded. " + player.getName() + " Skill level: " + currentSkillLevel);
     }
 }

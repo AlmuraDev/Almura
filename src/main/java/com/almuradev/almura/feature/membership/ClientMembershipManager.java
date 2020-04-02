@@ -37,7 +37,7 @@ public final class ClientMembershipManager implements Witness {
         this.network.sendToServer(new ServerboundMembershipGuiOpenRequestPacket());
     }
 
-    public void requestMembershipPurchase(int membershipLevel) {
-        this.network.sendToServer(new ServerboundMembershipPurchaseRequestPacket(membershipLevel));
+    public void requestMembershipPurchase(int membershipLevel, int type) {
+        this.network.sendToServer(new ServerboundMembershipPurchaseRequestPacket(membershipLevel, type));
     }
 }
