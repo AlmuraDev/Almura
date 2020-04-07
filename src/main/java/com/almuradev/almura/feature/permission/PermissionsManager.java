@@ -17,6 +17,8 @@ import com.almuradev.almura.shared.util.UchatUtil;
 import com.almuradev.core.event.Witness;
 import io.github.nucleuspowered.nucleus.api.exceptions.NicknameException;
 import io.github.nucleuspowered.nucleus.api.service.NucleusNicknameService;
+import me.ryanhamshire.griefprevention.GPPlayerData;
+import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.event.user.track.UserTrackEvent;
 import net.luckperms.api.model.user.User;
@@ -86,6 +88,10 @@ public final class PermissionsManager implements Witness {
                 final UUID targetUniqueId = e.getUser().getUniqueId();
                 final Player target = Sponge.getServer().getPlayer(targetUniqueId).orElse(null);
                 final String toGroup = e.getGroupTo().orElse(null);
+
+                // Refresh Grief Prevention user options after changing groups.
+                GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(target.getWorld(), target.getUniqueId());
+                playerData.refreshPlayerOptions();
 
                 if (targetUniqueId != null && toGroup != null && this.nickApi != null) {
                     Text nick = Text.of("");
