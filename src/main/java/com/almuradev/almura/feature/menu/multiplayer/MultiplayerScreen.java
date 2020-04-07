@@ -182,6 +182,11 @@ public class MultiplayerScreen extends PanoramicScreen {
       e.status = e.query.pingServer() ? ServerStatus.ONLINE : ServerStatus.OFFLINE;
       if (e.status == ServerStatus.ONLINE) {
         // Query the server
+        if (e.players == 0 && e.maxPlayers == 0) {
+          // Display updating status while this status is know...
+          e.status = ServerStatus.UPDATING;
+        }
+
         e.query.sendQuery();
 
         // Determine if it is in the process of restarting
