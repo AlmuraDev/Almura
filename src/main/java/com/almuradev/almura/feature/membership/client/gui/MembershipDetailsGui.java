@@ -59,10 +59,20 @@ public class MembershipDetailsGui extends BasicScreen {
         cemariaWorldLabel.setPosition(unlocksWorldsLabel.getX() + unlocksWorldsLabel.getWidth() + 5, unlocksWorldsLabel.getY(), Anchor.LEFT | Anchor.TOP);
         form.add(cemariaWorldLabel);
 
+        final UILabel highgardenWorldLabel = new UILabel(this, "Highgarden");
+        highgardenWorldLabel.setFontOptions(FontOptions.builder().from(FontColors.GREEN_FO).shadow(true).scale(1.0F).build());
+        highgardenWorldLabel.setPosition(unlocksWorldsLabel.getX() + unlocksWorldsLabel.getWidth() + 5, cemariaWorldLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
+        form.add(highgardenWorldLabel);
+
+        final UILabel forestRiverWorldLabel = new UILabel(this, "ForestRiver");
+        forestRiverWorldLabel.setFontOptions(FontOptions.builder().from(FontColors.GREEN_FO).shadow(true).scale(1.0F).build());
+        forestRiverWorldLabel.setPosition(unlocksWorldsLabel.getX() + unlocksWorldsLabel.getWidth() + 5, highgardenWorldLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
+        form.add(forestRiverWorldLabel);
+
         if (membershipLevel >= 2) {
             final UILabel atlantisWorldLabel = new UILabel(this, "Atlantis");
             atlantisWorldLabel.setFontOptions(FontOptions.builder().from(FontColors.GREEN_FO).shadow(true).scale(1.0F).build());
-            atlantisWorldLabel.setPosition(unlocksWorldsLabel.getX() + unlocksWorldsLabel.getWidth() + 5, cemariaWorldLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
+            atlantisWorldLabel.setPosition(unlocksWorldsLabel.getX() + unlocksWorldsLabel.getWidth() + 5, forestRiverWorldLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
             form.add(atlantisWorldLabel);
 
             final UILabel keystoneWorldLabel = new UILabel(this, "Keystone");
@@ -70,32 +80,42 @@ public class MembershipDetailsGui extends BasicScreen {
             keystoneWorldLabel.setPosition(unlocksWorldsLabel.getX() + unlocksWorldsLabel.getWidth() + 5, atlantisWorldLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
             form.add(keystoneWorldLabel);
 
+            final UILabel marionWorldLabel = new UILabel(this, "Marion");
+            marionWorldLabel.setFontOptions(FontOptions.builder().from(FontColors.GREEN_FO).shadow(true).scale(1.0F).build());
+            marionWorldLabel.setPosition(unlocksWorldsLabel.getX() + unlocksWorldsLabel.getWidth() + 5, keystoneWorldLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
+            form.add(marionWorldLabel);
+
             if (membershipLevel == 3) {
                 final UILabel zealWorldLabel = new UILabel(this, "Zeal");
                 zealWorldLabel.setFontOptions(FontOptions.builder().from(FontColors.GREEN_FO).shadow(true).scale(1.0F).build());
-                zealWorldLabel.setPosition(unlocksWorldsLabel.getX() + unlocksWorldsLabel.getWidth() + 5, keystoneWorldLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
+                zealWorldLabel.setPosition(unlocksWorldsLabel.getX() + unlocksWorldsLabel.getWidth() + 5, marionWorldLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
                 form.add(zealWorldLabel);
 
                 final UILabel tollanaWorldLabel = new UILabel(this, "Tollana");
                 tollanaWorldLabel.setFontOptions(FontOptions.builder().from(FontColors.GREEN_FO).shadow(true).scale(1.0F).build());
                 tollanaWorldLabel.setPosition(unlocksWorldsLabel.getX() + unlocksWorldsLabel.getWidth() + 5, zealWorldLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
                 form.add(tollanaWorldLabel);
+
+                final UILabel othalaWorldLabel = new UILabel(this, "Othala");
+                othalaWorldLabel.setFontOptions(FontOptions.builder().from(FontColors.GREEN_FO).shadow(true).scale(1.0F).build());
+                othalaWorldLabel.setPosition(unlocksWorldsLabel.getX() + unlocksWorldsLabel.getWidth() + 5, tollanaWorldLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
+                form.add(othalaWorldLabel);
             }
         }
 
         final UILabel featuresLabel = new UILabel(this, "Features: ");
         featuresLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.0F).build());
         if (membershipLevel == 1) {
-            featuresLabel.setPosition(25, 25, Anchor.LEFT | Anchor.TOP);
-            form.setSize(form.getWidth(), 150);
+            featuresLabel.setPosition(25, 45, Anchor.LEFT | Anchor.TOP);
+            form.setSize(form.getWidth(), 170);
         }
         if (membershipLevel == 2) {
-            featuresLabel.setPosition(25, 45, Anchor.LEFT | Anchor.TOP);
-            form.setSize(form.getWidth(), 180);
+            featuresLabel.setPosition(25, 75, Anchor.LEFT | Anchor.TOP);
+            form.setSize(form.getWidth(), 210);
         }
         if (membershipLevel == 3) {
-            featuresLabel.setPosition(25, 65, Anchor.LEFT | Anchor.TOP);
-            form.setSize(form.getWidth(), 260);
+            featuresLabel.setPosition(25, 105, Anchor.LEFT | Anchor.TOP);
+            form.setSize(form.getWidth(), 300);
         }
 
         form.add(featuresLabel);
