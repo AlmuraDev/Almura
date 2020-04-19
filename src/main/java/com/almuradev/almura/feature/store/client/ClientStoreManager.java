@@ -11,6 +11,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.feature.store.SideType;
 import com.almuradev.almura.feature.store.Store;
 import com.almuradev.almura.feature.store.StoreItemSegmentType;
 import com.almuradev.almura.feature.store.StoreModifyType;
@@ -18,12 +19,14 @@ import com.almuradev.almura.feature.store.client.gui.StoreManagementScreen;
 import com.almuradev.almura.feature.store.client.gui.StoreScreen;
 import com.almuradev.almura.feature.store.listing.BuyingItem;
 import com.almuradev.almura.feature.store.listing.SellingItem;
+import com.almuradev.almura.feature.store.listing.StoreItem;
 import com.almuradev.almura.feature.store.network.ServerboundDelistItemsPacket;
 import com.almuradev.almura.feature.store.network.ServerboundItemTransactionPacket;
 import com.almuradev.almura.feature.store.network.ServerboundListItemsRequestPacket;
 import com.almuradev.almura.feature.store.network.ServerboundModifyItemsPacket;
 import com.almuradev.almura.feature.store.network.ServerboundModifyStorePacket;
 import com.almuradev.almura.shared.feature.FeatureConstants;
+import com.almuradev.almura.shared.feature.filter.FilterRegistry;
 import com.almuradev.almura.shared.item.VanillaStack;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
@@ -38,8 +41,11 @@ import org.spongepowered.api.network.ChannelId;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import javax.inject.Singleton;
@@ -109,6 +115,36 @@ public final class ClientStoreManager implements Witness {
         checkNotNull(id);
 
         this.network.sendToServer(new ServerboundModifyStorePacket(id));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends StoreItem> List<T> filterLocalItems(final String id, @Nullable final String filter, @Nullable final String sort,
+      final SideType targetSide) {
+        checkNotNull(id);
+        checkNotNull(targetSide);
+
+        final Store axs = this.getStore(id);
+        checkNotNull(axs);
+
+        Stream<T> stream = targetSide == SideType.BUY ? (Stream<T>) axs.getBuyingItems().stream() : (Stream<T>) axs.getSellingItems().stream();
+
+        if (filter != null) {
+            final List<FilterRegistry.FilterElement<StoreItem>> elements = FilterRegistry.instance.getFilterElements(filter);
+            stream = stream
+              .filter(storeItem -> elements
+                .stream()
+                .allMatch(element -> element.getFilter().test(storeItem, element.getValue())));
+        }
+
+        if (sort != null) {
+            final List<FilterRegistry.SorterElement<StoreItem>> elements = FilterRegistry.instance.getSortingElements(sort);
+            final Comparator<StoreItem> comparator = FilterRegistry.instance.buildSortingComparator(elements).orElse(null);
+            if (comparator != null) {
+                stream = stream.sorted(comparator);
+            }
+        }
+
+        return stream.collect(Collectors.toList());
     }
 
     /**
@@ -209,7 +245,7 @@ public final class ClientStoreManager implements Witness {
         new StoreManagementScreen().display();
     }
 
-    public void handleStoreSpecific(final String id, boolean isAdmin) {
+    public void handleStoreSpecific(final String id, final boolean isAdmin) {
         final Store store = this.getStore(id);
 
         if (store != null) {

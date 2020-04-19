@@ -13,6 +13,7 @@ import static com.google.common.base.Preconditions.checkState;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.exchange.Exchange;
 import com.almuradev.almura.feature.exchange.ExchangeModifyType;
+import com.almuradev.almura.feature.exchange.ExchangeModule;
 import com.almuradev.almura.feature.exchange.InventoryAction;
 import com.almuradev.almura.feature.exchange.ListStatusType;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeManagementScreen;
@@ -60,7 +61,7 @@ import javax.inject.Singleton;
 public final class ClientExchangeManager implements Witness {
 
     @Nullable private static final String defaultFilter = null;
-    private static final String defaultSort = "price" + FeatureConstants.EQUALITY + "asc" + FeatureConstants.DELIMITER;
+    private static final String defaultSort = ExchangeModule.ID + "_price" + FeatureConstants.EQUALITY + "asc" + FeatureConstants.DELIMITER;
     private static final int defaultSkip = 0;
     private static final int defaultLimit = 10;
 

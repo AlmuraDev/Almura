@@ -8,7 +8,6 @@
 package com.almuradev.almura.feature.store;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.feature.exchange.Exchange;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.google.inject.Inject;
 import org.spongepowered.api.command.CommandResult;

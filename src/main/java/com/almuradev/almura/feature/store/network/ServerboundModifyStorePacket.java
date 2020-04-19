@@ -9,7 +9,6 @@ package com.almuradev.almura.feature.store.network;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.almuradev.almura.feature.exchange.ExchangeModifyType;
 import com.almuradev.almura.feature.store.StoreModifyType;
 import org.spongepowered.api.network.ChannelBuf;
 import org.spongepowered.api.network.Message;

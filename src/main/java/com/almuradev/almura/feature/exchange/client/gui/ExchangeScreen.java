@@ -7,6 +7,10 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui;
 
+import com.almuradev.almura.FeatureSortTypes;
+import com.almuradev.almura.feature.FeatureSortType;
+import com.almuradev.almura.feature.SortType;
+import com.almuradev.almura.feature.exchange.ExchangeModule;
 import com.almuradev.almura.feature.exchange.ListStatusType;
 import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.feature.exchange.Exchange;
@@ -17,6 +21,7 @@ import com.almuradev.almura.shared.client.ui.component.UISaneTooltip;
 import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
 import com.almuradev.almura.feature.exchange.listing.ListItem;
+import com.almuradev.almura.shared.feature.filter.Direction;
 import com.almuradev.almura.shared.item.VirtualStack;
 import com.almuradev.almura.shared.util.MathUtil;
 import net.malisis.core.client.gui.Anchor;
@@ -73,7 +78,7 @@ public final class ExchangeScreen extends BasicScreen {
     buttonBuyAll, buttonBuyQuantity, buttonList;
     private UILabel labelSearchPage, labelLimit, noResultsLabel;
     private UISelect<SortType> comboBoxSortType;
-    private BasicTextBox displayNameSearchTextBox, sellerSearchTextBox;
+    private BasicTextBox itemDisplayNameSearchBox, sellerSearchTextBox;
     private int currentPage = 1;
     private int pages;
 
@@ -112,18 +117,18 @@ public final class ExchangeScreen extends BasicScreen {
         itemSearchLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).scale(1.1F).build());
         itemSearchLabel.setPosition(0, 4, Anchor.LEFT | Anchor.TOP);
 
-        this.displayNameSearchTextBox = new BasicTextBox(this, "");
-        this.displayNameSearchTextBox.setAcceptsReturn(false);
-        this.displayNameSearchTextBox.setAcceptsTab(false);
-        this.displayNameSearchTextBox.setTabIndex(0);
-        this.displayNameSearchTextBox.setOnEnter((tb) -> this.search());
-        this.displayNameSearchTextBox.setSize(145, 0);
-        this.displayNameSearchTextBox.setPosition(itemSearchLabel.getWidth() + innerPadding, 2, Anchor.LEFT | Anchor.TOP);
-        this.displayNameSearchTextBox.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
+        this.itemDisplayNameSearchBox = new BasicTextBox(this, "");
+        this.itemDisplayNameSearchBox.setAcceptsReturn(false);
+        this.itemDisplayNameSearchBox.setAcceptsTab(false);
+        this.itemDisplayNameSearchBox.setTabIndex(0);
+        this.itemDisplayNameSearchBox.setOnEnter((tb) -> this.search());
+        this.itemDisplayNameSearchBox.setSize(145, 0);
+        this.itemDisplayNameSearchBox.setPosition(itemSearchLabel.getWidth() + innerPadding, 2, Anchor.LEFT | Anchor.TOP);
+        this.itemDisplayNameSearchBox.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
         final UILabel sellerSearchLabel = new UILabel(this, I18n.format("almura.feature.exchange.text.seller") + ":");
         sellerSearchLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).scale(1.1F).build());
-        sellerSearchLabel.setPosition(displayNameSearchTextBox.getX() - sellerSearchLabel.getWidth() - 1,
+        sellerSearchLabel.setPosition(itemDisplayNameSearchBox.getX() - sellerSearchLabel.getWidth() - 1,
             getPaddedY(itemSearchLabel, 7), Anchor.LEFT | Anchor.TOP);
 
         this.sellerSearchTextBox = new BasicTextBox(this, "");
@@ -132,13 +137,24 @@ public final class ExchangeScreen extends BasicScreen {
         this.sellerSearchTextBox.setTabIndex(1);
         this.sellerSearchTextBox.setOnEnter(tb -> this.search());
         this.sellerSearchTextBox.setSize(145, 0);
-        this.sellerSearchTextBox.setPosition(this.displayNameSearchTextBox.getX(), getPaddedY(this.displayNameSearchTextBox, 4), Anchor.LEFT | Anchor.TOP);
+        this.sellerSearchTextBox.setPosition(this.itemDisplayNameSearchBox.getX(), getPaddedY(this.itemDisplayNameSearchBox, 4), Anchor.LEFT | Anchor.TOP);
         this.sellerSearchTextBox.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
         // Sort combobox
-        this.comboBoxSortType = new UISelect<>(this, 78, Arrays.asList(SortType.values()));
-        this.comboBoxSortType.setLabelFunction(type -> type == null ? "" : type.displayName); // Because that's reasonable.
-        this.comboBoxSortType.select(SortType.PRICE_ASC);
+        // Sort combobox
+        this.comboBoxSortType = new UISelect<>(this, 78);
+        this.comboBoxSortType.setOptions(Arrays.asList(
+          FeatureSortTypes.CREATED_ASC,
+          FeatureSortTypes.CREATED_DESC,
+          FeatureSortTypes.PRICE_ASC,
+          FeatureSortTypes.PRICE_DESC,
+          FeatureSortTypes.ITEM_DISPLAY_NAME_ASC,
+          FeatureSortTypes.ITEM_DISPLAY_NAME_DESC,
+          ExchangeSortTypes.SELLER_NAME_ASC,
+          ExchangeSortTypes.SELLER_NAME_DESC
+        ));
+        this.comboBoxSortType.setLabelFunction(type -> type == null ? "" : type.getName()); // Because that's reasonable.
+        this.comboBoxSortType.select(FeatureSortTypes.CREATED_ASC);
         this.comboBoxSortType.setPosition(-(innerPadding + 1), 2, Anchor.RIGHT | Anchor.TOP);
 
         // Search button
@@ -217,7 +233,7 @@ public final class ExchangeScreen extends BasicScreen {
         forSaleBottomLine.setPosition(0, BasicScreen.getPaddedY(this.buttonFirstPage, 2, Anchor.BOTTOM), Anchor.CENTER | Anchor.BOTTOM);
 
         // Add Elements of Search Area
-        searchContainer.add(itemSearchLabel, this.displayNameSearchTextBox, sellerSearchLabel, this.sellerSearchTextBox, buttonSearch,
+        searchContainer.add(itemSearchLabel, this.itemDisplayNameSearchBox, sellerSearchLabel, this.sellerSearchTextBox, buttonSearch,
                 this.comboBoxSortType, this.buttonFirstPage, this.buttonPreviousPage, this.buttonNextPage, this.buttonLastPage, this.forSaleList,
                 this.noResultsLabel, this.labelSearchPage, forSaleTopLine, forSaleBottomLine);
 
@@ -334,7 +350,7 @@ public final class ExchangeScreen extends BasicScreen {
 
         addToScreen(form);
 
-        this.displayNameSearchTextBox.focus();
+        this.itemDisplayNameSearchBox.focus();
     }
 
     @Override
@@ -361,18 +377,19 @@ public final class ExchangeScreen extends BasicScreen {
 
     private void search() {
         final Map<String, Object> filterQueryMap = new HashMap<>();
-        filterQueryMap.put("display_name", this.displayNameSearchTextBox.getText());
+        filterQueryMap.put("item_display_name", this.itemDisplayNameSearchBox.getText());
         filterQueryMap.put("seller_name", this.sellerSearchTextBox.getText());
 
         final Map<String, String> sortQueryMap = new HashMap<>();
-        sortQueryMap.put(this.comboBoxSortType.getSelectedValue().id, this.comboBoxSortType.getSelectedValue().direction);
+        sortQueryMap.put(this.comboBoxSortType.getSelectedValue().getTypeId(), this.comboBoxSortType.getSelectedValue().getDirection().getId());
 
         final StringBuilder filterQueryBuilder = new StringBuilder();
         for (final Map.Entry<String, Object> entry : filterQueryMap.entrySet()) {
             if (entry.getValue().toString().isEmpty()) {
                 continue;
             }
-            filterQueryBuilder.append(entry.getKey()).append(FeatureConstants.EQUALITY).append(entry.getValue()).append(FeatureConstants.DELIMITER);
+            filterQueryBuilder.append(ExchangeModule.ID).append("_").append(entry.getKey()).append(FeatureConstants.EQUALITY).append(entry.getValue())
+              .append(FeatureConstants.DELIMITER);
         }
 
         // Not needed to be done this way in current form but adds native support if we allow multiple sorting patterns
@@ -381,7 +398,8 @@ public final class ExchangeScreen extends BasicScreen {
             if (entry.getValue().isEmpty()) {
                 continue;
             }
-            sortQueryBuilder.append(entry.getKey()).append(FeatureConstants.EQUALITY).append(entry.getValue()).append(FeatureConstants.DELIMITER);
+            sortQueryBuilder.append(ExchangeModule.ID).append("_").append(entry.getKey()).append(FeatureConstants.EQUALITY).append(entry.getValue())
+              .append(FeatureConstants.DELIMITER);
         }
 
         final String filterQuery = filterQueryBuilder.toString().isEmpty() ? null : filterQueryBuilder.toString();
@@ -670,21 +688,10 @@ public final class ExchangeScreen extends BasicScreen {
         }
     }
 
-    public enum SortType {
-        OLDEST(I18n.format("almura.feature.exchange.text.sort.oldest"), "created", "asc"),
-        NEWEST(I18n.format("almura.feature.exchange.text.sort.newest"), "created", "desc"),
-        PRICE_ASC(I18n.format("almura.feature.exchange.text.sort.price_ascending"), "price", "asc"),
-        PRICE_DESC(I18n.format("almura.feature.exchange.text.sort.price_descending"), "price", "desc"),
-        DISPLAY_NAME_ASC(I18n.format("almura.feature.exchange.text.sort.item_ascending"), "display_name", "asc"),
-        DISPLAY_NAME_DESC(I18n.format("almura.feature.exchange.text.sort.item_descending"), "display_name", "desc"),
-        SELLER_NAME_ASC(I18n.format("almura.feature.exchange.text.sort.player_ascending"), "seller_name", "asc"),
-        SELLER_NAME_DESC(I18n.format("almura.feature.exchange.text.sort.player_descending"), "seller_name", "desc");
-
-        public final String displayName, id, direction;
-        SortType(final String displayName, final String id, final String direction) {
-            this.displayName = displayName;
-            this.id = id;
-            this.direction = direction;
-        }
+    private static final class ExchangeSortTypes {
+        public static final SortType SELLER_NAME_ASC =
+          new FeatureSortType("seller_name", I18n.format("almura.feature.exchange.text.sort.seller_name_asc"), Direction.ASCENDING);
+        public static final SortType SELLER_NAME_DESC =
+          new FeatureSortType("seller_name", I18n.format("almura.feature.exchange.text.sort.seller_name_desc"), Direction.DESCENDING);
     }
 }

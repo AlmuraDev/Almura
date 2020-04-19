@@ -52,7 +52,9 @@ import org.spongepowered.api.Platform;
 import java.util.Comparator;
 
 public final class ExchangeModule extends AbstractModule implements CommonBinder {
-    
+
+    public static final String ID = "exchange";
+
     @Override
     protected void configure() {
         this.requestStaticInjection(ExchangeCommandsCreator.class);
@@ -103,20 +105,20 @@ public final class ExchangeModule extends AbstractModule implements CommonBinder
             .child(ExchangeCommandsCreator.createCommand(), "exchange", "axs");
 
         FilterRegistry.instance
-            .<ListItem>registerFilter("display_name", (target, value) ->
+            .<ListItem>registerFilter(ID + "_item_display_name", (target, value) ->
                     target.asRealStack().getDisplayName().toLowerCase().contains(value.toLowerCase()))
-            .<ListItem>registerFilter("seller_name", (target, value) ->
+            .<ListItem>registerFilter(ID + "_seller_name", (target, value) ->
                     target.getSellerName().isPresent() && target.getSellerName().get().toLowerCase().contains(value.toLowerCase()))
-            .<ListItem>registerComparator("display_name", Comparator.comparing(k -> k.asRealStack().getDisplayName().toLowerCase()))
-            .<ListItem>registerComparator("seller_name", Comparator.comparing(v -> v.getSellerName().orElse("").toLowerCase()))
-            .<ListItem>registerComparator("price", Comparator.comparing(l -> {
+            .<ListItem>registerComparator(ID + "_item_display_name", Comparator.comparing(k -> k.asRealStack().getDisplayName().toLowerCase()))
+            .<ListItem>registerComparator(ID + "_seller_name", Comparator.comparing(v -> v.getSellerName().orElse("").toLowerCase()))
+            .<ListItem>registerComparator(ID + "_price", Comparator.comparing(l -> {
                     final ForSaleItem item = l.getForSaleItem().orElse(null);
                     if (item == null) {
                         return null;
                     }
                     return item.getPrice();
                 }))
-            .<ListItem>registerComparator("created", Comparator.comparing(l -> {
+            .<ListItem>registerComparator(ID + "_created", Comparator.comparing(l -> {
                 final ForSaleItem item = l.getForSaleItem().orElse(null);
                 if (item == null) {
                     return null;

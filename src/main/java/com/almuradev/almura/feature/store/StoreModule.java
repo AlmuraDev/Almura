@@ -12,6 +12,7 @@ import com.almuradev.almura.feature.store.client.gui.StoreListScreen;
 import com.almuradev.almura.feature.store.client.gui.StoreManagementScreen;
 import com.almuradev.almura.feature.store.client.gui.StoreScreen;
 import com.almuradev.almura.feature.store.client.gui.StoreTransactQuantityScreen;
+import com.almuradev.almura.feature.store.listing.StoreItem;
 import com.almuradev.almura.feature.store.network.ClientboundListItemsResponsePacket;
 import com.almuradev.almura.feature.store.network.ServerboundDelistItemsPacket;
 import com.almuradev.almura.feature.store.network.ServerboundItemTransactionPacket;
@@ -28,6 +29,7 @@ import com.almuradev.almura.feature.store.network.handler.ServerboundItemTransac
 import com.almuradev.almura.feature.store.network.handler.ServerboundModifyItemsPacketHandler;
 import com.almuradev.almura.feature.store.network.handler.ServerboundModifyStorePacketHandler;
 import com.almuradev.almura.feature.store.network.handler.ServerboundListItemsRequestPacketHandler;
+import com.almuradev.almura.shared.feature.filter.FilterRegistry;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
@@ -35,7 +37,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
 
+import java.util.Comparator;
+
 public final class StoreModule extends AbstractModule implements CommonBinder {
+
+    public static final String ID = "store";
 
     @Override
     protected void configure() {
@@ -64,11 +70,18 @@ public final class StoreModule extends AbstractModule implements CommonBinder {
             .bind(ServerboundModifyItemsPacket.class,
                 binder -> binder.handler(ServerboundModifyItemsPacketHandler.class, Platform.Type.SERVER))
 
-          .bind(ServerboundDelistItemsPacket.class,
-            binder -> binder.handler(ServerboundDelistItemsPacketHandler.class, Platform.Type.SERVER))
+            .bind(ServerboundDelistItemsPacket.class,
+                binder -> binder.handler(ServerboundDelistItemsPacketHandler.class, Platform.Type.SERVER))
 
             .bind(ServerboundItemTransactionPacket.class,
                 binder -> binder.handler(ServerboundItemTransactionPacketHandler.class, Platform.Type.SERVER));
+
+        FilterRegistry.instance
+          .<StoreItem>registerFilter(ID + "_item_display_name", (target, value) ->
+            target.asRealStack().getDisplayName().toLowerCase().contains(value.toLowerCase()))
+          .<StoreItem>registerComparator(ID + "_item_display_name", Comparator.comparing(k -> k.asRealStack().getDisplayName().toLowerCase()))
+          .registerComparator(ID + "_price", Comparator.comparing(StoreItem::getPrice))
+          .registerComparator(ID + "_created", Comparator.comparing(StoreItem::getCreated));
 
         this.on(Platform.Type.CLIENT, () -> {
             final class ClientModule extends AbstractModule implements ClientBinder {

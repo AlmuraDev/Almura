@@ -150,6 +150,12 @@ almura.feature.common.text.total=Total
 almura.feature.common.text.unknown=Unknown
 almura.feature.common.title.are_you_sure=Are you sure?
 almura.feature.common.title.management=%s - Management
+almura.feature.common.text.sort.item_display_name_asc=Item (Asc.)
+almura.feature.common.text.sort.item_display_name_desc=Item (Desc.)
+almura.feature.common.text.sort.created_asc=Oldest
+almura.feature.common.text.sort.created_desc=Newest
+almura.feature.common.text.sort.price_asc=Price (Asc.)
+almura.feature.common.text.sort.price_desc=Price (Desc.)
 
 # ---------------
 # ---- store ----
@@ -171,14 +177,8 @@ almura.feature.exchange.text.inventory=Inventory
 almura.feature.exchange.text.item_name=Item Name
 almura.feature.exchange.text.searching_for_criteria=Searching for criteria
 almura.feature.exchange.text.seller=Seller
-almura.feature.exchange.text.sort.item_ascending=Item (Asc.)
-almura.feature.exchange.text.sort.item_descending=Item (Desc.)
-almura.feature.exchange.text.sort.newest=Newest
-almura.feature.exchange.text.sort.oldest=Oldest
-almura.feature.exchange.text.sort.player_ascending=Player (Asc.)
-almura.feature.exchange.text.sort.player_descending=Player (Desc.)
-almura.feature.exchange.text.sort.price_ascending=Price (Asc.)
-almura.feature.exchange.text.sort.price_descending=Price (Desc.)
+almura.feature.exchange.text.sort.seller_name_asc=Seller (Asc.)
+almura.feature.exchange.text.sort.seller_name_desc=Seller (Desc.)
 almura.feature.exchange.text.unlisted_items=Unlisted Items
 almura.feature.exchange.title.enter_a_price=Enter a price
 almura.feature.exchange.title.enter_a_quantity=Enter a Quantity

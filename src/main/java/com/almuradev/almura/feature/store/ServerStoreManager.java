@@ -11,7 +11,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.feature.exchange.listing.ListItem;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.feature.store.basic.BasicStore;
 import com.almuradev.almura.feature.store.basic.listing.BasicBuyingItem;
@@ -19,6 +18,7 @@ import com.almuradev.almura.feature.store.basic.listing.BasicSellingItem;
 import com.almuradev.almura.feature.store.database.StoreQueries;
 import com.almuradev.almura.feature.store.listing.BuyingItem;
 import com.almuradev.almura.feature.store.listing.SellingItem;
+import com.almuradev.almura.feature.store.listing.StoreItem;
 import com.almuradev.almura.feature.store.network.ClientboundListItemsResponsePacket;
 import com.almuradev.almura.feature.store.network.ServerboundListItemsRequestPacket;
 import com.almuradev.almura.feature.store.network.ClientboundStoreGuiResponsePacket;
@@ -28,6 +28,7 @@ import com.almuradev.almura.shared.database.DatabaseManager;
 import com.almuradev.almura.shared.database.DatabaseQueue;
 import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.almuradev.almura.shared.feature.IngameFeature;
+import com.almuradev.almura.shared.feature.filter.FilterRegistry;
 import com.almuradev.almura.shared.item.VanillaStack;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.SerializationUtil;
@@ -90,7 +91,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
 import javax.inject.Singleton;
 
 @Singleton
@@ -280,11 +283,10 @@ public final class ServerStoreManager extends Witness.Impl implements Witness.Li
 
                             final Player p = Sponge.getServer().getPlayer(uniqueId).orElse(null);
                             if (p != null && p.isOnline() && !p.isRemoved()) {
+                                this.network.sendTo(p, new ClientboundListItemsResponsePacket(store.getId(), StoreItemSegmentType.BUYING,
+                                  store.getBuyingItems()));
                                 this.network.sendTo(p, new ClientboundListItemsResponsePacket(store.getId(), StoreItemSegmentType.SELLING,
                                     store.getSellingItems()));
-
-                                this.network.sendTo(player, new ClientboundListItemsResponsePacket(store.getId(), StoreItemSegmentType.BUYING,
-                                    store.getBuyingItems()));
                             }
                         }
                     })

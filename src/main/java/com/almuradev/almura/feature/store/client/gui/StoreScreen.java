@@ -7,7 +7,11 @@
  */
 package com.almuradev.almura.feature.store.client.gui;
 
+import com.almuradev.almura.FeatureSortTypes;
+import com.almuradev.almura.feature.SortType;
+import com.almuradev.almura.feature.store.SideType;
 import com.almuradev.almura.feature.store.Store;
+import com.almuradev.almura.feature.store.StoreModule;
 import com.almuradev.almura.feature.store.client.ClientStoreManager;
 import com.almuradev.almura.feature.store.listing.BuyingItem;
 import com.almuradev.almura.feature.store.listing.SellingItem;
@@ -33,6 +37,7 @@ import net.malisis.core.client.gui.component.interaction.UISelect;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
 import net.malisis.core.client.gui.event.ComponentEvent;
+import net.malisis.core.renderer.font.FontOptions;
 import net.malisis.core.util.FontColors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -47,18 +52,15 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -70,12 +72,13 @@ public class StoreScreen extends BasicScreen {
     @Inject private static ClientStoreManager storeManager;
     private static final int defaultTabColor = 0x1E1E1E;
     private static final int hoveredTabColor = 0x3C3C3C;
+    private static final int innerPadding = 2;
     private static final Map<ItemFinder, Object> itemFinderRelationshipMap = new LinkedHashMap<>();
 
     private final Store store;
     private final boolean isAdmin;
     private final int selectedTabColor = 0;
-    private final int tabWidth = 115;
+    private final int tabWidth = 119;
     private final int tabHeight = 16;
     private final List<ItemStack> adminBaseList = new ArrayList<>();
 
@@ -87,7 +90,9 @@ public class StoreScreen extends BasicScreen {
     private UILabel typeLabel, adminListTotalLabel, buyTabLabel, sellTabLabel;
     private BasicLine thisDoesNotExistLine;
     private UISelect<ItemFinder> locationSelect;
+    private BasicTextBox itemDisplayNameSearchBox;
     private BasicTextBox adminSearchTextBox;
+    private UISelect<SortType> comboBoxSortType;
 
     public StoreScreen(final Store store, final boolean isAdmin) {
         this.store = store;
@@ -132,7 +137,7 @@ public class StoreScreen extends BasicScreen {
         final int leftOffset = storeContainer.getLeftPadding() - storeContainer.getLeftBorderSize();
         this.buyTabContainer = new BasicContainer<>(this, this.tabWidth, this.tabHeight);
         this.buyTabContainer.setBorders(FontColors.WHITE, 185, 1, 1, 1, 0);
-        this.buyTabContainer.setPosition(4, 2);
+        this.buyTabContainer.setPosition(2, 2);
         this.buyTabContainer.setColor(defaultTabColor);
         this.buyTabContainer.attachData(SideType.BUY);
 
@@ -146,7 +151,7 @@ public class StoreScreen extends BasicScreen {
         this.sellTabContainer = new BasicContainer<>(this, this.tabWidth, this.tabHeight);
         this.sellTabContainer.setBorders(FontColors.WHITE, 185, 1, 1, 1, 0);
         this.sellTabContainer.setColor(defaultTabColor);
-        this.sellTabContainer.setPosition(-4, 2, Anchor.TOP | Anchor.RIGHT);
+        this.sellTabContainer.setPosition(-2, 2, Anchor.TOP | Anchor.RIGHT);
         this.sellTabContainer.attachData(SideType.SELL);
 
         // Sell tab label
@@ -165,10 +170,52 @@ public class StoreScreen extends BasicScreen {
                 storeContainer.getWidth() - (storeContainer.getLeftBorderSize() + storeContainer.getRightBorderSize()), 1);
         tabContainerLineBottom.setPosition(-leftOffset, BasicScreen.getPaddedY(this.buyTabContainer, 0));
 
+        // Search Y
+        final int searchY = BasicScreen.getPaddedY(tabContainerLineBottom, 2);
+
+        // Item Display Name Search Label
+        final UILabel itemSearchLabel = new UILabel(this, I18n.format("almura.feature.exchange.text.item_name") + ":");
+        itemSearchLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).build());
+        itemSearchLabel.setPosition(1, searchY + 3, Anchor.LEFT | Anchor.TOP);
+
+        // Item Display Name Search Text Box
+        this.itemDisplayNameSearchBox = new BasicTextBox(this, "");
+        this.itemDisplayNameSearchBox.setAcceptsReturn(false);
+        this.itemDisplayNameSearchBox.setAcceptsTab(false);
+        this.itemDisplayNameSearchBox.setTabIndex(0);
+        this.itemDisplayNameSearchBox.setOnEnter((tb) -> this.search());
+        this.itemDisplayNameSearchBox.setSize(60, 0);
+        this.itemDisplayNameSearchBox.setPosition(BasicScreen.getPaddedX(itemSearchLabel, innerPadding), searchY + 1, Anchor.LEFT | Anchor.TOP);
+        this.itemDisplayNameSearchBox.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
+
+        // Sort combobox
+        this.comboBoxSortType = new UISelect<>(this, 78);
+        this.comboBoxSortType.setPosition(BasicScreen.getPaddedX(this.itemDisplayNameSearchBox, innerPadding), searchY + 1);
+        this.comboBoxSortType.setOptions(Arrays.asList(
+          FeatureSortTypes.CREATED_ASC,
+          FeatureSortTypes.CREATED_DESC,
+          FeatureSortTypes.PRICE_ASC,
+          FeatureSortTypes.PRICE_DESC,
+          FeatureSortTypes.ITEM_DISPLAY_NAME_ASC,
+          FeatureSortTypes.ITEM_DISPLAY_NAME_DESC
+        ));
+        this.comboBoxSortType.setOptionsWidth(UISelect.LONGEST_OPTION);
+        this.comboBoxSortType.setLabelFunction(type -> type == null ? "" : type.getName()); // Because that's reasonable.
+        this.comboBoxSortType.select(FeatureSortTypes.CREATED_ASC);
+
+        // Search button
+        final UIButton buttonSearch = new UIButtonBuilder(this)
+          .width(50)
+          .anchor(Anchor.RIGHT | Anchor.TOP)
+          .position(0, searchY)
+          .text(I18n.format("almura.feature.common.button.search"))
+          .onClick(this::search)
+          .build("button.search");
+
         // List
-        this.itemList = new BasicList<>(this, UIComponent.INHERITED,
-                BasicScreen.getPaddedHeight(form) - this.buyTabContainer.getHeight() - tabContainerLineBottom.getHeight() - 28);
-        this.itemList.setPosition(0, BasicScreen.getPaddedY(tabContainerLineBottom, 2));
+        this.itemList = new BasicList<>(this, UIComponent.INHERITED, BasicScreen.getPaddedHeight(form) - this.buyTabContainer.getHeight()
+          - tabContainerLineBottom.getHeight() - buttonSearch.getHeight() - 30);
+        this.itemList.setPosition(0, BasicScreen.getPaddedY(buttonSearch, 2));
         this.itemList.setSelectConsumer(i -> this.updateStoreControls());
         this.itemList.setItemComponentSpacing(1);
         this.itemList.setBorder(FontColors.WHITE, 1, 185);
@@ -236,8 +283,9 @@ public class StoreScreen extends BasicScreen {
                 })
                 .build("button.transact.quantity");
 
-        storeContainer.add(this.buyTabContainer, this.sellTabContainer, tabContainerLineBottom, this.thisDoesNotExistLine, this.itemList,
-                this.buttonTransactOne, this.buttonTransactStack, this.buttonTransactQuantity, this.buttonTransactAll);
+        storeContainer.add(this.buyTabContainer, this.sellTabContainer, tabContainerLineBottom, this.thisDoesNotExistLine, itemSearchLabel,
+          this.itemDisplayNameSearchBox, this.comboBoxSortType, buttonSearch, this.itemList, this.buttonTransactOne, this.buttonTransactStack,
+          this.buttonTransactQuantity, this.buttonTransactAll);
 
         form.add(storeContainer);
 
@@ -396,20 +444,7 @@ public class StoreScreen extends BasicScreen {
           ? new UITooltip(this, "almura.feature.store.text.no_items_for_purchase")
           : null);
 
-        // Store current selection
-        final int currentRecord = this.itemList.getSelectedItem() != null ? this.itemList.getSelectedItem().getRecord() : -1;
-
-        // Collections.unmodifiableList because you know... Java.
-        this.itemList.setItems(Collections.unmodifiableList(this.currentSide == SideType.BUY
-                ? this.store.getBuyingItems()
-                : this.store.getSellingItems()));
-
-        // Select the current item if available, otherwise the first item, last but not least, null if nothing is available.
-        this.itemList.setSelectedItem(this.itemList.getItems()
-          .stream()
-          .filter(i -> i.getRecord() == currentRecord)
-          .findFirst()
-          .orElse(this.itemList.getItems().stream().findFirst().orElse(null)));
+        this.search();
 
         if (createControls && this.isAdmin) {
             this.createAdminControls(this.locationSelect.getSelectedValue());
@@ -417,6 +452,49 @@ public class StoreScreen extends BasicScreen {
 
         this.updateStoreControls();
         this.updateAdminControls();
+    }
+
+    private void search() {
+        final Map<String, Object> filterQueryMap = new HashMap<>();
+        filterQueryMap.put("item_display_name", this.itemDisplayNameSearchBox.getText());
+
+        final Map<String, String> sortQueryMap = new HashMap<>();
+        sortQueryMap.put(this.comboBoxSortType.getSelectedValue().getTypeId(), this.comboBoxSortType.getSelectedValue().getDirection().getId());
+
+        final StringBuilder filterQueryBuilder = new StringBuilder();
+        for (final Map.Entry<String, Object> entry : filterQueryMap.entrySet()) {
+            if (entry.getValue().toString().isEmpty()) {
+                continue;
+            }
+            filterQueryBuilder.append(StoreModule.ID).append("_").append(entry.getKey()).append(FeatureConstants.EQUALITY).append(entry.getValue())
+              .append(FeatureConstants.DELIMITER);
+        }
+
+        // Not needed to be done this way in current form but adds native support if we allow multiple sorting patterns
+        final StringBuilder sortQueryBuilder = new StringBuilder();
+        for (final Map.Entry<String, String> entry : sortQueryMap.entrySet()) {
+            if (entry.getValue().isEmpty()) {
+                continue;
+            }
+            sortQueryBuilder.append(StoreModule.ID).append("_").append(entry.getKey()).append(FeatureConstants.EQUALITY)
+              .append(entry.getValue()).append(FeatureConstants.DELIMITER);
+        }
+
+        final String filterQuery = filterQueryBuilder.toString().isEmpty() ? null : filterQueryBuilder.toString();
+        final String sortQuery = sortQueryBuilder.toString().isEmpty() ? null : sortQueryBuilder.toString();
+
+        // Store current selection
+        final int currentRecord = this.itemList.getSelectedItem() != null ? this.itemList.getSelectedItem().getRecord() : -1;
+
+        // Update the item list to have the current filtered items
+        this.itemList.setItems(storeManager.filterLocalItems(this.store.getId(), filterQuery, sortQuery, this.currentSide));
+
+        // Select the current item if available, otherwise the first item, last but not least, null if nothing is available.
+        this.itemList.setSelectedItem(this.itemList.getItems()
+          .stream()
+          .filter(i -> i.getRecord() == currentRecord)
+          .findFirst()
+          .orElse(this.itemList.getItems().stream().findFirst().orElse(null)));
     }
 
     private void transact(final int value) {
@@ -860,10 +938,5 @@ public class StoreScreen extends BasicScreen {
 
             this.refreshDisplayName();
         }
-    }
-
-    protected enum SideType {
-        BUY,
-        SELL
     }
 }

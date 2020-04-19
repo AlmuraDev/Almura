@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.store.client.gui;
 
+import com.almuradev.almura.feature.store.SideType;
 import com.almuradev.almura.feature.store.Store;
 import com.almuradev.almura.feature.store.client.ClientStoreManager;
 import com.almuradev.almura.feature.store.listing.StoreItem;
@@ -34,7 +35,7 @@ public class StoreTransactQuantityScreen extends BasicScreen {
 
   private final Store store;
   private final StoreItem transactItem;
-  private final StoreScreen.SideType sideType;
+  private final SideType sideType;
   private final int maxTransactable;
 
   private UIButton buttonTransact, buttonCancel;
@@ -42,7 +43,7 @@ public class StoreTransactQuantityScreen extends BasicScreen {
   private BasicTextBox quantityTextBox;
   private BasicForm form;
 
-  public StoreTransactQuantityScreen(final StoreScreen parent, final Store store, final StoreItem transactItem, StoreScreen.SideType sideType) {
+  public StoreTransactQuantityScreen(final StoreScreen parent, final Store store, final StoreItem transactItem, final SideType sideType) {
     super(parent, true);
 
     this.store = store;
@@ -52,7 +53,7 @@ public class StoreTransactQuantityScreen extends BasicScreen {
     // Establish the max transactable (is that even a word?)
     // If the item quantity is -1 then it is infinite and we'll allow up to 9999
     final int itemQuantity = this.transactItem.getQuantity() == -1 ? 9999 : this.transactItem.getQuantity();
-    if (this.sideType == StoreScreen.SideType.BUY) {
+    if (this.sideType == SideType.BUY) {
       this.maxTransactable = itemQuantity;
     } else {
       // Establish how much we have of this item in the player's main inventory
@@ -84,7 +85,7 @@ public class StoreTransactQuantityScreen extends BasicScreen {
     this.quantityTextBox.setOnEnter(tb -> this.transact());
     this.quantityTextBox.setSize(45, 0);
     this.quantityTextBox.setPosition(0, 0, Anchor.TOP | Anchor.RIGHT);
-    this.quantityTextBox.setFilter(s -> String.valueOf(MathUtil.squashi(Integer.valueOf(s.replaceAll("[^\\d]", "")), 1, this.maxTransactable)));
+    this.quantityTextBox.setFilter(s -> String.valueOf(MathUtil.squashi(Integer.parseInt(s.replaceAll("[^\\d]", "")), 1, this.maxTransactable)));
     this.quantityTextBox.setPosition(0, 0);
     this.quantityTextBox.register(this);
 
@@ -157,10 +158,10 @@ public class StoreTransactQuantityScreen extends BasicScreen {
   }
 
   private void transact() {
-    if (this.sideType == StoreScreen.SideType.BUY) {
-      storeManager.buy(this.store.getId(), this.transactItem.getRecord(), Integer.valueOf(this.quantityTextBox.getText()));
+    if (this.sideType == SideType.BUY) {
+      storeManager.buy(this.store.getId(), this.transactItem.getRecord(), Integer.parseInt(this.quantityTextBox.getText()));
     } else {
-      storeManager.sell(this.store.getId(), this.transactItem.getRecord(), Integer.valueOf(this.quantityTextBox.getText()));
+      storeManager.sell(this.store.getId(), this.transactItem.getRecord(), Integer.parseInt(this.quantityTextBox.getText()));
     }
     this.close();
   }

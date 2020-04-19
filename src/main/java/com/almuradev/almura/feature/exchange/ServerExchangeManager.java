@@ -884,9 +884,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             return;
         }
 
-        Stream<ForSaleItem> stream = axs.getForSaleItems().entrySet()
+        Stream<ForSaleItem> stream = axs.getForSaleItems().values()
             .stream()
-            .map(Map.Entry::getValue)
             .flatMap(List::stream);
 
         if (filter != null) {

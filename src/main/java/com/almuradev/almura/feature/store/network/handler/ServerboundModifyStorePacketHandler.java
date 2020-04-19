@@ -9,8 +9,6 @@ package com.almuradev.almura.feature.store.network.handler;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.almuradev.almura.feature.exchange.ServerExchangeManager;
-import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePacket;
 import com.almuradev.almura.feature.store.ServerStoreManager;
 import com.almuradev.almura.feature.store.network.ServerboundModifyStorePacket;
 import com.almuradev.almura.shared.util.PacketUtil;
