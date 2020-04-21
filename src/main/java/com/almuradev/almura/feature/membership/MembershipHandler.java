@@ -188,7 +188,7 @@ public final class MembershipHandler implements Witness {
         final String currentGroup = permService.getUserManager().getUser(player.getUniqueId()).getPrimaryGroup();
         final String command = "lp user " + player.getName() + " promote members";
 
-        if (newMembershipLevel == 1 && currentSkillLevel > 275 && currentGroup.equalsIgnoreCase("survivor")) {
+        if (newMembershipLevel == 1 && currentSkillLevel > 250 && currentGroup.equalsIgnoreCase("survivor")) {
             this.commandManager.process(Sponge.getServer().getConsole(), command);
             serverNotificationManager.sendPopupNotification(player, Text.of("Membership Upgrade"), Text.of("You've been upgraded to: Citizen!"), 5);
             return;
