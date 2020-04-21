@@ -192,16 +192,14 @@ public class StoreScreen extends BasicScreen {
         this.comboBoxSortType = new UISelect<>(this, 78);
         this.comboBoxSortType.setPosition(BasicScreen.getPaddedX(this.itemDisplayNameSearchBox, innerPadding), searchY + 1);
         this.comboBoxSortType.setOptions(Arrays.asList(
-          FeatureSortTypes.CREATED_ASC,
-          FeatureSortTypes.CREATED_DESC,
-          FeatureSortTypes.PRICE_ASC,
-          FeatureSortTypes.PRICE_DESC,
           FeatureSortTypes.ITEM_DISPLAY_NAME_ASC,
-          FeatureSortTypes.ITEM_DISPLAY_NAME_DESC
+          FeatureSortTypes.ITEM_DISPLAY_NAME_DESC,
+          FeatureSortTypes.PRICE_ASC,
+          FeatureSortTypes.PRICE_DESC
         ));
         this.comboBoxSortType.setOptionsWidth(UISelect.LONGEST_OPTION);
         this.comboBoxSortType.setLabelFunction(type -> type == null ? "" : type.getName()); // Because that's reasonable.
-        this.comboBoxSortType.select(FeatureSortTypes.CREATED_ASC);
+        this.comboBoxSortType.select(FeatureSortTypes.ITEM_DISPLAY_NAME_ASC);
 
         // Search button
         final UIButton buttonSearch = new UIButtonBuilder(this)
