@@ -52,7 +52,7 @@ public abstract class MixinEntityCow extends EntityAnimal {
         Item cornItem = GameRegistry.makeItemStack("almura:food/food/corn", 0, 1, null).getItem();
         Item alfalfaItem = GameRegistry.makeItemStack("almura:normal/crop/alfalfa_item", 0, 1, null).getItem();
 
-        if (soyBeanItem != null && cornItem != null) {
+        if (soyBeanItem != null && cornItem != null && alfalfaItem != null) {
             TEMPTATION_ITEMS.add(soyBeanItem);
             TEMPTATION_ITEMS.add(cornItem);
             TEMPTATION_ITEMS.add(alfalfaItem);
