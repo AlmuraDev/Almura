@@ -33,7 +33,6 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -43,16 +42,17 @@ import java.util.TimerTask;
 public class MultiplayerScreen extends PanoramicScreen {
 
   private static final List<ServerEntry> serverEntries = new ArrayList<>();
+  private int shownItems = 0;
 
   static {
-    serverEntries.add(new ServerEntry(I18n.format("almura.menu.server.live.name"), "srv1.almuramc.com", 25566));
-    serverEntries.add(new ServerEntry(I18n.format("almura.menu.server.dev.name"), "dev.almuramc.com", 25566));
+    serverEntries.add(new ServerEntry(I18n.format("almura.menu.server.live.name"), "srv1.almuramc.com", 25566, false));
+    serverEntries.add(new ServerEntry(I18n.format("almura.menu.server.dev.name"), "dev.almuramc.com", 25566, true));
   }
 
   private final Timer queryTimer = new Timer();
   private boolean timerRunning = false;
   private BasicList<ServerEntry> serverList;
-  private UIButton joinButton;
+  private UIButton joinButton, backButton, otherButton;
 
   public MultiplayerScreen(final BasicScreen parent) {
     super(parent);
@@ -77,7 +77,7 @@ public class MultiplayerScreen extends PanoramicScreen {
     logoImage.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
     // Container for server entries
-    this.serverList = new BasicList<>(this, UIConstants.Button.WIDTH_LONG - 2, 53);
+    this.serverList = new BasicList<>(this, UIConstants.Button.WIDTH_LONG - 2, 26);
     this.serverList.setPosition(0, BasicScreen.getPaddedY(logoImage, 10), Anchor.TOP | Anchor.CENTER);
     this.serverList.setColor(0x000000);
     this.serverList.setBackgroundAlpha(185);
@@ -87,6 +87,7 @@ public class MultiplayerScreen extends PanoramicScreen {
     this.serverList.setItemComponentFactory(ServerEntryItemComponent::new);
     this.serverList.setSelectConsumer(i -> this.updateButtons());
     this.serverList.setItems(serverEntries);
+    this.serverList.createItemComponents();
 
     // Join button
     this.joinButton = new UIButtonBuilder(this)
@@ -100,7 +101,7 @@ public class MultiplayerScreen extends PanoramicScreen {
       .build("button.join");
 
     // Back button
-    final UIButton backButton = new UIButtonBuilder(this)
+    this.backButton = new UIButtonBuilder(this)
       .text(I18n.format("gui.back"))
       .width(UIConstants.Button.WIDTH_SHORT)
       .height(UIConstants.Button.HEIGHT)
@@ -110,7 +111,7 @@ public class MultiplayerScreen extends PanoramicScreen {
       .build("button.back");
 
     // Other button
-    final UIButton otherButton = new UIButtonBuilder(this)
+    this.otherButton = new UIButtonBuilder(this)
       .text(I18n.format("almura.menu_button.other"))
       .width(UIConstants.Button.WIDTH_SHORT)
       .height(UIConstants.Button.HEIGHT)
@@ -128,6 +129,7 @@ public class MultiplayerScreen extends PanoramicScreen {
 
     // Select the first entry
     this.serverList.setSelectedItem(serverEntries.stream().findFirst().orElse(null));
+    updateButtons();
   }
 
   public void startTimer() {
@@ -136,8 +138,8 @@ public class MultiplayerScreen extends PanoramicScreen {
         @Override public void run() {
           queryServers();
           serverList.getComponents().stream().filter(i -> i instanceof ServerEntryItemComponent).forEach(i -> ((ServerEntryItemComponent) i).update());
-          updateButtons();
           timerRunning = true;
+          updateButtons();
         }
       }, 0L, 3000L);
     }
@@ -161,7 +163,25 @@ public class MultiplayerScreen extends PanoramicScreen {
 
   private void updateButtons() {
     final ServerEntry entry = this.serverList.getSelectedItem();
+
+    shownItems = 0;
+    serverList.getComponents().stream().filter(i -> i instanceof ServerEntryItemComponent).forEach(i -> {
+      if ((i).isVisible()) {
+        shownItems = shownItems +1;
+      }
+    });
+
+    // Note:  this works, don't blame me for alignment and size issues...
+    if (shownItems > 1) {
+      serverList.setHeight(shownItems * 27);
+    } else {
+      serverList.setHeight(28);
+    }
+
     this.joinButton.setEnabled(entry != null && entry.status == ServerStatus.ONLINE);
+    this.joinButton.setPosition(0, BasicScreen.getPaddedY(this.serverList, 2));
+    this.backButton.setPosition(0, BasicScreen.getPaddedY(this.joinButton, 2));
+    this.otherButton.setPosition(0, BasicScreen.getPaddedY(this.joinButton, 2));
   }
 
   private void join() {
@@ -172,7 +192,6 @@ public class MultiplayerScreen extends PanoramicScreen {
     }
 
     FMLClientHandler.instance().setupServerList();
-    //FMLClientHandler.instance().connectToServer(this, new ServerData(entry.name, entry.address + ":" + entry.port, false));
     new ConnectingGui(this, new ServerData(entry.name, entry.address + ":" + entry.port, false)).display();
   }
 
@@ -212,16 +231,18 @@ public class MultiplayerScreen extends PanoramicScreen {
     private final String address;
     private final int port;
     private final Query query;
+    private final boolean canHide;
     private String motd;
     private int players;
     private int maxPlayers;
     private ServerStatus status = ServerStatus.UPDATING;
 
-    ServerEntry(final String name, final String address, final int port) {
+    ServerEntry(final String name, final String address, final int port, final boolean canHide) {
       this.name = name;
       this.address = address;
       this.port = port;
       this.query = new Query(address, port);
+      this.canHide = canHide;
     }
   }
 
@@ -268,6 +289,13 @@ public class MultiplayerScreen extends PanoramicScreen {
         this.serverStatusLabel.setText(this.item.status.getFormattedName());
       }
 
+      if (this.item.status == ServerStatus.OFFLINE || this.item.status == ServerStatus.UPDATING) {
+        if (this.item.canHide) {
+          this.visible = false;
+        }
+      } else {
+        this.visible = true;
+      }
 
       // Update MOTD tooltip
       this.setTooltip((this.item.motd == null || this.item.motd.isEmpty()) ? null : new UITooltip(this.getGui(), this.item.motd));
