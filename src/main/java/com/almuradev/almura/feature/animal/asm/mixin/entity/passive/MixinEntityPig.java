@@ -21,6 +21,7 @@ import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import org.spongepowered.asm.mixin.Mixin;
@@ -47,10 +48,10 @@ public abstract class MixinEntityPig extends EntityAnimal {
         Item soyBeanItem = GameRegistry.makeItemStack("almura:food/food/soybean", 0, 1, null).getItem();
         Item cornItem = GameRegistry.makeItemStack("almura:food/food/corn", 0, 1, null).getItem();
 
-        if (soyBeanItem != null && cornItem != null) {
+        if (soyBeanItem != ItemStack.EMPTY.getItem())
             TEMPTATION_ITEMS.add(soyBeanItem);
+        if (cornItem != ItemStack.EMPTY.getItem())
             TEMPTATION_ITEMS.add(cornItem);
-        }
 
         this.tasks.addTask(0, new EntityAISwimming(this));
         this.tasks.addTask(1, new EntityAIPanic(this, 1.25D));
