@@ -188,12 +188,12 @@ public final class MembershipHandler implements Witness {
         final String currentGroup = permService.getUserManager().getUser(player.getUniqueId()).getPrimaryGroup();
         final String command = "lp user " + player.getName() + " promote members";
 
-        if (newMembershipLevel == 1 && currentSkillLevel > 250 && currentGroup.equalsIgnoreCase("survivor")) {
+        if (newMembershipLevel == 1 && currentSkillLevel >= 250 && currentGroup.equalsIgnoreCase("survivor")) {
             this.commandManager.process(Sponge.getServer().getConsole(), command);
             serverNotificationManager.sendPopupNotification(player, Text.of("Membership Upgrade"), Text.of("You've been upgraded to: Citizen!"), 5);
             return;
         }
-        if (newMembershipLevel == 2 && currentSkillLevel > 375 && (currentGroup.equalsIgnoreCase("survivor") || currentGroup.equalsIgnoreCase("citizen"))) {
+        if (newMembershipLevel == 2 && currentSkillLevel >= 375 && (currentGroup.equalsIgnoreCase("survivor") || currentGroup.equalsIgnoreCase("citizen"))) {
             if (currentGroup.equalsIgnoreCase("survivor")) {
                 this.commandManager.process(Sponge.getServer().getConsole(), command);
             }
@@ -202,7 +202,7 @@ public final class MembershipHandler implements Witness {
             serverNotificationManager.sendPopupNotification(player, Text.of("Membership Upgrade"), Text.of("You've been upgraded to: Explorer!"), 5);
             return;
         }
-        if (newMembershipLevel == 3 && currentSkillLevel > 400 && (currentGroup.equalsIgnoreCase("survivor") || currentGroup.equalsIgnoreCase("citizen") || currentGroup.equalsIgnoreCase("explorer"))) {
+        if (newMembershipLevel == 3 && currentSkillLevel >= 400 && (currentGroup.equalsIgnoreCase("survivor") || currentGroup.equalsIgnoreCase("citizen") || currentGroup.equalsIgnoreCase("explorer"))) {
             if (currentGroup.equalsIgnoreCase("survivor")) {
                 this.commandManager.process(Sponge.getServer().getConsole(), command);
                 this.commandManager.process(Sponge.getServer().getConsole(), command);
