@@ -138,8 +138,9 @@ public final class ServerTitleManager extends Witness.Impl implements Witness.Li
 
                   String titleId = "lostsoul";
 
-                  if (record != null) {
+                  if (record != null && !record.getTitle().isEmpty()) {
                       titleId = record.getTitle();
+                      System.err.println("[ServerTitleManager]: Assigning player configured title: [" + titleId + "] for player: [" + player.getName() + "].");
                   } else {
                       // The following are setup as fallback titles when a record doesn't exist in the DB for the player.
                       if (player.hasPermission("almura.title.soldier")) titleId = "soldier";
