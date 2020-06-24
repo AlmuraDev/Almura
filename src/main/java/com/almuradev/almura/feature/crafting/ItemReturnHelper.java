@@ -98,17 +98,30 @@ public class ItemReturnHelper implements Witness {
     }
 
     public static void returnReusableItem(EntityPlayer player, String name, ItemStack currentStack, boolean debug) {
+        if (player != null && player.getEntityWorld().isRemote) {
+            return;
+        }
+
         int damage = 0;
         ItemStack reusableItem;
+
         if (debug) {
             System.out.println("ItemReturnHelper: Name = " + name.toUpperCase());
         }
+
         switch (name.toUpperCase()) {
             case "ITEM.ALMURA.NORMAL.TOOL.GRINDER":
                 reusableItem = new ItemStack(currentStack.getItem(), 1, currentStack.getMetadata());
                 damage = 1;
                 break;
 
+            case "ITEM.ALMURA.FOOD.DRINK.COFFEE_HOT":
+            case "ITEM.ALMURA.FOOD.DRINK.COFFEE":
+                reusableItem = GameRegistry.makeItemStack("almura:normal/ingredient/coffee_cup", 0, 1, null);
+                break;
+
+            case "ITEM.ALMURA.NORMAL.INGREDIENT.GLASS_WATER_CRUET":
+            case "ITEM.GLASS_WATER_CRUET":
             case "ITEM.ALMURA.NORMAL.INGREDIENT.VINEGAR":
             case "ITEM.ALMURA.NORMAL.INGREDIENT.YEAST":
             case "ITEM.ALMURA.NORMAL.INGREDIENT.BROTH_BEEF":
@@ -285,6 +298,10 @@ public class ItemReturnHelper implements Witness {
                 }
                 return; // Item durability of returned exceeds maximum.
             }
+        }
+
+        if (debug) {
+            System.out.println("ItemReturnHelper: Item Returned: " + reusableItem.getDisplayName());
         }
 
         boolean found = false;
