@@ -97,10 +97,7 @@ public final class ServerAnimalManager extends Witness.Impl  {
         final ItemStackSnapshot parentASnapshot = this.usedItemCache.get(parents.get(0).getUniqueId());
         final ItemStackSnapshot parentBSnapshot = this.usedItemCache.get(parents.get(1).getUniqueId());
 
-        if (parentBSnapshot == null) {
-            System.out.println("onBreedEntity:  parentBSnapshot NULL");
-            System.out.println("Value: " + parents.get(1));
-        }
+       // Note parentASnapshot & parentBSnapshot will be null in the event of using Feed Throuth from Farming for Block Heads, this is expected.
         
         final Ageable child = event.getOffspringEntity();
 
@@ -111,7 +108,6 @@ public final class ServerAnimalManager extends Witness.Impl  {
         }
 
         final int additionalSpawnCount = this.getAdditionalSpawnCount(child, parentASnapshot, parentBSnapshot);
-        //System.out.println("onBreedEntity: additionalSpawnCount: " + additionalSpawnCount);
 
         for (int i = 0; i < additionalSpawnCount; i++) {
             final Ageable other = (Ageable) child.getWorld().createEntity(child.getType(), child.getLocation().getPosition());
@@ -122,7 +118,6 @@ public final class ServerAnimalManager extends Witness.Impl  {
             if (this.colorifyNameplate(other)) {
                 other.offer(Keys.DISPLAY_NAME, Text.of(TextColors.AQUA, child.getType().getTranslation().get()));
             }
-            System.out.println("Spawned Twin!: " + other);
             child.getWorld().spawnEntity(other);
         }
 
@@ -168,9 +163,8 @@ public final class ServerAnimalManager extends Witness.Impl  {
 
     private int getAdditionalSpawnCount(final Ageable baby, final ItemStackSnapshot parentAItem, final ItemStackSnapshot parentBItem) {
         checkNotNull(baby);
-        checkNotNull(parentAItem);
-        //checkNotNull(parentBItem);
-        if (parentBItem == null) {
+        if (parentAItem == null || parentBItem == null) {
+            // Note: parentAItem will be null when using FarmingForBlockHeads, this is expected.
             //System.out.println("Almura: SpongeForge bug, parentBItem NULL");
             return 0;
         }

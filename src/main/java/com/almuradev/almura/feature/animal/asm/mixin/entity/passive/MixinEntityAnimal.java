@@ -71,6 +71,14 @@ public abstract class MixinEntityAnimal extends EntityAgeable implements IAnimal
         return super.processInteract(player, hand);
     }
 
+    /**
+     * @author Dockter
+     */
+    @Overwrite // Intended to bring compatibility to FarmingForBlockHeads.
+    public boolean isBreedingItem(ItemStack stack) {
+        return isCustomBreedingItem(stack);
+    }
+
     private boolean isCustomBreedingItem(ItemStack stack) {
         final String itemName = stack.getTranslationKey();
         //System.out.println("Breed Item: " + itemName);
