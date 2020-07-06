@@ -12,7 +12,8 @@
         "tileentity.MixinTileEntity",
         "tileentity.MixinTileEntityFurnace",
         "util.MixinFoodStats",
-        "world.MixinBossBarColor"
+        "world.MixinBossBarColor",
+        "world.MixinGameRules"
     ],
     "client": [
         "client.gui.MixinGuiBossOverlay",

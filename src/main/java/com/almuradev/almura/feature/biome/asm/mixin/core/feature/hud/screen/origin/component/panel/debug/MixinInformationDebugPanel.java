@@ -26,13 +26,27 @@ public abstract class MixinInformationDebugPanel {
      * @reason Make Origin Debug HUD biome namespaced id.
      */
     @Overwrite
-    private String getBiomeName(Biome biome, BlockPos pos) {
+    private String getBiomeRegistryName(Biome biome, BlockPos pos) {
         final BiomeChunk chunk = BiomeUtil.getChunk(pos);
         if (chunk == null) {
             return biome.getRegistryName().toString();
         }
 
         return chunk.getBiomeRegistryName(pos, biome);
+    }
+
+    /**
+     * @author Dockter
+     * @reason Make Origin Debug HUD biome name.
+     */
+    @Overwrite
+    private String getBiomeName(Biome biome, BlockPos pos) {
+        final BiomeChunk chunk = BiomeUtil.getChunk(pos);
+        if (chunk == null) {
+            return biome.getBiomeName();
+        }
+
+        return chunk.getBiomeName(pos, biome);
     }
 
     /**

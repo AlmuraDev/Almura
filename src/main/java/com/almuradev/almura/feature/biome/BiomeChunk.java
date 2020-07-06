@@ -43,6 +43,17 @@ public final class BiomeChunk {
         return config.getRegistryKey();
     }
 
+    public String getBiomeName(final BlockPos pos, Biome fallback) {
+        final int biomeId = this.getBiomeId(pos);
+
+        final BiomeConfig config = this.configs.get(biomeId);
+        if (config == null) {
+            return fallback.getBiomeName();
+        }
+
+        return config.getBiomeName();
+    }
+
     public float getTemperature(final BlockPos pos, Biome fallback) {
         final int biomeId = this.getBiomeId(pos);
 

@@ -89,7 +89,9 @@ public class InformationDebugPanel extends AbstractDebugPanel {
             this.drawProperty("Chunk", String.format("%d, %d, %d in %d, %d, %d", fx & 0xf, fy & 0xf, fz & 0xf, fx >> 4, fy >> 4, fz >> 4), 4);
             if (view.getEntityWorld().isBlockLoaded(pos) && pos.getY() >= 0 && pos.getY() < 256 && !chunk.isEmpty()) {
                 final Biome biome = chunk.getBiome(pos, this.client.world.getBiomeProvider());
-                this.drawProperty("Biome", this.getBiomeName(biome, pos), 4);
+                this.drawProperty("Biome Reg", this.getBiomeRegistryName(biome, pos), 4);
+                this.drawProperty("Biome Name", this.getBiomeName(biome, pos), 4);
+                this.drawProperty("Biome ID", String.valueOf(this.getBiomeId(biome, pos)), 4);
                 this.drawProperty("Temperature", "" + this.getTemperature(biome, pos),4);
                 this.drawProperty("Rainfall", "" + this.getRainfall(biome, pos), 4);
                 this.drawProperty("Light", getLightDetails(pos, chunk), 4);
@@ -112,8 +114,16 @@ public class InformationDebugPanel extends AbstractDebugPanel {
         this.client.profiler.endSection();
     }
 
-    private String getBiomeName(Biome biome, BlockPos pos) {
+    private String getBiomeRegistryName(Biome biome, BlockPos pos) {
         return biome.getRegistryName().toString();
+    }
+
+    private int getBiomeId(Biome biome, BlockPos pos) {
+        return Biome.getIdForBiome(biome);
+    }
+
+    private String getBiomeName(Biome biome, BlockPos pos) {
+        return biome.getBiomeName();
     }
 
     private float getTemperature(Biome biome, BlockPos pos) {

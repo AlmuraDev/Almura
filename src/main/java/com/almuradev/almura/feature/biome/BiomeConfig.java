@@ -18,6 +18,7 @@ public final class BiomeConfig implements Serializable {
     private static final long serialVersionUID = 1L;
     private int serverBiomeId;
     private String registryKey;
+    private String biomeName;
     private float temperature = 0f;
     private float rainfall = 0f;
     private int waterColor;
@@ -25,21 +26,25 @@ public final class BiomeConfig implements Serializable {
     public BiomeConfig() {
     }
 
-    public BiomeConfig(final int serverBiomeId, final String registryKey, final float temperature, final float rainfall, final int waterColor) {
+    public BiomeConfig(final int serverBiomeId, final String registryKey, final String biomeName, final float temperature, final float rainfall, final int waterColor) {
         this.serverBiomeId = serverBiomeId;
         this.registryKey = registryKey;
+        this.biomeName = biomeName;
         this.temperature = temperature;
         this.rainfall = rainfall;
         this.waterColor = waterColor;
     }
 
     public static BiomeConfig of(Biome biome) {
-        return new BiomeConfig(((ForgeRegistry<Biome>) ForgeRegistries.BIOMES).getID(biome), biome.getRegistryName().toString(), biome
-                .getDefaultTemperature(), biome.getRainfall(), biome.waterColor);
+        return new BiomeConfig(((ForgeRegistry<Biome>) ForgeRegistries.BIOMES).getID(biome), biome.getRegistryName().toString(), biome.biomeName, biome.getDefaultTemperature(), biome.getRainfall(), biome.waterColor);
     }
 
     public int getServerBiomeId() {
         return this.serverBiomeId;
+    }
+
+    public String getBiomeName() {
+        return this.biomeName;
     }
 
     public String getRegistryKey() {
