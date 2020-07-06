@@ -45,12 +45,15 @@ public abstract class MixinEntityAnimal extends EntityAgeable implements IAnimal
     @Shadow int inLove;
     @Shadow UUID playerInLove;
 
+    @Shadow public abstract boolean isInLove();
+
     /**
      * @author Dockter
      */
     @Overwrite
     public boolean processInteract(EntityPlayer player, EnumHand hand) {
         ItemStack itemstack = player.getHeldItem(hand);
+        //System.out.println("Info - Age: " + this.getGrowingAge() + " Love: " + this.isInLove() + " Child: " + this.isChild());
         if (!itemstack.isEmpty()) {
             if (this.isCustomBreedingItem(itemstack) && this.getGrowingAge() == 0 && this.inLove <= 0) {
                 this.consumeItemFromStack(player, itemstack);
