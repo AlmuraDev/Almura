@@ -9,6 +9,7 @@ package com.almuradev.almura.feature.menu;
 
 import com.almuradev.almura.feature.death.client.gui.PlayerDiedGUI;
 import com.almuradev.almura.feature.menu.game.SimpleIngameMenu;
+import com.almuradev.almura.feature.menu.main.ConnectingGui;
 import com.almuradev.almura.feature.menu.main.DisconnectedGui;
 import com.almuradev.almura.feature.menu.main.PanoramicMainMenu;
 import com.almuradev.core.event.Witness;
@@ -48,7 +49,11 @@ public class MainMenuManager implements Witness {
                // Cancel this, packet sent to client opens the DeathGUI
             } else if (screen.getClass().equals(GuiDisconnected.class)) {
                 event.setCanceled(true);
-                new DisconnectedGui("").display();
+                String message = "";
+                if (currentScreen instanceof ConnectingGui) {
+                    message = ((ConnectingGui) currentScreen).networkManager.getExitMessage().getFormattedText();
+                }
+                new DisconnectedGui(message).display();
             }
         }
     }

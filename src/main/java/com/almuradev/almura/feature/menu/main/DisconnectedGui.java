@@ -28,6 +28,7 @@ import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.decoration.UISeparator;
+import net.malisis.core.client.gui.component.interaction.BasicTextBox;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
 import net.malisis.core.renderer.font.FontOptions;
@@ -61,6 +62,7 @@ public final class DisconnectedGui extends BasicScreen {
     private boolean unlockMouse = true;
     private boolean update = true;
     private UILabel messageLabel;
+    private BasicTextBox reasonBox;
     private BasicForm form;
     private UIButton buttonClose;
     private String reason;
@@ -82,7 +84,7 @@ public final class DisconnectedGui extends BasicScreen {
         this.guiscreenBackground = true;
         Keyboard.enableRepeatEvents(true);
 
-        this.form = new BasicForm(this, 170, 170, "Server Status");
+        this.form = new BasicForm(this, 350, 140, "Server Status");
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(false);
         this.form.setClosable(false);
@@ -95,15 +97,36 @@ public final class DisconnectedGui extends BasicScreen {
 
         // Almura header
         final UIImage almuraHeader = new UIImage(this, new GuiTexture(GuiConfig.Location.DEAD_STEVE), null);
-        almuraHeader.setSize(99, 99);
+        almuraHeader.setSize(59, 59);
         almuraHeader.setPosition(0, 5, Anchor.TOP | Anchor.CENTER);
 
         this.messageLabel = new UILabel(this, "Disconnected from Server");
-        if(reason.length() > 0) {
-            this.messageLabel.setText(reason);
-        }
         this.messageLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        this.messageLabel.setPosition(0, 112, Anchor.CENTER | Anchor.TOP);
+        this.messageLabel.setPosition(0, almuraHeader.getHeight() + 5, Anchor.CENTER | Anchor.TOP);
+
+        final UISeparator belowLabelSeparator = new UISeparator(this);
+        belowLabelSeparator.setSize(this.form.getWidth() -5, 1);
+        belowLabelSeparator.setPosition(0, this.messageLabel.getY() + 10, Anchor.CENTER | Anchor.TOP);
+        this.form.add(belowLabelSeparator);
+
+        this.reasonBox = new BasicTextBox(this, "Unknown Reason", true);
+        this.reasonBox.setAlpha(0);
+        this.reasonBox.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.7F).build());
+        this.reasonBox.setPosition(0, this.messageLabel.getY() + 14, Anchor.CENTER | Anchor.TOP);
+        this.reasonBox.setOptions(16238795,0,0);
+        if (reason.length() > 0) {
+            this.reasonBox.setSize(this.form.getWidth() - 5, 15);
+            this.reasonBox.setText(reason);
+        }
+
+        for (int i = 0; i < 4; i++) {
+            if (this.reasonBox.getScrollbar().isEnabled()) {
+                this.reasonBox.setSize(this.reasonBox.getWidth(), this.reasonBox.getHeight() + 15);
+                this.form.setSize(this.form.getWidth(), this.form.getHeight() + 15);
+            }
+        }
+
+        this.reasonBox.getScrollbar().autoHide = true;
 
         final UISeparator aboveButtonsSeparator = new UISeparator(this);
         aboveButtonsSeparator.setSize(this.form.getWidth() -5, 1);
@@ -121,7 +144,7 @@ public final class DisconnectedGui extends BasicScreen {
                 .listener(this)
                 .build("button.return");
 
-        this.form.add(almuraHeader, this.messageLabel, this.buttonClose);
+        this.form.add(almuraHeader, this.messageLabel, this.reasonBox, this.buttonClose);
 
         addToScreen(this.form);
     }
