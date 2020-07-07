@@ -72,7 +72,7 @@ public final class ConnectingGui extends BasicScreen {
     @Inject private static PluginContainer container;
     private static final Logger LOGGER = LogManager.getLogger();
     private static final AtomicInteger CONNECTION_ID = new AtomicInteger(0);
-    private NetworkManager networkManager;
+    public NetworkManager networkManager;
     private boolean cancel;
     private final MultiplayerScreen previousGuiScreen;
     private ServerData serverEntry;
