@@ -85,10 +85,10 @@ repositories {
     }
     maven {
         name = 'bstats'
-        url = 'http://repo.bstats.org/content/repositories/releases/'
+        url = 'https://repo.codemc.org/repository/maven-public'
     }
     maven {
-        url = "https://raw.github.com/FabioZumbi12/UltimateChat/mvn-repo/"
+        url = "https://raw.githubusercontent.com/FabioZumbi12/UltimateChat/mvn-repo"
     }
     maven {
         name = "LuckPerms"
@@ -117,7 +117,8 @@ dependencies {
     deobfCompile ('com.almuradev:malisiscore:1.12.2-6.5.3-SNAPSHOT') {
         transitive = false
     }
-    compile 'br.net.fabiozumbi12.UltimateChat:UltimateChat-Sponge-7:1.8.9'
+    //compile 'br.net.fabiozumbi12.UltimateChat:UltimateChat-Sponge-7:1.8.9'
+    compile 'br.net.fabiozumbi12.UltimateChat:UltimateChat-Sponge-56-1.9.1'
     compile 'org.spongepowered:configurate-json:3.5'
     compile 'org.inspirenxe:skills:1.0.0-SNAPSHOT:api'
     compile 'com.almuradev:toolbox:1.0.0-SNAPSHOT'
