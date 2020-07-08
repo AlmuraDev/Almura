@@ -219,6 +219,9 @@ public final class ConnectingGui extends BasicScreen {
                     }
 
                     inetaddress = InetAddress.getByName(ip);
+                    if (Almura.networkManager != null) {
+                        Almura.networkManager = null;
+                    }
                     Almura.networkManager = NetworkManager.createNetworkManagerAndConnect(inetaddress, port, ConnectingGui.this.mc.gameSettings.isUsingNativeTransport());
                     Almura.networkManager.setNetHandler(new NetHandlerLoginClient(Almura.networkManager, ConnectingGui.this.mc, ConnectingGui.this.previousGuiScreen));
                     Almura.networkManager.sendPacket(new C00Handshake(ip, port, EnumConnectionState.LOGIN));

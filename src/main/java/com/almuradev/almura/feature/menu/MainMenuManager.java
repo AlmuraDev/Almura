@@ -53,11 +53,11 @@ public class MainMenuManager implements Witness {
             } else if (screen.getClass().equals(GuiDisconnected.class)) {
                 event.setCanceled(true);
                 String message = "";
-                if (message.isEmpty()) {
-                  if (Almura.networkManager != null) {
-                      message = Almura.networkManager.getExitMessage().getFormattedText();
-                  }
+
+                if (Almura.networkManager != null && Almura.networkManager.getExitMessage() != null) {
+                    message = Almura.networkManager.getExitMessage().getFormattedText();
                 }
+
                 new DisconnectedGui(message).display();
             }
         }
