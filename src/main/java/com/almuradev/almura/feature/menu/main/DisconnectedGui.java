@@ -114,8 +114,8 @@ public final class DisconnectedGui extends BasicScreen {
         this.reasonBox.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.7F).build());
         this.reasonBox.setPosition(0, this.messageLabel.getY() + 14, Anchor.CENTER | Anchor.TOP);
         this.reasonBox.setOptions(16238795,0,0);
+        this.reasonBox.setSize(this.form.getWidth() - 5, 15);
         if (reason.length() > 0) {
-            this.reasonBox.setSize(this.form.getWidth() - 5, 15);
             this.reasonBox.setText(reason);
         }
 

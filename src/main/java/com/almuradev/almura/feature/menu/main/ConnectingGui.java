@@ -15,6 +15,7 @@ package com.almuradev.almura.feature.menu.main;
  * All Rights Reserved.
  */
 
+import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.menu.multiplayer.MultiplayerScreen;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.shared.client.GuiConfig;
@@ -72,7 +73,6 @@ public final class ConnectingGui extends BasicScreen {
     @Inject private static PluginContainer container;
     private static final Logger LOGGER = LogManager.getLogger();
     private static final AtomicInteger CONNECTION_ID = new AtomicInteger(0);
-    public NetworkManager networkManager;
     private boolean cancel;
     private final MultiplayerScreen previousGuiScreen;
     private ServerData serverEntry;
@@ -153,8 +153,8 @@ public final class ConnectingGui extends BasicScreen {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.return":
                 this.cancel = true;
-                if (this.networkManager != null) {
-                    this.networkManager.closeChannel(new TextComponentString("Aborted"));
+                if (Almura.networkManager != null) {
+                    Almura.networkManager.closeChannel(new TextComponentString("Aborted"));
                 }
                 new MultiplayerScreen(null).display();
                 break;
@@ -163,7 +163,7 @@ public final class ConnectingGui extends BasicScreen {
 
     @Override
     public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
-        if (this.networkManager == null) {
+        if (Almura.networkManager == null) {
             this.messageLabel.setText("Connecting to server...");
             this.messageLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
             this.messageLabel2.setVisible(false);
@@ -180,11 +180,11 @@ public final class ConnectingGui extends BasicScreen {
     @Override
     public void update(int mouseX, int mouseY, float partialTick) {
         super.update(mouseX, mouseY, partialTick);
-        if (this.networkManager != null) {
-            if (this.networkManager.isChannelOpen()) {
-                this.networkManager.processReceivedPackets();
+        if (Almura.networkManager != null) {
+            if (Almura.networkManager.isChannelOpen()) {
+                Almura.networkManager.processReceivedPackets();
             } else {
-                this.networkManager.handleDisconnection();
+                Almura.networkManager.handleDisconnection();
             }
         }
     }
@@ -219,10 +219,10 @@ public final class ConnectingGui extends BasicScreen {
                     }
 
                     inetaddress = InetAddress.getByName(ip);
-                    ConnectingGui.this.networkManager = NetworkManager.createNetworkManagerAndConnect(inetaddress, port, ConnectingGui.this.mc.gameSettings.isUsingNativeTransport());
-                    ConnectingGui.this.networkManager.setNetHandler(new NetHandlerLoginClient(ConnectingGui.this.networkManager, ConnectingGui.this.mc, ConnectingGui.this.previousGuiScreen));
-                    ConnectingGui.this.networkManager.sendPacket(new C00Handshake(ip, port, EnumConnectionState.LOGIN));
-                    ConnectingGui.this.networkManager.sendPacket(new CPacketLoginStart(ConnectingGui.this.mc.getSession().getProfile()));
+                    Almura.networkManager = NetworkManager.createNetworkManagerAndConnect(inetaddress, port, ConnectingGui.this.mc.gameSettings.isUsingNativeTransport());
+                    Almura.networkManager.setNetHandler(new NetHandlerLoginClient(Almura.networkManager, ConnectingGui.this.mc, ConnectingGui.this.previousGuiScreen));
+                    Almura.networkManager.sendPacket(new C00Handshake(ip, port, EnumConnectionState.LOGIN));
+                    Almura.networkManager.sendPacket(new CPacketLoginStart(ConnectingGui.this.mc.getSession().getProfile()));
                 } catch (UnknownHostException unknownhostexception) {
                     if (ConnectingGui.this.cancel) {
                         return;

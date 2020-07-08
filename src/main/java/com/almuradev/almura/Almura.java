@@ -8,6 +8,7 @@
 package com.almuradev.almura;
 
 import com.google.inject.Injector;
+import net.minecraft.network.NetworkManager;
 import net.minecraftforge.fml.common.SidedProxy;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameConstructionEvent;
@@ -29,6 +30,7 @@ public class Almura implements com.almuradev.almura.shared.plugin.Plugin {
     public static final String ID = "almura";
     public static final String NAME = "Almura";
     public static boolean debug = true;
+    public static NetworkManager networkManager;
 
     @SidedProxy(
             modId = ID,
