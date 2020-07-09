@@ -14,6 +14,7 @@
         "client.resources.LocaleAccessor",
         "item.ItemAccessor",
         "item.ItemBlockAccessor",
-        "item.ItemFoodAccessor"
+        "item.ItemFoodAccessor",
+        "item.ItemSeedAccessor"
     ]
 }
