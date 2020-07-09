@@ -7,6 +7,8 @@
  */
 package com.almuradev.content.type.item.type.slab;
 
+import com.almuradev.almura.asm.mixin.accessors.item.ItemAccessor;
+import com.almuradev.almura.asm.mixin.accessors.item.ItemBlockAccessor;
 import com.almuradev.content.type.block.state.LazyBlockState;
 import com.almuradev.content.type.item.ItemTooltip;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -43,7 +45,7 @@ public final class SlabItemImpl extends ItemSlab implements SlabItem {
 
     SlabItemImpl(final SlabItemBuilder builder) {
         super(Blocks.AIR, null, null);
-        this.tabToDisplayOn = null;
+        ((ItemAccessor) (Object) this).accessor$setTabToDisplayOn(null);
         this.doubleBlock = builder.doubleBlock;
         this.singleBlock = builder.singleBlock;
         builder.fill(this);
@@ -181,8 +183,7 @@ public final class SlabItemImpl extends ItemSlab implements SlabItem {
         if (this.block == Blocks.AIR || this.singleSlab == null || this.doubleSlab == null) {
             this.singleSlab = (BlockSlab) this.singleBlock.get().getBlock();
             this.doubleSlab = (BlockSlab) this.doubleBlock.get().getBlock();
-
-            this.block = this.singleSlab;
+            ((ItemBlockAccessor) (Object) this).accessor$setBlock (this.singleSlab);
         }
     }
 }

@@ -7,6 +7,7 @@
  */
 package com.almuradev.content.type.block.type.log;
 
+import com.almuradev.almura.asm.mixin.accessors.client.block.BlockAccessor;
 import com.almuradev.content.type.block.type.log.state.LogBlockStateDefinition;
 import net.minecraft.block.BlockLog;
 import net.minecraft.block.state.BlockStateContainer;
@@ -20,7 +21,7 @@ public final class LogBlockImpl extends BlockLog implements LogBlock {
     private final LogBlockStateDefinition definition;
 
     LogBlockImpl(final LogBlockBuilder builder) {
-        this.displayOnCreativeTab = null;
+        ((BlockAccessor) (Object) this).accessor$setDisplayOnCreativeTab(null);
         builder.fill(this);
         this.definition = builder.singleState();
         this.definition.fill(this);

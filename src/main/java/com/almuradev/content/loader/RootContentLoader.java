@@ -7,6 +7,8 @@
  */
 package com.almuradev.content.loader;
 
+import com.almuradev.almura.asm.mixin.accessors.client.MinecraftAccessor;
+import com.almuradev.almura.asm.mixin.accessors.client.block.BlockAccessor;
 import com.almuradev.content.ContentConfig;
 import com.almuradev.content.ContentType;
 import com.almuradev.core.event.Witness;
@@ -65,7 +67,7 @@ public final class RootContentLoader implements Witness {
     public void insertResourcePack(final GamePreInitializationEvent event) {
         final Minecraft client = Minecraft.getMinecraft();
         for (final AbstractFileSystemSearchEntry qrp : this.entries(AbstractFileSystemSearchEntry.class)) {
-            client.defaultResourcePacks.add(new DirectoryResourcePack(qrp));
+            ((MinecraftAccessor) client).accessor$getDefaultResourcePacks().add(new DirectoryResourcePack(qrp));
         }
         client.refreshResources();
     }

@@ -7,6 +7,7 @@
  */
 package com.almuradev.content.type.block.type.sapling;
 
+import com.almuradev.almura.asm.mixin.accessors.client.block.BlockAccessor;
 import com.almuradev.content.type.block.BlockUpdateFlag;
 import com.almuradev.content.type.block.StateMappedBlock;
 import com.almuradev.content.type.block.type.sapling.state.SaplingBlockStateDefinition;
@@ -29,7 +30,7 @@ public final class SaplingBlockImpl extends AbstractSaplingBlock implements Sapl
     private final SaplingBlockStateDefinition definition;
 
     SaplingBlockImpl(final SaplingBlockBuilder builder) {
-        this.displayOnCreativeTab = null;
+        ((BlockAccessor) (Object) this).accessor$setDisplayOnCreativeTab(null);
         builder.fill(this);
         this.definition = builder.singleState();
         this.definition.fill(this);

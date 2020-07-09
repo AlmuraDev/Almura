@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature;
 
+import com.almuradev.almura.asm.mixin.accessors.item.ItemFoodAccessor;
 import com.almuradev.almura.feature.animal.AnimalModule;
 import com.almuradev.almura.feature.biome.BiomeModule;
 import com.almuradev.almura.feature.cache.CacheModule;
@@ -108,104 +109,104 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
     //ToDo: put into its own module ones the ability to turn features on and off is implemented.
 
     private void nerfVanillaFood() {
-        ((ItemFood) Items.BEEF).healAmount = 1;
-        ((ItemFood) Items.BEEF).saturationModifier = 0.0F;
+        ((ItemFoodAccessor) Items.BEEF).accessor$setHealAmount(1);
+        ((ItemFoodAccessor) Items.BEEF).accessor$setSaturationModifier(0.0F);
 
-        ((ItemFood) Items.COOKED_BEEF).healAmount = 3;
-        ((ItemFood) Items.COOKED_BEEF).saturationModifier = 0.2F;
-        ((ItemFood) Items.COOKED_BEEF).alwaysEdible = true;
+        ((ItemFoodAccessor) Items.COOKED_BEEF).accessor$setHealAmount(3);
+        ((ItemFoodAccessor) Items.COOKED_BEEF).accessor$setSaturationModifier(0.2F);
+        ((ItemFoodAccessor) Items.COOKED_BEEF).accessor$setAlwaysEdible(true);
 
-        ((ItemFood) Items.FISH).healAmount = 1;
-        ((ItemFood) Items.FISH).saturationModifier = 0.0F;
+        ((ItemFoodAccessor) Items.FISH).accessor$setHealAmount(1);
+        ((ItemFoodAccessor) Items.FISH).accessor$setSaturationModifier(0.0F);
 
-        ((ItemFood) Items.COOKED_FISH).healAmount = 3;
-        ((ItemFood) Items.COOKED_FISH).saturationModifier = 0.2F;
-        ((ItemFood) Items.COOKED_FISH).alwaysEdible = true;
+        ((ItemFoodAccessor) Items.COOKED_FISH).accessor$setHealAmount(3);
+        ((ItemFoodAccessor) Items.COOKED_FISH).accessor$setSaturationModifier(0.2F);
+        ((ItemFoodAccessor) Items.COOKED_FISH).accessor$setAlwaysEdible(true);
 
-        ((ItemFood) Items.RABBIT).healAmount = 1;
-        ((ItemFood) Items.RABBIT).saturationModifier = 0.0F;
+        ((ItemFoodAccessor) Items.RABBIT).accessor$setHealAmount(1);
+        ((ItemFoodAccessor) Items.RABBIT).accessor$setSaturationModifier(0.0F);
 
-        ((ItemFood) Items.COOKED_RABBIT).healAmount = 3;
-        ((ItemFood) Items.COOKED_RABBIT).saturationModifier = 0.2F;
-        ((ItemFood) Items.COOKED_RABBIT).alwaysEdible = true;
+        ((ItemFoodAccessor) Items.COOKED_RABBIT).accessor$setHealAmount(3);
+        ((ItemFoodAccessor) Items.COOKED_RABBIT).accessor$setSaturationModifier(0.2F);
+        ((ItemFoodAccessor) Items.COOKED_RABBIT).accessor$setAlwaysEdible(true);
 
-        ((ItemFood) Items.CHICKEN).healAmount = 1;
-        ((ItemFood) Items.CHICKEN).saturationModifier = 0.0F;
+        ((ItemFoodAccessor) Items.CHICKEN).accessor$setHealAmount(1);
+        ((ItemFoodAccessor) Items.CHICKEN).accessor$setSaturationModifier(0.0F);
 
-        ((ItemFood) Items.COOKED_CHICKEN).healAmount = 3;
-        ((ItemFood) Items.COOKED_CHICKEN).saturationModifier = 0.2F;
-        ((ItemFood) Items.COOKED_CHICKEN).alwaysEdible = true;
+        ((ItemFoodAccessor) Items.COOKED_CHICKEN).accessor$setHealAmount(3);
+        ((ItemFoodAccessor) Items.COOKED_CHICKEN).accessor$setSaturationModifier(0.2F);
+        ((ItemFoodAccessor) Items.COOKED_CHICKEN).accessor$setAlwaysEdible(true);
 
-        ((ItemFood) Items.PORKCHOP).healAmount = 1;
-        ((ItemFood) Items.PORKCHOP).saturationModifier = 0.0F;
+        ((ItemFoodAccessor) Items.PORKCHOP).accessor$setHealAmount(1);
+        ((ItemFoodAccessor) Items.PORKCHOP).accessor$setSaturationModifier(0.0F);
 
-        ((ItemFood) Items.COOKED_PORKCHOP).healAmount = 3;
-        ((ItemFood) Items.COOKED_PORKCHOP).saturationModifier = 0.2F;
-        ((ItemFood) Items.COOKED_PORKCHOP).alwaysEdible = true;
+        ((ItemFoodAccessor) Items.COOKED_PORKCHOP).accessor$setHealAmount(3);
+        ((ItemFoodAccessor) Items.COOKED_PORKCHOP).accessor$setSaturationModifier(0.2F);
+        ((ItemFoodAccessor) Items.COOKED_PORKCHOP).accessor$setAlwaysEdible(true);
 
-        ((ItemFood) Items.MUTTON).healAmount = 1;
-        ((ItemFood) Items.MUTTON).saturationModifier = 0.0F;
+        ((ItemFoodAccessor) Items.MUTTON).accessor$setHealAmount(1);
+        ((ItemFoodAccessor) Items.MUTTON).accessor$setSaturationModifier(0.0F);
 
-        ((ItemFood) Items.COOKED_MUTTON).healAmount = 3;
-        ((ItemFood) Items.COOKED_MUTTON).saturationModifier = 0.2F;
-        ((ItemFood) Items.COOKED_MUTTON).alwaysEdible = true;
+        ((ItemFoodAccessor) Items.COOKED_MUTTON).accessor$setHealAmount(3);
+        ((ItemFoodAccessor) Items.COOKED_MUTTON).accessor$setSaturationModifier(0.2F);
+        ((ItemFoodAccessor) Items.COOKED_MUTTON).accessor$setAlwaysEdible(true);
 
-        ((ItemFood) Items.POTATO).healAmount = 1;
-        ((ItemFood) Items.POTATO).saturationModifier = 0.0F;
+        ((ItemFoodAccessor) Items.CARROT).accessor$setHealAmount(1);
+        ((ItemFoodAccessor) Items.CARROT).accessor$setSaturationModifier(0.0F);
 
-        ((ItemFood) Items.CARROT).healAmount = 1;
-        ((ItemFood) Items.CARROT).saturationModifier = 0.0F;
+        ((ItemFoodAccessor) Items.POTATO).accessor$setHealAmount(1);
+        ((ItemFoodAccessor) Items.POTATO).accessor$setSaturationModifier(0.0F);
 
-        ((ItemFood) Items.BAKED_POTATO).healAmount = 2;
-        ((ItemFood) Items.BAKED_POTATO).saturationModifier = 0.2F;
-        ((ItemFood) Items.BAKED_POTATO).alwaysEdible = true;
+        ((ItemFoodAccessor) Items.BAKED_POTATO).accessor$setHealAmount(2);
+        ((ItemFoodAccessor) Items.BAKED_POTATO).accessor$setSaturationModifier(0.2F);
+        ((ItemFoodAccessor) Items.BAKED_POTATO).accessor$setAlwaysEdible(true);
 
-        ((ItemFood) Items.BREAD).healAmount = 2;
-        ((ItemFood) Items.BREAD).saturationModifier = 0.0F;
-        ((ItemFood) Items.BREAD).alwaysEdible = true;
+        ((ItemFoodAccessor) Items.BREAD).accessor$setHealAmount(2);
+        ((ItemFoodAccessor) Items.BREAD).accessor$setSaturationModifier(0.0F);
+        ((ItemFoodAccessor) Items.BREAD).accessor$setAlwaysEdible(true);
 
-        ((ItemFood) Items.APPLE).healAmount = 1;
-        ((ItemFood) Items.APPLE).saturationModifier = 0.0F;
-        ((ItemFood) Items.APPLE).alwaysEdible = true;
+        ((ItemFoodAccessor) Items.APPLE).accessor$setHealAmount(1);
+        ((ItemFoodAccessor) Items.APPLE).accessor$setSaturationModifier(0.0F);
+        ((ItemFoodAccessor) Items.APPLE).accessor$setAlwaysEdible(true);
 
-        ((ItemFood) Items.COOKIE).healAmount = 1;
-        ((ItemFood) Items.COOKIE).saturationModifier = 0.0F;
-        ((ItemFood) Items.COOKIE).alwaysEdible = true;
+        ((ItemFoodAccessor) Items.COOKIE).accessor$setHealAmount(1);
+        ((ItemFoodAccessor) Items.COOKIE).accessor$setSaturationModifier(0.0F);
+        ((ItemFoodAccessor) Items.COOKIE).accessor$setAlwaysEdible(true);
 
-        ((ItemFood) Items.MELON).healAmount = 1;
-        ((ItemFood) Items.MELON).saturationModifier = 0.0F;
-        ((ItemFood) Items.MELON).alwaysEdible = true;
+        ((ItemFoodAccessor) Items.MELON).accessor$setHealAmount(1);
+        ((ItemFoodAccessor) Items.MELON).accessor$setSaturationModifier(0.0F);
+        ((ItemFoodAccessor) Items.MELON).accessor$setAlwaysEdible(true);
 
-        ((ItemFood) Items.ROTTEN_FLESH).healAmount = 0;
-        ((ItemFood) Items.ROTTEN_FLESH).saturationModifier = 0.0F;
-        ((ItemFood) Items.ROTTEN_FLESH).alwaysEdible = true;
+        ((ItemFoodAccessor) Items.ROTTEN_FLESH).accessor$setHealAmount(0);
+        ((ItemFoodAccessor) Items.ROTTEN_FLESH).accessor$setSaturationModifier(0.0F);
+        ((ItemFoodAccessor) Items.ROTTEN_FLESH).accessor$setAlwaysEdible(true);
 
-        ((ItemFood) Items.SPIDER_EYE).healAmount = 0;
-        ((ItemFood) Items.SPIDER_EYE).saturationModifier = 0.0F;
-        ((ItemFood) Items.SPIDER_EYE).alwaysEdible = true;
+        ((ItemFoodAccessor) Items.SPIDER_EYE).accessor$setHealAmount(0);
+        ((ItemFoodAccessor) Items.SPIDER_EYE).accessor$setSaturationModifier(0.0F);
+        ((ItemFoodAccessor) Items.SPIDER_EYE).accessor$setAlwaysEdible(true);
 
-        ((ItemFood) Items.POISONOUS_POTATO).healAmount = 0;
-        ((ItemFood) Items.POISONOUS_POTATO).saturationModifier = 0.0F;
-        ((ItemFood) Items.POISONOUS_POTATO).alwaysEdible = true;
+        ((ItemFoodAccessor) Items.POISONOUS_POTATO).accessor$setHealAmount(0);
+        ((ItemFoodAccessor) Items.POISONOUS_POTATO).accessor$setSaturationModifier(0.0F);
+        ((ItemFoodAccessor) Items.POISONOUS_POTATO).accessor$setAlwaysEdible(true);
 
-        ((ItemFood) Items.PUMPKIN_PIE).healAmount = 3;
-        ((ItemFood) Items.PUMPKIN_PIE).saturationModifier = 0.2F;
-        ((ItemFood) Items.PUMPKIN_PIE).alwaysEdible = true;
+        ((ItemFoodAccessor) Items.PUMPKIN_PIE).accessor$setHealAmount(0);
+        ((ItemFoodAccessor) Items.PUMPKIN_PIE).accessor$setSaturationModifier(0.0F);
+        ((ItemFoodAccessor) Items.PUMPKIN_PIE).accessor$setAlwaysEdible(true);
 
-        ((ItemFood) Items.BEETROOT).healAmount = 1;
-        ((ItemFood) Items.BEETROOT).saturationModifier = 0.0F;
-        ((ItemFood) Items.BEETROOT).alwaysEdible = true;
+        ((ItemFoodAccessor) Items.BEETROOT).accessor$setHealAmount(1);
+        ((ItemFoodAccessor) Items.BEETROOT).accessor$setSaturationModifier(0.0F);
+        ((ItemFoodAccessor) Items.BEETROOT).accessor$setAlwaysEdible(true);
 
-        ((ItemFood) Items.RABBIT_STEW).healAmount = 3;
-        ((ItemFood) Items.RABBIT_STEW).saturationModifier = 0.2F;
-        ((ItemFood) Items.RABBIT_STEW).alwaysEdible = true;
+        ((ItemFoodAccessor) Items.RABBIT_STEW).accessor$setHealAmount(2);
+        ((ItemFoodAccessor) Items.RABBIT_STEW).accessor$setSaturationModifier(0.2F);
+        ((ItemFoodAccessor) Items.RABBIT_STEW).accessor$setAlwaysEdible(true);
 
-        ((ItemFood) Items.BEETROOT_SOUP).healAmount = 3;
-        ((ItemFood) Items.BEETROOT_SOUP).saturationModifier = 0.2F;
-        ((ItemFood) Items.BEETROOT_SOUP).alwaysEdible = true;
+        ((ItemFoodAccessor) Items.BEETROOT_SOUP).accessor$setHealAmount(3);
+        ((ItemFoodAccessor) Items.BEETROOT_SOUP).accessor$setSaturationModifier(0.2F);
+        ((ItemFoodAccessor) Items.BEETROOT_SOUP).accessor$setAlwaysEdible(true);
 
-        ((ItemFood) Items.MUSHROOM_STEW).healAmount = 3;
-        ((ItemFood) Items.MUSHROOM_STEW).saturationModifier = 0.2F;
-        ((ItemFood) Items.MUSHROOM_STEW).alwaysEdible = true;
+        ((ItemFoodAccessor) Items.MUSHROOM_STEW).accessor$setHealAmount(3);
+        ((ItemFoodAccessor) Items.MUSHROOM_STEW).accessor$setSaturationModifier(0.2F);
+        ((ItemFoodAccessor) Items.MUSHROOM_STEW).accessor$setAlwaysEdible(true);
     }
 }

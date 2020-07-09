@@ -7,9 +7,9 @@
  */
 package com.almuradev.content.type.block.type.leaf;
 
-import com.almuradev.content.type.block.ContentBlock;
+import com.almuradev.almura.asm.mixin.accessors.client.block.BlockAccessor;
+import com.almuradev.almura.asm.mixin.accessors.client.block.BlockLeavesAccessor;
 import com.almuradev.content.type.block.StateMappedBlock;
-import com.almuradev.content.type.block.mixin.iface.IMixinContentBlock;
 import com.almuradev.content.type.block.type.leaf.state.LeafBlockStateDefinition;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockPlanks;
@@ -19,7 +19,6 @@ import net.minecraft.client.renderer.block.statemap.IStateMapper;
 import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
@@ -37,7 +36,7 @@ public final class LeafBlockImpl extends BlockLeaves implements LeafBlock, State
     private final LeafBlockStateDefinition definition;
 
     LeafBlockImpl(final LeafBlockBuilder builder) {
-        this.displayOnCreativeTab = null;
+        ((BlockAccessor) (Object) this).accessor$setDisplayOnCreativeTab(null);
         builder.fill(this);
         this.definition = builder.singleState();
         this.definition.fill(this);
@@ -63,7 +62,7 @@ public final class LeafBlockImpl extends BlockLeaves implements LeafBlock, State
 
     @Override
     public boolean isOpaqueCube(IBlockState state) {
-        return !Blocks.LEAVES.leavesFancy;
+        return !((BlockLeavesAccessor) (Object) this).accessor$getIsLeavesFancy();
     }
 
     @Deprecated
@@ -104,9 +103,7 @@ public final class LeafBlockImpl extends BlockLeaves implements LeafBlock, State
 
     @Override
     @SideOnly(Side.CLIENT)
-    public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
-    {
-        return (Blocks.LEAVES.leavesFancy || blockAccess.getBlockState(pos.offset(side)).getBlock() != this) && super.shouldSideBeRendered(blockState,
-                blockAccess, pos, side);
+    public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
+        return (((BlockLeavesAccessor) (Object) this).accessor$getIsLeavesFancy() || blockAccess.getBlockState(pos.offset(side)).getBlock() != this) && super.shouldSideBeRendered(blockState, blockAccess, pos, side);
     }
 }

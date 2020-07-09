@@ -7,6 +7,8 @@
  */
 package com.almuradev.content.type.item.type.seed;
 
+import com.almuradev.almura.asm.mixin.accessors.item.ItemAccessor;
+import com.almuradev.almura.asm.mixin.accessors.item.ItemSeedAccessor;
 import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.type.item.ItemTooltip;
 import com.almuradev.content.type.item.type.seed.processor.grass.Grass;
@@ -43,7 +45,7 @@ public final class SeedItemImpl extends ItemSeeds implements SeedItem {
         this.cropDelegate = builder.crop;
         this.soilDelegate = builder.soil;
         this.grass = builder.grass;
-        this.tabToDisplayOn = null;
+        ((ItemAccessor) (Object) this).accessor$setTabToDisplayOn(null);
         builder.fill(this);
     }
 
@@ -77,9 +79,9 @@ public final class SeedItemImpl extends ItemSeeds implements SeedItem {
     }
 
     private void setCatalogsIfNecessary() {
-        if (this.crops == null || this.soilBlockID == null) {
-            this.crops = (Block) this.cropDelegate.get();
-            this.soilBlockID = (Block) this.soilDelegate.get();
+        if (((ItemSeedAccessor) (Object) this).accessor$getCrops() == null || ((ItemSeedAccessor) (Object) this).accessor$getSoilBlockID() == null) {
+            ((ItemSeedAccessor) (Object) this).accessor$setCrops ((Block) this.cropDelegate.get());
+            ((ItemSeedAccessor) (Object) this).accessor$setSoilBlockID ((Block) this.soilDelegate.get());
         }
     }
 }

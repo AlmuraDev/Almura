@@ -7,6 +7,7 @@
  */
 package com.almuradev.content.type.block.type.slab;
 
+import com.almuradev.almura.asm.mixin.accessors.client.block.BlockAccessor;
 import com.almuradev.content.type.block.state.LazyBlockState;
 import com.almuradev.content.type.block.type.slab.state.SlabBlockStateDefinition;
 import net.minecraft.block.BlockSlab;
@@ -28,7 +29,7 @@ public final class SlabBlockImpl extends BlockSlab implements SlabBlock {
     SlabBlockImpl(final SlabBlockBuilder builder) {
         // TODO This too early, fix this better
         super((Material) builder.material.get());
-        this.displayOnCreativeTab = null;
+        ((BlockAccessor) (Object) this).accessor$setDisplayOnCreativeTab(null);
         builder.fill(this);
         this.definition = builder.singleState();
         this.definition.fill(this);
@@ -40,7 +41,7 @@ public final class SlabBlockImpl extends BlockSlab implements SlabBlock {
         if (!this.isDouble()) {
             this.setDefaultState(this.blockState.getBaseState().withProperty(HALF, EnumBlockHalf.BOTTOM));
         } else {
-            this.blockState = this.createBlockState();
+            ((BlockAccessor) (Object) this).accessor$setBlockState(this.createBlockState());
             this.setDefaultState(this.blockState.getBaseState());
         }
     }

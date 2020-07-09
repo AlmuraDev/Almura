@@ -7,6 +7,8 @@
  */
 package com.almuradev.content.type.item.type.food;
 
+import com.almuradev.almura.asm.mixin.accessors.item.ItemAccessor;
+import com.almuradev.almura.asm.mixin.accessors.item.ItemFoodAccessor;
 import com.almuradev.almura.feature.crafting.ItemReturnHelper;
 import com.almuradev.content.component.apply.Apply;
 import com.almuradev.content.component.apply.context.ItemOnlyApplyContext;
@@ -47,10 +49,10 @@ public final class FoodItemImpl extends ItemFood implements FoodItem {
     public FoodItemImpl(final FoodItemBuilder builder) {
         super(0, 0f, false); // We'll handle these values on our own
 
-        this.tabToDisplayOn = null;
+        ((ItemAccessor) (Object) this).accessor$setTabToDisplayOn(null);
 
         builder.fill(this);
-        this.itemUseDuration = builder.durationTicks;
+        ((ItemFoodAccessor) (Object) this).accessor$setItemUseDuration(builder.durationTicks);
 
         this.apply = builder.apply;
         this.foodEffect = builder.foodEffect;
@@ -135,7 +137,7 @@ public final class FoodItemImpl extends ItemFood implements FoodItem {
 
     @Override
     public int getMaxItemUseDuration(final ItemStack stack) {
-        return this.itemUseDuration;
+        return ((ItemFoodAccessor) (Object) this).accessor$getItemUseDuration();
     }
 
     // TODO I'm doing it this way to ensure compatibility with mods

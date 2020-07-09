@@ -7,6 +7,7 @@
  */
 package com.almuradev.content.type.block.type.stair;
 
+import com.almuradev.almura.asm.mixin.accessors.client.block.BlockAccessor;
 import com.almuradev.content.type.block.state.LazyBlockState;
 import com.almuradev.content.type.block.type.stair.state.StairBlockStateDefinition;
 import net.minecraft.block.BlockStairs;
@@ -19,7 +20,7 @@ public final class StairBlockImpl extends BlockStairs implements StairBlock {
     StairBlockImpl(final StairBlockBuilder builder) {
         // TODO This too early, fix better
         super(builder.block.get());
-        this.displayOnCreativeTab = null;
+        ((BlockAccessor) (Object) this).accessor$setDisplayOnCreativeTab(null);
         builder.fill(this);
         this.definition = builder.singleState();
         this.definition.fill(this);

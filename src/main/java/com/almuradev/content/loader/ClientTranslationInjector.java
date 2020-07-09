@@ -7,10 +7,13 @@
  */
 package com.almuradev.content.loader;
 
+import com.almuradev.almura.asm.mixin.accessors.client.resources.LanguageManagerAccessor;
+import com.almuradev.almura.asm.mixin.accessors.client.resources.LocaleAccessor;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.client.resources.Language;
 import net.minecraft.client.resources.LanguageManager;
+import net.minecraft.client.resources.Locale;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -48,6 +51,7 @@ public final class ClientTranslationInjector extends TranslationInjector impleme
     @Override
     void inject(final Map<String, String> translations) {
         super.inject(translations);
-        LanguageManager.CURRENT_LOCALE.properties.putAll(translations);
+        Locale locale = ((LanguageManagerAccessor) (Object) this).accessor$getCurrentLocale();
+        ((LocaleAccessor) locale).accessor$getProperties().putAll(translations);
     }
 }

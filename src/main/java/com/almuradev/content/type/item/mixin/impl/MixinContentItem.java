@@ -7,6 +7,7 @@
  */
 package com.almuradev.content.type.item.mixin.impl;
 
+import com.almuradev.almura.asm.mixin.accessors.item.ItemAccessor;
 import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.type.item.ContentItem;
 import com.almuradev.content.type.item.type.food.FoodItemImpl;
@@ -41,14 +42,15 @@ public abstract class MixinContentItem extends MixinItem implements ContentItem,
 
     @Override
     public Optional<ItemGroup> itemGroup() {
-        if (this.tabToDisplayOn != null) {
-            return Optional.of((ItemGroup) this.tabToDisplayOn);
+
+        if (((ItemAccessor) this).accessor$getTabToDisplayOn() != null) {
+            return Optional.of((ItemGroup) ((ItemAccessor) this).accessor$getTabToDisplayOn());
         }
         if (this.lazyItemGroup == null) {
             throw new IllegalStateException("Content item with a null item group");
         }
-        this.tabToDisplayOn = (CreativeTabs) this.lazyItemGroup.get();
-        return Optional.ofNullable((ItemGroup) this.tabToDisplayOn);
+        ((ItemAccessor) this).accessor$setTabToDisplayOn((CreativeTabs) this.lazyItemGroup.get());
+        return Optional.ofNullable((ItemGroup) ((ItemAccessor) this).accessor$getTabToDisplayOn());
     }
 
     @Override

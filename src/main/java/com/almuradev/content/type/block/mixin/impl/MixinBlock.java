@@ -7,6 +7,7 @@
  */
 package com.almuradev.content.type.block.mixin.impl;
 
+import com.almuradev.almura.asm.mixin.accessors.client.block.BlockAccessor;
 import com.almuradev.content.type.block.ContentBlock;
 import com.almuradev.content.type.block.mixin.iface.IMixinBlock;
 import com.almuradev.content.type.itemgroup.ItemGroup;
@@ -35,9 +36,8 @@ import javax.annotation.Nullable;
 
 @Mixin(value = Block.class, priority = 998)
 public abstract class MixinBlock implements ContentBlock, IMixinBlock {
-    @Nullable @Shadow public CreativeTabs displayOnCreativeTab;
-    @Shadow public abstract CreativeTabs getCreativeTab();
 
+    @Shadow public abstract CreativeTabs getCreativeTab();
     @Shadow protected SoundType blockSoundType;
     @Shadow(remap = false) protected ThreadLocal<EntityPlayer> harvesters;
     @Shadow public abstract void harvestBlock(final World world, final EntityPlayer player, final BlockPos pos, final IBlockState state, @Nullable final TileEntity te, final ItemStack stack);
@@ -53,7 +53,7 @@ public abstract class MixinBlock implements ContentBlock, IMixinBlock {
 
     @Override
     public Optional<ItemGroup> itemGroup() {
-        return Optional.ofNullable((ItemGroup) this.displayOnCreativeTab);
+        return Optional.ofNullable((ItemGroup) ((BlockAccessor) this).accessor$getDisplayOnCreativeTab());
     }
 
     private boolean dropsFromDecay = false;

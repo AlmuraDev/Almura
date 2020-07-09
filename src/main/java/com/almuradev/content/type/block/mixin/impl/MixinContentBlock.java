@@ -7,6 +7,7 @@
  */
 package com.almuradev.content.type.block.mixin.impl;
 
+import com.almuradev.almura.asm.mixin.accessors.client.block.BlockAccessor;
 import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.component.delegate.DelegateSet;
 import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;
@@ -68,14 +69,14 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
 
     @Override
     public Optional<ItemGroup> itemGroup() {
-        if (this.displayOnCreativeTab != null) {
-            return Optional.of((ItemGroup) this.displayOnCreativeTab);
+        if (((BlockAccessor) this).accessor$getDisplayOnCreativeTab() != null) {
+            return Optional.of((ItemGroup) ((BlockAccessor) this).accessor$getDisplayOnCreativeTab());
         }
         if (this.lazyItemGroup == null) {
             return Optional.empty();
         }
-        this.displayOnCreativeTab = (CreativeTabs) this.lazyItemGroup.get();
-        return Optional.ofNullable((ItemGroup) this.displayOnCreativeTab);
+        ((BlockAccessor) this).accessor$setDisplayOnCreativeTab((CreativeTabs) this.lazyItemGroup.get());
+        return Optional.ofNullable((ItemGroup) ((BlockAccessor) this).accessor$getDisplayOnCreativeTab());
     }
 
     @Override
