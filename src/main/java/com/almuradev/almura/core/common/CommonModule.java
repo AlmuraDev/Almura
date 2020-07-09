@@ -60,7 +60,6 @@ public final class CommonModule extends AbstractModule implements CommonBinder {
         this.install(new ServerConfigurationModule());
         this.install(new DatabaseModule());
         this.facet().add(ContentMover.class);
-        this.facet()
-                .add(ContentLoader.class);
+        this.facet().add(ContentLoader.class);
     }
 }

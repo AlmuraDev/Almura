@@ -19,6 +19,7 @@ import com.almuradev.almura.feature.guide.GuideModule;
 import com.almuradev.almura.feature.hud.HeadUpDisplayModule;
 import com.almuradev.almura.feature.membership.MembershipModule;
 import com.almuradev.almura.feature.menu.ingame.FeaturesModule;
+import com.almuradev.almura.feature.moc.MocModule;
 import com.almuradev.almura.feature.nick.NickModule;
 import com.almuradev.almura.feature.notification.NotificationModule;
 import com.almuradev.almura.feature.offhand.OffHandListener;
@@ -33,6 +34,9 @@ import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemFood;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
@@ -95,6 +99,9 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
     private void loadServerSideModules() {
         if (Sponge.getPluginManager().isLoaded("luckperms")) {
             this.install(new PermissionsModule());
+        }
+        if (Loader.isModLoaded("mocreatures")) {
+            this.install(new MocModule());
         }
     }
 
