@@ -26,12 +26,12 @@ public final class FirstLaunchOptimization implements Witness {
         settings.fancyGraphics = false;
         settings.useVbo = true;
         settings.mipmapLevels = 0;
-        settings.guiScale = 2;
-        settings.limitFramerate = 120;
+        settings.guiScale = 3;
+        settings.limitFramerate = 90;
         settings.enableVsync = false;
         settings.clouds = 0;
         settings.snooperEnabled = false;
-        settings.renderDistanceChunks = 12;
+        settings.renderDistanceChunks = 10;
         settings.viewBobbing = false;
 
         //if (!settings.resourcePacks.contains("Almura Font.zip")) {
