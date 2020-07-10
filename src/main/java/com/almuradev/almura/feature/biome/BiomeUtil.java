@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.biome;
 
+import com.almuradev.almura.asm.mixin.accessors.world.biome.BiomeAccessor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.relauncher.Side;
@@ -28,7 +29,7 @@ public final class BiomeUtil {
 
     public static float getScaledTemperature(BiomeConfig biomeConfig, BlockPos pos) {
         if (pos.getY() > 64) {
-            float f = (float) (Biome.TEMPERATURE_NOISE.getValue((double) ((float) pos.getX() / 8.0F), (double) ((float) pos.getZ() / 8.0F)) * 4.0D);
+            float f = (float) (BiomeAccessor.accessor$getTemperatureNoise().getValue((double) ((float) pos.getX() / 8.0F), (double) ((float) pos.getZ() / 8.0F)) * 4.0D);
             return biomeConfig.getDefaultTemperature() - (f + (float) pos.getY() - 64.0F) * 0.05F / 30.0F;
         } else {
             return biomeConfig.getDefaultTemperature();

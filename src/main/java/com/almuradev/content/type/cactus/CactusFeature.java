@@ -7,6 +7,7 @@
  */
 package com.almuradev.content.type.cactus;
 
+import com.almuradev.almura.asm.mixin.accessors.world.ChunkCacheAccessor;
 import com.almuradev.content.type.block.BlockUpdateFlag;
 import com.almuradev.content.type.block.state.LazyBlockState;
 import com.almuradev.content.util.WeightedLazyBlockState;
@@ -73,7 +74,7 @@ public final class CactusFeature extends WorldGenCactus implements Cactus {
         World world;
 
         if (access instanceof ChunkCache) {
-            world = ((ChunkCache) access).world;
+            world = ((ChunkCacheAccessor)access).accessor$getWorld();
         } else {
             world = (World) access;
         }

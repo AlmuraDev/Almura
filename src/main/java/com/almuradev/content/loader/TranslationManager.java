@@ -7,6 +7,7 @@
  */
 package com.almuradev.content.loader;
 
+import com.almuradev.almura.asm.mixin.accessors.util.text.translation.LanguageMapAccessor;
 import com.google.common.base.Joiner;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -28,6 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -88,7 +90,7 @@ public class TranslationManager {
                 final JsonObject object = GSON.fromJson(new InputStreamReader(is), JsonObject.class);
                 for (final Map.Entry<String, JsonElement> entry : object.entrySet()) {
                     final String key = source.getValue().buildTranslationKey(entry.getKey());
-                    final String value = LanguageMap.NUMERIC_VARIABLE_PATTERN.matcher(LegacyTexts.replace(readValue(entry.getValue()), '&', SpongeTexts.COLOR_CHAR)).replaceAll("%$1s");
+                    final String value = ((LanguageMapAccessor)LanguageMap.getInstance()).accessor$getNumericVariablePattern().matcher(LegacyTexts.replace(readValue(entry.getValue()), '&', SpongeTexts.COLOR_CHAR)).replaceAll("%$1s");
                     map.put(key, value);
                 }
             }

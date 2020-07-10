@@ -9,6 +9,7 @@ package com.almuradev.content.type.item.type.slab;
 
 import com.almuradev.almura.asm.mixin.accessors.item.ItemAccessor;
 import com.almuradev.almura.asm.mixin.accessors.item.ItemBlockAccessor;
+import com.almuradev.almura.asm.mixin.accessors.item.ItemSlabAccessor;
 import com.almuradev.content.type.block.state.LazyBlockState;
 import com.almuradev.content.type.item.ItemTooltip;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -133,8 +134,8 @@ public final class SlabItemImpl extends ItemSlab implements SlabItem {
             pos = pos.offset(facing);
         }
 
-        if (!itemStack.isEmpty() && player.canPlayerEdit(pos, facing, itemStack) && world.mayPlace(this.singleSlab, pos, false, facing, player)) {
-            final IBlockState singleState = this.singleSlab.getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, 0, player, hand);
+        if (!itemStack.isEmpty() && player.canPlayerEdit(pos, facing, itemStack) && world.mayPlace(((ItemSlabAccessor)(Object)this).accessor$getSingleSlab(), pos, false, facing, player)) {
+            final IBlockState singleState = ((ItemSlabAccessor)(Object)this).accessor$getSingleSlab().getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, 0, player, hand);
 
             if (world.setBlockState(pos, singleState, 11)) {
                 previousState = world.getBlockState(pos);
@@ -180,10 +181,11 @@ public final class SlabItemImpl extends ItemSlab implements SlabItem {
     }
 
     private void checkAndDelegate() {
-        if (this.block == Blocks.AIR || this.singleSlab == null || this.doubleSlab == null) {
-            this.singleSlab = (BlockSlab) this.singleBlock.get().getBlock();
-            this.doubleSlab = (BlockSlab) this.doubleBlock.get().getBlock();
-            ((ItemBlockAccessor) (Object) this).accessor$setBlock (this.singleSlab);
+        if (((ItemBlockAccessor)(Object)this).accessor$getBlock() == Blocks.AIR || ((ItemSlabAccessor)(Object)this).accessor$getSingleSlab() == null || ((ItemSlabAccessor)(Object)this).accessor$getDoubleSlab() == null) {
+            ((ItemSlabAccessor)(Object)this).accessor$setSingleSlab((BlockSlab) this.singleBlock.get().getBlock());
+            ((ItemSlabAccessor)(Object)this).accessor$setDoubleSlab((BlockSlab) this.doubleBlock.get().getBlock());
+            // Todo: why are we only setting this?
+            ((ItemBlockAccessor) (Object) this).accessor$setBlock (((ItemSlabAccessor)(Object)this).accessor$getSingleSlab());
         }
     }
 }

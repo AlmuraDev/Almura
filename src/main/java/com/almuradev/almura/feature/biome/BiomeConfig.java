@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.biome;
 
+import com.almuradev.almura.asm.mixin.accessors.world.biome.BiomeAccessor;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.registries.ForgeRegistry;
@@ -36,7 +37,7 @@ public final class BiomeConfig implements Serializable {
     }
 
     public static BiomeConfig of(Biome biome) {
-        return new BiomeConfig(((ForgeRegistry<Biome>) ForgeRegistries.BIOMES).getID(biome), biome.getRegistryName().toString(), biome.biomeName, biome.getDefaultTemperature(), biome.getRainfall(), biome.waterColor);
+        return new BiomeConfig(((ForgeRegistry<Biome>) ForgeRegistries.BIOMES).getID(biome), biome.getRegistryName().toString(), ((BiomeAccessor)biome).accessor$getBiomeName(), biome.getDefaultTemperature(), biome.getRainfall(), ((BiomeAccessor)biome).accessor$getWaterColor());
     }
 
     public int getServerBiomeId() {

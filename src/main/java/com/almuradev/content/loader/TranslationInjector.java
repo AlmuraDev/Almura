@@ -7,6 +7,7 @@
  */
 package com.almuradev.content.loader;
 
+import com.almuradev.almura.asm.mixin.accessors.util.text.translation.LanguageMapAccessor;
 import net.minecraft.util.text.translation.LanguageMap;
 
 import java.util.Map;
@@ -19,6 +20,6 @@ public abstract class TranslationInjector {
     abstract void inject();
 
     void inject(final Map<String, String> translations) {
-        LanguageMap.getInstance().languageList.putAll(translations);
+        ((LanguageMapAccessor)LanguageMap.getInstance()).accessor$getLanguageList().putAll(translations);
     }
 }

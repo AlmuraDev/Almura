@@ -7,6 +7,7 @@
  */
 package com.almuradev.content.type.flower;
 
+import com.almuradev.almura.asm.mixin.accessors.world.ChunkCacheAccessor;
 import com.almuradev.content.type.block.BlockUpdateFlag;
 import com.almuradev.content.type.block.state.LazyBlockState;
 import com.almuradev.content.util.WeightedLazyBlockState;
@@ -63,7 +64,7 @@ public final class FlowerFeature extends WorldGenFlowers implements Flower {
         World world;
 
         if (access instanceof ChunkCache) {
-            world = ((ChunkCache) access).world;
+            world = ((ChunkCacheAccessor)access).accessor$getWorld();
         } else {
             world = (World) access;
         }

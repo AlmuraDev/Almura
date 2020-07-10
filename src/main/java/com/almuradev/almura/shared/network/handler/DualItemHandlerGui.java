@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.shared.network.handler;
 
+import com.almuradev.almura.asm.mixin.accessors.client.gui.inventory.GuiChestAccessor;
 import com.almuradev.almura.shared.inventory.DualItemHandlerContainer;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -55,7 +56,7 @@ public final class DualItemHandlerGui extends GuiContainer {
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         // Copy-paste from GuiChest
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(GuiChest.CHEST_GUI_TEXTURE);
+        this.mc.getTextureManager().bindTexture(GuiChestAccessor.accessor$getChestGuiTexture());
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;
         this.drawTexturedModalRect(i, j, 0, 0, this.xSize, this.inventoryRows * 18 + 17);

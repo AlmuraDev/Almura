@@ -9,6 +9,7 @@ package com.almuradev.content.type.item.type.food;
 
 import com.almuradev.almura.asm.mixin.accessors.item.ItemAccessor;
 import com.almuradev.almura.asm.mixin.accessors.item.ItemFoodAccessor;
+import com.almuradev.almura.asm.mixin.accessors.util.FoodStatsAccessor;
 import com.almuradev.almura.feature.crafting.ItemReturnHelper;
 import com.almuradev.content.component.apply.Apply;
 import com.almuradev.content.component.apply.context.ItemOnlyApplyContext;

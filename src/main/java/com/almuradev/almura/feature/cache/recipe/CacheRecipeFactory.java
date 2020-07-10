@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.cache.recipe;
 
+import com.almuradev.almura.asm.mixin.accessors.item.crafting.ShapedRecipesAccessor;
 import com.google.gson.JsonObject;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
@@ -35,6 +36,6 @@ public final class CacheRecipeFactory implements IRecipeFactory {
     @Override
     public IRecipe parse(JsonContext context, JsonObject json) {
         final ShapedRecipes vanilla = (ShapedRecipes) this.vanillaShapedCraftingFactory.parse(context, json);
-        return new CacheRecipe(vanilla.group, vanilla.getWidth(), vanilla.getHeight(), vanilla.recipeItems, vanilla.getRecipeOutput());
+        return new CacheRecipe(((ShapedRecipesAccessor)vanilla).accessor$getGroup(), vanilla.getWidth(), vanilla.getHeight(), ((ShapedRecipesAccessor)vanilla).accessor$getRecipeItems(), vanilla.getRecipeOutput());
     }
 }

@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.biome.asm.mixin.core.server.management;
 
+import com.almuradev.almura.asm.mixin.accessors.server.management.PlayerChunkMapAccessor;
 import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Lists;
 import net.minecraft.server.management.PlayerChunkMap;
@@ -59,14 +60,14 @@ public abstract class MixinPlayerChunkMap {
 
 
                         //Todo: make this a configurable / toggleable option (in-realtime)
-                        if (!playerchunkmapentry.hasPlayerMatchingInRange(128.0D, PlayerChunkMap.NOT_SPECTATOR)) {
+                        if (!playerchunkmapentry.hasPlayerMatchingInRange(128.0D, PlayerChunkMapAccessor.accessor$getNotSpectator())) {
                             continue;
                         }
 
                         return chunk;
                     }
 
-                    return (Chunk)this.endOfData();
+                    return this.endOfData();
                 }
             }
         };

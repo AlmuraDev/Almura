@@ -7,6 +7,7 @@
  */
 package com.almuradev.content.component.apply.impl;
 
+import com.almuradev.almura.asm.mixin.accessors.util.FoodStatsAccessor;
 import com.almuradev.content.component.apply.Apply;
 import com.almuradev.content.component.apply.context.ApplyContext;
 import com.almuradev.toolbox.config.ConfigurationNodeDeserializer;
@@ -33,10 +34,8 @@ public final class SaturationChangeApply implements Apply<EntityPlayer, ApplyCon
     @Override
     public void apply0(final EntityPlayer entity, final ApplyContext context) {
 
-        final float currentSaturationLevel = entity.getFoodStats().foodSaturationLevel;
-
-        entity.getFoodStats().foodSaturationLevel =
-                Math.min(currentSaturationLevel + (float) this.change.random(context.random()), (float) 20);
+        final float currentSaturationLevel = ((FoodStatsAccessor)entity.getFoodStats()).accessor$getFoodSaturationLevel();
+        ((FoodStatsAccessor)entity.getFoodStats()).accessor$setFoodSaturationLevel(Math.min(currentSaturationLevel + (float) this.change.random(context.random()), (float) 20));
     }
 
     public DoubleRange getChange() {

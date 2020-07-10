@@ -6,15 +6,28 @@
     "target": "@env(DEFAULT)",
     "compatibilityLevel": "JAVA_8",
     "mixins": [
+        "item.ItemAccessor",
+        "item.ItemBlockAccessor",
+        "item.ItemFoodAccessor",
+        "item.ItemSeedAccessor",
+        "item.ItemSlabAccessor",
+        "util.FoodStatsAccessor",
+        "util.text.translation.LanguageMapAccessor",
+        "item.crafting.ShapedRecipesAccessor",
+        "world.ChunkCacheAccessor",
+        "world.biome.BiomeAccessor",
+        "entity.EntityListAccessor",
+        "server.management.PlayerChunkMapAccessor"
+    ],
+    "client": [
         "client.block.BlockAccessor",
         "client.block.BlockLeavesAccessor",
         "client.block.model.ModelResourceLocationAccessor",
         "client.MinecraftAccessor",
+        "client.gui.inventory.GuiChestAccessor",
         "client.resources.LanguageManagerAccessor",
         "client.resources.LocaleAccessor",
-        "item.ItemAccessor",
-        "item.ItemBlockAccessor",
-        "item.ItemFoodAccessor",
-        "item.ItemSeedAccessor"
-    ]
+        "world.biome.BiomeColorHelperAccessor",
+        "client.resources.ResourcePackRepositoryAccessor"
+     ]
 }

@@ -7,6 +7,7 @@
  */
 package com.almuradev.content.component.apply.impl;
 
+import com.almuradev.almura.asm.mixin.accessors.util.FoodStatsAccessor;
 import com.almuradev.content.component.apply.Apply;
 import com.almuradev.content.component.apply.context.ItemApplyContext;
 import com.almuradev.toolbox.config.ConfigurationNodeDeserializer;
@@ -38,9 +39,9 @@ public final class FoodLevelChangeApply implements Apply<EntityPlayer, ItemApply
 
         if (usedStack.getItem() instanceof ItemFood) {
             final ItemFood food = (ItemFood) usedStack.getItem();
-            final int currentFoodLevel = entity.getFoodStats().foodLevel;
+            final int currentFoodLevel = ((FoodStatsAccessor)entity.getFoodStats()).accessor$getFoodLevel();
 
-            entity.getFoodStats().foodLevel = Math.min(currentFoodLevel + food.getHealAmount(usedStack), 20);
+            ((FoodStatsAccessor)entity.getFoodStats()).accessor$setFoodSaturationLevel(Math.min(currentFoodLevel + food.getHealAmount(usedStack), 20));
         }
     }
 
