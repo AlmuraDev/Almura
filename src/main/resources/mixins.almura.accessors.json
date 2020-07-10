@@ -4,6 +4,7 @@
     "package": "com.almuradev.almura.asm.mixin.accessors",
     "refmap": "mixins.almura.refmap.json",
     "target": "@env(DEFAULT)",
+    "priority": 900,
     "compatibilityLevel": "JAVA_8",
     "mixins": [
         "item.ItemAccessor",

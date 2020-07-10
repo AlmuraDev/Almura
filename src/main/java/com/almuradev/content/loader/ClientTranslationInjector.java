@@ -51,7 +51,7 @@ public final class ClientTranslationInjector extends TranslationInjector impleme
     @Override
     void inject(final Map<String, String> translations) {
         super.inject(translations);
-        Locale locale = ((LanguageManagerAccessor) (Object) this).accessor$getCurrentLocale();
-        ((LocaleAccessor) locale).accessor$getProperties().putAll(translations);
+        Locale locale = LanguageManagerAccessor.accessor$getCurrentLocale();
+        ((LocaleAccessor)locale).accessor$getProperties().putAll(translations);
     }
 }
