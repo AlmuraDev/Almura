@@ -15,8 +15,8 @@ The following steps will ensure your project is cloned properly.
 __Note:__ If you do not have [Gradle] installed then use ./gradlew for Unix systems or Git Bash and gradlew.bat for Windows systems in place of any 'gradle' command.
 
 __For [IntelliJ]__  
-  1. Run `gradle setupDecompWorkspace --refresh-dependencies`
-  2. Run `gradle generateDatabaseClasses`  
+  1. Run `gradle generateDatabaseClasses`  
+  2. Run `gradle setupDecompWorkspace --refresh-dependencies`  
   3. Make sure you have the Gradle plugin enabled (File > Settings > Plugins).  
   4. Click File > Import Module and select the **build.gradle** file for Almura.
   5. On the import screen, uncheck `Create separate module per source set`
