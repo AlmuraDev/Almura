@@ -135,7 +135,7 @@ public class InformationDebugPanel extends AbstractDebugPanel {
     }
 
     private void renderTitle() {
-        this.drawText(this.title, (Math.max(this.autoWidth, this.baseWidth) / 2) - this.titleWidth, this.autoHeight);
+        this.drawText(this.title, (this.width / 2) - this.titleWidth, this.autoHeight);
         if (this.autoSize) {
             this.autoWidth = 0;
         }
