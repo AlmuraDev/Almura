@@ -43,27 +43,25 @@ public final class GrassGeneratorImpl implements GrassGenerator, Witness {
 
     @SubscribeEvent
     public void decorate(final DecorateBiomeEvent.Decorate event) {
-        if (event.getType() != DecorateBiomeEvent.Decorate.EventType.GRASS || event.getResult() == Event.Result.DENY) {
-            return;
-        }
+        if (event.getType() == DecorateBiomeEvent.Decorate.EventType.GRASS || event.getType() == DecorateBiomeEvent.Decorate.EventType.FLOWERS) {
+            final World world = event.getWorld();
+            if (!this.in(world)) {
+                return;
+            }
 
-        final World world = event.getWorld();
-        if (!this.in(world)) {
-            return;
-        }
+            final DoubleRange chance = this.chance(world.getBiome(event.getPos()));
+            if (chance == null || chance.max() == 0) {
+                return;
+            }
 
-        final DoubleRange chance = this.chance(world.getBiome(event.getPos()));
-        if (chance == null || chance.max() == 0) {
-            return;
-        }
-
-        final Random random = event.getRand();
-        if (random.nextDouble() <= (chance.random(random) / 100d)) {
-            final int x = random.nextInt(16) + 8;
-            final int z = random.nextInt(16) + 8;
-            final BlockPos pos = world.getHeight(event.getPos().add(x, 0, z));
-            ((GrassFeature) this.grass.require()).generate(world, random, pos, this.requires);
-            event.setResult(Event.Result.DENY);
+            final Random random = event.getRand();
+            if (random.nextDouble() <= (chance.random(random) / 100d)) {
+                final int x = random.nextInt(16) + 8;
+                final int z = random.nextInt(16) + 8;
+                final BlockPos pos = world.getHeight(event.getPos().add(x, 0, z));
+                ((GrassFeature) this.grass.require()).generate(world, random, pos, this.requires);
+                event.setResult(Event.Result.DENY);
+            }
         }
     }
 
