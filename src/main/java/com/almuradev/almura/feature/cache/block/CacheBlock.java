@@ -23,6 +23,7 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -341,12 +342,29 @@ public final class CacheBlock extends BlockContainer {
     private TileEntity cacheTe = null;
 
     @Override
-    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest)
-    {
+    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
+        if (player.isCreative()) {
+            final TileEntity te = world.getTileEntity(pos);
+
+            if (te instanceof SingleSlotTileEntity) {
+                final SingleSlotTileEntity cte = (SingleSlotTileEntity) te;
+                final ISingleSlotItemHandler itemHandler = (ISingleSlotItemHandler) cte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+
+                if (itemHandler != null) {
+                    final ItemStack cacheStack = itemHandler.getStackInSlot(0);
+
+                    if (!cacheStack.isEmpty()) {
+                        if (!(player.getHeldItemMainhand().getItem() == Items.DIAMOND)) {
+                            if (!world.isRemote)
+                                ((Player) player).sendMessage(Text.of("Cache not destroyed, you're in creative mode.  Can be destroyed using a diamond."));
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
         this.onBlockHarvested(world, pos, state, player);
-
         this.cacheTe = world.getTileEntity(pos);
-
         return world.setBlockState(pos, net.minecraft.init.Blocks.AIR.getDefaultState(), world.isRemote ? 11 : 3);
     }
 
