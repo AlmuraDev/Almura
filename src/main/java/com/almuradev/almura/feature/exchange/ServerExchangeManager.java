@@ -1561,6 +1561,10 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             return 10;
         }
 
+        if (slots == 0) {
+            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("You lack sufficient permissions *slots* to list anything!"));
+        }
+
         return slots;
     }
 
