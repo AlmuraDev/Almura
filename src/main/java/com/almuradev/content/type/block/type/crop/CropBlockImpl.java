@@ -38,6 +38,7 @@ import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.item.ItemType;
+import org.spongepowered.common.SpongeImplHooks;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -171,8 +172,11 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
     public boolean canUseBonemeal(final World world, final Random random, final BlockPos pos, final IBlockState state) {
         if (!world.isRemote) {
             if (!this.isMaxAge(state)) {
+                // Return TRUE always when in Dev mode!
+                if (SpongeImplHooks.isDeobfuscatedEnvironment()) {
+                    return true;
+                }
                 // TODO Maybe best to move this into an interact listener and make this hook do nothing
-
                 final CropBlockStateDefinition definition = this.definition(state);
 
                 if (definition.fertilizer != null) {
