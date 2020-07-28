@@ -12,7 +12,7 @@
         "item.ItemAccessor",
         "item.ItemBlockAccessor",
         "item.ItemFoodAccessor",
-        "item.ItemSeedAccessor",
+        "item.ItemSeedsAccessor",
         "item.ItemSlabAccessor",
         "util.FoodStatsAccessor",
         "util.text.translation.LanguageMapAccessor",

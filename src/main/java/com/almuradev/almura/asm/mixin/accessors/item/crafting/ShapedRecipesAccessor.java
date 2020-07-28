@@ -19,5 +19,5 @@ public interface ShapedRecipesAccessor {
     //public net.minecraft.item.crafting.ShapedRecipes field_194137_e # group
     @Accessor("group") String accessor$getGroup();
     //New Entry
-    @Mutable @Accessor("recipeItems") NonNullList<Ingredient> accessor$getRecipeItems();
+    @Accessor("recipeItems") NonNullList<Ingredient> accessor$getRecipeItems();
 }

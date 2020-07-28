@@ -23,6 +23,7 @@ import javax.inject.Inject;
     id = Almura.ID,
     dependencies = {
         @Dependency(id = "nucleus", optional = true),
+        @Dependency(id = "griefdefender", optional = true),
         @Dependency(id = "terraincontrol", optional = true)
     }
 )

@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(LanguageManager.class)
 public interface LanguageManagerAccessor {
     // public net.minecraft.client.resources.LanguageManager field_135049_a # CURRENT_LOCALE
-    @Mutable @Accessor("CURRENT_LOCALE") static Locale accessor$getCurrentLocale() {
+    @Accessor("CURRENT_LOCALE") static Locale accessor$getCurrentLocale() {
         throw new IllegalStateException("Untransformed Accessor!");
     }
 }
