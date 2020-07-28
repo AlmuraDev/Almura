@@ -94,6 +94,14 @@ repositories {
         name = "LuckPerms"
         url = "https://repo.lucko.me/"
     }
+    maven {
+        name = 'jitpack'
+        url = 'https://jitpack.io'
+    }
+    maven {
+        name = 'glare'
+        url = 'https://repo.glaremasters.me/repository/bloodshot'
+    }
     flatDir {
         dirs "lib"
     }
@@ -114,6 +122,7 @@ dependencies {
     compile 'net.kyori:lunar:1.0.5-SNAPSHOT'
     compile 'net.kyori:membrane:1.0.5'
     compile 'net.kyori:violet:1.0.0'
+    compile "com.github.bloodmc:GriefDefenderAPI:master-SNAPSHOT"
     deobfCompile ('com.almuradev:malisiscore:1.12.2-6.5.3-SNAPSHOT') {
         transitive = false
     }
@@ -125,7 +134,7 @@ dependencies {
     compile 'org.inspirenxe:skills:1.0.0-SNAPSHOT'
     compile 'io.github.nucleuspowered:nucleus-api:1.14.1-S7.1'
     compile "net.luckperms:api:5.0"
-    compile 'me.ryanhamshire:griefprevention:1.12.2-4.5.5.0'
+    //compile 'me.ryanhamshire:griefprevention:1.12.2-4.5.5.0'
     compile "org.jooq:jooq:${project.jooqVersion}"
     compile "org.jooq:jooq-meta:${project.jooqVersion}"
     compile "org.jooq:jooq-codegen:${project.jooqVersion}"

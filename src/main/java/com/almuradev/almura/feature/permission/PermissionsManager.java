@@ -15,15 +15,12 @@ import com.almuradev.almura.feature.title.network.ClientboundSelectedTitlePacket
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.UchatUtil;
 import com.almuradev.core.event.Witness;
-import io.github.nucleuspowered.nucleus.api.exceptions.NicknameException;
+import com.griefdefender.api.GriefDefender;
+import com.griefdefender.api.data.PlayerData;
 import io.github.nucleuspowered.nucleus.api.service.NucleusNicknameService;
-import me.ryanhamshire.griefprevention.GPPlayerData;
-import me.ryanhamshire.griefprevention.GriefPreventionPlugin;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.event.user.track.UserTrackEvent;
 import net.luckperms.api.model.user.User;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.event.ForgeEventFactory;
 import org.apache.commons.lang3.text.WordUtils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;
@@ -40,7 +37,6 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Scheduler;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.World;
 
 import java.util.UUID;
@@ -90,8 +86,9 @@ public final class PermissionsManager implements Witness {
                 final String toGroup = e.getGroupTo().orElse(null);
 
                 // Refresh Grief Prevention user options after changing groups.
-                GPPlayerData playerData = GriefPreventionPlugin.instance.dataStore.getOrCreatePlayerData(target.getWorld(), target.getUniqueId());
-                playerData.refreshPlayerOptions();
+                PlayerData playerData = GriefDefender.getCore().getPlayerData(target.getWorld().getUniqueId(), target.getUniqueId()).get();
+                // Todo: is this fix still needed?
+                //playerData.refreshPlayerOptions();
 
                 if (targetUniqueId != null && toGroup != null && this.nickApi != null) {
                     Text nick = Text.of("");

@@ -12,7 +12,7 @@ import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiAbandonRequ
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.PacketUtil;
-import me.ryanhamshire.griefprevention.api.claim.Claim;
+import com.griefdefender.api.claim.Claim;
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
