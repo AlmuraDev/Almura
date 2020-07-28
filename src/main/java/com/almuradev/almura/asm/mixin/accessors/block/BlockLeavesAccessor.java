@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.asm.mixin.accessors.client.block;
+package com.almuradev.almura.asm.mixin.accessors.block;
 
 import net.minecraft.block.BlockLeaves;
 import org.spongepowered.asm.mixin.Mixin;

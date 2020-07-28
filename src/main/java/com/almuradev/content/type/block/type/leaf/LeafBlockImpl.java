@@ -7,8 +7,8 @@
  */
 package com.almuradev.content.type.block.type.leaf;
 
-import com.almuradev.almura.asm.mixin.accessors.client.block.BlockAccessor;
-import com.almuradev.almura.asm.mixin.accessors.client.block.BlockLeavesAccessor;
+import com.almuradev.almura.asm.mixin.accessors.block.BlockAccessor;
+import com.almuradev.almura.asm.mixin.accessors.block.BlockLeavesAccessor;
 import com.almuradev.content.type.block.StateMappedBlock;
 import com.almuradev.content.type.block.type.leaf.state.LeafBlockStateDefinition;
 import net.minecraft.block.BlockLeaves;
@@ -17,7 +17,6 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.statemap.IStateMapper;
 import net.minecraft.client.renderer.block.statemap.StateMap;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;

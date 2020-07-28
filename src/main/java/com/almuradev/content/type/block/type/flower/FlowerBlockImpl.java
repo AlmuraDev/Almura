@@ -7,7 +7,7 @@
  */
 package com.almuradev.content.type.block.type.flower;
 
-import com.almuradev.almura.asm.mixin.accessors.client.block.BlockAccessor;
+import com.almuradev.almura.asm.mixin.accessors.block.BlockAccessor;
 import com.almuradev.content.type.block.type.flower.state.FlowerBlockStateDefinition;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;

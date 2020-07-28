@@ -7,7 +7,7 @@
  */
 package com.almuradev.content.type.block.mixin.impl;
 
-import com.almuradev.almura.asm.mixin.accessors.client.block.BlockAccessor;
+import com.almuradev.almura.asm.mixin.accessors.block.BlockAccessor;
 import com.almuradev.content.type.block.ContentBlock;
 import com.almuradev.content.type.block.mixin.iface.IMixinBlock;
 import com.almuradev.content.type.itemgroup.ItemGroup;

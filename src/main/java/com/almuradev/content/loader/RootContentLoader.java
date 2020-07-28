@@ -8,7 +8,6 @@
 package com.almuradev.content.loader;
 
 import com.almuradev.almura.asm.mixin.accessors.client.MinecraftAccessor;
-import com.almuradev.almura.asm.mixin.accessors.client.block.BlockAccessor;
 import com.almuradev.content.ContentConfig;
 import com.almuradev.content.ContentType;
 import com.almuradev.core.event.Witness;

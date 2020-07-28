@@ -7,7 +7,7 @@
  */
 package com.almuradev.content.type.block.type.slab;
 
-import com.almuradev.almura.asm.mixin.accessors.client.block.BlockAccessor;
+import com.almuradev.almura.asm.mixin.accessors.block.BlockAccessor;
 import com.almuradev.content.type.block.state.LazyBlockState;
 import com.almuradev.content.type.block.type.slab.state.SlabBlockStateDefinition;
 import net.minecraft.block.BlockSlab;

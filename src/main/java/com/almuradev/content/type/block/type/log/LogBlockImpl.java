@@ -7,7 +7,7 @@
  */
 package com.almuradev.content.type.block.type.log;
 
-import com.almuradev.almura.asm.mixin.accessors.client.block.BlockAccessor;
+import com.almuradev.almura.asm.mixin.accessors.block.BlockAccessor;
 import com.almuradev.content.type.block.type.log.state.LogBlockStateDefinition;
 import net.minecraft.block.BlockLog;
 import net.minecraft.block.state.BlockStateContainer;

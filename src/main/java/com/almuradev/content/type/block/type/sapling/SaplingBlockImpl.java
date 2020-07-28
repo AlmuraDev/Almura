@@ -7,7 +7,7 @@
  */
 package com.almuradev.content.type.block.type.sapling;
 
-import com.almuradev.almura.asm.mixin.accessors.client.block.BlockAccessor;
+import com.almuradev.almura.asm.mixin.accessors.block.BlockAccessor;
 import com.almuradev.content.type.block.BlockUpdateFlag;
 import com.almuradev.content.type.block.StateMappedBlock;
 import com.almuradev.content.type.block.type.sapling.state.SaplingBlockStateDefinition;

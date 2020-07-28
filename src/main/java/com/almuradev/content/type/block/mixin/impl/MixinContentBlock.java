@@ -7,7 +7,7 @@
  */
 package com.almuradev.content.type.block.mixin.impl;
 
-import com.almuradev.almura.asm.mixin.accessors.client.block.BlockAccessor;
+import com.almuradev.almura.asm.mixin.accessors.block.BlockAccessor;
 import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.component.delegate.DelegateSet;
 import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;

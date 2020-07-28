@@ -18,6 +18,7 @@ import com.almuradev.almura.feature.death.DeathModule;
 import com.almuradev.almura.feature.exchange.ExchangeModule;
 import com.almuradev.almura.feature.guide.GuideModule;
 import com.almuradev.almura.feature.hud.HeadUpDisplayModule;
+import com.almuradev.almura.feature.membership.MembershipHandler;
 import com.almuradev.almura.feature.membership.MembershipModule;
 import com.almuradev.almura.feature.menu.ingame.FeaturesModule;
 import com.almuradev.almura.feature.moc.MocModule;
@@ -32,6 +33,7 @@ import com.almuradev.almura.feature.store.StoreModule;
 import com.almuradev.almura.feature.title.TitleModule;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
+import com.almuradev.almura.shared.util.UchatUtil;
 import net.kyori.violet.AbstractModule;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemFood;
@@ -103,6 +105,9 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         }
         if (Loader.isModLoaded("mocreatures")) {
             this.install(new MocModule());
+        }
+        if (Sponge.getPluginManager().isLoaded("ultimatechat")) {
+            this.facet().add(UchatUtil.class);
         }
     }
 
