@@ -10,8 +10,10 @@ package com.almuradev.almura;
 import com.google.inject.Injector;
 import net.minecraft.network.NetworkManager;
 import net.minecraftforge.fml.common.SidedProxy;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameConstructionEvent;
+import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingEvent;
 import org.spongepowered.api.event.world.UnloadWorldEvent;
 import org.spongepowered.api.plugin.Dependency;
@@ -50,6 +52,14 @@ public class Almura implements com.almuradev.almura.shared.plugin.Plugin {
     @Listener
     public void gameDestruct(final GameStoppingEvent event) {
         proxy.destruct();
+    }
+
+    @Listener
+    public void gameStartedServer(final GameStartedServerEvent event) {
+        if (Sponge.getPluginManager().isLoaded("griefdefender")) {
+            //final ServerClaimManager manager = this.injector.getInstance(ServerClaimManager.class);
+            //GriefDefender.getEventManager().register(manager);
+        }
     }
 
     @Listener

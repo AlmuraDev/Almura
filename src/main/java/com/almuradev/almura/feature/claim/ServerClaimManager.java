@@ -22,13 +22,17 @@ import com.griefdefender.api.event.CreateClaimEvent;
 import com.griefdefender.api.event.FlagPermissionEvent;
 import com.griefdefender.api.event.RemoveClaimEvent;
 import com.griefdefender.api.event.TaxClaimEvent;
+import com.griefdefender.api.permission.Context;
+import net.kyori.event.method.annotation.Subscribe;
 import net.kyori.text.TextComponent;
+import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import net.minecraftforge.fml.server.FMLServerHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.filter.Getter;
+import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
@@ -44,7 +48,9 @@ import org.spongepowered.api.world.World;
 import java.util.UUID;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public final class ServerClaimManager implements Witness {
 
     private final ChannelBinding.IndexedMessageChannel network;
@@ -58,6 +64,11 @@ public final class ServerClaimManager implements Witness {
         this.network = network;
         this.serverNotificationManager = notificationManager;
         this.container = container;
+    }
+
+    @Listener
+    public void serverStarted(final GameStartedServerEvent event) {
+        GriefDefender.getEventManager().register(this);
     }
 
     public void sendUpdate(final Player player, final Claim claim, boolean everyone) {
@@ -111,15 +122,15 @@ public final class ServerClaimManager implements Witness {
                     }
 
                     if (claim.getData() != null && claim.getData().getGreeting().isPresent()) {
-                        claimGreeting = claim.getData().getGreeting().get().toString();
+                        claimGreeting = LegacyComponentSerializer.legacy().serialize(claim.getData().getGreeting().get());
                     }
 
                     if (claim.getData() != null &&claim.getData().getFarewell().isPresent()) {
-                        claimFarewell = claim.getData().getFarewell().get().toString();
+                        claimFarewell = LegacyComponentSerializer.legacy().serialize(claim.getData().getFarewell().get());
                     }
 
                     if (claim.getName().isPresent()) {
-                        claimName = claim.getName().get().toString();
+                        claimName = LegacyComponentSerializer.legacy().serialize(claim.getName().get());
 
                         final EconomyService service = Sponge.getServiceManager().provide(EconomyService.class).orElse(null);
                         if (service != null && player != null) {
@@ -175,14 +186,17 @@ public final class ServerClaimManager implements Witness {
         }
     }
 
+    @Subscribe
     public void onEnterExitClaim(BorderClaimEvent event, @Getter("getTargetEntity") Player player) {
         // Notes:  this event does NOT fire when a player logs into the server.
+        System.out.println("Enter Claim Event");
         Task.builder()
             .delayTicks(10) // Give GP time to finish event
             .execute(t -> this.sendUpdate(player, GriefDefender.getCore().getClaimManager(player.getWorld().getUniqueId()).getClaimAt(player.getPosition().toInt()), false))
             .submit(this.container);
     }
 
+    @Subscribe
     public void onChangeClaim(final ChangeClaimEvent event) {
         for (final UUID playersUUID : event.getClaim().getPlayers()) {
             Task.builder()
@@ -192,6 +206,7 @@ public final class ServerClaimManager implements Witness {
         }
     }
 
+    @Subscribe
     public void onCreateClaim(final CreateClaimEvent event) {
         for (final UUID playersUUID : event.getClaim().getPlayers()) {
             Task.builder()
@@ -201,6 +216,7 @@ public final class ServerClaimManager implements Witness {
         }
     }
 
+    @Subscribe
     public void onDeleteClaim(final RemoveClaimEvent event) {
         for (final UUID playersUUID : event.getClaim().getPlayers()) {
             Task.builder()
@@ -210,6 +226,7 @@ public final class ServerClaimManager implements Witness {
         }
     }
 
+    @Subscribe
     public void onTaxClaim(final TaxClaimEvent event) {
         /*
         for (final Player players : event.getClaim().getPlayers()) {
@@ -220,15 +237,28 @@ public final class ServerClaimManager implements Witness {
         } */
     }
 
+    @Subscribe
     public void onClaimFlagChange(final FlagPermissionEvent event) {
-        // Todo: fix this using context lookup?
-        /*
-        for (final Player players : event.getClaim().getPlayers()) {
-            Task.builder()
-                .delayTicks(10) // Give GP time to finish event
-                .execute(t -> this.sendUpdate(players, GriefDefender.getCore().getClaimManager(players.getWorld().getUniqueId()).getClaimAt(players.getPosition().toInt()), false))
-                .submit(this.container);
-        }*/
+        Claim claim = null;
+        for (Context context : event.getContexts()) {
+            if (context.getKey().contains("gd_claim") || context.getKey().equals("server")) {
+                claim = GriefDefender.getCore().getClaim(UUID.fromString(context.getValue()));
+
+            }
+        }
+        System.out.println("FlagPermissionEvent detected");
+
+        if (claim != null) {
+            System.out.println("Claim: " + claim.getOwnerName());
+            final Claim finalClaim = claim;
+            for (UUID playersUUID : claim.getPlayers()) {
+                Task.builder().delayTicks(10) // Give GP time to finish event
+                    .execute(t -> this.sendUpdate((Player)FMLServerHandler.instance().getServer().getPlayerList().getPlayerByUUID(playersUUID), finalClaim, false))
+                    .submit(this.container);
+            }
+        } else {
+            System.out.println("Claim is null");
+        }
     }
 
     public final boolean isGPEnabled(final Player player) {
@@ -260,7 +290,7 @@ public final class ServerClaimManager implements Witness {
         final Claim claim = this.claimLookup(player, x, y, z, worldName);
         if (claim != null) {
             final boolean isOwner = (claim.getOwnerUniqueId().equals(player.getUniqueId()));
-            final boolean isAdmin = player.hasPermission("griefprevention.admin");
+            final boolean isAdmin = player.hasPermission("griefdefender.admin");
 
             if (isOwner || isAdmin) {
                 claim.getData().setName(TextComponent.builder(claimName).build());
@@ -352,7 +382,7 @@ public final class ServerClaimManager implements Witness {
         if (claim != null) { // if GP is loaded, claim should never be null.
             final boolean isOwner = (claim.getOwnerUniqueId().equals(player.getUniqueId()));
             final boolean isTrusted = claim.isTrusted(player.getUniqueId());
-            final boolean isAdmin = player.hasPermission("griefprevention.admin");
+            final boolean isAdmin = player.hasPermission("griefdefender.admin");
             if (!isAdmin && claim.isWilderness()) {
                 this.serverNotificationManager
                     .sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Insufficient permissions to open Claim Manager in Wilderness"),

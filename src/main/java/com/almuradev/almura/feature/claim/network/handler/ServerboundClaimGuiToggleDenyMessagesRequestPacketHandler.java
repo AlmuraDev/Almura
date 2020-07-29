@@ -48,7 +48,7 @@ public final class ServerboundClaimGuiToggleDenyMessagesRequestPacketHandler imp
             final Claim claim = serverClaimManager.claimLookup(player, message.x, message.y, message.z, message.worldName);
             if (claim != null) { // if GP is loaded, claim should never be null.
                 final boolean isOwner = (claim.getOwnerUniqueId().equals(player.getUniqueId()));
-                final boolean isAdmin = player.hasPermission("griefprevention.admin");
+                final boolean isAdmin = player.hasPermission("griefdefender.admin");
 
                 if (isOwner || isAdmin) {
                     this.serverClaimManager.toggleClaimDenyMessages(player, claim, message.value);

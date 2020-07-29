@@ -123,6 +123,9 @@ dependencies {
     compile 'net.kyori:membrane:1.0.5'
     compile 'net.kyori:violet:1.0.0'
     compile 'net.kyori:text-api:3.0.2'
+    compile 'net.kyori:text-serializer-legacy:3.0.4'
+    compile 'net.kyori:event-api:3.0.0'
+    compile 'net.kyori:event-method:3.0.0'
     compile ("com.github.bloodmc:GriefDefenderAPI:master-SNAPSHOT") {
         exclude module: 'event-method-asm'
     }
@@ -246,6 +249,7 @@ shadowJar {
     classifier ''
     exclude 'dummyThing'
     relocate 'com.typesafe.config', 'configurate.typesafe.config'
+    relocate 'net.kyori.event', 'almura.kyori.event'
     dependencies {
         include dependency('com.almuradev:toolbox')
         include dependency('com.fasterxml.jackson.core:jackson-core')
@@ -253,7 +257,10 @@ shadowJar {
         include dependency('com.google.inject.extensions:guice-multibindings')
         include dependency('io.github.nucleuspowered:nucleus-api')
         include dependency('net.kyori:indigo')
+        include dependency('net.kyori:event-api')
+        include dependency('net.kyori:event-method')
         include dependency('net.kyori:text-api')
+        include dependency('net.kyori:text-serializer-legacy')
         include dependency('net.kyori:lunar')
         include dependency('net.kyori:membrane')
         include dependency('net.kyori:violet')
