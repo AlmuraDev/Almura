@@ -7,7 +7,9 @@
  */
 package com.almuradev.almura;
 
+import com.almuradev.almura.feature.claim.ServerClaimManager;
 import com.google.inject.Injector;
+import com.griefdefender.api.GriefDefender;
 import net.minecraft.network.NetworkManager;
 import net.minecraftforge.fml.common.SidedProxy;
 import org.spongepowered.api.Sponge;
@@ -57,8 +59,9 @@ public class Almura implements com.almuradev.almura.shared.plugin.Plugin {
     @Listener
     public void gameStartedServer(final GameStartedServerEvent event) {
         if (Sponge.getPluginManager().isLoaded("griefdefender")) {
-            //final ServerClaimManager manager = this.injector.getInstance(ServerClaimManager.class);
-            //GriefDefender.getEventManager().register(manager);
+            final ServerClaimManager manager = this.injector.getInstance(ServerClaimManager.class);
+            System.out.println("Registering GD Event Listeners within Almura");
+            GriefDefender.getEventManager().register(manager);
         }
     }
 

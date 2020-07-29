@@ -32,7 +32,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.filter.Getter;
-import org.spongepowered.api.event.game.state.GameStartedServerEvent;
+import org.spongepowered.api.event.game.state.GameAboutToStartServerEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
@@ -67,8 +67,9 @@ public final class ServerClaimManager implements Witness {
     }
 
     @Listener
-    public void serverStarted(final GameStartedServerEvent event) {
-        GriefDefender.getEventManager().register(this);
+    public void serverStarted(final GameAboutToStartServerEvent event) {
+        //System.out.println("Hello Murray2");
+        //GriefDefender.getEventManager().register(this);
     }
 
     public void sendUpdate(final Player player, final Claim claim, boolean everyone) {
@@ -187,12 +188,12 @@ public final class ServerClaimManager implements Witness {
     }
 
     @Subscribe
-    public void onEnterExitClaim(BorderClaimEvent event, @Getter("getTargetEntity") Player player) {
+    public void onEnterExitClaim(BorderClaimEvent event) {
         // Notes:  this event does NOT fire when a player logs into the server.
         System.out.println("Enter Claim Event");
         Task.builder()
             .delayTicks(10) // Give GP time to finish event
-            .execute(t -> this.sendUpdate(player, GriefDefender.getCore().getClaimManager(player.getWorld().getUniqueId()).getClaimAt(player.getPosition().toInt()), false))
+            .execute(t -> this.sendUpdate((Player)FMLServerHandler.instance().getServer().getPlayerList().getPlayerByUUID(event.getEntityUniqueId()), event.getClaim(), false))
             .submit(this.container);
     }
 

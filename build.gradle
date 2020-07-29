@@ -249,7 +249,7 @@ shadowJar {
     classifier ''
     exclude 'dummyThing'
     relocate 'com.typesafe.config', 'configurate.typesafe.config'
-    relocate 'net.kyori.event', 'almura.kyori.event'
+    //relocate 'net.kyori.event', 'almura.kyori.event'
     dependencies {
         include dependency('com.almuradev:toolbox')
         include dependency('com.fasterxml.jackson.core:jackson-core')
