@@ -75,6 +75,7 @@ public final class PermissionsManager implements Witness {
 
     @Listener
     public void onServiceChange(ChangeServiceProviderEvent event) {
+        boolean debug = false;
         if (event.getNewProviderRegistration().getService().equals(NucleusNicknameService.class)) {
             this.nickApi = (NucleusNicknameService) event.getNewProviderRegistration().getProvider();
         } else if (event.getNewProviderRegistration().getService().equals(LuckPerms.class)) {
@@ -99,7 +100,8 @@ public final class PermissionsManager implements Witness {
                     }
                     final String fancyGroupName = WordUtils.capitalize(toGroup.toLowerCase());
 
-                    System.out.println("Cause: " + e.getAction().name());
+                    if (debug)
+                        System.out.println("Cause: " + e.getAction().name());
 
                     if (e.getAction().name().equalsIgnoreCase("promotion")) {
                         // Broadcast Promotion to Discord

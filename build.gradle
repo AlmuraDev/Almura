@@ -132,7 +132,6 @@ dependencies {
     deobfCompile ('com.almuradev:malisiscore:1.12.2-6.5.3-SNAPSHOT') {
         transitive = false
     }
-    //compile 'br.net.fabiozumbi12.UltimateChat:UltimateChat-Sponge-7:1.8.9'
     compile 'br.net.fabiozumbi12.UltimateChat:UltimateChat-Sponge-56-1.9.1'
     compile 'org.spongepowered:configurate-json:3.5'
     compile 'org.inspirenxe:skills:1.0.0-SNAPSHOT:api'
@@ -140,7 +139,6 @@ dependencies {
     compile 'org.inspirenxe:skills:1.0.0-SNAPSHOT'
     compile 'io.github.nucleuspowered:nucleus-api:1.14.6-S7.1'
     compile "net.luckperms:api:5.0"
-    //compile 'me.ryanhamshire:griefprevention:1.12.2-4.5.5.0'
     compile "org.jooq:jooq:${project.jooqVersion}"
     compile "org.jooq:jooq-meta:${project.jooqVersion}"
     compile "org.jooq:jooq-codegen:${project.jooqVersion}"
