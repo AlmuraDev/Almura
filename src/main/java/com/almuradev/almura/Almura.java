@@ -54,7 +54,8 @@ public class Almura implements com.almuradev.almura.shared.plugin.Plugin {
         proxy.destruct();
     }
 
-    @Listener void gameShutdown(final GameStoppingServerEvent event) {
+    @Listener
+    public void gameShutdown(final GameStoppingServerEvent event) {
         isShuttingDown = true;
     }
 
