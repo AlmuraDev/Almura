@@ -380,6 +380,11 @@ public final class ServerClaimManager implements Witness {
     }
 
     public void openClientGUI (final Player player){
+        if (!Sponge.getPluginManager().isLoaded("griefdefender")) {
+            this.serverNotificationManager.sendPopupNotification(player, notificationTitle, Text.of("GriefDefender not detected!"), 2);
+            return;
+        }
+
         if (!player.hasPermission(Almura.ID + ".claim.base")) {
             this.serverNotificationManager.sendPopupNotification(player, notificationTitle, Text.of("Insufficient Permissions to Manage Claim!"), 2);
             return;
