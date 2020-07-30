@@ -43,6 +43,8 @@ public final class ClientClaimManager implements Witness {
     public String claimOwner = "";
     public String claimGreeting = "";
     public String claimFarewell = "";
+    public double claimTaxBalance;
+    public double claimSalePrice;
 
     @Inject
     public ClientClaimManager(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network, final

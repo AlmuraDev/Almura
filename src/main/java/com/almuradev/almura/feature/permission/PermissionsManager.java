@@ -79,7 +79,6 @@ public final class PermissionsManager implements Witness {
             this.nickApi = (NucleusNicknameService) event.getNewProviderRegistration().getProvider();
         } else if (event.getNewProviderRegistration().getService().equals(LuckPerms.class)) {
             this.permApi = (LuckPerms) event.getNewProviderRegistration().getProvider();
-
             this.permApi.getEventBus().subscribe(UserTrackEvent.class, e -> {
                 final UUID targetUniqueId = e.getUser().getUniqueId();
                 final Player target = Sponge.getServer().getPlayer(targetUniqueId).orElse(null);

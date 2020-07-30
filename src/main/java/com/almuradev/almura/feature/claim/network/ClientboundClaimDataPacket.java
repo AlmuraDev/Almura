@@ -30,13 +30,16 @@ public final class ClientboundClaimDataPacket implements Message {
     public double claimBlockCost;
     public double claimBlockSell;
     public boolean hasWECUI;
+    public double claimTaxBalance;
+    public double claimSalePrice;
 
     public ClientboundClaimDataPacket() {
     }
 
     public ClientboundClaimDataPacket(final boolean isClaim, final String claimName, final String claimOwner, final boolean isWilderness, final boolean isTownClaim, final boolean isAdminClaim, final boolean isBasicClaim, final boolean isSubdivision,
             final double claimEconBalance, final String claimGreeting, final String claimFarewell, final int claimSize, final boolean isForSale,
-        final boolean showWarnings, final double claimTaxes, final double claimBlockCost, final double claimBlockSell, final boolean hasWECUI) {
+            final boolean showWarnings, final double claimTaxes, final double claimBlockCost, final double claimBlockSell, final boolean hasWECUI,
+            final double claimTaxBalance, final double claimSalePrice) {
         this.isClaim = isClaim;
         this.claimName = claimName;
         this.claimOwner = claimOwner;
@@ -55,6 +58,8 @@ public final class ClientboundClaimDataPacket implements Message {
         this.claimBlockCost = claimBlockCost;
         this.claimBlockSell = claimBlockSell;
         this.hasWECUI = hasWECUI;
+        this.claimTaxBalance = claimTaxBalance;
+        this.claimSalePrice = claimSalePrice;
     }
 
     @Override
@@ -77,6 +82,8 @@ public final class ClientboundClaimDataPacket implements Message {
         this.claimBlockCost = buf.readDouble();
         this.claimBlockSell = buf.readDouble();
         this.hasWECUI = buf.readBoolean();
+        this.claimTaxBalance = buf.readDouble();
+        this.claimSalePrice = buf.readDouble();
     }
 
     @Override
@@ -99,5 +106,7 @@ public final class ClientboundClaimDataPacket implements Message {
         buf.writeDouble(this.claimBlockCost);
         buf.writeDouble(this.claimBlockSell);
         buf.writeBoolean(this.hasWECUI);
+        buf.writeDouble(this.claimTaxBalance);
+        buf.writeDouble(this.claimSalePrice);
     }
 }

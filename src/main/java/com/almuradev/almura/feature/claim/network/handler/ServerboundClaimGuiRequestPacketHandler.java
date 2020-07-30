@@ -47,7 +47,7 @@ public final class ServerboundClaimGuiRequestPacketHandler implements MessageHan
             final Player player = ((PlayerConnection) connection).getPlayer();
 
             if (!player.hasPermission(Almura.ID + ".claim.base")) {
-                this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Insufficient Permissions to manage this claim!"), 2);
+                this.notificationManager.sendPopupNotification(player, ServerClaimManager.notificationTitle, Text.of("Insufficient Permissions to manage this claim!"), 2);
                 return;
             }
 

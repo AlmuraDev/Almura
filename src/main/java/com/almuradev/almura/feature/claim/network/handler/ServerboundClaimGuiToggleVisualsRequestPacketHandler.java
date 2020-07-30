@@ -48,13 +48,13 @@ public final class ServerboundClaimGuiToggleVisualsRequestPacketHandler implemen
             final Claim claim = serverClaimManager.claimLookup(player, message.x, message.y, message.z, message.worldName);
             if (claim != null) { // if GP is loaded, claim should never be null.
                 final boolean isOwner = (claim.getOwnerUniqueId().equals(player.getUniqueId()));
-                final boolean isAdmin = player.hasPermission("griefdefender.admin");
+                final boolean isAdmin = player.hasPermission(ServerClaimManager.adminPermission);
 
                 if (isOwner || isAdmin) {
                     this.serverClaimManager.toggleVisuals(player, claim, message.value);
-                    this.serverClaimManager.sendUpdate(player, claim, false);
+                    this.serverClaimManager.sendUpdateTo(player, claim, null,false);
                 } else {
-                    this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Insufficient Permissions!"), 5);
+                    this.notificationManager.sendPopupNotification(player, ServerClaimManager.notificationTitle, Text.of("Insufficient Permissions!"), 5);
                 }
             }
         }

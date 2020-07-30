@@ -31,7 +31,6 @@ import net.malisis.core.client.gui.component.interaction.button.builder.UIButton
 import net.malisis.core.client.gui.event.ComponentEvent;
 import net.malisis.core.renderer.font.FontOptions;
 import net.malisis.core.util.FontColors;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -40,7 +39,6 @@ import org.lwjgl.input.Mouse;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -60,8 +58,8 @@ public final class ClaimManageScreen extends BasicScreen {
     private boolean update = true;
 
     private BasicForm form, functionsArea, econArea;
-    private UITextField claimNameField, claimOwnerField, claimGreetingField, claimFarewellField, claimSizeField, claimValueField, claimTaxField;
-    private UILabel claimNameLabel, claimForSaleLabel, claimOwnerLabel, claimGreetingLabel, claimFarewellLabel, claimSizeLabel, claimTaxLabel;
+    private UITextField claimNameField, claimOwnerField, claimGreetingField, claimFarewellField, claimSizeField, claimValueField, claimTaxField, claimTaxBalanceField;
+    private UILabel claimNameLabel, claimForSaleLabel, claimOwnerLabel, claimGreetingLabel, claimFarewellLabel, claimSizeLabel, claimTaxLabel, claimTaxBalanceLabel;
     private UICheckBox showWarningsCheckbox;
     private UIButton buttonVisuals, buttonHideVisuals;
 
@@ -198,6 +196,17 @@ public final class ClaimManageScreen extends BasicScreen {
         this.claimTaxField.setPosition(120, this.claimTaxLabel.getY() - 1, Anchor.LEFT | Anchor.TOP);
         this.claimTaxField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
+        this.claimTaxBalanceLabel = new UILabel(this, "Tax Balance:");
+        this.claimTaxBalanceLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
+        this.claimTaxBalanceLabel.setPosition(15, 65, Anchor.LEFT | Anchor.TOP);
+
+        this.claimTaxBalanceField = new UITextField(this, "", false);
+        this.claimTaxBalanceField.setSize(100, 0);
+        this.claimTaxBalanceField.setText("$ 56,434.00");
+        this.claimTaxBalanceField.setEditable(false);
+        this.claimTaxBalanceField.setPosition(120, this.claimTaxBalanceLabel.getY() - 1, Anchor.LEFT | Anchor.TOP);
+        this.claimTaxBalanceField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
+
         this.claimForSaleLabel = new UILabel(this, "<- Claim is For Sale ->");
         this.claimForSaleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         this.claimForSaleLabel.setPosition(0, 0, Anchor.CENTER | Anchor.BOTTOM);
@@ -208,7 +217,7 @@ public final class ClaimManageScreen extends BasicScreen {
             .scale(1.2F)
             .build());
 
-        this.econArea.add(econSeparator, econSeparator, econTitleLabel, claimValueLabel, this.claimValueField, this.claimTaxLabel, this.claimTaxField, this.claimForSaleLabel);
+        this.econArea.add(econSeparator, econSeparator, econTitleLabel, claimValueLabel, this.claimValueField, this.claimTaxLabel, this.claimTaxField, this.claimForSaleLabel, this.claimTaxBalanceLabel, this.claimTaxBalanceField);
 
         // Functions Container
         this.functionsArea = new BasicForm(this, 110, 200, "");
@@ -385,6 +394,7 @@ public final class ClaimManageScreen extends BasicScreen {
         this.showWarningsCheckbox.setVisible(!this.clientClaimManager.isWilderness);
         this.claimValueField.setText("$ " + TextFormatting.GREEN + dFormat.format(this.clientClaimManager.claimBlockCost * this.clientClaimManager.claimSize));
         this.claimTaxField.setText("$ " + TextFormatting.YELLOW + dFormat.format(this.clientClaimManager.claimTaxes));
+        this.claimTaxBalanceField.setText("$ " + TextFormatting.RED + dFormat.format(this.clientClaimManager.claimTaxBalance));
         this.econArea.setVisible(!this.clientClaimManager.isWilderness);
         this.functionsArea.setVisible(!this.clientClaimManager.isWilderness);
 

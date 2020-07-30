@@ -50,6 +50,8 @@ public final class ClientboundClaimDataPacketHandler implements MessageHandler<C
                 clientClaimManager.claimBlockCost = message.claimBlockCost;
                 clientClaimManager.claimBlockSell = message.claimBlockSell;
                 clientClaimManager.hasWECUI = message.hasWECUI;
+                clientClaimManager.claimTaxBalance = message.claimTaxBalance;
+                clientClaimManager.claimSalePrice = message.claimSalePrice;
                 final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
 
                 if (currentScreen instanceof ClaimManageScreen) {

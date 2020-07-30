@@ -19,13 +19,13 @@ import com.griefdefender.api.data.PlayerData;
 import com.griefdefender.api.event.BorderClaimEvent;
 import com.griefdefender.api.event.ChangeClaimEvent;
 import com.griefdefender.api.event.CreateClaimEvent;
-import com.griefdefender.api.event.FlagPermissionEvent;
 import com.griefdefender.api.event.RemoveClaimEvent;
 import com.griefdefender.api.event.TaxClaimEvent;
-import com.griefdefender.api.permission.Context;
 import net.kyori.event.method.annotation.Subscribe;
 import net.kyori.text.TextComponent;
 import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
+import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.event.group.GroupDataRecalculateEvent;
 import net.minecraftforge.fml.server.FMLServerHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -45,6 +45,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -57,6 +58,8 @@ public final class ServerClaimManager implements Witness {
     private final ServerNotificationManager serverNotificationManager;
     private final PluginContainer container;
     private boolean debugClaimManager = false;
+    public static Text notificationTitle = Text.of("Claim Manager");
+    public static String adminPermission = "griefdefender.admin";
 
     @Inject
     public ServerClaimManager(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network, final
@@ -68,19 +71,108 @@ public final class ServerClaimManager implements Witness {
 
     @Listener
     public void serverStarted(final GameAboutToStartServerEvent event) {
-        //System.out.println("Hello Murray2");
-        //GriefDefender.getEventManager().register(this);
+        GriefDefender.getEventManager().register(this);
+        LuckPermsProvider.get().getEventBus().subscribe(GroupDataRecalculateEvent.class,this::onLpPermChange);
     }
 
-    public void sendUpdate(final Player player, final Claim claim, boolean everyone) {
+    @Listener(order = Order.LAST)
+    public void onPlayerJoin(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
+        this.sendUpdateTo(player, null, null,false);
+    }
+
+    @Subscribe
+    public void onEnterExitClaim(BorderClaimEvent event) {
+        final Player player = (Player)FMLServerHandler.instance().getServer().getPlayerList().getPlayerByUUID(event.getEntityUniqueId());
+        this.sendUpdateTo(player, event.getClaim(), null,false);
+    }
+
+    @Subscribe
+    public void onChangeClaim(final ChangeClaimEvent event) {
+        this.sendUpdateTo(null, event.getClaim(), event.getClaim().getPlayers(), false);
+    }
+
+    @Subscribe
+    public void onCreateClaim(final CreateClaimEvent event) {
+        this.sendUpdateTo(null, event.getClaim(), event.getClaim().getPlayers(), false);
+    }
+
+    @Subscribe
+    public void onDeleteClaim(final RemoveClaimEvent event) {
+        this.sendUpdateTo(null, event.getClaim(), event.getClaim().getPlayers(), false);
+    }
+
+    @Subscribe
+    public void onTaxClaim(final TaxClaimEvent event) {
+        this.sendUpdateTo(null, event.getClaim(), event.getClaim().getPlayers(), false);
+    }
+
+    //LP Event system uses inline Registration.
+    private void onLpPermChange(final GroupDataRecalculateEvent event) {
+        if (Sponge.getServer().getOnlinePlayers().size() > 0) {
+            if (event.getGroup().getName().equalsIgnoreCase("griefdefender_default")) {
+                // This will send an update to everyone on the server if a flag change is detected within GD.
+                sendUpdateTo(null, null, null, true);
+            }
+        }
+    }
+
+    public void sendUpdateTo(final Player player, Claim claim, List<UUID> players, final boolean everyone) {
+        // Do not continue; this is events firing from entities other than players.
+        if (player == null && players == null && !everyone) {
+            return;
+        }
+
+        // Lookup claim where player is standing
+        if (claim == null && player != null) {
+            claim = GriefDefender.getCore().getClaimManager(player.getWorld().getUniqueId()).getClaimAt(player.getLocation().getPosition().toInt());
+        }
+
+        // Send to specific player
+        if (!everyone && player != null && claim != null) {
+            final Claim finalClaim = claim;
+            Task.builder().delayTicks(10).execute(t -> this.sendUpdate(player, finalClaim)).submit(this.container);
+        }
+        // Send to everyone regardless of implied list from events.
+        if (everyone && player == null && claim != null) {
+            final Claim finalClaim = claim;
+            for (Player onlinePlayer : Sponge.getServer().getOnlinePlayers()) {
+                Task.builder().delayTicks(10).execute(t -> this.sendUpdate(onlinePlayer, finalClaim)).submit(this.container);
+            }
+        }
+        // Send to the implied list of players when claim is handed into the method.
+        if (players != null && claim != null) {
+            final Claim finalClaim = claim;
+            for (UUID playerUUID : players) {
+                final Player finalPlayer = (Player)FMLServerHandler.instance().getServer().getPlayerList().getPlayerByUUID(playerUUID);
+                if (finalPlayer != null) {
+                    Task.builder().delayTicks(10).execute(t -> this.sendUpdate(finalPlayer, finalClaim)).submit(this.container);
+                }
+            }
+        }
+       // Send update to everyone on server regardless of location or claim
+        if (player == null && players == null && claim == null && everyone) {
+            for (final Player onlinePlayer : Sponge.getServer().getOnlinePlayers()) {
+                if (onlinePlayer != null && onlinePlayer.getWorld() != null) {
+                    claim = GriefDefender.getCore().getClaimManager(onlinePlayer.getWorld().getUniqueId()).getClaimAt(onlinePlayer.getLocation().getPosition().toInt());
+                    if (claim != null) {
+                        final Claim finalClaim = claim;
+                        Task.builder().delayTicks(10).execute(t -> this.sendUpdate(onlinePlayer, finalClaim)).submit(this.container);
+                    }
+                }
+            }
+        }
+    }
+
+    protected void sendUpdate(final Player player, final Claim claim) {
         if (GriefDefender.getCore() != null) {
             boolean isWorldOrilla = false;
             boolean isWorldAsgard = false;
-            if (Sponge.getServer().getWorld("orilla").isPresent()) {
-                isWorldOrilla = Sponge.getServer().getWorld("orilla").get().getUniqueId() == claim.getWorldUniqueId();
+            System.out.println("SendUpdate: " + player.getName() + "|" + claim.getName());
+            if (Sponge.getServer().getWorld("Orilla").isPresent()) {
+                isWorldOrilla = Sponge.getServer().getWorld("Orilla").get().getUniqueId() == claim.getWorldUniqueId();
             }
-            if (Sponge.getServer().getWorld("asgard").isPresent()) {
-                isWorldOrilla = Sponge.getServer().getWorld("asgard").get().getUniqueId() == claim.getWorldUniqueId();
+            if (Sponge.getServer().getWorld("Asgard").isPresent()) {
+                isWorldAsgard = Sponge.getServer().getWorld("Asgard").get().getUniqueId() == claim.getWorldUniqueId();
             }
             if (GriefDefender.getPermissionManager() != null) {
                 if (claim != null) {
@@ -99,16 +191,14 @@ public final class ServerClaimManager implements Witness {
                     double claimBlockCost = 0.0;
                     double claimBlockSell = 0.0;
                     int claimSize = 0;
+                    double claimTaxBalance = 0.0;
+                    double claimSalePrice = 0.0;
 
                     final boolean isWilderness = claim.isWilderness();
                     final boolean isTownClaim = claim.isTown();
                     final boolean isAdminClaim = claim.isAdminClaim();
                     final boolean isBasicClaim = claim.isBasicClaim();
                     final boolean isSubdivision = claim.isSubdivision();
-
-                    if (claim.isWilderness()) {
-                        isForSale = claim.getEconomyData().isForSale();
-                    }
 
                     if (claim.getData() != null) {
                         showWarnings = claim.getData().allowDenyMessages();
@@ -142,6 +232,11 @@ public final class ServerClaimManager implements Witness {
                             final Currency currency = service.getDefaultCurrency();
 
                             if (claim.getEconomyAccountId().isPresent()) {
+                                claimTaxBalance = this.claimTaxBalance(player, claim);
+                                if (claim.getEconomyData().isForSale()) {
+                                    isForSale = true;
+                                    claimSalePrice = this.claimSalePrice(player, claim);
+                                }
                                 UUID accountID = claim.getEconomyAccountId().orElse(null);
                                 if (!(accountID == null)) {
                                     final UniqueAccount claimAccount = service.getOrCreateAccount(accountID).orElse(null);
@@ -160,120 +255,23 @@ public final class ServerClaimManager implements Witness {
                         claimName = "Server Protected Area";
                     }
 
-
                     if (player != null) {
                         this.network.sendTo(player, new ClientboundClaimDataPacket(isClaim, claimName, claimOwner, isWilderness, isTownClaim, isAdminClaim, isBasicClaim, isSubdivision, claimEconBalance, claimGreeting, claimFarewell, claimSize,
-                                isForSale, showWarnings, claimTaxes, claimBlockCost, claimBlockSell, hasWECUI));
-                    }
-                    if (everyone && !claim.isWilderness()) {
-                        for (final UUID playersUUID : claim.getPlayers()) {  //Apparently claims.getPlayers() doesn't include the one that just entered or exited it.
-                            this.network.sendTo((Player) FMLServerHandler.instance().getServer().getPlayerList().getPlayerByUUID(playersUUID),
-                                new ClientboundClaimDataPacket(isClaim, claimName, claimOwner, isWilderness, isTownClaim, isAdminClaim, isBasicClaim, isSubdivision, claimEconBalance, claimGreeting, claimFarewell, claimSize, isForSale, showWarnings, claimTaxes, claimBlockCost, claimBlockSell,
-                                    hasWECUI));
-                        }
+                                isForSale, showWarnings, claimTaxes, claimBlockCost, claimBlockSell, hasWECUI, claimTaxBalance, claimSalePrice));
                     }
                 }
             }
         }
     }
 
-    @Listener(order = Order.LAST)
-    public void onPlayerJoin(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
-        if (player != null && this.isGPEnabled(player)) {
-            Task.builder()
-                .delayTicks(20) // Give GP time to register the user as its not at tick zero.
-                .execute(t -> this.sendUpdate(player, GriefDefender.getCore().getClaimManager(player.getWorld().getUniqueId()).getClaimAt(player.getLocation().getPosition().toInt()), false))
-                .submit(this.container);
-        }
-    }
-
-    @Subscribe
-    public void onEnterExitClaim(BorderClaimEvent event) {
-        // Notes:  this event does NOT fire when a player logs into the server.
-        System.out.println("Enter Claim Event");
-        Task.builder()
-            .delayTicks(10) // Give GP time to finish event
-            .execute(t -> this.sendUpdate((Player)FMLServerHandler.instance().getServer().getPlayerList().getPlayerByUUID(event.getEntityUniqueId()), event.getClaim(), false))
-            .submit(this.container);
-    }
-
-    @Subscribe
-    public void onChangeClaim(final ChangeClaimEvent event) {
-        for (final UUID playersUUID : event.getClaim().getPlayers()) {
-            Task.builder()
-                .delayTicks(10) // Give GP time to finish event
-                .execute(t -> this.sendUpdate((Player)FMLServerHandler.instance().getServer().getPlayerList().getPlayerByUUID(playersUUID), event.getClaim(), false))
-                .submit(this.container);
-        }
-    }
-
-    @Subscribe
-    public void onCreateClaim(final CreateClaimEvent event) {
-        for (final UUID playersUUID : event.getClaim().getPlayers()) {
-            Task.builder()
-                .delayTicks(10) // Give GP time to finish event
-                .execute(t -> this.sendUpdate((Player)FMLServerHandler.instance().getServer().getPlayerList().getPlayerByUUID(playersUUID), event.getClaim(), false))
-                .submit(this.container);
-        }
-    }
-
-    @Subscribe
-    public void onDeleteClaim(final RemoveClaimEvent event) {
-        for (final UUID playersUUID : event.getClaim().getPlayers()) {
-            Task.builder()
-                .delayTicks(10) // Give GP time to finish event
-                .execute(t -> this.sendUpdate((Player)FMLServerHandler.instance().getServer().getPlayerList().getPlayerByUUID(playersUUID), event.getClaim(), false))
-                .submit(this.container);
-        }
-    }
-
-    @Subscribe
-    public void onTaxClaim(final TaxClaimEvent event) {
-        /*
-        for (final Player players : event.getClaim().getPlayers()) {
-            Task.builder()
-                .delayTicks(10) // Give GP time to finish event
-                .execute(t -> this.sendUpdate(players, GriefPrevention.getApi().getClaimManager(players.getWorld()).getClaimAt(players.getLocation()), false))
-                .submit(this.container);
-        } */
-    }
-
-    @Subscribe
-    public void onClaimFlagChange(final FlagPermissionEvent event) {
-        Claim claim = null;
-        for (Context context : event.getContexts()) {
-            if (context.getKey().contains("gd_claim") || context.getKey().equals("server")) {
-                claim = GriefDefender.getCore().getClaim(UUID.fromString(context.getValue()));
-
-            }
-        }
-        System.out.println("FlagPermissionEvent detected");
-
-        if (claim != null) {
-            System.out.println("Claim: " + claim.getOwnerName());
-            final Claim finalClaim = claim;
-            for (UUID playersUUID : claim.getPlayers()) {
-                Task.builder().delayTicks(10) // Give GP time to finish event
-                    .execute(t -> this.sendUpdate((Player)FMLServerHandler.instance().getServer().getPlayerList().getPlayerByUUID(playersUUID), finalClaim, false))
-                    .submit(this.container);
-            }
-        } else {
-            System.out.println("Claim is null");
-        }
-    }
-
-    public final boolean isGPEnabled(final Player player) {
-        // Todo: this needs to be rebuilt.
-        return true;
-    }
-
     public void toggleVisuals(final Player player, final Claim claim, final boolean value) {
-        if (!isGPEnabled(player) || GriefDefender.getCore().getWorldEditProvider() == null) {
+        if (GriefDefender.getCore().getWorldEditProvider() == null) {
             return;
         }
 
         if (!GriefDefender.getCore().getWorldEditProvider().hasCUISupport(player.getUniqueId())) {
-            this.serverNotificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("WECUI Mod not loaded!"), 2);
+            this.serverNotificationManager.sendPopupNotification(player, notificationTitle, Text.of("WECUI Mod not loaded!"), 2);
+            return;
         }
 
         // The below is tested and verified working!
@@ -285,26 +283,22 @@ public final class ServerClaimManager implements Witness {
     }
 
     public void saveChanges(final Player player, final String claimName, final String claimGreeting, final String claimFarewell, final double x, final double y, final double z, final String worldName) {
-        if (!isGPEnabled(player))
-            return;
-
         final Claim claim = this.claimLookup(player, x, y, z, worldName);
         if (claim != null) {
             final boolean isOwner = (claim.getOwnerUniqueId().equals(player.getUniqueId()));
-            final boolean isAdmin = player.hasPermission("griefdefender.admin");
+            final boolean isAdmin = player.hasPermission(adminPermission);
 
             if (isOwner || isAdmin) {
                 claim.getData().setName(TextComponent.builder(claimName).build());
                 claim.getData().setGreeting(TextComponent.builder(claimGreeting).build());
                 claim.getData().setFarewell(TextComponent.builder(claimFarewell).build());
-                this.sendUpdate(player, claim, true);
-                this.serverNotificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Changed Saved!"), 5);
+                this.sendUpdateTo(player, claim, claim.getPlayers(), false);
+                this.serverNotificationManager.sendPopupNotification(player, notificationTitle, Text.of("Changed Saved!"), 5);
             } else {
-                this.serverNotificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Insufficient Permissions!"), 5);
+                this.serverNotificationManager.sendPopupNotification(player, notificationTitle, Text.of("Insufficient Permissions!"), 5);
             }
         } else {
-            this.serverNotificationManager
-                .sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Unable to lookup Claim, changed not saved!"), 5);
+            this.serverNotificationManager.sendPopupNotification(player, notificationTitle, Text.of("Unable to lookup Claim, changed not saved!"), 5);
         }
     }
 
@@ -312,13 +306,13 @@ public final class ServerClaimManager implements Witness {
         final World world = Sponge.getServer().getWorld(worldName).orElse(null);
         if (world == null) {
             this.serverNotificationManager
-                .sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Unable to find world, changes not saved!"), 5);
+                .sendPopupNotification(player, notificationTitle, Text.of("Unable to find world, changes not saved!"), 5);
             return null;
         }
         final Location<World> location = new Location<>(world, x, y, z);
         if (location == null) {
             this.serverNotificationManager
-                .sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Invalid location sent to server.  Changes not saved!"), 5);
+                .sendPopupNotification(player, notificationTitle, Text.of("Invalid location sent to server.  Changes not saved!"), 5);
         } else {
             final Claim claim = GriefDefender.getCore().getClaimManager(player.getWorld().getUniqueId()).getClaimAt(location.getBlockPosition());
             if (claim != null) {
@@ -334,29 +328,45 @@ public final class ServerClaimManager implements Witness {
             final double taxRate = playerData.getTaxRate(claim.getType());
             final double taxOwed = (claim.getClaimBlocks() / 256) * taxRate;
             return taxOwed;
-        } else {
-            return 0;
         }
+        return 0;
     }
 
     public final double claimBlockCost(final Player player, final Claim claim) {
         if (claim != null && player != null) {
             PlayerData playerData = GriefDefender.getCore().getPlayerData(player.getWorld().getUniqueId(), player.getUniqueId()).get();
             return playerData.getEconomyClaimBlockCost();
-        } else {
-            return 0.0;
         }
+        return 0.0;
     }
 
     public final double claimBlockSell(final Player player, final Claim claim) {
         if (claim != null && player != null) {
             PlayerData playerData = GriefDefender.getCore().getPlayerData(player.getWorld().getUniqueId(), player.getUniqueId()).get();
             return playerData.getEconomyClaimBlockReturn();
-        } else {
-            return 0.0;
         }
+        return 0.0;
     }
 
+    public final double claimTaxBalance(final Player player, final Claim claim) {
+        if (claim != null && player != null) {
+            if (claim.getEconomyData() != null) {
+                return claim.getEconomyData().getTaxBalance();
+            }
+        }
+        return 0.0;
+    }
+
+    public final double claimSalePrice(final Player player, final Claim claim) {
+        if (claim != null && player != null) {
+            if (claim.getEconomyData() != null) {
+                return claim.getEconomyData().getSalePrice();
+            }
+        }
+        return 0.0;
+    }
+
+    // Functions
     public void abandonClaim(final Player player, final Claim claim) {
         if (claim != null && player != null) {
             claim.getClaimManager().deleteClaim(claim);
@@ -370,24 +380,18 @@ public final class ServerClaimManager implements Witness {
     }
 
     public void openClientGUI (final Player player){
-        if (!isGPEnabled(player)) {
-            return;
-        }
-
         if (!player.hasPermission(Almura.ID + ".claim.base")) {
-            this.serverNotificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Insufficient Permissions to Manage Claim!"), 2);
+            this.serverNotificationManager.sendPopupNotification(player, notificationTitle, Text.of("Insufficient Permissions to Manage Claim!"), 2);
             return;
         }
 
         final Claim claim = GriefDefender.getCore().getClaimManager(player.getWorld().getUniqueId()).getClaimAt(player.getLocation().getBlockPosition());
-        if (claim != null) { // if GP is loaded, claim should never be null.
+        if (claim != null) {
             final boolean isOwner = (claim.getOwnerUniqueId().equals(player.getUniqueId()));
             final boolean isTrusted = claim.isTrusted(player.getUniqueId());
-            final boolean isAdmin = player.hasPermission("griefdefender.admin");
+            final boolean isAdmin = player.hasPermission(adminPermission);
             if (!isAdmin && claim.isWilderness()) {
-                this.serverNotificationManager
-                    .sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Insufficient permissions to open Claim Manager in Wilderness"),
-                        5);
+                this.serverNotificationManager.sendPopupNotification(player, notificationTitle, Text.of("Insufficient permissions to open Claim Manager in Wilderness"),5);
             } else {
                 this.network.sendTo(player, new ClientboundClaimGuiResponsePacket(isOwner, isTrusted, isAdmin));
             }
