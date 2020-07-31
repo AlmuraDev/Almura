@@ -131,6 +131,7 @@ public final class ServerClaimManager implements Witness {
         if (!everyone && player != null && claim != null) {
             final Claim finalClaim = claim;
             Task.builder().delayTicks(10).execute(t -> this.sendUpdate(player, finalClaim)).submit(this.container);
+            return;
         }
         // Send to everyone regardless of implied list from events.
         if (everyone && player == null && claim != null) {
@@ -138,6 +139,7 @@ public final class ServerClaimManager implements Witness {
             for (Player onlinePlayer : Sponge.getServer().getOnlinePlayers()) {
                 Task.builder().delayTicks(10).execute(t -> this.sendUpdate(onlinePlayer, finalClaim)).submit(this.container);
             }
+            return;
         }
         // Send to the implied list of players when claim is handed into the method.
         if (players != null && claim != null) {
@@ -148,6 +150,7 @@ public final class ServerClaimManager implements Witness {
                     Task.builder().delayTicks(10).execute(t -> this.sendUpdate(finalPlayer, finalClaim)).submit(this.container);
                 }
             }
+            return;
         }
        // Send update to everyone on server regardless of location or claim
         if (player == null && players == null && claim == null && everyone) {
@@ -160,6 +163,7 @@ public final class ServerClaimManager implements Witness {
                     }
                 }
             }
+            return;
         }
     }
 
@@ -167,7 +171,7 @@ public final class ServerClaimManager implements Witness {
         if (GriefDefender.getCore() != null) {
             boolean isWorldOrilla = false;
             boolean isWorldAsgard = false;
-            System.out.println("SendUpdate: " + player.getName() + "|" + claim.getName());
+
             if (Sponge.getServer().getWorld("Orilla").isPresent()) {
                 isWorldOrilla = Sponge.getServer().getWorld("Orilla").get().getUniqueId() == claim.getWorldUniqueId();
             }
@@ -225,6 +229,10 @@ public final class ServerClaimManager implements Witness {
 
                         final EconomyService service = Sponge.getServiceManager().provide(EconomyService.class).orElse(null);
                         if (service != null && player != null) {
+                            if (claim.getEconomyData().isForSale()) {
+                                isForSale = true;
+                                claimSalePrice = this.claimSalePrice(player, claim);
+                            }
                             // Todo: implement the rest of the econ stuffz.
                             claimTaxes = this.claimTaxes(player, claim);
                             claimBlockCost = this.claimBlockCost(player, claim);
@@ -233,10 +241,6 @@ public final class ServerClaimManager implements Witness {
 
                             if (claim.getEconomyAccountId().isPresent()) {
                                 claimTaxBalance = this.claimTaxBalance(player, claim);
-                                if (claim.getEconomyData().isForSale()) {
-                                    isForSale = true;
-                                    claimSalePrice = this.claimSalePrice(player, claim);
-                                }
                                 UUID accountID = claim.getEconomyAccountId().orElse(null);
                                 if (!(accountID == null)) {
                                     final UniqueAccount claimAccount = service.getOrCreateAccount(accountID).orElse(null);
@@ -376,10 +380,28 @@ public final class ServerClaimManager implements Witness {
     public void toggleClaimDenyMessages(final Player player, final Claim claim, final boolean value) {
         if (claim != null && player != null) {
             claim.getData().setDenyMessages(value);
+            claim.getData().save();
+        }
+    }
+
+    public void setForSale(final Player player, final Claim claim, boolean forSale, double salePrice) {
+        if (claim != null && player != null) {
+            claim.getEconomyData().setForSale(forSale);
+            claim.getEconomyData().setSalePrice(salePrice);
+            claim.getData().save();
+            System.out.println("For Sale: " + claim.getEconomyData().isForSale() + " @ " + claim.getEconomyData().getSalePrice());
+        }
+    }
+
+    public void setSpawnLocation(final Player player, final Claim claim) {
+        if (claim != null && player != null) {
+            claim.getData().setSpawnPos((int)player.getPosition().getX(), (int)player.getPosition().getY(), (int)player.getPosition().getZ());
+            claim.getData().save();
         }
     }
 
     public void openClientGUI (final Player player){
+        this.network.sendTo(player, new ClientboundClaimGuiResponsePacket(true, true, true));
         if (!Sponge.getPluginManager().isLoaded("griefdefender")) {
             this.serverNotificationManager.sendPopupNotification(player, notificationTitle, Text.of("GriefDefender not detected!"), 2);
             return;

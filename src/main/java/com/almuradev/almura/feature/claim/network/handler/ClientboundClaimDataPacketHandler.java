@@ -38,7 +38,7 @@ public final class ClientboundClaimDataPacketHandler implements MessageHandler<C
                 clientClaimManager.claimGreeting = message.claimGreeting;
                 clientClaimManager.claimFarewell = message.claimFarewell;
                 clientClaimManager.claimEconBalance = message.claimEconBalance;
-                clientClaimManager.isClaim = message.isClaim;
+                clientClaimManager.isForSale = message.isForSale;
                 clientClaimManager.isWilderness = message.isWilderness;
                 clientClaimManager.isTownClaim = message.isTownClaim;
                 clientClaimManager.isAdminClaim = message.isAdminClaim;
