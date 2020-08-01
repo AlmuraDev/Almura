@@ -272,16 +272,6 @@ public final class ClaimManageScreen extends BasicScreen {
             .text("Abandon Claim")
             .listener(this)
             .enabled(this.isOwner || this.isAdmin)
-            .onClick(() -> {
-                BasicMessageBox.showDialog(this, "Abandon Claim",
-                    "Do you wish to abandon this claim?",
-                    MessageBoxButtons.YES_NO, (result) -> {
-                        if (result != MessageBoxResult.YES) return;
-                        this.network.sendToServer(new ServerboundClaimGuiAbandonRequestPacket(this.mc.player.posX, this.mc.player.posY, this.mc.player.posZ, hudData.worldName));
-                        this.closeOnAbandon = true;
-                    });
-
-            })
             .build("button.abandon");
 
         buttonSetForSale = new UIButtonBuilder(this)
@@ -376,7 +366,6 @@ public final class ClaimManageScreen extends BasicScreen {
                             "Do you wish to list this claim for sale?",
                             MessageBoxButtons.YES_NO, (result) -> {
                                 if (result != MessageBoxResult.YES) return;
-                                System.out.println("Sending LIST Packet to Server");
                                 this.network.sendToServer(new ServerboundClaimGuiForSaleRequestPacket(this.mc.player.posX, this.mc.player.posY, this.mc.player.posZ, hudData.worldName, true, value));
                             });
                     } else {
@@ -384,7 +373,6 @@ public final class ClaimManageScreen extends BasicScreen {
                             "Do you wish to delist this claim?",
                             MessageBoxButtons.YES_NO, (result) -> {
                                 if (result != MessageBoxResult.YES) return;
-                                System.out.println("Sending DELIST Packet to server");
                                 this.network.sendToServer(new ServerboundClaimGuiForSaleRequestPacket(this.mc.player.posX, this.mc.player.posY, this.mc.player.posZ, hudData.worldName, false, value));
                             });
                     }
@@ -400,6 +388,16 @@ public final class ClaimManageScreen extends BasicScreen {
                 this.network.sendToServer(new ServerboundClaimGuiSaveRequestPacket(this.claimNameField.getText().trim(), this.claimGreetingField.getText().trim(), this.claimFarewellField.getText().trim(), this.mc.player.posX, this.mc.player.posY,
                     this.mc.player.posZ, hudData.worldName));
                 this.close();
+                break;
+
+            case "button.abandon":
+                BasicMessageBox.showDialog(this, "Abandon Claim",
+                    "Do you wish to abandon this claim?",
+                    MessageBoxButtons.YES_NO, (result) -> {
+                        if (result != MessageBoxResult.YES) return;
+                        this.network.sendToServer(new ServerboundClaimGuiAbandonRequestPacket(this.mc.player.posX, this.mc.player.posY, this.mc.player.posZ, hudData.worldName));
+                        this.closeOnAbandon = true;
+                    });
                 break;
 
             case "button.close":
@@ -451,6 +449,7 @@ public final class ClaimManageScreen extends BasicScreen {
             this.form.setSize(400, 250);
             this.claimSizeField.setText("" + NumberFormat.getNumberInstance(Locale.US).format(this.clientClaimManager.claimSize));
         }
+
         if (this.clientClaimManager.isForSale) {
             this.buttonSetForSale.setText(("Delist For Sale"));
         } else {
