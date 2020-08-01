@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(GuiChest.class)
 public interface GuiChestAccessor {
     //public net.minecraft.client.gui.inventory.GuiChest field_147017_u # CHEST_GUI_TEXTURE
-    @Mutable @Accessor("CHEST_GUI_TEXTURE") static ResourceLocation accessor$getChestGuiTexture() {
+    @Accessor("CHEST_GUI_TEXTURE") static ResourceLocation accessor$getChestGuiTexture() {
         throw new IllegalStateException("Untransformed Accessor!");
     }
 }

@@ -13,6 +13,7 @@ import net.minecraftforge.fml.common.SidedProxy;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameConstructionEvent;
 import org.spongepowered.api.event.game.state.GameStoppingEvent;
+import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.event.world.UnloadWorldEvent;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
@@ -23,6 +24,7 @@ import javax.inject.Inject;
     id = Almura.ID,
     dependencies = {
         @Dependency(id = "nucleus", optional = true),
+        @Dependency(id = "griefdefender", optional = true),
         @Dependency(id = "terraincontrol", optional = true)
     }
 )
@@ -31,6 +33,7 @@ public class Almura implements com.almuradev.almura.shared.plugin.Plugin {
     public static final String ID = "almura";
     public static final String NAME = "Almura";
     public static boolean debug = true;
+    public static boolean isShuttingDown = false;
     public static NetworkManager networkManager;
 
     @SidedProxy(
@@ -52,12 +55,19 @@ public class Almura implements com.almuradev.almura.shared.plugin.Plugin {
     }
 
     @Listener
+    public void gameShutdown(final GameStoppingServerEvent event) {
+        isShuttingDown = true;
+    }
+
+    @Listener
     public void onWorldUnload(final UnloadWorldEvent event) {
         // The following prevents worlds from unloading unless server is shutting down
         // This is necessary to prevent TerrainControl configs loading more than once
         // on the dev server.  Live server doesn't have this issue because each world
         // is kept active by Dynmap holding 1 chunk open per loaded world.
-        System.out.println("Almura prevented unloading of: " + event.getTargetWorld().getName());
-        //event.setCancelled(true);
+        if (!isShuttingDown) {
+            System.out.println("Almura prevented unloading of: " + event.getTargetWorld().getName());
+            event.setCancelled(true);
+        }
     }
 }

@@ -9,7 +9,9 @@ package com.almuradev.almura.feature.claim.gui;
 
 import com.almuradev.almura.feature.claim.ClientClaimManager;
 import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiAbandonRequestPacket;
+import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiForSaleRequestPacket;
 import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiSaveRequestPacket;
+import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiSetSpawnRequestPacket;
 import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiToggleDenyMessagesRequestPacket;
 import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiToggleVisualsRequestPacket;
 import com.almuradev.almura.feature.hud.HeadUpDisplay;
@@ -31,7 +33,6 @@ import net.malisis.core.client.gui.component.interaction.button.builder.UIButton
 import net.malisis.core.client.gui.event.ComponentEvent;
 import net.malisis.core.renderer.font.FontOptions;
 import net.malisis.core.util.FontColors;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -40,7 +41,6 @@ import org.lwjgl.input.Mouse;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -60,10 +60,12 @@ public final class ClaimManageScreen extends BasicScreen {
     private boolean update = true;
 
     private BasicForm form, functionsArea, econArea;
-    private UITextField claimNameField, claimOwnerField, claimGreetingField, claimFarewellField, claimSizeField, claimValueField, claimTaxField;
-    private UILabel claimNameLabel, claimForSaleLabel, claimOwnerLabel, claimGreetingLabel, claimFarewellLabel, claimSizeLabel, claimTaxLabel;
+    private UITextField claimNameField, claimOwnerField, claimGreetingField, claimFarewellField, claimSizeField, claimValueField, claimTaxField, claimTaxBalanceField;
+    private UITextField forSalePriceField;
+    private UILabel claimNameLabel, claimForSaleLabel, claimOwnerLabel, claimGreetingLabel, claimFarewellLabel, claimSizeLabel, claimTaxLabel, claimTaxBalanceLabel;
+    private UILabel econTitleLabel, claimValueLabel, claimFunctionsLabel, forSaleLabel;
     private UICheckBox showWarningsCheckbox;
-    private UIButton buttonVisuals, buttonHideVisuals;
+    private UIButton buttonVisuals, buttonHideVisuals, buttonAbandon, buttonSetForSale, buttonSetSpawnLocation;
 
     private boolean isOwner, isTrusted, isAdmin, toggleVisuals, closeOnAbandon;
 
@@ -100,59 +102,48 @@ public final class ClaimManageScreen extends BasicScreen {
         separator.setSize(form.getWidth() - 15, 1);
         separator.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
-        final UILabel claimNameLabel = new UILabel(this, "Name:");
-        claimNameLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        claimNameLabel.setPosition(7, 8, Anchor.LEFT | Anchor.TOP);
+        this.claimNameLabel = new UILabel(this, "Name:");
+        this.claimNameLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
+        this.claimNameLabel.setPosition(7, 8, Anchor.LEFT | Anchor.TOP);
 
         this.claimNameField = new UITextField(this, "", false);
         this.claimNameField.setSize(150, 0);
         this.claimNameField.setText(this.clientClaimManager.claimName);
         this.claimNameField.setEditable(this.isOwner || this.isAdmin);
-        this.claimNameField.setPosition(15, claimNameLabel.getY() + 14, Anchor.LEFT | Anchor.TOP);
+        this.claimNameField.setPosition(60, claimNameLabel.getY() - 2, Anchor.LEFT | Anchor.TOP);
         this.claimNameField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
-        this.claimSizeLabel = new UILabel(this, "Size:");
-        this.claimSizeLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        this.claimSizeLabel.setPosition(170, 8, Anchor.LEFT | Anchor.TOP);
-
-        this.claimSizeField = new UITextField(this, "", false);
-        this.claimSizeField.setSize(85, 0);
-        this.claimSizeField.setText("" + NumberFormat.getNumberInstance(Locale.US).format(this.clientClaimManager.claimSize));
-        this.claimSizeField.setTooltip("Total blocks included in claim");
-        this.claimSizeField.setPosition(175, claimNameLabel.getY() + 14, Anchor.LEFT | Anchor.TOP);
-        this.claimSizeField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
-
-        final UILabel claimOwnerLabel = new UILabel(this, "Greeting:");
-        claimOwnerLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        claimOwnerLabel.setPosition(7, claimNameLabel.getY() + 30, Anchor.LEFT | Anchor.TOP);
+        this.claimOwnerLabel = new UILabel(this, "Owner:");
+        this.claimOwnerLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
+        this.claimOwnerLabel.setPosition(7, claimNameLabel.getY() + 15, Anchor.LEFT | Anchor.TOP);
 
         this.claimOwnerField = new UITextField(this, "", false);
-        this.claimOwnerField.setSize(265, 0);
+        this.claimOwnerField.setSize(150, 0);
         this.claimOwnerField.setText(this.clientClaimManager.claimOwner);
         this.claimOwnerField.setEditable(false);
-        this.claimOwnerField.setPosition(15, claimNameLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
+        this.claimOwnerField.setPosition(60, claimOwnerLabel.getY() - 2 , Anchor.LEFT | Anchor.TOP);
         this.claimOwnerField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
-        final UILabel claimGreetingLabel = new UILabel(this, "Greeting:");
-        claimGreetingLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        claimGreetingLabel.setPosition(7, claimNameLabel.getY() + 33, Anchor.LEFT | Anchor.TOP);
+        this.claimGreetingLabel = new UILabel(this, "Greeting:");
+        this.claimGreetingLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
+        this.claimGreetingLabel.setPosition(7, claimOwnerLabel.getY() + 15, Anchor.LEFT | Anchor.TOP);
 
         this.claimGreetingField = new UITextField(this, "", false);
         this.claimGreetingField.setSize(200, 0);
         this.claimGreetingField.setText(this.clientClaimManager.claimGreeting);
         this.claimGreetingField.setEditable(this.isOwner || this.isAdmin);
-        this.claimGreetingField.setPosition(60, claimNameLabel.getY() + 32, Anchor.LEFT | Anchor.TOP);
+        this.claimGreetingField.setPosition(60, claimGreetingLabel.getY() - 2, Anchor.LEFT | Anchor.TOP);
         this.claimGreetingField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
-        final UILabel claimFarewellLabel = new UILabel(this, "Farewell:");
-        claimFarewellLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        claimFarewellLabel.setPosition(7, claimOwnerLabel.getY() + 22, Anchor.LEFT | Anchor.TOP);
+        this.claimFarewellLabel = new UILabel(this, "Farewell:");
+        this.claimFarewellLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
+        this.claimFarewellLabel.setPosition(7, claimGreetingLabel.getY() + 15, Anchor.LEFT | Anchor.TOP);
 
         this.claimFarewellField = new UITextField(this, "", false);
         this.claimFarewellField.setSize(200, 0);
         this.claimFarewellField.setText(this.clientClaimManager.claimFarewell);
         this.claimFarewellField.setEditable(this.isOwner || this.isAdmin);
-        this.claimFarewellField.setPosition(60, claimOwnerLabel.getY() + 20, Anchor.LEFT | Anchor.TOP);
+        this.claimFarewellField.setPosition(60, claimFarewellLabel.getY() -2, Anchor.LEFT | Anchor.TOP);
         this.claimFarewellField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
         // Economy Container
@@ -168,35 +159,46 @@ public final class ClaimManageScreen extends BasicScreen {
         this.econArea.setLeftPadding(3);
         this.econArea.setVisible(!this.clientClaimManager.isWilderness);
 
-        final UILabel econTitleLabel = new UILabel(this, "Economy Functions");
-        econTitleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        econTitleLabel.setPosition(0, 2, Anchor.CENTER | Anchor.TOP);
+        this.econTitleLabel = new UILabel(this, "Economy Functions");
+        this.econTitleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
+        this.econTitleLabel.setPosition(0, 2, Anchor.CENTER | Anchor.TOP);
 
         final UISeparator econSeparator = new UISeparator(this);
         econSeparator.setSize(econArea.getWidth() - 15, 1);
-        econSeparator.setPosition(0, 15, Anchor.TOP | Anchor.CENTER);
+        econSeparator.setPosition(0, econTitleLabel.getY() + 13, Anchor.TOP | Anchor.CENTER);
 
-        final UILabel claimValueLabel = new UILabel(this, "Estimated Value:");
-        claimValueLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        claimValueLabel.setPosition(15, 25, Anchor.LEFT | Anchor.TOP);
+        this.claimValueLabel = new UILabel(this, "Estimated Value:");
+        this.claimValueLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
+        this.claimValueLabel.setPosition(15, econSeparator.getY() + 10, Anchor.LEFT | Anchor.TOP);
 
         this.claimValueField = new UITextField(this, "", false);
         this.claimValueField.setSize(100, 0);
         this.claimValueField.setText("$ 1,456,434.00");
         this.claimValueField.setEditable(false);
-        this.claimValueField.setPosition(120, claimValueLabel.getY() - 1, Anchor.LEFT | Anchor.TOP);
+        this.claimValueField.setPosition(120, claimValueLabel.getY() - 2, Anchor.LEFT | Anchor.TOP);
         this.claimValueField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
         this.claimTaxLabel = new UILabel(this, "Estimated Taxes:");
         this.claimTaxLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        this.claimTaxLabel.setPosition(15, 45, Anchor.LEFT | Anchor.TOP);
+        this.claimTaxLabel.setPosition(15, claimValueLabel.getY() + 15, Anchor.LEFT | Anchor.TOP);
 
         this.claimTaxField = new UITextField(this, "", false);
         this.claimTaxField.setSize(100, 0);
         this.claimTaxField.setText("$ 56,434.00");
         this.claimTaxField.setEditable(false);
-        this.claimTaxField.setPosition(120, this.claimTaxLabel.getY() - 1, Anchor.LEFT | Anchor.TOP);
+        this.claimTaxField.setPosition(120, this.claimTaxLabel.getY() - 2, Anchor.LEFT | Anchor.TOP);
         this.claimTaxField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
+
+        this.claimTaxBalanceLabel = new UILabel(this, "Claim Tax Balance:");
+        this.claimTaxBalanceLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
+        this.claimTaxBalanceLabel.setPosition(15, claimTaxLabel.getY() + 15, Anchor.LEFT | Anchor.TOP);
+
+        this.claimTaxBalanceField = new UITextField(this, "", false);
+        this.claimTaxBalanceField.setSize(100, 0);
+        this.claimTaxBalanceField.setText("$ 56,434.00");
+        this.claimTaxBalanceField.setEditable(false);
+        this.claimTaxBalanceField.setPosition(120, this.claimTaxBalanceLabel.getY() - 2, Anchor.LEFT | Anchor.TOP);
+        this.claimTaxBalanceField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
         this.claimForSaleLabel = new UILabel(this, "<- Claim is For Sale ->");
         this.claimForSaleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
@@ -208,7 +210,31 @@ public final class ClaimManageScreen extends BasicScreen {
             .scale(1.2F)
             .build());
 
-        this.econArea.add(econSeparator, econSeparator, econTitleLabel, claimValueLabel, this.claimValueField, this.claimTaxLabel, this.claimTaxField, this.claimForSaleLabel);
+        this.claimSizeLabel = new UILabel(this, "Claim Size: (Blocks)");
+        this.claimSizeLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
+        this.claimSizeLabel.setPosition(15, claimTaxBalanceLabel.getY() + 15, Anchor.LEFT | Anchor.TOP);
+
+        this.claimSizeField = new UITextField(this, "", false);
+        this.claimSizeField.setSize(95, 0);
+        this.claimSizeField.setText("" + NumberFormat.getNumberInstance(Locale.US).format(this.clientClaimManager.claimSize));
+        this.claimSizeField.setTooltip("Total blocks included in claim");
+        this.claimSizeField.setPosition(125, this.claimSizeLabel.getY() - 2, Anchor.LEFT | Anchor.TOP);
+        this.claimSizeField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
+
+        this.forSaleLabel = new UILabel(this, "For Sale Price:");
+        this.forSaleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
+        this.forSaleLabel.setPosition(15, claimSizeLabel.getY() + 25, Anchor.LEFT | Anchor.TOP);
+
+        this.forSalePriceField = new UITextField(this, "", false);
+        this.forSalePriceField.setSize(100, 0);
+        this.forSalePriceField.setText("" + NumberFormat.getNumberInstance(Locale.US).format(this.clientClaimManager.claimSalePrice));
+        this.forSalePriceField.setTooltip("Sale Price of this Claim");
+        this.forSalePriceField.setPosition(120, this.forSaleLabel.getY() - 2, Anchor.LEFT | Anchor.TOP);
+        this.forSalePriceField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
+
+        this.econArea.add(econSeparator, econSeparator, econTitleLabel, claimValueLabel, this.claimValueField, this.claimTaxLabel,
+            this.claimTaxField, this.claimForSaleLabel, this.claimTaxBalanceLabel, this.claimTaxBalanceField, this.claimSizeLabel,
+            this.claimSizeField, this.forSaleLabel, this.forSalePriceField);
 
         // Functions Container
         this.functionsArea = new BasicForm(this, 110, 200, "");
@@ -223,9 +249,9 @@ public final class ClaimManageScreen extends BasicScreen {
         this.functionsArea.setLeftPadding(3);
         this.functionsArea.setVisible(!this.clientClaimManager.isWilderness);
 
-        final UILabel claimFunctionsLabel = new UILabel(this, "Claim Functions");
-        claimFunctionsLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        claimFunctionsLabel.setPosition(0, 4, Anchor.CENTER | Anchor.TOP);
+        this.claimFunctionsLabel = new UILabel(this, "Claim Functions");
+        this.claimFunctionsLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
+        this.claimFunctionsLabel.setPosition(0, 4, Anchor.CENTER | Anchor.TOP);
 
         final UISeparator functionsSeparator = new UISeparator(this);
         functionsSeparator.setSize(this.functionsArea.getWidth() - 15, 1);
@@ -239,44 +265,34 @@ public final class ClaimManageScreen extends BasicScreen {
         // this.buttonVisuals.setVisible(this.clientClaimManager.hasWECUI);
         this.buttonVisuals.register(this);
 
-        final UIButton buttonAbandon = new UIButtonBuilder(this)
+        buttonAbandon = new UIButtonBuilder(this)
             .width(40)
             .y(buttonVisuals.getY() + 20)
             .anchor(Anchor.CENTER | Anchor.TOP)
             .text("Abandon Claim")
             .listener(this)
             .enabled(this.isOwner || this.isAdmin)
-            .onClick(() -> {
-                BasicMessageBox.showDialog(this, "Abandon Claim",
-                    "Do you wish to abandon this claim?",
-                    MessageBoxButtons.YES_NO, (result) -> {
-                        if (result != MessageBoxResult.YES) return;
-                        this.network.sendToServer(new ServerboundClaimGuiAbandonRequestPacket(this.mc.player.posX, this.mc.player.posY, this.mc.player.posZ, hudData.worldName));
-                        this.closeOnAbandon = true;
-                    });
-
-            })
             .build("button.abandon");
 
-        final UIButton buttonSetForSale = new UIButtonBuilder(this)
+        buttonSetForSale = new UIButtonBuilder(this)
             .width(40)
             .y(buttonAbandon.getY() + 20)
             .anchor(Anchor.CENTER | Anchor.TOP)
-            .text("List For Sale")
+            .text("For Sale")
             .listener(this)
             .enabled(this.isOwner || this.isAdmin)
-            .visible(false)
-            .build("button.setForSale");
+            .visible(true)
+            .build("button.toggleforsale");
 
-        final UIButton buttonSetSpawnLocation = new UIButtonBuilder(this)
+        buttonSetSpawnLocation = new UIButtonBuilder(this)
             .width(40)
             .y(buttonSetForSale.getY() + 20)
             .anchor(Anchor.CENTER | Anchor.TOP)
             .text("Set Spawn")
             .listener(this)
             .enabled(this.isOwner || this.isAdmin)
-            .visible(false)
-            .build("button.setSpawnLocation");
+            .visible(true)
+            .build("button.setspawnlocation");
 
         this.functionsArea.add(claimFunctionsLabel, functionsSeparator, buttonAbandon, buttonSetForSale, buttonSetSpawnLocation, buttonVisuals);
 
@@ -305,7 +321,6 @@ public final class ClaimManageScreen extends BasicScreen {
             .enabled(this.isOwner || this.isAdmin)
             .build("button.save");
 
-        // Close button
         final UIButton buttonClose = new UIButtonBuilder(this)
             .width(40)
             .anchor(Anchor.RIGHT | Anchor.BOTTOM)
@@ -313,7 +328,7 @@ public final class ClaimManageScreen extends BasicScreen {
             .listener(this)
             .build("button.close");
 
-        this.form.add(titleLabel, separator, claimNameLabel, this.claimNameField, this.claimSizeLabel, this.claimSizeField, claimGreetingLabel, this.claimGreetingField, claimFarewellLabel, this.claimFarewellField, this.econArea, this
+        this.form.add(titleLabel, separator, claimNameLabel, this.claimNameField, this.claimOwnerLabel, this.claimOwnerField, claimGreetingLabel, this.claimGreetingField, claimFarewellLabel, this.claimFarewellField, this.econArea, this
             .functionsArea, this.showWarningsCheckbox, buttonHideVisuals, buttonSave, buttonClose);
 
         updateValues();
@@ -325,7 +340,6 @@ public final class ClaimManageScreen extends BasicScreen {
     public void onValueChange(ComponentEvent.ValueChange event) {
         switch (event.getComponent().getName()) {
             case "checkbox.showwarnings":
-                System.out.println("Checked: " + !this.showWarningsCheckbox.isChecked());
                 this.network.sendToServer(new ServerboundClaimGuiToggleDenyMessagesRequestPacket(this.mc.player.posX, this.mc.player.posY, this.mc
                     .player.posZ, hudData.worldName, !this.showWarningsCheckbox.isChecked()));
                 break;
@@ -340,19 +354,50 @@ public final class ClaimManageScreen extends BasicScreen {
                 if (this.clientClaimManager.isWilderness) {
                     this.toggleVisuals = false;  // Forces disable.
                 }
-                System.out.println("Toggle: " + this.toggleVisuals);
                 this.network.sendToServer(new ServerboundClaimGuiToggleVisualsRequestPacket(this.mc.player.posX, this.mc.player.posY, this.mc.player.posZ, hudData.worldName, this.toggleVisuals));
                 break;
 
-            case "button.abandon":
-                // Handled in the onClick lamda setup.
+            case "button.toggleforsale":
+                Double value = Double.valueOf(this.forSalePriceField.getText().replace("$","").replace("§b","").trim());
 
+                if (!this.clientClaimManager.isWilderness) {
+                    if (!this.clientClaimManager.isForSale) {
+                        BasicMessageBox.showDialog(this, "List Claim For Sale",
+                            "Do you wish to list this claim for sale?",
+                            MessageBoxButtons.YES_NO, (result) -> {
+                                if (result != MessageBoxResult.YES) return;
+                                this.network.sendToServer(new ServerboundClaimGuiForSaleRequestPacket(this.mc.player.posX, this.mc.player.posY, this.mc.player.posZ, hudData.worldName, true, value));
+                            });
+                    } else {
+                        BasicMessageBox.showDialog(this, "Delist Claim For Sale",
+                            "Do you wish to delist this claim?",
+                            MessageBoxButtons.YES_NO, (result) -> {
+                                if (result != MessageBoxResult.YES) return;
+                                this.network.sendToServer(new ServerboundClaimGuiForSaleRequestPacket(this.mc.player.posX, this.mc.player.posY, this.mc.player.posZ, hudData.worldName, false, value));
+                            });
+                    }
+                }
+
+                break;
+
+            case "button.setspawnlocation":
+                this.network.sendToServer(new ServerboundClaimGuiSetSpawnRequestPacket(this.mc.player.posX, this.mc.player.posY, this.mc.player.posZ, hudData.worldName));
                 break;
 
             case "button.save":
                 this.network.sendToServer(new ServerboundClaimGuiSaveRequestPacket(this.claimNameField.getText().trim(), this.claimGreetingField.getText().trim(), this.claimFarewellField.getText().trim(), this.mc.player.posX, this.mc.player.posY,
                     this.mc.player.posZ, hudData.worldName));
                 this.close();
+                break;
+
+            case "button.abandon":
+                BasicMessageBox.showDialog(this, "Abandon Claim",
+                    "Do you wish to abandon this claim?",
+                    MessageBoxButtons.YES_NO, (result) -> {
+                        if (result != MessageBoxResult.YES) return;
+                        this.network.sendToServer(new ServerboundClaimGuiAbandonRequestPacket(this.mc.player.posX, this.mc.player.posY, this.mc.player.posZ, hudData.worldName));
+                        this.closeOnAbandon = true;
+                    });
                 break;
 
             case "button.close":
@@ -385,6 +430,8 @@ public final class ClaimManageScreen extends BasicScreen {
         this.showWarningsCheckbox.setVisible(!this.clientClaimManager.isWilderness);
         this.claimValueField.setText("$ " + TextFormatting.GREEN + dFormat.format(this.clientClaimManager.claimBlockCost * this.clientClaimManager.claimSize));
         this.claimTaxField.setText("$ " + TextFormatting.YELLOW + dFormat.format(this.clientClaimManager.claimTaxes));
+        this.claimTaxBalanceField.setText("$ " + TextFormatting.RED + dFormat.format(this.clientClaimManager.claimTaxBalance));
+        this.forSalePriceField.setText("$ " + TextFormatting.AQUA + dFormat.format(this.clientClaimManager.claimSalePrice));
         this.econArea.setVisible(!this.clientClaimManager.isWilderness);
         this.functionsArea.setVisible(!this.clientClaimManager.isWilderness);
 
@@ -401,6 +448,12 @@ public final class ClaimManageScreen extends BasicScreen {
         } else {
             this.form.setSize(400, 250);
             this.claimSizeField.setText("" + NumberFormat.getNumberInstance(Locale.US).format(this.clientClaimManager.claimSize));
+        }
+
+        if (this.clientClaimManager.isForSale) {
+            this.buttonSetForSale.setText(("Delist For Sale"));
+        } else {
+            this.buttonSetForSale.setText(("List For Sale"));
         }
     }
 

@@ -8,7 +8,7 @@
 package com.almuradev.content.type.item.type.seed;
 
 import com.almuradev.almura.asm.mixin.accessors.item.ItemAccessor;
-import com.almuradev.almura.asm.mixin.accessors.item.ItemSeedAccessor;
+import com.almuradev.almura.asm.mixin.accessors.item.ItemSeedsAccessor;
 import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.type.item.ItemTooltip;
 import com.almuradev.content.type.item.type.seed.processor.grass.Grass;
@@ -79,9 +79,9 @@ public final class SeedItemImpl extends ItemSeeds implements SeedItem {
     }
 
     private void setCatalogsIfNecessary() {
-        if (((ItemSeedAccessor) (Object) this).accessor$getCrops() == null || ((ItemSeedAccessor) (Object) this).accessor$getSoilBlockID() == null) {
-            ((ItemSeedAccessor) (Object) this).accessor$setCrops ((Block) this.cropDelegate.get());
-            ((ItemSeedAccessor) (Object) this).accessor$setSoilBlockID ((Block) this.soilDelegate.get());
+        if (((ItemSeedsAccessor) (Object) this).accessor$getCrops() == null || ((ItemSeedsAccessor) (Object) this).accessor$getSoilBlockID() == null) {
+            ((ItemSeedsAccessor) (Object) this).accessor$setCrops ((Block) this.cropDelegate.get());
+            ((ItemSeedsAccessor) (Object) this).accessor$setSoilBlockID ((Block) this.soilDelegate.get());
         }
     }
 }

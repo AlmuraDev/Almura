@@ -10,14 +10,14 @@ package com.almuradev.almura.feature.claim.network;
 import org.spongepowered.api.network.ChannelBuf;
 import org.spongepowered.api.network.Message;
 
-public final class ServerboundClaimGuiAbandonRequestPacket implements Message {
+public final class ServerboundClaimGuiSetSpawnRequestPacket implements Message {
 
     public double x, y, z;
     public String worldName;
 
-    public ServerboundClaimGuiAbandonRequestPacket() {}
+    public ServerboundClaimGuiSetSpawnRequestPacket() {}
 
-    public ServerboundClaimGuiAbandonRequestPacket(final double x, final double y, final double z, final String worldName) {
+    public ServerboundClaimGuiSetSpawnRequestPacket(final double x, final double y, final double z, final String worldName) {
         this.x = x;
         this.y = y;
         this.z = z;

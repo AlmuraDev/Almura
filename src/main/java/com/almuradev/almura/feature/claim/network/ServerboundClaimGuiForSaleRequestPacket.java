@@ -10,18 +10,22 @@ package com.almuradev.almura.feature.claim.network;
 import org.spongepowered.api.network.ChannelBuf;
 import org.spongepowered.api.network.Message;
 
-public final class ServerboundClaimGuiAbandonRequestPacket implements Message {
+public final class ServerboundClaimGuiForSaleRequestPacket implements Message {
 
     public double x, y, z;
     public String worldName;
+    public boolean setForSale;
+    public double salePrice;
 
-    public ServerboundClaimGuiAbandonRequestPacket() {}
+    public ServerboundClaimGuiForSaleRequestPacket() {}
 
-    public ServerboundClaimGuiAbandonRequestPacket(final double x, final double y, final double z, final String worldName) {
+    public ServerboundClaimGuiForSaleRequestPacket(final double x, final double y, final double z, final String worldName, final boolean setForSale, final double salePrice) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.worldName = worldName;
+        this.setForSale = setForSale;
+        this.salePrice = salePrice;
     }
 
     @Override
@@ -30,6 +34,8 @@ public final class ServerboundClaimGuiAbandonRequestPacket implements Message {
         this.y = buf.readDouble();
         this.z = buf.readDouble();
         this.worldName = buf.readString();
+        this.setForSale = buf.readBoolean();
+        this.salePrice = buf.readDouble();
     }
 
     @Override
@@ -38,5 +44,7 @@ public final class ServerboundClaimGuiAbandonRequestPacket implements Message {
         buf.writeDouble(this.y);
         buf.writeDouble(this.z);
         buf.writeString(this.worldName);
+        buf.writeBoolean(this.setForSale);
+        buf.writeDouble(this.salePrice);
     }
 }

@@ -33,7 +33,7 @@ public final class ClientboundClaimGuiResponsePacket implements Message {
     @Override
     public void writeTo(ChannelBuf buf) {
         buf.writeBoolean(this.isOwner);
-        buf.writeBoolean(this.isAdmin);
+        buf.writeBoolean(this.isTrusted);
         buf.writeBoolean(this.isAdmin);
     }
 }

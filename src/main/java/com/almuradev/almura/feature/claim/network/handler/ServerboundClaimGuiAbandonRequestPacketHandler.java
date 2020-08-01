@@ -12,7 +12,7 @@ import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiAbandonRequ
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.PacketUtil;
-import me.ryanhamshire.griefprevention.api.claim.Claim;
+import com.griefdefender.api.claim.Claim;
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
@@ -48,14 +48,14 @@ public final class ServerboundClaimGuiAbandonRequestPacketHandler implements Mes
             final Claim claim = serverClaimManager.claimLookup(player, message.x, message.y, message.z, message.worldName);
             if (claim != null) {
                 final boolean isOwner = (claim.getOwnerUniqueId().equals(player.getUniqueId()));
-                final boolean isAdmin = player.hasPermission("griefprevention.admin");
+                final boolean isAdmin = player.hasPermission(ServerClaimManager.adminPermission);
 
                 if (isOwner || isAdmin) {
                     this.serverClaimManager.abandonClaim(player, claim);
-                    this.serverClaimManager.sendUpdate(player, claim, true);
-                    this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Claim Abandoned!"), 5);
+                    this.serverClaimManager.sendUpdateTo(player, claim, null, true);
+                    this.notificationManager.sendPopupNotification(player, ServerClaimManager.notificationTitle, Text.of("Claim Abandoned!"), 5);
                 } else {
-                    this.notificationManager.sendPopupNotification(player, Text.of("Claim Manager"), Text.of("Insufficient Permissions!"), 5);
+                    this.notificationManager.sendPopupNotification(player, ServerClaimManager.notificationTitle, Text.of("Insufficient Permissions!"), 5);
                 }
             }
         }

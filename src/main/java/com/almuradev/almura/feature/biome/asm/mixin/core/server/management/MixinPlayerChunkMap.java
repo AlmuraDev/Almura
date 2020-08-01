@@ -7,8 +7,7 @@
  */
 package com.almuradev.almura.feature.biome.asm.mixin.core.server.management;
 
-import com.almuradev.almura.asm.mixin.accessors.server.management.PlayerChunkMapAccessor;
-import com.google.common.collect.AbstractIterator;
+import com.almuradev.almura.feature.biome.util.CustomChunkIterator;
 import com.google.common.collect.Lists;
 import net.minecraft.server.management.PlayerChunkMap;
 import net.minecraft.server.management.PlayerChunkMapEntry;
@@ -30,46 +29,11 @@ public abstract class MixinPlayerChunkMap {
 
     /**
      * @author Dockter
-     * Purpose: experimental test to bypass OR remove player range check for certain worlds.
+     * @reason Experimental test to bypass OR remove player range check for certain worlds.
      */
     @Overwrite
     public Iterator<Chunk> getChunkIterator() {
         final Iterator<PlayerChunkMapEntry> iterator = this.entries.iterator();
-        return new AbstractIterator<Chunk>() {
-            protected Chunk computeNext() {
-                while (true) {
-                    if (iterator.hasNext()) {
-                        PlayerChunkMapEntry playerchunkmapentry = iterator.next();
-                        Chunk chunk = playerchunkmapentry.getChunk();
-
-                        if (chunk == null) {
-                            continue;
-                        }
-
-                        if (!chunk.isLightPopulated() && chunk.isTerrainPopulated()) {
-                            return chunk;
-                        }
-
-                        if (!chunk.wasTicked()) {
-                            return chunk;
-                        }
-
-                        if (world.getWorldInfo().getWorldName().equalsIgnoreCase("orilla")) {
-                            return chunk;
-                        }
-
-
-                        //Todo: make this a configurable / toggleable option (in-realtime)
-                        if (!playerchunkmapentry.hasPlayerMatchingInRange(128.0D, PlayerChunkMapAccessor.accessor$getNotSpectator())) {
-                            continue;
-                        }
-
-                        return chunk;
-                    }
-
-                    return this.endOfData();
-                }
-            }
-        };
+        return new CustomChunkIterator(this.world, iterator);
     }
 }

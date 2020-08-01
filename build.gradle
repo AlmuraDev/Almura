@@ -44,7 +44,7 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 archivesBaseName = project.name.toLowerCase()
-version = "mc[${project.minecraftVersion}]-forge[${project.forgeBuild}]-sf[${project.spongeImplVersion.split("-")[3]}]-b${project.internalBuild}"
+version = "mc[${project.minecraftVersion}]-forge[${project.forgeBuild}]-sf[${project.spongeImplVersion.split("-")[2]}]-b${project.internalBuild}"
 
 minecraft {
     version = "${project.forgeVersion}"
@@ -94,6 +94,14 @@ repositories {
         name = "LuckPerms"
         url = "https://repo.lucko.me/"
     }
+    maven {
+        name = 'jitpack'
+        url = 'https://jitpack.io'
+    }
+    maven {
+        name = 'glare'
+        url = 'https://repo.glaremasters.me/repository/bloodshot'
+    }
     flatDir {
         dirs "lib"
     }
@@ -114,18 +122,23 @@ dependencies {
     compile 'net.kyori:lunar:1.0.5-SNAPSHOT'
     compile 'net.kyori:membrane:1.0.5'
     compile 'net.kyori:violet:1.0.0'
+    compile 'net.kyori:text-api:3.0.2'
+    compile 'net.kyori:text-serializer-legacy:3.0.4'
+    compile 'net.kyori:event-api:3.0.0'
+    compile 'net.kyori:event-method:3.0.0'
+    compile ("com.github.bloodmc:GriefDefenderAPI:master-SNAPSHOT") {
+        exclude module: 'event-method-asm'
+    }
     deobfCompile ('com.almuradev:malisiscore:1.12.2-6.5.3-SNAPSHOT') {
         transitive = false
     }
-    //compile 'br.net.fabiozumbi12.UltimateChat:UltimateChat-Sponge-7:1.8.9'
     compile 'br.net.fabiozumbi12.UltimateChat:UltimateChat-Sponge-56-1.9.1'
     compile 'org.spongepowered:configurate-json:3.5'
     compile 'org.inspirenxe:skills:1.0.0-SNAPSHOT:api'
     compile 'com.almuradev:toolbox:1.0.0-SNAPSHOT'
     compile 'org.inspirenxe:skills:1.0.0-SNAPSHOT'
-    compile 'io.github.nucleuspowered:nucleus-api:1.14.1-S7.1'
+    compile 'io.github.nucleuspowered:nucleus-api:1.14.6-S7.1'
     compile "net.luckperms:api:5.0"
-    compile 'me.ryanhamshire:griefprevention:1.12.2-4.5.5.0'
     compile "org.jooq:jooq:${project.jooqVersion}"
     compile "org.jooq:jooq-meta:${project.jooqVersion}"
     compile "org.jooq:jooq-codegen:${project.jooqVersion}"
@@ -234,6 +247,7 @@ shadowJar {
     classifier ''
     exclude 'dummyThing'
     relocate 'com.typesafe.config', 'configurate.typesafe.config'
+    //relocate 'net.kyori.event', 'almura.kyori.event'
     dependencies {
         include dependency('com.almuradev:toolbox')
         include dependency('com.fasterxml.jackson.core:jackson-core')
@@ -241,12 +255,17 @@ shadowJar {
         include dependency('com.google.inject.extensions:guice-multibindings')
         include dependency('io.github.nucleuspowered:nucleus-api')
         include dependency('net.kyori:indigo')
+        include dependency('net.kyori:event-api')
+        include dependency('net.kyori:event-method')
+        include dependency('net.kyori:text-api')
+        include dependency('net.kyori:text-serializer-legacy')
         include dependency('net.kyori:lunar')
         include dependency('net.kyori:membrane')
         include dependency('net.kyori:violet')
         include dependency('ninja.leaping.configurate:configurate-json')
         include dependency('io.github.nucleuspowered:nucleus-api')
         include dependency('org.jooq:jooq')
+        include dependency('com.github.bloodmc:GriefDefenderAPI')
     }
     afterEvaluate {
         from zipTree(reobfJar.jar)
