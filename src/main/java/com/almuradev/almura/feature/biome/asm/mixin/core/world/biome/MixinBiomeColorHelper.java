@@ -7,16 +7,10 @@
  */
 package com.almuradev.almura.feature.biome.asm.mixin.core.world.biome;
 
-import com.almuradev.almura.feature.biome.BiomeChunk;
-import com.almuradev.almura.feature.biome.BiomeUtil;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeColorHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 
 @SideOnly(Side.CLIENT)
 @Mixin(value = BiomeColorHelper.class)
@@ -27,8 +21,9 @@ public abstract class MixinBiomeColorHelper {
      * @reason Have water respect our config
      */
 
-
-    /*@Overwrite
+    //Todo: this code works as long as you don't use optifine...
+    /*
+    @Overwrite
     private static int getColorAtPos(IBlockAccess blockAccess, BlockPos pos, BiomeColorHelper.ColorResolver colorResolver)
     {
         int i = 0;
@@ -52,11 +47,20 @@ public abstract class MixinBiomeColorHelper {
                 l = colorResolver.getColorAtPos(biome, blockpos$mutableblockpos);
             }
 
+            if (blockAccess.getBlockState(blockpos$mutableblockpos).getMaterial() == Material.WATER) {
+                final BiomeChunk biomeChunk = BiomeUtil.getChunk(blockpos$mutableblockpos);
+                if (biomeChunk == null) {
+                    l = colorResolver.getColorAtPos(biome, blockpos$mutableblockpos);
+                } else {
+                    l = biomeChunk.getWaterColor(pos, biome);
+                }
+            }
+
             i += (l & 16711680) >> 16;
             j += (l & 65280) >> 8;
             k += l & 255;
         }
 
         return (i / 9 & 255) << 16 | (j / 9 & 255) << 8 | k / 9 & 255;
-    }*/
+    } */
 }
