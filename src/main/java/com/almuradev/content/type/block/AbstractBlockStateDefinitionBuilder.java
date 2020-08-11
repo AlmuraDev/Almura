@@ -141,7 +141,7 @@ public abstract class AbstractBlockStateDefinitionBuilder<D extends BlockStateDe
             if (that.destroyAction == null && this.destroyAction != null) that.destroyAction = this.destroyAction;
             if (!that.flammability.isPresent() && this.flammability.isPresent()) that.flammability = this.flammability;
             if (!that.fireSpreadSpeed.isPresent() && this.fireSpreadSpeed.isPresent())  that.fireSpreadSpeed = this.fireSpreadSpeed;
-            that.blockFaceShape = this.blockFaceShape;
+            if (that.blockFaceShape == null && this.blockFaceShape != null) that.blockFaceShape = this.blockFaceShape;
         }
     }
 
