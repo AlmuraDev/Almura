@@ -129,18 +129,18 @@ public abstract class AbstractBlockStateDefinitionBuilder<D extends BlockStateDe
         }
 
         if (this != that) {
-            if (this.box != null) that.box = BlockAABB.shares(this.box, 1);
-            if (this.collisionBox != null) that.collisionBox = BlockAABB.shares(this.collisionBox, 1);
-            if (this.wireFrame != null) that.wireFrame = BlockAABB.shares(this.wireFrame, 1);
-            if (this.hardness.isPresent()) that.hardness = this.hardness;
-            if (this.lightEmission.isPresent()) that.lightEmission = this.lightEmission;
-            if (this.lightOpacity.isPresent()) that.lightOpacity = this.lightOpacity;
-            if (this.opaque != null) that.opaque = this.opaque;
-            if (this.resistance.isPresent()) that.resistance = this.resistance;
-            if (this.sound != null) that.sound = this.sound;
-            if (this.destroyAction != null) that.destroyAction = this.destroyAction;
-            if (this.flammability.isPresent()) that.flammability = this.flammability;
-            if (this.fireSpreadSpeed.isPresent())  that.fireSpreadSpeed = this.fireSpreadSpeed;
+            if (that.box == null && this.box != null) that.box = BlockAABB.shares(this.box,1);
+            if (that.collisionBox == null && this.collisionBox != null) that.collisionBox = BlockAABB.shares(this.collisionBox, 1);
+            if (that.wireFrame == null && this.wireFrame != null) that.wireFrame = BlockAABB.shares(this.wireFrame, 1);
+            if (!that.hardness.isPresent() && this.hardness.isPresent()) that.hardness = this.hardness;
+            if (!that.lightEmission.isPresent() && this.lightEmission.isPresent()) that.lightEmission = this.lightEmission;
+            if (!that.lightOpacity.isPresent() && this.lightOpacity.isPresent()) that.lightOpacity = this.lightOpacity;
+            if (that.opaque == null && this.opaque != null) that.opaque = this.opaque;
+            if (!that.resistance.isPresent() && this.resistance.isPresent()) that.resistance = this.resistance;
+            if (that.sound == null && this.sound != null) that.sound = this.sound;
+            if (that.destroyAction == null && this.destroyAction != null) that.destroyAction = this.destroyAction;
+            if (!that.flammability.isPresent() && this.flammability.isPresent()) that.flammability = this.flammability;
+            if (!that.fireSpreadSpeed.isPresent() && this.fireSpreadSpeed.isPresent())  that.fireSpreadSpeed = this.fireSpreadSpeed;
             that.blockFaceShape = this.blockFaceShape;
         }
     }
