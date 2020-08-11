@@ -73,13 +73,22 @@ public final class Boxes {
         final List<Double> max = config.getNode(AABBConfig.Box.MAX).getList(Types::asDouble, Collections.emptyList());
         checkArgument(min.size() == 3, "min must have 3 components");
         checkArgument(max.size() == 3, "max must have 3 components");
-        double x0 = min.get(0) > 1 ? 1 : min.get(0) < 0 ? 0 : min.get(0);
+
+        //Todo: incorrect assumptions made on this.  The collision box for the player CAN be greater than 1 and less than 0
+        //Todo: in certain scenarios; its the ability to break the block is only 0/1.
+
+        //Todo: Collisions work, wireframe works; but the client/servers ability to rayTrace beyond 0/1 is not possible for a single x/y/z location.
+        /*double x0 = min.get(0) > 1 ? 1 : min.get(0) < 0 ? 0 : min.get(0);
         double y0 = min.get(1) > 1 ? 1 : min.get(1) < 0 ? 0 : min.get(1);
         double z0 = min.get(2) > 1 ? 1 : min.get(2) < 0 ? 0 : min.get(2);
         double x1 = max.get(0) > 1 ? 1 : max.get(0) < 0 ? 0 : max.get(0);
         double y1 = max.get(1) > 1 ? 1 : max.get(1) < 0 ? 0 : max.get(1);
         double z1 = max.get(2) > 1 ? 1 : max.get(2) < 0 ? 0 : max.get(2);
 
-        return new AxisAlignedBB(x0, y0, z0, x1, y1, z1);
+        return new AxisAlignedBB(x0, y0, z0, x1, y1, z1); */
+        return new AxisAlignedBB(
+            min.get(0), min.get(1), min.get(2),
+            max.get(0), max.get(1), max.get(2)
+        );
     }
 }
