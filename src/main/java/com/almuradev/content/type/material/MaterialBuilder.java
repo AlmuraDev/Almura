@@ -69,6 +69,37 @@ public final class MaterialBuilder extends ContentBuilder.Impl<Material> impleme
 
     @Override
     public Material build() {
-        return null; // TODO(kashike)
+        final MaterialImpl material = new MaterialImpl((net.minecraft.block.material.MapColor) this.mapColor);
+        if (this. blocksLight) {
+            material.blocksLight();
+        }
+        if (this.blocksMovement) {
+            material.blocksMovement();
+        }
+        if (this.liquid) {
+            material.setLiquid(true);
+        }
+        switch (this.push) {
+            case BLOCK:
+                material.setImmovableMobility();
+                break;
+            case DESTROY:
+                material.setNoPushMobility();
+                break;
+        }
+        if (this.solid) {
+            material.setSolid(true);
+        }
+        if (this.liquid) {
+            material.setLiquid(true);
+        }
+        if (this.replaceable) {
+            material.setReplaceable();
+        }
+        if (this.toolRequired) {
+            material.setRequiresTool();
+        }
+
+        return (Material) (Object) material;
     }
 }
