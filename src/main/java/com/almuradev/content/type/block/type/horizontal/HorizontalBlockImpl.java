@@ -9,7 +9,6 @@ package com.almuradev.content.type.block.type.horizontal;
 
 import com.almuradev.content.type.block.type.horizontal.state.HorizontalBlockStateDefinition;
 import net.kyori.lunar.PrimitiveOptionals;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;

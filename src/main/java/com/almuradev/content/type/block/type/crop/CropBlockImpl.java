@@ -29,10 +29,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.fml.relauncher.Side;
@@ -41,8 +41,6 @@ import org.spongepowered.api.item.ItemType;
 import org.spongepowered.common.SpongeImplHooks;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.List;
 import java.util.Random;
 
@@ -204,38 +202,39 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
 
     @Override
     public boolean isFertile(final World world, final BlockPos pos) {
-        final CropBlockStateDefinition definition = this.definition(world.getBlockState(pos.up()));
+        if (!world.isRemote) {
+            final CropBlockStateDefinition definition = this.definition(world.getBlockState(pos.up()));
 
-        final IBlockState soilState = world.getBlockState(pos);
+            final IBlockState soilState = world.getBlockState(pos);
 
-        if (definition.hydration == null) {
+            if (definition.hydration == null) {
 
-            // Vanilla mechanics
+                // Vanilla mechanics
 
-            if (soilState.getBlock() == net.minecraft.init.Blocks.FARMLAND) {
-                return ((Integer) soilState.getValue(BlockFarmland.MOISTURE)) > 0;
-            }
-
-            // Not farmland? Seed said our soil is something else so just assume always fertile since their config lacked it
-            return true;
-        } else {
-            final int maxRadius = definition.hydration.getMaxRadius();
-
-            for (final BlockPos.MutableBlockPos inRange : BlockPos.getAllInBoxMutable(
-                    pos.add(-maxRadius, 0, -maxRadius),
-                    pos.add(maxRadius, 0, maxRadius)
-            )) {
-                final IBlockState inRangeState;
-                // Skip soil state lookup and use it to perform the check. Now you may ask how the soil could be the hydration but our system
-                // lets you do stone soil and "hydrated" by stone
-                if (inRange.equals(pos)) {
-                    inRangeState = soilState;
-                } else {
-                    inRangeState = world.getBlockState(inRange);
+                if (soilState.getBlock() == net.minecraft.init.Blocks.FARMLAND) {
+                    return ((Integer) soilState.getValue(BlockFarmland.MOISTURE)) > 0;
                 }
 
-                if (definition.hydration.doesStateMatch(inRangeState)) {
-                    return true;
+                // Not farmland? Seed said our soil is something else so just assume always fertile since their config lacked it
+                return true;
+            } else {
+                final int maxRadius = definition.hydration.getMaxRadius();
+
+                for (final BlockPos.MutableBlockPos inRange : BlockPos.getAllInBoxMutable(pos.add(-maxRadius, 0, -maxRadius), pos.add(maxRadius, 0, maxRadius))) {
+                    if (((WorldServer) world).getChunkProvider().chunkExists(pos.getX() >> 4, pos.getZ() >> 4)) {
+                        final IBlockState inRangeState;
+                        // Skip soil state lookup and use it to perform the check. Now you may ask how the soil could be the hydration but our system
+                        // lets you do stone soil and "hydrated" by stone
+                        if (inRange.equals(pos)) {
+                            inRangeState = soilState;
+                        } else {
+                            inRangeState = world.getBlockState(inRange);
+                        }
+
+                        if (definition.hydration.doesStateMatch(inRangeState)) {
+                            return true;
+                        }
+                    }
                 }
             }
         }
@@ -243,22 +242,25 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
         return false;
     }
 
-    public static boolean hasAdditionalSource(World worldIn, BlockPos pos, int type) {
-        // Todo: ability to add more heat/light sources.
-        Block block = null;
+    public static boolean hasAdditionalLightSource(World worldIn, BlockPos pos, int type) {
+        if (!worldIn.isRemote) {
+            // Todo: ability to add more heat/light sources.
+            Block block = null;
 
-        if (type == 1) { // Heat Lamp
-            block = Block.getBlockFromName("almura:horizontal/lighting/plant_light");
-        }
+            if (type == 1) { // Heat Lamp
+                block = Block.getBlockFromName("almura:horizontal/lighting/plant_light");
+            }
 
-        if (block != null) {
-            for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.getAllInBoxMutable(pos.add(-2, 1, -2), pos.add(2, 3, 2))) {
-                if (worldIn.getBlockState(blockpos$mutableblockpos).getBlock() == block) {
-                    return true;
+            if (block != null) {
+                for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.getAllInBoxMutable(pos.add(-2, 1, -2), pos.add(2, 3, 2))) {
+                    if (((WorldServer) worldIn).getChunkProvider().chunkExists(pos.getX() >> 4, pos.getZ() >> 4)) {
+                        if (worldIn.getBlockState(blockpos$mutableblockpos).getBlock() == block) {
+                            return true;
+                        }
+                    }
                 }
             }
         }
-
         return false;
     }
 
@@ -313,7 +315,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
                 }
 
                 if (biomeTemperature < temperatureRequiredRange.min()) {  // Check for additional heat source
-                    if (hasAdditionalSource(world, pos, 1)) {
+                    if (hasAdditionalLightSource(world, pos, 1)) {
                         rollback = false;
                     }
                 }
@@ -321,7 +323,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
 
             // Light of biome isn't in required range? Don't grow and rollback if applicable
             final DoubleRange light = growth.getOrLoadLightRangeForBiome(biome);
-            final boolean hasAdditionalLightSource = hasAdditionalSource(world, pos, 1);
+            final boolean hasAdditionalLightSource = hasAdditionalLightSource(world, pos, 1);
             // Only run light checks if surrounding chunks are loaded else this will trigger chunk loads
             // Skip this section if rollback is true because a Tempoerature fail should never be overridden by light.
             if (!rollback && light != null && world.isAreaLoaded(pos, 1)) {

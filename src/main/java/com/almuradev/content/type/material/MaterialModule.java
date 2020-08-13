@@ -19,10 +19,10 @@ public final class MaterialModule extends AbstractModule implements CoreBinder {
     @Override
     protected void configure() {
         this.inSet(ContentType.class).addBinding().toInstance(new ContentType.Impl("material", MaterialContentTypeLoader.class));
+        this.facet().add(MaterialContentTypeLoader.class);
         this.bind(Material.Builder.class).to(MaterialBuilder.class);
         this.registry().module(Material.class, MaterialRegistryModule.class);
-        this.processors()
-                .add(MaterialProcessor.class);
+        this.processors().add(MaterialProcessor.class);
     }
 
     private SingleTypeProcessorBinder<Material, Material.Builder, ConfigProcessor<? extends Material.Builder>> processors() {
