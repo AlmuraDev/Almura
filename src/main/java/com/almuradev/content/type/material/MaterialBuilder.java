@@ -7,6 +7,7 @@
  */
 package com.almuradev.content.type.material;
 
+import com.almuradev.content.mixin.iface.IMixinSetCatalogTypeId;
 import com.almuradev.content.registry.ContentBuilder;
 import com.almuradev.content.type.mapcolor.MapColor;
 import net.minecraft.block.material.EnumPushReaction;
@@ -99,7 +100,7 @@ public final class MaterialBuilder extends ContentBuilder.Impl<Material> impleme
         if (this.toolRequired) {
             material.setRequiresTool();
         }
-
+        ((IMixinSetCatalogTypeId) (Object) material).setId(this.id, this.name);
         return (Material) (Object) material;
     }
 }
