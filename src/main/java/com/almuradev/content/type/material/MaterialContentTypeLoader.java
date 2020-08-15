@@ -9,8 +9,10 @@ package com.almuradev.content.type.material;
 
 import com.almuradev.content.loader.SingleTypeContentLoader;
 import com.almuradev.core.event.Witness;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import net.minecraft.block.Block;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -24,8 +26,8 @@ public final class MaterialContentTypeLoader extends SingleTypeContentLoader<Mat
         this.module = module;
     }
 
-    @Listener
-    public void init(final GamePreInitializationEvent event) {
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void blocks(final RegistryEvent.Register<Block> event) {
         this.build();
 
         for (final Entry<Material, Material.Builder> entry : this.entries.values()) {
