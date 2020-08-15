@@ -44,56 +44,59 @@ public abstract class MixinBlockFarmland extends Block {
     @Override
     @Overwrite
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
-        //if (!worldIn.isRemote) {
-            final Random random = new Random();
-            int soilMoisture = ((Integer) state.getValue(MOISTURE)).intValue();
-            int revertChance = random.nextInt(25);
+        boolean irrigationPipeNear = false;
+        boolean setMaxMoisture = false;
+        final Random random = new Random();
+        int soilMoisture = ((Integer) state.getValue(MOISTURE)).intValue();
+        int revertChance = random.nextInt(10);
+        Block pipe = null;
+        Block spinkler = null;
+        pipe = Block.getBlockFromName("almura:horizontal/agriculture/pipe");
+        // Todo: implement sprinkler
+        spinkler = Block.getBlockFromName("almura:horizontal/agriculture/pipe");
 
-            if (!this.hasWater(worldIn, pos) && !worldIn.isRainingAt(pos.up()) && !(worldIn.getBiomeForCoordsBody(pos).getRainfall() > 0.5)) { // Add Biome rainfall.
-                if (soilMoisture > 0 && revertChance == 1) { // Slow down the revert to account for longer lasting rain.
-                    worldIn.setBlockState(pos, state.withProperty(MOISTURE, Integer.valueOf(soilMoisture - 1)), 2);
-                } else if (!this.hasCrops(worldIn, pos)) {
-                    // ToDo:  We need a hook into GP for a Soil Flag like we did with Res-Protect.
-                    //turnToDirt(worldIn, pos);
+        if (pipe != null && spinkler != null) {
+            for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.getAllInBoxMutable(pos.add(-6, 1, -6), pos.add(6, 1, 6))) {
+                if (((WorldServer) worldIn).getChunkProvider().chunkExists(pos.getX() >> 4, pos.getZ() >> 4) && !irrigationPipeNear) {
+                    Block posBlock = worldIn.getBlockState(blockpos$mutableblockpos).getBlock();
+                    if (posBlock == pipe || posBlock == spinkler) {
+                        irrigationPipeNear = true;
+                    }
                 }
-            } else if (soilMoisture < 7) {
-                // Set original ticked location to high moisture.
+            }
+        }
+
+        if (!this.hasWater(worldIn, pos) && !worldIn.isRainingAt(pos.up()) && !(worldIn.getBiomeForCoordsBody(pos).getRainfall() > 0.5)) { // Add Biome rainfall.
+            if (soilMoisture > 0 && revertChance == 1) { // Slow down the revert to account for longer lasting rain.
+                if (!irrigationPipeNear) {
+                    worldIn.setBlockState(pos, state.withProperty(MOISTURE, Integer.valueOf(soilMoisture - 1)), 2);
+                }
+            } else if (!this.hasCrops(worldIn, pos)) {
+                //turnToDirt(worldIn, pos);  && Vanilla
+            }
+        } else if (soilMoisture < 7) {
+            setMaxMoisture = true;
+        }
+        // Scan additional blocks around the original for possible updates if it is raining.
+        if (worldIn.isRainingAt(pos.up())) {
+            int spreadChance;
+            for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.getAllInBoxMutable(pos.add(-1, 0, -1), pos.add(1, 0, 1))) {
+                if (((WorldServer) worldIn).getChunkProvider().chunkExists(pos.getX() >> 4, pos.getZ() >> 4)) {
+                    if (worldIn.getBlockState(blockpos$mutableblockpos).getBlock() == Blocks.FARMLAND && (Integer) (worldIn.getBlockState(blockpos$mutableblockpos).getValue(MOISTURE)).intValue() < 7) {
+                        spreadChance = random.nextInt(2);
+                        if (spreadChance == 1 || blockpos$mutableblockpos == pos) {
+                            worldIn.setBlockState(blockpos$mutableblockpos, worldIn.getBlockState(blockpos$mutableblockpos).withProperty(MOISTURE, Integer.valueOf(7)), 2);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (setMaxMoisture || irrigationPipeNear) {
+            if (soilMoisture < 7) {
                 worldIn.setBlockState(pos, state.withProperty(MOISTURE, Integer.valueOf(7)), 2);
             }
-            // Scan additional blocks around the original for possible updates if it is raining.
-            if (worldIn.isRainingAt(pos.up())) {
-                int spreadChance;
-                for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.getAllInBoxMutable(pos.add(-1, 0, -1), pos.add(1, 0, 1))) {
-                    if (((WorldServer) worldIn).getChunkProvider().chunkExists(pos.getX() >> 4, pos.getZ() >> 4)) {
-                        if (worldIn.getBlockState(blockpos$mutableblockpos).getBlock() == Blocks.FARMLAND && (Integer) (worldIn.getBlockState(blockpos$mutableblockpos).getValue(MOISTURE)).intValue() < 7) {
-                            spreadChance = random.nextInt(2);
-                            if (spreadChance == 1 || blockpos$mutableblockpos == pos) {
-                                worldIn.setBlockState(blockpos$mutableblockpos, worldIn.getBlockState(blockpos$mutableblockpos).withProperty(MOISTURE, Integer.valueOf(7)), 2);
-                            }
-                        }
-                    }
-                }
-            }
-            // Scan for additional custom water sources
-            if (soilMoisture < 1) {
-                Block pipe = null;
-                Block spinkler = null;
-                pipe = Block.getBlockFromName("almura:horizontal/agriculture/pipe");
-                spinkler = Block.getBlockFromName("almura:horizontal/agriculture/pipe");
-
-                if (pipe != null && spinkler != null) {
-                    for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.getAllInBoxMutable(pos.add(-6, 1, -6), pos.add(6, 1, 6))) {
-                        if (worldIn.isBlockLoaded(blockpos$mutableblockpos)) {
-                            Block posBlock = worldIn.getBlockState(blockpos$mutableblockpos).getBlock();
-                            if (posBlock == pipe || posBlock == spinkler) {
-                                worldIn.setBlockState(pos, state.withProperty(MOISTURE, Integer.valueOf(7)), 2);
-                                return;
-                            }
-                        }
-                    }
-                }
-            }
-       // }
+        }
     }
 
     @ModifyConstant(
