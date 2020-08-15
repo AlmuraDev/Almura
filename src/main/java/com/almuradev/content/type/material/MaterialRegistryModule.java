@@ -9,8 +9,10 @@ package com.almuradev.content.type.material;
 
 import com.almuradev.content.registry.AbstractCatalogRegistryModule;
 import com.almuradev.content.registry.EagerCatalogRegistration;
+import com.google.inject.Singleton;
 import net.minecraft.block.material.Material;
 
+@Singleton
 @EagerCatalogRegistration
 public final class MaterialRegistryModule extends AbstractCatalogRegistryModule.Mapped<com.almuradev.content.type.material.Material, Material> {
     public MaterialRegistryModule() {

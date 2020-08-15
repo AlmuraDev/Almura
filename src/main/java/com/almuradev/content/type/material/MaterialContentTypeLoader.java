@@ -26,7 +26,7 @@ public final class MaterialContentTypeLoader extends SingleTypeContentLoader<Mat
         this.module = module;
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    @SubscribeEvent(priority = EventPriority.LOW)
     public void blocks(final RegistryEvent.Register<Block> event) {
         this.build();
 
