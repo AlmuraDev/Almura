@@ -177,6 +177,7 @@ if (JavaVersion.current().isJava8Compatible() || JavaVersion.current().isJava9Co
 compileJava {
     options.compilerArgs += [
             '-Xlint:-processing',
+            '-Xlint:-deprecation',
     ]
     options.deprecation = true
     options.encoding = 'utf8'
