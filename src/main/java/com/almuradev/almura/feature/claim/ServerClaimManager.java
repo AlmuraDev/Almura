@@ -118,6 +118,10 @@ public final class ServerClaimManager implements Witness {
 
     public void sendUpdateTo(final Player player, Claim claim, List<UUID> players, final boolean everyone) {
         // Do not continue; this is events firing from entities other than players.
+        if (!Sponge.getPluginManager().isLoaded("griefdefender")) {
+            // Check here to see if its loaded because in the deobfuscated environment I force load the ClaimManager classes for testing purposes.
+            return;
+        }
         if (player == null && players == null && !everyone) {
             return;
         }
