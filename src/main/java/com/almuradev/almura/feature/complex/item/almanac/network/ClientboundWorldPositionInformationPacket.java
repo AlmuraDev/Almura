@@ -17,14 +17,15 @@ public final class ClientboundWorldPositionInformationPacket implements Message 
     public String biomeId;
     public float biomeTemperature, biomeRainfall; // TODO One day we will have the client know all of the biome's information if from TC
     public int blockLight, skyLight, combinedLight;
-    public boolean isDaytime, canSeeSky, hasAdditionalLightHeatSource;
+    public boolean isDaytime, canSeeSky, hasAdditionalLightHeatSource, irrigationPipe, irrigationPipeNear;
 
     public ClientboundWorldPositionInformationPacket() {
 
     }
 
     public ClientboundWorldPositionInformationPacket(int x, int y, int z, float hitX, float hitY, float hitZ, String biomeId, float
-            biomeTemperature, float biomeRainfall, int blockLight, int skyLight, int combinedLight, boolean isDaytime, boolean canSeeSky, boolean hasAdditionalLightHeatSource) {
+            biomeTemperature, float biomeRainfall, int blockLight, int skyLight, int combinedLight, boolean isDaytime, boolean canSeeSky,
+            boolean hasAdditionalLightHeatSource, boolean irrigationPipe, boolean irrigationPipeNear) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -44,6 +45,8 @@ public final class ClientboundWorldPositionInformationPacket implements Message 
         this.isDaytime = isDaytime;
         this.canSeeSky = canSeeSky;
         this.hasAdditionalLightHeatSource = hasAdditionalLightHeatSource;
+        this.irrigationPipe = irrigationPipe;
+        this.irrigationPipeNear = irrigationPipeNear;
     }
 
     @Override
@@ -68,6 +71,8 @@ public final class ClientboundWorldPositionInformationPacket implements Message 
         this.isDaytime = buf.readBoolean();
         this.canSeeSky = buf.readBoolean();
         this.hasAdditionalLightHeatSource = buf.readBoolean();
+        this.irrigationPipe = buf.readBoolean();
+        this.irrigationPipeNear = buf.readBoolean();
     }
 
     @Override
@@ -92,5 +97,7 @@ public final class ClientboundWorldPositionInformationPacket implements Message 
         buf.writeBoolean(this.isDaytime);
         buf.writeBoolean(this.canSeeSky);
         buf.writeBoolean(this.hasAdditionalLightHeatSource);
+        buf.writeBoolean(this.irrigationPipe);
+        buf.writeBoolean(this.irrigationPipeNear);
     }
 }

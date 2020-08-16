@@ -26,6 +26,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.Biome;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -63,6 +64,8 @@ public final class FarmersAlmanacItem extends ComplexItem {
     public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 
         if (!world.isRemote) {
+            boolean irrigationPipe = false;
+            boolean irrigationPipeNear = false;
             final Player spongePlayer = (Player) player;
             if (!spongePlayer.hasPermission("almura.item.farmers_almanac")) {
                 spongePlayer.sendMessage(Text.of("Access denied, missing permission: ", TextColors.AQUA, "almura.item.farmers_"
@@ -71,7 +74,25 @@ public final class FarmersAlmanacItem extends ComplexItem {
             }
 
             final Block block = world.getBlockState(pos).getBlock();
-            if (block instanceof BlockFarmland | block instanceof BlockCrops) {
+            if (block.getRegistryName().toString().length() > 30 && block.getRegistryName().toString().substring(0,30).equalsIgnoreCase("almura:horizontal/agriculture/")) {
+                irrigationPipe = true;
+            }
+
+            Block pipe = null;
+            pipe = Block.getBlockFromName("almura:horizontal/agriculture/pipe");
+
+            if (pipe != null) {
+                for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.getAllInBoxMutable(pos.add(-6, 1, -6), pos.add(6, 1, 6))) {
+                    if (((WorldServer) world).getChunkProvider().chunkExists(pos.getX() >> 4, pos.getZ() >> 4) && !irrigationPipeNear) {
+                        Block posBlock = world.getBlockState(blockpos$mutableblockpos).getBlock();
+                        if (posBlock.getRegistryName().toString().length() > 30 && posBlock.getRegistryName().toString().substring(0,30).equalsIgnoreCase("almura:horizontal/agriculture/")) {
+                            irrigationPipeNear = true;
+                        }
+                    }
+                }
+            }
+
+            if (block instanceof BlockFarmland | block instanceof BlockCrops | irrigationPipe) {
 
                 final Biome biome = world.getBiome(pos);
                 final float biomeTemperature = biome.getTemperature(pos);
@@ -86,10 +107,11 @@ public final class FarmersAlmanacItem extends ComplexItem {
                 player.swingArm(hand);
 
                 network.sendTo(spongePlayer, new ClientboundWorldPositionInformationPacket(pos.getX(), pos.getY(), pos.getZ(), hitX, hitY, hitZ,
-                        biome.getRegistryName().toString(), biomeTemperature, biomeRainfall, blockLight, skyLight, combinedLight, isDaytime, canSeeSky, hasAdditionalLightHeatSource));
+                        biome.getRegistryName().toString(), biomeTemperature, biomeRainfall, blockLight, skyLight, combinedLight, isDaytime,
+                        canSeeSky, hasAdditionalLightHeatSource, irrigationPipe, irrigationPipeNear));
             } else {
                 spongePlayer.sendMessage(Text.of("The ", TextColors.AQUA,"Farmer's Almanac", TextColors.WHITE, " can only be "
-                        + "used on crops or farmland."));
+                        + "used on crops, farmland or irrigation pipes."));
             }
         }
 

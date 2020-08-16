@@ -49,17 +49,15 @@ public abstract class MixinBlockFarmland extends Block {
         final Random random = new Random();
         int soilMoisture = ((Integer) state.getValue(MOISTURE)).intValue();
         int revertChance = random.nextInt(10);
+        // The following is to check if pipes are even loaded from the content repo; skip this if not.
         Block pipe = null;
-        Block spinkler = null;
         pipe = Block.getBlockFromName("almura:horizontal/agriculture/pipe");
-        // Todo: implement sprinkler
-        spinkler = Block.getBlockFromName("almura:horizontal/agriculture/pipe");
 
-        if (pipe != null && spinkler != null) {
+        if (pipe != null) {
             for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.getAllInBoxMutable(pos.add(-6, 1, -6), pos.add(6, 1, 6))) {
                 if (((WorldServer) worldIn).getChunkProvider().chunkExists(pos.getX() >> 4, pos.getZ() >> 4) && !irrigationPipeNear) {
                     Block posBlock = worldIn.getBlockState(blockpos$mutableblockpos).getBlock();
-                    if (posBlock == pipe || posBlock == spinkler) {
+                    if (posBlock.getRegistryName().toString().length() > 30 && posBlock.getRegistryName().toString().substring(0,30).equalsIgnoreCase("almura:horizontal/agriculture/")) {
                         irrigationPipeNear = true;
                     }
                 }

@@ -225,31 +225,27 @@ public class IngameFarmersAlmanac extends BasicScreen {
                 }
             });
         }
+        if (!message.irrigationPipe) {
+            // Growth stage
+            getGrowthStage(blockState).ifPresent(growthStage -> this.addLineLabel(this.getGenericPropertyText("Growth Stage", String.format("%d of %d", growthStage.getFirst() + 1, growthStage.getSecond() + 1))));
 
-        // Growth stage
-        getGrowthStage(blockState)
-                .ifPresent(growthStage ->
-                        this.addLineLabel(this.getGenericPropertyText("Growth Stage",String.format("%d of %d", growthStage.getFirst() + 1, growthStage.getSecond() + 1))));
+            getGrowthStage(blockState).ifPresent(growthStage -> readyForHarvest = growthStage.getFirst() == growthStage.getSecond());
 
-        getGrowthStage(blockState)
-                .ifPresent(growthStage ->
-                        readyForHarvest = growthStage.getFirst() == growthStage.getSecond());
-
-        // Ground moisture
-        final IBlockState moistureBlockStateTarget = blockState.getBlock() instanceof BlockCrops ? world.getBlockState(targetBlockPos.down()) : blockState;
-        final int moistureLevel = getMoistureLevel(moistureBlockStateTarget);
-        final boolean isFertile = (moistureLevel > 0) || (hydration != null && growing);  //Todo: theoretically this should work.
-        final TextColor fertileColor = isFertile ? TextColors.DARK_GREEN : TextColors.RED;
-        this.addLineLabel(Text.of(TextColors.WHITE, "Soil Quality: ", fertileColor, isFertile ? "Fertile" : "Too dry"));
-        if (isFertile) {
-            final TextColor moistureColor = moistureLevel > 3 ? TextColors.DARK_GREEN : TextColors.YELLOW;
-            this.addLineLabel(Text.of(TextColors.WHITE, "Moisture Level: ", moistureColor, moistureLevel), 2);
-        } else {
-            this.growing = false;
+            // Ground moisture
+            final IBlockState moistureBlockStateTarget = blockState.getBlock() instanceof BlockCrops ? world.getBlockState(targetBlockPos.down()) : blockState;
+            final int moistureLevel = getMoistureLevel(moistureBlockStateTarget);
+            final boolean isFertile = (moistureLevel > 0) || (hydration != null && growing);  //Todo: theoretically this should work.
+            final TextColor fertileColor = isFertile ? TextColors.DARK_GREEN : TextColors.RED;
+            this.addLineLabel(Text.of(TextColors.WHITE, "Soil Quality: ", fertileColor, isFertile ? "Fertile" : "Too dry"));
+            if (isFertile) {
+                final TextColor moistureColor = moistureLevel > 3 ? TextColors.DARK_GREEN : TextColors.YELLOW;
+                this.addLineLabel(Text.of(TextColors.WHITE, "Moisture Level: ", moistureColor, moistureLevel), 2);
+            } else {
+                this.growing = false;
+            }
+            // Biome rain
+            this.addLineLabel(Text.of(TextColors.WHITE, "Rain: ", message.biomeRainfall > 0.5 ? TextColors.DARK_GREEN : TextColors.GOLD, numberFormat.format(message.biomeRainfall)), 2);
         }
-        // Biome rain
-        this.addLineLabel(Text.of(TextColors.WHITE, "Rain: ",
-            message.biomeRainfall > 0.5 ? TextColors.DARK_GREEN : TextColors.GOLD, numberFormat.format(message.biomeRainfall)),2);
 
         // Ground temperature
         final DoubleRange temperatureRange = getTemperatureRange(world, blockState, targetBlockPos).orElse(null);
@@ -269,7 +265,7 @@ public class IngameFarmersAlmanac extends BasicScreen {
 
             this.addLineLabel(this.getGenericPropertyText("Required",
                     String.format("%s-%s", numberFormat.format(temperatureRange.min()), numberFormat.format(temperatureRange.max()))), 2);
-        } else { //Is a farmland block
+        } else { //Is a farmland block or an irrigation pipe
             this.addLineLabel(Text.of(TextColors.WHITE, "Ground Temperature: ", TextColors.DARK_GREEN, numberFormat.format(message.biomeTemperature)));
         }
 
@@ -306,31 +302,45 @@ public class IngameFarmersAlmanac extends BasicScreen {
             this.addLineLabel(Text.of(TextColors.WHITE, "Combined Light: ", TextColors.DARK_GREEN, String.valueOf(combinedLightValue)));
         }
 
-        // Can Die
-        if (!(blockState.getBlock() instanceof BlockFarmland)) {
-            if (!this.readyForHarvest) {
-                if (String.valueOf(canRollback(blockState)).equalsIgnoreCase("true")) {
-                    this.addLineLabel((Text.of(TextColors.WHITE, "Can Die: ", TextColors.RED, "Yes")));
-                    canDie = true;
-                } else {
-                    this.addLineLabel((Text.of(TextColors.WHITE, "Can Die: ", TextColors.DARK_GREEN, "No")));
-                    canDie = false;
+
+        if (!message.irrigationPipe) {
+            // Can Die
+            if (!(blockState.getBlock() instanceof BlockFarmland)) {
+                if (!this.readyForHarvest) {
+                    if (String.valueOf(canRollback(blockState)).equalsIgnoreCase("true")) {
+                        this.addLineLabel((Text.of(TextColors.WHITE, "Can Die: ", TextColors.RED, "Yes")));
+                        canDie = true;
+                    } else {
+                        this.addLineLabel((Text.of(TextColors.WHITE, "Can Die: ", TextColors.DARK_GREEN, "No")));
+                        canDie = false;
+                    }
                 }
+
+            } else {
+                this.cropStatusLabel.setVisible(false);
             }
 
-        } else {
-            this.cropStatusLabel.setVisible(false);
-        }
-
-        // Harvest Tool
-        final String harvestTool = blockState.getBlock().getHarvestTool(blockState);
-        if (harvestTool != null && !harvestTool.isEmpty()) {
-            this.addLineLabel(this.getGenericPropertyText("Harvested by", harvestTool));
+            // Harvest Tool
+            final String harvestTool = blockState.getBlock().getHarvestTool(blockState);
+            if (harvestTool != null && !harvestTool.isEmpty()) {
+                this.addLineLabel(this.getGenericPropertyText("Harvested by", harvestTool));
+            }
         }
 
         if (message.hasAdditionalLightHeatSource) {
             this.addLineLabel(Text.of(TextColors.WHITE, "Special: "));
             this.addLineLabel(Text.of(TextColors.YELLOW, "Heat Lamp Found!"), 4);
+        }
+
+        if (message.irrigationPipe) {
+            this.addLineLabel((Text.of(TextColors.WHITE, "Irrigation Water Range: ", TextColors.DARK_GREEN, "6")));
+            this.cropStatusLabel.setVisible(false);
+        } else {
+            if (message.irrigationPipeNear) {
+                this.addLineLabel((Text.of(TextColors.WHITE, "In-Range of Irrigation: ", TextColors.DARK_GREEN, "Yes")));
+            } else {
+                this.addLineLabel(Text.of(TextColors.WHITE, "In-Range of Irrigation: ", message.biomeRainfall > 0.5 ? TextColors.DARK_GREEN : TextColors.GOLD, "No"));
+            }
         }
     }
 
