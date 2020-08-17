@@ -12,7 +12,11 @@ import static com.google.common.base.Preconditions.checkState;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.exchange.basic.BasicExchange;
+import com.almuradev.almura.feature.exchange.basic.listing.BasicForSaleItem;
+import com.almuradev.almura.feature.exchange.basic.listing.BasicListItem;
 import com.almuradev.almura.feature.exchange.database.ExchangeQueries;
+import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
+import com.almuradev.almura.feature.exchange.listing.ListItem;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeGuiResponsePacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundExchangeRegistryPacket;
 import com.almuradev.almura.feature.exchange.network.ClientboundForSaleFilterRequestPacket;
@@ -23,13 +27,9 @@ import com.almuradev.almura.feature.exchange.network.ClientboundTransactionCompl
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.database.DatabaseManager;
 import com.almuradev.almura.shared.database.DatabaseQueue;
-import com.almuradev.almura.shared.feature.IngameFeature;
 import com.almuradev.almura.shared.feature.FeatureConstants;
+import com.almuradev.almura.shared.feature.IngameFeature;
 import com.almuradev.almura.shared.feature.filter.FilterRegistry;
-import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
-import com.almuradev.almura.feature.exchange.listing.ListItem;
-import com.almuradev.almura.feature.exchange.basic.listing.BasicForSaleItem;
-import com.almuradev.almura.feature.exchange.basic.listing.BasicListItem;
 import com.almuradev.almura.shared.item.VanillaStack;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.SerializationUtil;
@@ -59,7 +59,6 @@ import org.jooq.Results;
 import org.slf4j.Logger;
 import org.spongepowered.api.GameState;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.effect.sound.SoundTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.CauseStackManager;
 import org.spongepowered.api.event.Listener;
@@ -1538,7 +1537,11 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         int slots = 0;
 
         if (player.hasPermission("almura.exchange.admin")) {
-            return 1000;
+            return 1000000;
+        }
+
+        if (player.hasPermission("almura.exchange.slots.5000")) {
+            return 5000;
         }
 
         if (player.hasPermission("almura.exchange.slots.500")) {
