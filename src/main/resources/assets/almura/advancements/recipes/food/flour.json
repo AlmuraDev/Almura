@@ -1,0 +1,39 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "almura:normal/ingredient/flour_0",
+      "almura:normal/ingredient/flour_1",
+      "almura:normal/ingredient/flour_2",
+      "almura:normal/ingredient/flour_3",
+      "almura:normal/ingredient/flour_4",
+      "almura:normal/ingredient/flour_5",
+      "almura:normal/ingredient/flour_6",
+      "almura:normal/ingredient/flour_7"
+    ]
+  },
+  "criteria": {
+    "has_wheat": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "minecraft:wheat"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "almura:normal/ingredient/flour_0"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_wheat",
+      "has_the_recipe"
+    ]
+  ]
+}
