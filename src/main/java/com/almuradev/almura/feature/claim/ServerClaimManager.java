@@ -71,8 +71,10 @@ public final class ServerClaimManager implements Witness {
 
     @Listener
     public void serverStarted(final GameAboutToStartServerEvent event) {
-        GriefDefender.getEventManager().register(this);
-        LuckPermsProvider.get().getEventBus().subscribe(GroupDataRecalculateEvent.class,this::onLpPermChange);
+        if (Sponge.getPluginManager().isLoaded("griefdefender")) {
+            GriefDefender.getEventManager().register(this);
+            LuckPermsProvider.get().getEventBus().subscribe(GroupDataRecalculateEvent.class, this::onLpPermChange);
+        }
     }
 
     @Listener(order = Order.LAST)
