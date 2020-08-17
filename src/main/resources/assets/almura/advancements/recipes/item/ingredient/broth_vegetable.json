@@ -2,8 +2,8 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "almura:normal/ingredient/broth_vegatable_0",
-      "almura:normal/ingredient/broth_vegatable_1"
+      "almura:normal/ingredient/broth_vegetable_0",
+      "almura:normal/ingredient/broth_vegetable_1"
     ]
   },
   "criteria": {
@@ -20,7 +20,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "almura:normal/ingredient/broth_vegatable_0"
+        "recipe": "almura:normal/ingredient/broth_vegetable_0"
       }
     }
   },
