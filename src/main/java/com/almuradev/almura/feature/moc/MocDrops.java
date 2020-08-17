@@ -74,12 +74,25 @@ public class MocDrops implements Witness {
 
         // Duck
         if (entityName.equalsIgnoreCase("duck")) {
-            minimum = 3;
-
+            minimum = 1;
             // Ducks getDrops list doesn't contain the following item, no need to search existing drops.
-            // Todo: this item still needs to be created on Almura's end
-            //dropStack = GameRegistry.makeItemStack("almura:normal/ingredient/raw_duck", 0, minimum - quantityFound, null);
+            dropStack = GameRegistry.makeItemStack("almura:normal/ingredient/duck_raw", 0, minimum - quantityFound, null);
+        }
 
+        // Cod
+        if (entityName.equalsIgnoreCase("cod")) {
+            minimum = 2;
+            dropStack = GameRegistry.makeItemStack("almura:normal/ingredient/cod_raw", 0, minimum - quantityFound, null);
+            // Clear the drops list; don't care about the eggs, but I don't want the extra fish.
+            event.getDrops().clear();
+        }
+
+        // Bass
+        if (entityName.equalsIgnoreCase("bass")) {
+            minimum = 2;
+            dropStack = GameRegistry.makeItemStack("almura:normal/ingredient/bass_raw", 0, minimum - quantityFound, null);
+            // Clear the drops list; don't care about the eggs, but I don't want the extra fish.
+            event.getDrops().clear();
         }
 
         // Finish up and create additional drops
