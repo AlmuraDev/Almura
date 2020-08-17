@@ -14,6 +14,7 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -33,6 +34,8 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import org.spongepowered.api.Sponge;
+
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -126,5 +129,11 @@ public final class GlassWaterCruetItem extends ComplexItem {
         }
 
         return true;
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, World player, List<String> tooltip, ITooltipFlag advanced) {
+        tooltip.add("Water Filled Container");
+        super.addInformation(stack, player, tooltip, advanced);
     }
 }

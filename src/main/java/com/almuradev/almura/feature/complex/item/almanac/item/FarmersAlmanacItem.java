@@ -16,6 +16,7 @@ import com.almuradev.content.type.itemgroup.ItemGroup;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
 import net.minecraft.block.BlockFarmland;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -34,6 +35,8 @@ import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -116,5 +119,11 @@ public final class FarmersAlmanacItem extends ComplexItem {
         }
 
         return EnumActionResult.PASS;
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, World player, List<String> tooltip, ITooltipFlag advanced) {
+        tooltip.add("Displays useful information on farming");
+        super.addInformation(stack, player, tooltip, advanced);
     }
 }

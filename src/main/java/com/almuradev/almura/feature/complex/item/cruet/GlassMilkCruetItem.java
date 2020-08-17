@@ -10,10 +10,14 @@ package com.almuradev.almura.feature.complex.item.cruet;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.complex.item.ComplexItem;
 import com.almuradev.content.type.itemgroup.ItemGroup;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import org.spongepowered.api.Sponge;
+
+import java.util.List;
 
 public final class GlassMilkCruetItem extends ComplexItem {
 
@@ -33,4 +37,9 @@ public final class GlassMilkCruetItem extends ComplexItem {
         return false;
     }
 
+    @Override
+    public void addInformation(ItemStack stack, World player, List<String> tooltip, ITooltipFlag advanced) {
+        tooltip.add("Milk Filled Container");
+        super.addInformation(stack, player, tooltip, advanced);
+    }
 }

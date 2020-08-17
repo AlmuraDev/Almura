@@ -14,6 +14,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -30,6 +31,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import org.spongepowered.api.Sponge;
 
+import java.util.List;
+
 public final class GlassCruetItem extends ComplexItem {
 
     private final Block containedBlock = Blocks.AIR; // This will change based on the type of item.
@@ -37,6 +40,7 @@ public final class GlassCruetItem extends ComplexItem {
     public GlassCruetItem() {
         super(new ResourceLocation(Almura.ID, "normal/ingredient/glass_cruet"), "glass_cruet");
         this.setMaxStackSize(64);
+
         Sponge.getRegistry().getType(ItemGroup.class, Almura.ID + ":ingredient").ifPresent((itemGroup) -> this.setCreativeTab((CreativeTabs) itemGroup));
     }
 
@@ -102,5 +106,11 @@ public final class GlassCruetItem extends ComplexItem {
                 return glass_cruet;
             }
         }
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, World player, List<String> tooltip, ITooltipFlag advanced) {
+        tooltip.add("Container");
+        super.addInformation(stack, player, tooltip, advanced);
     }
 }
