@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "almura:normal/ingredient/cream"
+    ]
+  },
+  "criteria": {
+    "has_all_items": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "almura:normal/ingredient/glass_milk_cruet"            
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "almura:normal/ingredient/cream"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_all_items",
+      "has_the_recipe"
+    ]
+  ]
+}

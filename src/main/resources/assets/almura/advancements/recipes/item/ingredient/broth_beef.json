@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "almura:normal/ingredient/broth_beef_0",
+      "almura:normal/ingredient/broth_beef_1"
+    ]
+  },
+  "criteria": {
+    "has_all_items": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "almura:normal/ingredient/broth_base",
+            "item": "minecraft:beef"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "almura:normal/ingredient/broth_beef_0"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_all_items",
+      "has_the_recipe"
+    ]
+  ]
+}

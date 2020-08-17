@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "almura:normal/ingredient/butter_slice"
+    ]
+  },
+  "criteria": {
+    "has_all_items": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "almura:normal/ingredient/butter"            
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "almura:normal/ingredient/butter_slice"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_all_items",
+      "has_the_recipe"
+    ]
+  ]
+}
