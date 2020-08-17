@@ -60,12 +60,26 @@ public final class RecipeManager {
             while (it.hasNext()) {
                 final Path path = it.next();
                 if ("json".equals(FilenameUtils.getExtension(path.toString()))) {
-                    final String id = FilenameUtils.removeExtension(source.relativize(path).toString()).replace("\\\\", "/");
+                    // The following registers the recipe at the content repo's location relative to the modid path, minus _recipes directory.
+                    final String filename_noext = FilenameUtils.removeExtension(source.relativize(path).toString()).replace("\\\\", "/");
+                    final String sourcePath = source.toString().replace("\\", "/");
+                    final String blockPath = "content/block/";
+                    final String itemPath = "content/item/";
+                    int start = 0;
+                    int end = sourcePath.indexOf("_recipes");
+                    if (sourcePath.contains(blockPath)) {
+                        start = sourcePath.indexOf(blockPath) + blockPath.length();
+                    } else if (sourcePath.contains(itemPath)) {
+                        start = sourcePath.indexOf(itemPath) + itemPath.length();
+                    }
+                    String resourceLocationAndId = sourcePath.substring(start, end) + filename_noext;
+                    // End.
                     try (final BufferedReader br = Files.newBufferedReader(path)) {
                         try {
                             final Object recipe = parseRecipe(JsonUtils.fromJson(GSON, br, JsonObject.class));
+
                             if (recipe instanceof IRecipe) {
-                                ((IRecipe) recipe).setRegistryName(new ResourceLocation("almura", id));
+                                ((IRecipe) recipe).setRegistryName(new ResourceLocation("almura", resourceLocationAndId));
                                 GameData.register_impl((IRecipe) recipe);
                             } else if (recipe instanceof FurnaceRecipe) {
                                 ((FurnaceRecipe) recipe).register();
