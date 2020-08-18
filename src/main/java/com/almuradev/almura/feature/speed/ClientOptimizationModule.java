@@ -17,6 +17,6 @@ public final class ClientOptimizationModule extends AbstractModule implements Cl
 
     @Override
     protected void configure() {
-        this.facet().add(FirstLaunchOptimization.class);
+        this.requestStaticInjection(AlmuraSettings.class);
     }
 }

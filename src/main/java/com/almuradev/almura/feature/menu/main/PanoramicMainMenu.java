@@ -7,15 +7,10 @@
  */
 package com.almuradev.almura.feature.menu.main;
 
-import com.almuradev.almura.core.client.config.ClientConfiguration;
-import com.almuradev.almura.core.client.config.category.GeneralCategory;
 import com.almuradev.almura.feature.menu.multiplayer.MultiplayerScreen;
-import com.almuradev.almura.feature.speed.FirstLaunchOptimization;
 import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.shared.client.ui.screen.PanoramicScreen;
-import com.almuradev.toolbox.config.map.MappedConfiguration;
 import com.google.common.eventbus.Subscribe;
-import com.google.inject.Inject;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.GuiTexture;
@@ -29,13 +24,10 @@ import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
 import net.malisis.core.renderer.font.FontOptions;
 import net.malisis.core.util.FontColors;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiWorldSelection;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.GuiModList;
 import net.minecraftforge.fml.relauncher.Side;
@@ -56,9 +48,7 @@ import javax.annotation.Nullable;
 public class PanoramicMainMenu extends PanoramicScreen {
 
     private static final int PADDING = 4;
-
     private UIBackgroundContainer buttonContainer;
-    @Inject private static MappedConfiguration<ClientConfiguration> configAdapter;
 
     public PanoramicMainMenu(@Nullable BasicScreen parent) {
         super(parent);
@@ -68,13 +58,6 @@ public class PanoramicMainMenu extends PanoramicScreen {
     @SuppressWarnings("deprecation")
     @Override
     public void construct() {
-        final GeneralCategory general = configAdapter.get().general;
-        if (general.firstLaunch) {
-            setupFirstLaunchEnvironment();
-            general.firstLaunch = false;
-            configAdapter.save();
-        }
-
         final UIBackgroundContainer contentContainer = new UIBackgroundContainer(this);
         contentContainer.setBackgroundAlpha(0);
         contentContainer.setPosition(0, -10, Anchor.MIDDLE | Anchor.CENTER);
@@ -211,13 +194,6 @@ public class PanoramicMainMenu extends PanoramicScreen {
             addToScreen(glWarning1);
             addToScreen(glWarning2);
         }
-
-        //Todo: please tell me there is a better way to do this.
-        //Why: the settings.saveOptions() method has a check to see if the game is still loading, thus the "FirstLaunched" settings are not saved when they are initially ran.
-        final GameSettings settings = Minecraft.getMinecraft().gameSettings;
-        settings.saveOptions();
-        // End stupidity.
-
     }
 
     @Override
@@ -256,13 +232,5 @@ public class PanoramicMainMenu extends PanoramicScreen {
                 Desktop.getDesktop().browse(new URI(GuiConfig.Url.ISSUES));
                 break;
         }
-    }
-
-    public void setupFirstLaunchEnvironment() {
-        FirstLaunchOptimization.optimizeGame();
-        ScaledResolution scaledresolution = new ScaledResolution(this.mc);
-        int j = scaledresolution.getScaledWidth();
-        int k = scaledresolution.getScaledHeight();
-        this.setWorldAndResolution(this.mc, j, k);
     }
 }

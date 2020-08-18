@@ -7,11 +7,11 @@
  */
 package com.almuradev.almura.feature.menu;
 
+import com.almuradev.almura.feature.speed.AlmuraSettings;
 import com.almuradev.almura.asm.ClientStaticAccess;
 import com.almuradev.almura.core.client.config.ClientConfiguration;
 import com.almuradev.almura.core.client.config.category.GeneralCategory;
 import com.almuradev.almura.feature.hud.HUDType;
-import com.almuradev.almura.feature.speed.FirstLaunchOptimization;
 import com.almuradev.toolbox.config.map.MappedConfiguration;
 import com.google.common.base.Converter;
 import com.google.common.eventbus.Subscribe;
@@ -267,7 +267,7 @@ public final class SimpleOptionsMenu extends BasicScreen {
     public void onButtonClick(UIButton.ClickEvent event) {
         switch (event.getComponent().getName()) {
             case "button.optimized":
-                FirstLaunchOptimization.optimizeGame();
+                AlmuraSettings.optimizeGame();
                 this.close();
                 break;
             case "button.hudType":

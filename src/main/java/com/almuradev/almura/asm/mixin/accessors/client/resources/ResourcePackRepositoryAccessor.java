@@ -8,9 +8,7 @@
 package com.almuradev.almura.asm.mixin.accessors.client.resources;
 
 import net.minecraft.client.resources.ResourcePackRepository;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.List;
