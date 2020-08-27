@@ -149,7 +149,8 @@ public final class LeafBlockImpl extends BlockLeaves implements LeafBlock, State
                                 }
 
                                 if (found == null) {
-                                    if (block.isLeaves(worldIn, x + l1, y + i2, z + j2)) {
+                                    
+                                    if (state.getBlock().isLeaves(state, worldIn, new BlockPos(pos.getX() + l1, pos.getY() + i2, pos.getZ() + j2))) {
                                         this.metaCache[(l1 + k1) * j1 + (i2 + k1) * b1 + j2 + k1] = -2;
                                     } else {
                                         this.metaCache[(l1 + k1) * j1 + (i2 + k1) * b1 + j2 + k1] = -1;
