@@ -81,7 +81,7 @@ public class MocDrops implements Witness {
 
         // Cod
         if (entityName.equalsIgnoreCase("cod")) {
-            minimum = 2;
+            minimum = 1;
             dropStack = GameRegistry.makeItemStack("almura:normal/ingredient/cod_raw", 0, minimum - quantityFound, null);
             // Clear the drops list; don't care about the eggs, but I don't want the extra fish.
             event.getDrops().clear();
@@ -89,8 +89,16 @@ public class MocDrops implements Witness {
 
         // Bass
         if (entityName.equalsIgnoreCase("bass")) {
-            minimum = 2;
+            minimum = 1;
             dropStack = GameRegistry.makeItemStack("almura:normal/ingredient/bass_raw", 0, minimum - quantityFound, null);
+            // Clear the drops list; don't care about the eggs, but I don't want the extra fish.
+            event.getDrops().clear();
+        }
+
+        // Salmon
+        if (entityName.equalsIgnoreCase("salmon")) {
+            minimum = 1;
+            dropStack = GameRegistry.makeItemStack("almura:normal/ingredient/salmon_raw", 0, minimum - quantityFound, null);
             // Clear the drops list; don't care about the eggs, but I don't want the extra fish.
             event.getDrops().clear();
         }

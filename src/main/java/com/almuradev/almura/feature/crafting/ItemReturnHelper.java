@@ -13,7 +13,6 @@ import net.minecraft.block.BlockDoublePlant;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.storage.loot.LootEntry;
 import net.minecraft.world.storage.loot.LootEntryItem;
@@ -110,7 +109,9 @@ public class ItemReturnHelper implements Witness {
         }
 
         switch (name.toUpperCase()) {
+            case "ITEM.ALMURA.NORMAL.TOOL.KNIFE":
             case "ITEM.ALMURA.NORMAL.TOOL.GRINDER":
+            case "ITEM.ALMURA.NORMAL.TOOL.GRATER":
                 reusableItem = new ItemStack(currentStack.getItem(), 1, currentStack.getMetadata());
                 damage = 1;
                 break;
@@ -136,6 +137,7 @@ public class ItemReturnHelper implements Witness {
             case "ITEM.ALMURA.NORMAL.INGREDIENT.VEGETABLEOIL":
             case "ITEM.ALMURA.NORMAL.INGREDIENT.MATERIALS_SODAWATER":
             case "ITEM.ALMURA.NORMAL.INGREDIENT.MAYONAISE":
+            case "ITEM.ALMURA.NORMAL.INGREDIENT.VANILLA_EXTRACT":
                 reusableItem = GameRegistry.makeItemStack("almura:normal/ingredient/glass_cruet", 0, 1, null);
                 break;
 
