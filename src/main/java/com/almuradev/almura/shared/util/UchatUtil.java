@@ -31,11 +31,8 @@ public final class UchatUtil implements Witness {
     }
 
     @Listener
-    public void onAchievementGranted(AdvancementEvent.Grant event) {
-        System.out.println("Event: " + event);
-        System.out.println("Message: " + event.getMessage());
-        System.out.println("Name " + event.getAdvancement().getName());
-        System.out.println("Player: " + event.getTargetEntity().getDisplayNameData().displayName());
+    public void onAchievementGranted(AdvancementEvent event) {
+        //Todo: this event doesn't care enough information to be useful....
     }
 }
 
