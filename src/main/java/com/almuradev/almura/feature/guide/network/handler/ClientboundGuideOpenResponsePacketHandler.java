@@ -23,8 +23,8 @@ import org.spongepowered.api.network.RemoteConnection;
 
 public final class ClientboundGuideOpenResponsePacketHandler implements MessageHandler<ClientboundGuideOpenResponsePacket> {
 
-    @Inject private static MappedConfiguration<ClientConfiguration> configAdapter;
     @SideOnly(Side.CLIENT)
+    @Inject private static MappedConfiguration<ClientConfiguration> configAdapter;
     @Override
     public void handleMessage(ClientboundGuideOpenResponsePacket message, RemoteConnection connection, Platform.Type side) {
         if (side.isClient()) {
