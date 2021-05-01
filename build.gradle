@@ -6,7 +6,7 @@ buildscript {
         mavenCentral()
         maven {
             name = 'forge'
-            url = 'http://files.minecraftforge.net/maven/'
+            url = 'https://files.minecraftforge.net/maven/'
         }
         maven {
             name = 'oss-sonatype-public'
@@ -14,7 +14,7 @@ buildscript {
         }
         maven {
             name = 'sponge'
-            url = 'http://repo.spongepowered.org/maven'
+            url = 'https://repo.spongepowered.org/maven'
         }
         maven {
             url = 'https://plugins.gradle.org/m2/'
