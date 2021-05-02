@@ -65,11 +65,16 @@ deobfMcMCP { failOnAtError = false }
 deobfMcSRG { failOnAtError = false }
 
 repositories {
-	mavenLocal()
+	// These three always first!!!
+    mavenLocal()
     mavenCentral()
+    flatDir {
+        dirs "lib"
+    }
+    // Any maven repo offline can cause the buildscript to fail during AT Extraction!
     maven {
         name = 'forge'
-        url = 'http://files.minecraftforge.net/maven/'
+        url = 'https://files.minecraftforge.net/maven/'
     }
     maven {
         name = 'oss-sonatype-public'
@@ -77,11 +82,11 @@ repositories {
     }
     maven {
         name 'drnaylor-minecraft'
-        url 'http://repo.drnaylor.co.uk/artifactory/list/minecraft'
+        url 'https://repo.drnaylor.co.uk/artifactory/list/minecraft'
     }
     maven {
         name = 'sponge'
-        url = 'http://repo.spongepowered.org/maven'
+        url = 'https://repo.spongepowered.org/maven'
     }
     maven {
         name = 'bstats'
@@ -101,9 +106,6 @@ repositories {
     maven {
         name = 'glare'
         url = 'https://repo.glaremasters.me/repository/bloodshot'
-    }
-    flatDir {
-        dirs "lib"
     }
 }
 
