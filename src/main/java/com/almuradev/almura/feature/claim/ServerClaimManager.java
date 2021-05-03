@@ -23,11 +23,9 @@ import com.griefdefender.api.event.RemoveClaimEvent;
 import com.griefdefender.api.event.TaxClaimEvent;
 import com.griefdefender.lib.kyori.event.method.annotation.Subscribe;
 import com.griefdefender.lib.kyori.text.TextComponent;
-import net.kyori.text.Component;
-import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
+import com.griefdefender.lib.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.event.group.GroupDataRecalculateEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.server.FMLServerHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -62,6 +60,7 @@ public final class ServerClaimManager implements Witness {
     private boolean debugClaimManager = false;
     public static Text notificationTitle = Text.of("Claim Manager");
     public static String adminPermission = "griefdefender.admin";
+    private boolean debug = false;
 
     @Inject
     public ServerClaimManager(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network, final
@@ -81,7 +80,7 @@ public final class ServerClaimManager implements Witness {
 
     @Listener(order = Order.LAST)
     public void onPlayerJoin(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
-        this.sendUpdateTo(player, null, null,false);
+        this.sendUpdateTo(player, null, null,false, "playerJoin");
     }
 
     // Note: due to the fact that GriefDefender does an internal re-locate for these Kyori libraries; we have to shade in the relocated libraries
@@ -90,27 +89,28 @@ public final class ServerClaimManager implements Witness {
     @Subscribe
     public void onEnterExitClaim(BorderClaimEvent event) {
         final Player player = (Player)FMLServerHandler.instance().getServer().getPlayerList().getPlayerByUUID(event.getEntityUniqueId());
-        this.sendUpdateTo(player, event.getClaim(), null,false);
+        this.sendUpdateTo(player, event.getClaim(), null,false, "exitClaim");
     }
 
     @Subscribe
     public void onChangeClaim(final ChangeClaimEvent event) {
-        this.sendUpdateTo(null, event.getClaim(), event.getClaim().getPlayers(), false);
+        this.sendUpdateTo(null, event.getClaim(), event.getClaim().getPlayers(), false, "changeClaim");
     }
 
     @Subscribe
     public void onCreateClaim(final CreateClaimEvent event) {
-        this.sendUpdateTo(null, event.getClaim(), event.getClaim().getPlayers(), false);
+        this.sendUpdateTo(null, event.getClaim(), event.getClaim().getPlayers(), false, "createClaim");
     }
 
     @Subscribe
     public void onDeleteClaim(final RemoveClaimEvent event) {
-        this.sendUpdateTo(null, event.getClaim(), event.getClaim().getPlayers(), false);
+        // This method gets called on the claim that is being deleted.
+        this.sendUpdateTo(null, null, event.getClaim().getPlayers(), false, "deleteClaim");
     }
 
     @Subscribe
     public void onTaxClaim(final TaxClaimEvent event) {
-        this.sendUpdateTo(null, event.getClaim(), event.getClaim().getPlayers(), false);
+        this.sendUpdateTo(null, event.getClaim(), event.getClaim().getPlayers(), false, "taxClaim");
     }
 
     //LP Event system uses inline Registration.
@@ -118,16 +118,25 @@ public final class ServerClaimManager implements Witness {
         if (Sponge.getServer().getOnlinePlayers().size() > 0) {
             if (event.getGroup().getName().equalsIgnoreCase("griefdefender_default")) {
                 // This will send an update to everyone on the server if a flag change is detected within GD.
-                sendUpdateTo(null, null, null, true);
+                sendUpdateTo(null, null, null, true, "lpPermsChange");
             }
         }
     }
 
-    public void sendUpdateTo(final Player player, Claim claim, List<UUID> players, final boolean everyone) {
+    public void sendUpdateTo(final Player player, Claim claim, List<UUID> players, final boolean everyone, final String reason) {
         // Do not continue; this is events firing from entities other than players.
-        System.out.println("Starting sendUpdateTo");
-        if (claim != null) {
-            System.out.println("Player: " + player.getName() + " / " + claim.getName());
+        if (debug) {
+            System.out.println("Starting sendUpdateTo because: " + reason);
+            if (claim != null) {
+                System.out.println("Claim: " + claim.getName());
+            } else {
+                System.out.println("Claim is null");
+            }
+            if (player != null) {
+                System.out.println("Player: " + player.getName());
+            } else {
+                System.out.println("Player is null");
+            }
         }
         if (!Sponge.getPluginManager().isLoaded("griefdefender")) {
             // Check here to see if its loaded because in the deobfuscated environment I force load the ClaimManager classes for testing purposes.
@@ -137,9 +146,19 @@ public final class ServerClaimManager implements Witness {
             return;
         }
 
-        // Lookup claim where player is standing
-        if (claim == null && player != null) {
-            claim = GriefDefender.getCore().getClaimManager(player.getWorld().getUniqueId()).getClaimAt(player.getLocation().getPosition().toInt());
+        // Lookup claim where player or players is standing
+        if (claim == null) {
+            if (player != null) {
+                claim = GriefDefender.getCore().getClaimManager(player.getWorld().getUniqueId()).getClaimAt(player.getLocation().getPosition().toInt());
+            }
+            if (players != null) {
+                for (UUID playerUUID : players) {
+                    final Player finalPlayer = (Player)FMLServerHandler.instance().getServer().getPlayerList().getPlayerByUUID(playerUUID);
+                    if (finalPlayer != null) {
+                        Task.builder().delayTicks(10).execute(t -> this.sendUpdate(finalPlayer, null)).submit(this.container);
+                    }
+                }
+            }
         }
 
         // Send to specific player
@@ -182,7 +201,7 @@ public final class ServerClaimManager implements Witness {
         }
     }
 
-    protected void sendUpdate(final Player player, final Claim claim) {
+    protected void sendUpdate(final Player player, Claim claim) {
         if (GriefDefender.getCore() != null) {
             boolean isWorldOrilla = false;
             boolean isWorldAsgard = false;
@@ -194,6 +213,10 @@ public final class ServerClaimManager implements Witness {
                 isWorldAsgard = Sponge.getServer().getWorld("Asgard").get().getUniqueId() == claim.getWorldUniqueId();
             }
             if (GriefDefender.getPermissionManager() != null) {
+                if (claim == null) {
+                    // This is intended to catch when a delayed task is sent to this method and claim is purposely left null.
+                    claim = GriefDefender.getCore().getClaimManager(player.getWorld().getUniqueId()).getClaimAt(player.getLocation().getPosition().toInt());
+                }
                 if (claim != null) {
                     boolean isClaim = true;
                     boolean hasWECUI = false;
@@ -232,15 +255,15 @@ public final class ServerClaimManager implements Witness {
                     }
 
                     if (claim.getData() != null && claim.getData().getGreeting().isPresent()) {
-                        claimGreeting = LegacyComponentSerializer.legacy().serialize((Component) claim.getData().getGreeting().get());
+                        claimGreeting = LegacyComponentSerializer.legacy().serialize(claim.getData().getGreeting().get());
                     }
 
                     if (claim.getData() != null &&claim.getData().getFarewell().isPresent()) {
-                        claimFarewell = LegacyComponentSerializer.legacy().serialize((Component) claim.getData().getFarewell().get());
+                        claimFarewell = LegacyComponentSerializer.legacy().serialize(claim.getData().getFarewell().get());
                     }
 
                     if (claim.getName().isPresent()) {
-                        claimName = LegacyComponentSerializer.legacy().serialize((Component) claim.getName().get());
+                        claimName = LegacyComponentSerializer.legacy().serialize(claim.getName().get());
 
                         final EconomyService service = Sponge.getServiceManager().provide(EconomyService.class).orElse(null);
                         if (service != null && player != null) {
@@ -311,7 +334,7 @@ public final class ServerClaimManager implements Witness {
                 claim.getData().setName(TextComponent.builder(claimName).build());
                 claim.getData().setGreeting(TextComponent.builder(claimGreeting).build());
                 claim.getData().setFarewell(TextComponent.builder(claimFarewell).build());
-                this.sendUpdateTo(player, claim, claim.getPlayers(), false);
+                this.sendUpdateTo(player, claim, claim.getPlayers(), false, "saveChanges");
                 this.serverNotificationManager.sendPopupNotification(player, notificationTitle, Text.of("Changed Saved!"), 5);
             } else {
                 this.serverNotificationManager.sendPopupNotification(player, notificationTitle, Text.of("Insufficient Permissions!"), 5);
@@ -389,6 +412,8 @@ public final class ServerClaimManager implements Witness {
     public void abandonClaim(final Player player, final Claim claim) {
         if (claim != null && player != null) {
             claim.getClaimManager().deleteClaim(claim);
+            // Send delayed request for update because the system needs time to finish this request; before it triggers the event
+            //Task.builder().delayTicks(10).execute(t -> this.sendUpdate(player, null)).submit(this.container);
         }
     }
 

@@ -51,7 +51,7 @@ public final class ServerboundClaimGuiForSaleRequestPacketHandler implements Mes
                 final boolean isAdmin = player.hasPermission(ServerClaimManager.adminPermission);
                 if (isOwner || isAdmin) {
                     this.serverClaimManager.setForSale(player, claim, message.setForSale, message.salePrice);
-                    this.serverClaimManager.sendUpdateTo(player, claim, claim.getPlayers(), true);
+                    this.serverClaimManager.sendUpdateTo(player, claim, claim.getPlayers(), true, "requestClaimForSalePacket");
                     if (message.setForSale) {
                         this.notificationManager.sendPopupNotification(player, ServerClaimManager.notificationTitle, Text.of("Claim Listed For Sale!"), 5);
                     } else {

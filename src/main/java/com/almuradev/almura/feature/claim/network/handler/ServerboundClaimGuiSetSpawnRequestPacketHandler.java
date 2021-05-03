@@ -52,7 +52,7 @@ public final class ServerboundClaimGuiSetSpawnRequestPacketHandler implements Me
 
                 if (isOwner || isAdmin) {
                     this.serverClaimManager.setSpawnLocation(player, claim);
-                    this.serverClaimManager.sendUpdateTo(player, claim, null, true);
+                    this.serverClaimManager.sendUpdateTo(player, claim, null, true, "setClaimSpawnGUIPacket");
                     this.notificationManager.sendPopupNotification(player, ServerClaimManager.notificationTitle, Text.of("Spawn point set!"), 5);
                 } else {
                     this.notificationManager.sendPopupNotification(player, ServerClaimManager.notificationTitle, Text.of("Insufficient Permissions!"), 5);
