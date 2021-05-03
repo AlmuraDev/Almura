@@ -17,7 +17,7 @@ import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.feature.title.ServerTitleManager;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
-import io.github.nucleuspowered.nucleus.api.events.NucleusFirstJoinEvent;
+import io.github.nucleuspowered.nucleus.api.core.event.NucleusFirstJoinEvent;
 import net.kyori.membrane.facet.Activatable;
 import net.minecraft.util.text.TextFormatting;
 import org.spongepowered.api.Game;

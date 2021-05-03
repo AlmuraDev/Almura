@@ -17,7 +17,7 @@ import com.almuradev.almura.shared.util.UchatUtil;
 import com.almuradev.core.event.Witness;
 import com.griefdefender.api.GriefDefender;
 import com.griefdefender.api.data.PlayerData;
-import io.github.nucleuspowered.nucleus.api.service.NucleusNicknameService;
+import io.github.nucleuspowered.nucleus.api.module.nickname.NucleusNicknameService;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.event.user.track.UserTrackEvent;
 import net.luckperms.api.model.user.User;

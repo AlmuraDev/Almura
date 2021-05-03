@@ -14,9 +14,9 @@ import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import io.github.nucleuspowered.nucleus.api.events.NucleusChangeNicknameEvent;
-import io.github.nucleuspowered.nucleus.api.exceptions.NicknameException;
-import io.github.nucleuspowered.nucleus.api.service.NucleusNicknameService;
+import io.github.nucleuspowered.nucleus.api.module.nickname.NucleusNicknameService;
+import io.github.nucleuspowered.nucleus.api.module.nickname.event.NucleusChangeNicknameEvent;
+import io.github.nucleuspowered.nucleus.api.module.nickname.exception.NicknameException;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.ForgeEventFactory;
@@ -129,7 +129,7 @@ public final class ServerNickManager extends Witness.Impl implements Witness.Lif
     // TODO - Update this for Nucleues' next release to use Post event
     @Listener(order = Order.POST)
     public void onChangeNickname(final NucleusChangeNicknameEvent.Pre event) {
-        final Player player = event.getTargetUser().getPlayer().orElse(null);
+        final Player player = event.getUser().getPlayer().orElse(null);
 
         if (player == null) {
             return;
@@ -142,7 +142,7 @@ public final class ServerNickManager extends Witness.Impl implements Witness.Lif
 
                 final EntityPlayerMP mcPlayer = (EntityPlayerMP) player;
                 final String oldNick = mcPlayer.getDisplayNameString();
-                final String newNick = TextSerializers.LEGACY_FORMATTING_CODE.serialize(event.getNewNickname());
+                final String newNick = TextSerializers.LEGACY_FORMATTING_CODE.serialize(event.getNickname().get());
 
                 if (!oldNick.equals(newNick)) {
                     final String modNick = ForgeEventFactory.getPlayerDisplayName(mcPlayer, newNick);

@@ -6,7 +6,7 @@ buildscript {
         mavenCentral()
         maven {
             name = 'forge'
-            url = 'https://files.minecraftforge.net/maven/'
+            url = 'https://maven.minecraftforge.net/'
         }
         maven {
             name = 'oss-sonatype-public'
@@ -74,7 +74,7 @@ repositories {
     // Any maven repo offline can cause the buildscript to fail during AT Extraction!
     maven {
         name = 'forge'
-        url = 'https://files.minecraftforge.net/maven/'
+        url = 'https://maven.minecraftforge.net/'
     }
     maven {
         name = 'oss-sonatype-public'
@@ -124,11 +124,11 @@ dependencies {
     compile 'net.kyori:lunar:1.0.5-SNAPSHOT'
     compile 'net.kyori:membrane:1.0.5'
     compile 'net.kyori:violet:1.0.0'
-    compile 'net.kyori:text-api:3.0.2'
+    compile 'net.kyori:text-api:3.0.4'
     compile 'net.kyori:text-serializer-legacy:3.0.4'
     compile 'net.kyori:event-api:3.0.0'
     compile 'net.kyori:event-method:3.0.0'
-    compile ("com.github.bloodmc:GriefDefenderAPI:master-SNAPSHOT") {
+    compile ("com.github.bloodmc:GriefDefenderAPI:1.0.0-20201166.204882-26") {
         exclude module: 'event-method-asm'
     }
     deobfCompile ('com.almuradev:malisiscore:1.12.2-6.5.3-SNAPSHOT') {
@@ -139,7 +139,7 @@ dependencies {
     compile 'org.inspirenxe:skills:1.0.0-SNAPSHOT:api'
     compile 'com.almuradev:toolbox:1.0.0-SNAPSHOT'
     compile 'org.inspirenxe:skills:1.0.0-SNAPSHOT'
-    compile 'io.github.nucleuspowered:nucleus-api:1.14.6-S7.1'
+    compile 'io.github.nucleuspowered:nucleus-api:2.4.0'
     compile "net.luckperms:api:5.0"
     compile "org.jooq:jooq:${project.jooqVersion}"
     compile "org.jooq:jooq-meta:${project.jooqVersion}"
@@ -268,7 +268,7 @@ shadowJar {
         include dependency('ninja.leaping.configurate:configurate-json')
         include dependency('io.github.nucleuspowered:nucleus-api')
         include dependency('org.jooq:jooq')
-        include dependency('com.github.bloodmc:GriefDefenderAPI')
+        //include dependency('com.github.bloodmc:GriefDefenderAPI')
     }
     afterEvaluate {
         from zipTree(reobfJar.jar)
