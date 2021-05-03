@@ -21,12 +21,13 @@ import com.griefdefender.api.event.ChangeClaimEvent;
 import com.griefdefender.api.event.CreateClaimEvent;
 import com.griefdefender.api.event.RemoveClaimEvent;
 import com.griefdefender.api.event.TaxClaimEvent;
-import net.kyori.event.method.annotation.Subscribe;
+import com.griefdefender.lib.kyori.event.method.annotation.Subscribe;
 import com.griefdefender.lib.kyori.text.TextComponent;
 import net.kyori.text.Component;
 import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.event.group.GroupDataRecalculateEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.server.FMLServerHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -83,6 +84,9 @@ public final class ServerClaimManager implements Witness {
         this.sendUpdateTo(player, null, null,false);
     }
 
+    // Note: due to the fact that GriefDefender does an internal re-locate for these Kyori libraries; we have to shade in the relocated libraries
+    // to make these listeners function.  This is insanity....
+
     @Subscribe
     public void onEnterExitClaim(BorderClaimEvent event) {
         final Player player = (Player)FMLServerHandler.instance().getServer().getPlayerList().getPlayerByUUID(event.getEntityUniqueId());
@@ -121,6 +125,10 @@ public final class ServerClaimManager implements Witness {
 
     public void sendUpdateTo(final Player player, Claim claim, List<UUID> players, final boolean everyone) {
         // Do not continue; this is events firing from entities other than players.
+        System.out.println("Starting sendUpdateTo");
+        if (claim != null) {
+            System.out.println("Player: " + player.getName() + " / " + claim.getName());
+        }
         if (!Sponge.getPluginManager().isLoaded("griefdefender")) {
             // Check here to see if its loaded because in the deobfuscated environment I force load the ClaimManager classes for testing purposes.
             return;

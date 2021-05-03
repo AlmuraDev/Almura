@@ -129,7 +129,8 @@ dependencies {
     compile 'com.griefdefender.lib.kyori:event-api-gd:3.0.4'
     compile 'net.kyori:text-serializer-legacy:3.0.4'
     //compile 'net.kyori:event-api:3.0.0'
-    compile 'net.kyori:event-method:3.0.0'
+    //compile 'net.kyori:event-method:3.0.0'
+    compile 'com.griefdefender.lib.kyori:event-method-gd:3.0.0'
     compile ("com.github.bloodmc:GriefDefenderAPI-Shaded:1.0.0-20201166.204882-26") {
         exclude module: 'event-method-asm'
     }
@@ -260,9 +261,10 @@ shadowJar {
         include dependency('com.google.inject.extensions:guice-multibindings')
         include dependency('io.github.nucleuspowered:nucleus-api')
         include dependency('net.kyori:indigo')
-//      include dependency('net.kyori:event-api')
+        //include dependency('net.kyori:event-api')
         include dependency('com.griefdefender.lib.kyori:event-api-gd')
-        include dependency('net.kyori:event-method')
+        //include dependency('net.kyori:event-method')
+        include dependency('com.griefdefender.lib.kyori:event-method-gd')
         include dependency('net.kyori:text-api')
         include dependency('net.kyori:text-serializer-legacy')
         include dependency('net.kyori:lunar')
