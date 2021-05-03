@@ -22,7 +22,8 @@ import com.griefdefender.api.event.CreateClaimEvent;
 import com.griefdefender.api.event.RemoveClaimEvent;
 import com.griefdefender.api.event.TaxClaimEvent;
 import net.kyori.event.method.annotation.Subscribe;
-import net.kyori.text.TextComponent;
+import com.griefdefender.lib.kyori.text.TextComponent;
+import net.kyori.text.Component;
 import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.event.group.GroupDataRecalculateEvent;
@@ -223,15 +224,15 @@ public final class ServerClaimManager implements Witness {
                     }
 
                     if (claim.getData() != null && claim.getData().getGreeting().isPresent()) {
-                        claimGreeting = LegacyComponentSerializer.legacy().serialize(claim.getData().getGreeting().get());
+                        claimGreeting = LegacyComponentSerializer.legacy().serialize((Component) claim.getData().getGreeting().get());
                     }
 
                     if (claim.getData() != null &&claim.getData().getFarewell().isPresent()) {
-                        claimFarewell = LegacyComponentSerializer.legacy().serialize(claim.getData().getFarewell().get());
+                        claimFarewell = LegacyComponentSerializer.legacy().serialize((Component) claim.getData().getFarewell().get());
                     }
 
                     if (claim.getName().isPresent()) {
-                        claimName = LegacyComponentSerializer.legacy().serialize(claim.getName().get());
+                        claimName = LegacyComponentSerializer.legacy().serialize((Component) claim.getName().get());
 
                         final EconomyService service = Sponge.getServiceManager().provide(EconomyService.class).orElse(null);
                         if (service != null && player != null) {
