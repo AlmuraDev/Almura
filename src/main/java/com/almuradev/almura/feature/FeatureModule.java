@@ -63,7 +63,8 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.facet().add(SignEditFeature.class);
         this.facet().add(ItemReturnHelper.class);
         this.nerfVanillaFood();
-        this.install(new ClaimModule());
+        // Disable this because we are getting a classloading error with Kyori.
+        //this.install(new ClaimModule());
         this.install(new MembershipModule());
         this.install(new SkillsModule());
 
