@@ -412,8 +412,6 @@ public final class ServerClaimManager implements Witness {
     public void abandonClaim(final Player player, final Claim claim) {
         if (claim != null && player != null) {
             claim.getClaimManager().deleteClaim(claim);
-            // Send delayed request for update because the system needs time to finish this request; before it triggers the event
-            //Task.builder().delayTicks(10).execute(t -> this.sendUpdate(player, null)).submit(this.container);
         }
     }
 
@@ -429,7 +427,6 @@ public final class ServerClaimManager implements Witness {
             claim.getEconomyData().setForSale(forSale);
             claim.getEconomyData().setSalePrice(salePrice);
             claim.getData().save();
-            System.out.println("For Sale: " + claim.getEconomyData().isForSale() + " @ " + claim.getEconomyData().getSalePrice());
         }
     }
 
