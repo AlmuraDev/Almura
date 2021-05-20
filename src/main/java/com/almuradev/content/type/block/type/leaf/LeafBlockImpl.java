@@ -10,9 +10,11 @@ package com.almuradev.content.type.block.type.leaf;
 import com.almuradev.almura.asm.mixin.accessors.block.BlockAccessor;
 import com.almuradev.almura.asm.mixin.accessors.block.BlockLeavesAccessor;
 import com.almuradev.content.type.block.StateMappedBlock;
+import com.almuradev.content.type.block.type.leaf.processor.preventdecay.PreventDecay;
 import com.almuradev.content.type.block.type.leaf.processor.spread.Spread;
 import com.almuradev.content.type.block.type.leaf.state.LeafBlockStateDefinition;
 import com.almuradev.toolbox.util.math.DoubleRange;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.state.BlockStateContainer;
@@ -114,8 +116,143 @@ public final class LeafBlockImpl extends BlockLeaves implements LeafBlock, State
 
     @Override
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
-        // Run decay logic
-        super.updateTick(worldIn, pos, state, rand);
+        if (!worldIn.isRemote)
+        {
+            if (((Boolean)state.getValue(CHECK_DECAY)).booleanValue() && ((Boolean)state.getValue(DECAYABLE)).booleanValue())
+            {
+                int i = 4;
+                int j = 5;
+                int k = pos.getX();
+                int l = pos.getY();
+                int i1 = pos.getZ();
+                int j1 = 32;
+                int k1 = 1024;
+                int l1 = 16;
+
+                if (((BlockLeavesAccessor) (Object) this).accessor$getSurroundings() == null)
+                {
+                    ((BlockLeavesAccessor) (Object) this).accessor$setSurroundings(new int[32768]);
+                }
+
+                final int[] surroundings = ((BlockLeavesAccessor) (Object) this).accessor$getSurroundings();
+
+                if (!worldIn.isAreaLoaded(pos, 1)) return; // Forge: prevent decaying leaves from updating neighbors and loading unloaded chunks
+                if (worldIn.isAreaLoaded(pos, 6)) // Forge: extend range from 5 to 6 to account for neighbor checks in world.markAndNotifyBlock -> world.updateObservingBlocksAt
+                {
+                    BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+
+                    for (int i2 = -4; i2 <= 4; ++i2)
+                    {
+                        for (int j2 = -4; j2 <= 4; ++j2)
+                        {
+                            for (int k2 = -4; k2 <= 4; ++k2)
+                            {
+                                IBlockState iblockstate = worldIn.getBlockState(blockpos$mutableblockpos.setPos(k + i2, l + j2, i1 + k2));
+                                Block block = iblockstate.getBlock();
+
+                                // Almura Start - Ask the leaf for a block that can keep it from decaying. Allow Vanilla logs to have first say
+                                boolean preventDecay = block.canSustainLeaves(iblockstate, worldIn, blockpos$mutableblockpos.setPos(k + i2, l + j2,
+                                        i1 + k2));
+                                if (!preventDecay) {
+                                    final PreventDecay pDecay = this.definition.preventDecay;
+                                    if (pDecay != null) {
+                                        final DoubleRange chanceRoll = pDecay.getOrLoadChanceRangeForBiome(worldIn.getBiome(blockpos$mutableblockpos));
+                                        if (chanceRoll != null) {
+                                            if ((rand.nextDouble() >= (chanceRoll.random(rand) / 100))) {
+                                                if (pDecay.getBlock().partialTest(iblockstate)) {
+                                                    preventDecay = true;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                if (!preventDecay)
+                                {
+                                // Almura End
+                                    if (block.isLeaves(iblockstate, worldIn, blockpos$mutableblockpos.setPos(k + i2, l + j2, i1 + k2)))
+                                    {
+                                        surroundings[(i2 + 16) * 1024 + (j2 + 16) * 32 + k2 + 16] = -2;
+                                    }
+                                    else
+                                    {
+                                        surroundings[(i2 + 16) * 1024 + (j2 + 16) * 32 + k2 + 16] = -1;
+                                    }
+                                }
+                                else
+                                {
+                                    surroundings[(i2 + 16) * 1024 + (j2 + 16) * 32 + k2 + 16] = 0;
+                                }
+                            }
+                        }
+                    }
+
+                    for (int i3 = 1; i3 <= 4; ++i3)
+                    {
+                        for (int j3 = -4; j3 <= 4; ++j3)
+                        {
+                            for (int k3 = -4; k3 <= 4; ++k3)
+                            {
+                                for (int l3 = -4; l3 <= 4; ++l3)
+                                {
+                                    if (surroundings[(j3 + 16) * 1024 + (k3 + 16) * 32 + l3 + 16] == i3 - 1)
+                                    {
+                                        if (surroundings[(j3 + 16 - 1) * 1024 + (k3 + 16) * 32 + l3 + 16] == -2)
+                                        {
+                                            surroundings[(j3 + 16 - 1) * 1024 + (k3 + 16) * 32 + l3 + 16] = i3;
+                                        }
+
+                                        if (surroundings[(j3 + 16 + 1) * 1024 + (k3 + 16) * 32 + l3 + 16] == -2)
+                                        {
+                                            surroundings[(j3 + 16 + 1) * 1024 + (k3 + 16) * 32 + l3 + 16] = i3;
+                                        }
+
+                                        if (surroundings[(j3 + 16) * 1024 + (k3 + 16 - 1) * 32 + l3 + 16] == -2)
+                                        {
+                                            surroundings[(j3 + 16) * 1024 + (k3 + 16 - 1) * 32 + l3 + 16] = i3;
+                                        }
+
+                                        if (surroundings[(j3 + 16) * 1024 + (k3 + 16 + 1) * 32 + l3 + 16] == -2)
+                                        {
+                                            surroundings[(j3 + 16) * 1024 + (k3 + 16 + 1) * 32 + l3 + 16] = i3;
+                                        }
+
+                                        if (surroundings[(j3 + 16) * 1024 + (k3 + 16) * 32 + (l3 + 16 - 1)] == -2)
+                                        {
+                                            surroundings[(j3 + 16) * 1024 + (k3 + 16) * 32 + (l3 + 16 - 1)] = i3;
+                                        }
+
+                                        if (surroundings[(j3 + 16) * 1024 + (k3 + 16) * 32 + l3 + 16 + 1] == -2)
+                                        {
+                                            surroundings[(j3 + 16) * 1024 + (k3 + 16) * 32 + l3 + 16 + 1] = i3;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                int l2 = surroundings[16912];
+
+                if (l2 >= 0)
+                {
+                    worldIn.setBlockState(pos, state.withProperty(CHECK_DECAY, Boolean.valueOf(false)), 4);
+                }
+                else
+                {
+                    ((BlockLeavesAccessor) (Object) this).invoker$destroy(worldIn, pos);
+                }
+            }
+        }
+
+        this.updateSpreadTick(worldIn, pos, state, rand);
+
+    }
+
+    private void updateSpreadTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
+        if (worldIn.isRemote) {
+            return;
+        }
 
         final Spread spread = this.definition.spread;
         if (spread == null) {
@@ -132,7 +269,7 @@ public final class LeafBlockImpl extends BlockLeaves implements LeafBlock, State
         if (chanceRoll == null) {
             return;
         }
-        if (!(RANDOM.nextDouble() <= (chanceRoll.random(RANDOM) / 100))) {
+        if (!(rand.nextDouble() <= (chanceRoll.random(rand) / 100))) {
             return;
         }
         for (final EnumFacing facing : EnumFacing.values()) {
