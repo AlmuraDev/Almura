@@ -7,11 +7,20 @@
  */
 package com.almuradev.almura;
 
+import com.almuradev.almura.feature.claim.ClaimModule;
+import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiRequestPacket;
+import com.almuradev.almura.feature.claim.network.handler.ServerboundClaimGuiRequestPacketHandler;
 import com.google.inject.Injector;
 import net.minecraft.network.NetworkManager;
 import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.relauncher.Side;
+import org.spongepowered.api.Platform;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.game.state.GameConstructionEvent;
+import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.event.world.UnloadWorldEvent;
@@ -49,6 +58,10 @@ public class Almura implements com.almuradev.almura.shared.plugin.Plugin {
         proxy.construct(this, this.injector);
     }
 
+    @Listener(order = Order.POST)
+    public void gamePreInit(final GamePreInitializationEvent event) {
+        proxy.preInit();
+    }
     @Listener
     public void gameDestruct(final GameStoppingEvent event) {
         proxy.destruct();

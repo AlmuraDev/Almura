@@ -86,7 +86,7 @@ public final class PermissionsManager implements Witness {
                 final String toGroup = e.getGroupTo().orElse(null);
 
                 // Refresh Grief Prevention user options after changing groups.
-                PlayerData playerData = GriefDefender.getCore().getPlayerData(target.getWorld().getUniqueId(), target.getUniqueId()).get();
+                PlayerData playerData = GriefDefender.getCore().getPlayerData(target.getWorld().getUniqueId(), target.getUniqueId());
                 // Todo: is this fix still needed?
                 //playerData.refreshPlayerOptions();
 

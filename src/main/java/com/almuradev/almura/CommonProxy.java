@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura;
 
+import com.almuradev.almura.feature.claim.ClaimModule;
 import com.almuradev.almura.shared.plugin.Plugin;
 import com.google.inject.Injector;
 import net.kyori.membrane.facet.internal.Facets;
@@ -17,9 +18,16 @@ import net.kyori.membrane.facet.internal.Facets;
 public abstract class CommonProxy {
 
     private Facets facets;
+    private Injector injector;
 
     protected final void construct(final Plugin plugin, final Injector injector) {
-        this.facets = this.createInjector(plugin, injector).getInstance(Facets.class);
+        this.injector = this.createInjector(plugin, injector);
+    }
+
+    protected final void preInit() {
+        // Put modules here that are required to load later on in the startup phase.
+        this.injector = this.injector.createChildInjector(new ClaimModule());
+        this.facets = this.injector.getInstance(Facets.class);
         this.facets.enable();
     }
 

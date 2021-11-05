@@ -21,9 +21,9 @@ import com.griefdefender.api.event.ChangeClaimEvent;
 import com.griefdefender.api.event.CreateClaimEvent;
 import com.griefdefender.api.event.RemoveClaimEvent;
 import com.griefdefender.api.event.TaxClaimEvent;
-import com.griefdefender.lib.kyori.event.method.annotation.Subscribe;
-import com.griefdefender.lib.kyori.text.TextComponent;
-import com.griefdefender.lib.kyori.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.text.Component;
+import net.kyori.text.TextComponent;
+import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.event.group.GroupDataRecalculateEvent;
 import net.minecraftforge.fml.server.FMLServerHandler;
@@ -73,7 +73,12 @@ public final class ServerClaimManager implements Witness {
     @Listener
     public void serverStarted(final GameAboutToStartServerEvent event) {
         if (Sponge.getPluginManager().isLoaded("griefdefender")) {
-            GriefDefender.getEventManager().register(this);
+            GriefDefender.getEventManager().getBus().subscribe(BorderClaimEvent.class, this:: onEnterExitClaim);
+            GriefDefender.getEventManager().getBus().subscribe(ChangeClaimEvent.class, this:: onChangeClaim);
+            GriefDefender.getEventManager().getBus().subscribe(CreateClaimEvent.class, this:: onCreateClaim);
+            GriefDefender.getEventManager().getBus().subscribe(RemoveClaimEvent.class, this:: onDeleteClaim);
+            GriefDefender.getEventManager().getBus().subscribe(TaxClaimEvent.class, this:: onTaxClaim);
+
             LuckPermsProvider.get().getEventBus().subscribe(GroupDataRecalculateEvent.class, this::onLpPermChange);
         }
     }
@@ -86,29 +91,24 @@ public final class ServerClaimManager implements Witness {
     // Note: due to the fact that GriefDefender does an internal re-locate for these Kyori libraries; we have to shade in the relocated libraries
     // to make these listeners function.  This is insanity....
 
-    @Subscribe
     public void onEnterExitClaim(BorderClaimEvent event) {
         final Player player = (Player)FMLServerHandler.instance().getServer().getPlayerList().getPlayerByUUID(event.getEntityUniqueId());
         this.sendUpdateTo(player, event.getClaim(), null,false, "exitClaim");
     }
 
-    @Subscribe
     public void onChangeClaim(final ChangeClaimEvent event) {
         this.sendUpdateTo(null, event.getClaim(), event.getClaim().getPlayers(), false, "changeClaim");
     }
 
-    @Subscribe
     public void onCreateClaim(final CreateClaimEvent event) {
         this.sendUpdateTo(null, event.getClaim(), event.getClaim().getPlayers(), false, "createClaim");
     }
 
-    @Subscribe
     public void onDeleteClaim(final RemoveClaimEvent event) {
         // This method gets called on the claim that is being deleted.
         this.sendUpdateTo(null, null, event.getClaim().getPlayers(), false, "deleteClaim");
     }
 
-    @Subscribe
     public void onTaxClaim(final TaxClaimEvent event) {
         this.sendUpdateTo(null, event.getClaim(), event.getClaim().getPlayers(), false, "taxClaim");
     }
@@ -128,7 +128,7 @@ public final class ServerClaimManager implements Witness {
         if (debug) {
             System.out.println("Starting sendUpdateTo because: " + reason);
             if (claim != null) {
-                System.out.println("Claim: " + claim.getName());
+                System.out.println("Claim: " + claim.getData().getDisplayName());
             } else {
                 System.out.println("Claim is null");
             }
@@ -255,15 +255,16 @@ public final class ServerClaimManager implements Witness {
                     }
 
                     if (claim.getData() != null && claim.getData().getGreeting().isPresent()) {
-                        claimGreeting = LegacyComponentSerializer.legacy().serialize(claim.getData().getGreeting().get());
+                        claimGreeting = LegacyComponentSerializer.legacy().serialize((Component) claim.getData().getGreeting().get());
+
                     }
 
                     if (claim.getData() != null &&claim.getData().getFarewell().isPresent()) {
-                        claimFarewell = LegacyComponentSerializer.legacy().serialize(claim.getData().getFarewell().get());
+                        claimFarewell = LegacyComponentSerializer.legacy().serialize((Component) claim.getData().getFarewell().get());
                     }
 
-                    if (claim.getName().isPresent()) {
-                        claimName = LegacyComponentSerializer.legacy().serialize(claim.getName().get());
+                    if (!claim.getData().getDisplayName().isEmpty()) {
+                        claimName = claim.getDisplayName();
 
                         final EconomyService service = Sponge.getServiceManager().provide(EconomyService.class).orElse(null);
                         if (service != null && player != null) {
@@ -277,9 +278,10 @@ public final class ServerClaimManager implements Witness {
                             claimBlockSell = this.claimBlockSell(player, claim);
                             final Currency currency = service.getDefaultCurrency();
 
-                            if (claim.getEconomyAccountId().isPresent()) {
+                            if (claim.getEconomyData() != null) {
+                                // Todo might be wrong
                                 claimTaxBalance = this.claimTaxBalance(player, claim);
-                                UUID accountID = claim.getEconomyAccountId().orElse(null);
+                                UUID accountID = claim.getEconomyAccountId();
                                 if (!(accountID == null)) {
                                     final UniqueAccount claimAccount = service.getOrCreateAccount(accountID).orElse(null);
                                     claimEconBalance = claimAccount.getBalance(currency).doubleValue();
@@ -331,9 +333,9 @@ public final class ServerClaimManager implements Witness {
             final boolean isAdmin = player.hasPermission(adminPermission);
 
             if (isOwner || isAdmin) {
-                claim.getData().setName(TextComponent.builder(claimName).build());
-                claim.getData().setGreeting(TextComponent.builder(claimGreeting).build());
-                claim.getData().setFarewell(TextComponent.builder(claimFarewell).build());
+                claim.getData().setDisplayName((net.kyori.adventure.text.Component) TextComponent.builder(claimName).build());
+                claim.getData().setGreeting((net.kyori.adventure.text.Component) TextComponent.builder(claimGreeting).build());
+                claim.getData().setFarewell((net.kyori.adventure.text.Component) TextComponent.builder(claimFarewell).build());
                 this.sendUpdateTo(player, claim, claim.getPlayers(), false, "saveChanges");
                 this.serverNotificationManager.sendPopupNotification(player, notificationTitle, Text.of("Changed Saved!"), 5);
             } else {
@@ -366,7 +368,7 @@ public final class ServerClaimManager implements Witness {
 
     public final double claimTaxes(final Player player, final Claim claim) {
         if (claim != null && player != null) {
-            PlayerData playerData = GriefDefender.getCore().getPlayerData(player.getWorld().getUniqueId(), player.getUniqueId()).get();
+            PlayerData playerData = GriefDefender.getCore().getPlayerData(player.getWorld().getUniqueId(), player.getUniqueId());
             final double taxRate = playerData.getTaxRate(claim.getType());
             final double taxOwed = (claim.getClaimBlocks() / 256) * taxRate;
             return taxOwed;
@@ -376,16 +378,18 @@ public final class ServerClaimManager implements Witness {
 
     public final double claimBlockCost(final Player player, final Claim claim) {
         if (claim != null && player != null) {
-            PlayerData playerData = GriefDefender.getCore().getPlayerData(player.getWorld().getUniqueId(), player.getUniqueId()).get();
-            return playerData.getEconomyClaimBlockCost();
+            PlayerData playerData = GriefDefender.getCore().getPlayerData(player.getWorld().getUniqueId(), player.getUniqueId());
+            if (playerData != null)
+                return playerData.getEconomyClaimBlockCost();
         }
         return 0.0;
     }
 
     public final double claimBlockSell(final Player player, final Claim claim) {
         if (claim != null && player != null) {
-            PlayerData playerData = GriefDefender.getCore().getPlayerData(player.getWorld().getUniqueId(), player.getUniqueId()).get();
-            return playerData.getEconomyClaimBlockReturn();
+            PlayerData playerData = GriefDefender.getCore().getPlayerData(player.getWorld().getUniqueId(), player.getUniqueId());
+            if (playerData != null)
+                return playerData.getEconomyClaimBlockReturn();
         }
         return 0.0;
     }
@@ -452,7 +456,9 @@ public final class ServerClaimManager implements Witness {
         final Claim claim = GriefDefender.getCore().getClaimManager(player.getWorld().getUniqueId()).getClaimAt(player.getLocation().getBlockPosition());
         if (claim != null) {
             final boolean isOwner = (claim.getOwnerUniqueId().equals(player.getUniqueId()));
-            final boolean isTrusted = claim.isTrusted(player.getUniqueId());
+            //final boolean isTrusted = claim.isUserTrusted(player.getUniqueId());
+            // Todo
+            final boolean isTrusted = false;
             final boolean isAdmin = player.hasPermission(adminPermission);
             if (!isAdmin && claim.isWilderness()) {
                 this.serverNotificationManager.sendPopupNotification(player, notificationTitle, Text.of("Insufficient permissions to open Claim Manager in Wilderness"),5);
