@@ -28,6 +28,7 @@ import com.almuradev.almura.feature.claim.network.handler.ServerboundClaimGuiTog
 import com.almuradev.almura.feature.claim.network.handler.ServerboundClaimGuiToggleVisualsRequestPacketHandler;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
+import com.almuradev.almura.shared.plugin.Plugin;
 import net.kyori.violet.AbstractModule;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
@@ -35,8 +36,15 @@ import org.spongepowered.common.SpongeImplHooks;
 
 public final class ClaimModule extends AbstractModule implements CommonBinder {
 
+    private final Plugin plugin;
+
+     public ClaimModule(Plugin plugin) {
+        this.plugin = plugin;
+    }
+
     @Override
     protected void configure() {
+        this.bind(Plugin.class).toInstance(this.plugin);
         // Safe to register both during Common
         // Note: the order in which the packets are registered will affect everything, register client/server packets in the same order.
         this.packet().bind(ClientboundClaimDataPacket.class, binder -> binder.handler(ClientboundClaimDataPacketHandler.class, Platform.Type.CLIENT));
@@ -57,6 +65,7 @@ public final class ClaimModule extends AbstractModule implements CommonBinder {
                     this.facet().add(ClientClaimManager.class);
 
                     if (!SpongeImplHooks.isDeobfuscatedEnvironment()) { //Only register these packets this way IF running production mode
+                        System.out.println("Registering Client Packets!!!");
                         this.packet().bind(ServerboundClaimGuiRequestPacket.class);
                         this.packet().bind(ServerboundClaimGuiSaveRequestPacket.class);
                         this.packet().bind(ServerboundClaimGuiAbandonRequestPacket.class);
@@ -75,6 +84,7 @@ public final class ClaimModule extends AbstractModule implements CommonBinder {
 
     private void loadServerModules() {
         // Note:  Can't register these during a normal load because the packet handler registration causes the class load of serverClaimManager.
+        System.out.println("Registering Server Packets");
         this.packet().bind(ServerboundClaimGuiRequestPacket.class, binder -> binder.handler(ServerboundClaimGuiRequestPacketHandler.class, Platform.Type.SERVER));
         this.packet().bind(ServerboundClaimGuiSaveRequestPacket.class, binder -> binder.handler(ServerboundClaimGuiSaveRequestPacketHandler.class, Platform.Type.SERVER));
         this.packet().bind(ServerboundClaimGuiAbandonRequestPacket.class, binder -> binder.handler(ServerboundClaimGuiAbandonRequestPacketHandler.class, Platform.Type.SERVER));

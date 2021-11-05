@@ -15,7 +15,6 @@ import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiSetSpawnReq
 import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiToggleDenyMessagesRequestPacket;
 import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiToggleVisualsRequestPacket;
 import com.almuradev.almura.feature.hud.HeadUpDisplay;
-import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
@@ -52,7 +51,6 @@ public final class ClaimManageScreen extends BasicScreen {
 
     @Inject @ChannelId(NetworkConfig.CHANNEL) private static ChannelBinding.IndexedMessageChannel network;
     @Inject private static ClientClaimManager clientClaimManager;
-    @Inject private static ClientNotificationManager notificationManager;
     @Inject private static HeadUpDisplay hudData;
 
     private int lastUpdate = 0;
