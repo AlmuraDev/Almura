@@ -129,16 +129,11 @@ dependencies {
     compile "net.kyori:text-serializer-legacy:3.0.2"
     compile "net.kyori:event-api:3.0.0"
     compile "net.kyori:event-method:3.0.0"
-    // 4 following dependencies libraries are to support GD's API which uses re-located libraries....
-    //compile 'com.griefdefender.lib.kyori:text-api-gd:3.0.4'
-    //compile 'com.griefdefender.lib.kyori:event-api-gd:3.0.4'
-    //compile 'com.griefdefender.lib.kyori:event-method-gd:3.0.0'
-    //compile 'com.griefdefender.lib.kyori:text-serializer-legacy-gd:3.0.4'
-    // GD's API for 1.5.11 (5/3/2021), specifically the shaded version which the plugin uses for its relocated libraries...
-    compile ("com.github.bloodmc:GriefDefenderAPI:2.0.0-SNAPSHOT")// {
-    //compile ("com.github.bloodmc:GriefDefenderAPI-Shaded:2.0.0-20210822.184639-9-shaded") {
-    //    exclude module: 'event-method-asm'
-    //}
+    // 2 following dependencies libraries are to support GD's API which uses re-located libraries....
+    compile 'com.griefdefender.lib.kyori:examination-api-gd:1.1.0'
+    compile 'com.griefdefender.lib.kyori:adventure-text-serializer-legacy-gd:4.8.0'
+    // GD's API for GD (Sponge) 2.0.1 (11/5/2021), specifically the shaded version which the plugin uses for its relocated libraries...
+    compile ("com.github.bloodmc:GriefDefenderAPI-2.0.0-Shaded:2.0.0-20210822.184639-9-shaded")
     // Remember to update this entry for Nucleus if the API gets behind the currently plugin version being used.
     compile 'io.github.nucleuspowered:nucleus-api:2.4.0'
     // Remember to update this entry for LuckPerms if the API gets behind the currently plugin version being used.
@@ -260,9 +255,7 @@ shadowJar {
     classifier ''
     exclude 'dummyThing'
     relocate 'com.typesafe.config', 'configurate.typesafe.config'
-    //relocate("com.flowpowered", "com.griefdefender.lib.flowpowered")
-    //relocate("net.kyori.event", "com.griefdefender.lib.kyori.event")
-    //relocate("net.kyori.adventure", "com.griefdefender.lib.kyori.adventure")
+    // Relocation of GD libraries isn't needed because we are shading them in below.
 
     dependencies {
 
@@ -276,18 +269,16 @@ shadowJar {
         include dependency('net.kyori:lunar')
         include dependency('net.kyori:membrane')
         include dependency('net.kyori:violet')
-        //include dependency('net.kyori:event')
         include dependency('ninja.leaping.configurate:configurate-json')
         include dependency('io.github.nucleuspowered:nucleus-api')
         include dependency('org.jooq:jooq')
-        //include dependency('com.github.bloodmc:GriefDefenderAPI-Shaded')
-        //include dependency("net.kyori:adventure-api:4.8.0")
-        //include dependency("net.kyori:event-api:5.0.0-SNAPSHOT")
-        //include dependency('com.griefdefender.lib.kyori:event-api-gd') //specifically for GD support (relocated shaded libraries)
-        //include dependency('com.griefdefender.lib.kyori:event-method-gd')  //specifically for GD support (relocated shaded libraries)
-        //include dependency('com.griefdefender.lib.kyori:text-api-gd') //specifically for GD support (relocated shaded libraries)
-        //include dependency('com.griefdefender.lib.kyori:text-serializer-legacy-gd') //specifically for GD support (relocated shaded libraries)
-        //include dependency('com.github.bloodmc:GriefDefenderAPI-Shaded') //GD API, shaded version (1.5.11, 5/3/2021)
+        // Shade GD API because normally this doesn't load until PreInit an we need it during GameConstruct.
+        include dependency('com.github.bloodmc:GriefDefenderAPI-2.0.0-Shaded')
+        // The three following includes are shaded & relocated version of libraries used by GD 2.0 API
+        // Found at /config/griefdefender/lib
+        include dependency("com.griefdefender.lib.net.kyori:adventure-api-gd:4.8.0")
+        include dependency("com.griefdefender.lib.kyori:event-api-gd:5.0.0-SNAPSHOT")
+        include dependency("com.griefdefender.lib.kyori:examination-api-gd:1.1.0")
     }
     afterEvaluate {
         from zipTree(reobfJar.jar)

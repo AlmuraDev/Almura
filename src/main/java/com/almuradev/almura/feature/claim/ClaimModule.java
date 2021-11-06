@@ -36,15 +36,8 @@ import org.spongepowered.common.SpongeImplHooks;
 
 public final class ClaimModule extends AbstractModule implements CommonBinder {
 
-    private final Plugin plugin;
-
-     public ClaimModule(Plugin plugin) {
-        this.plugin = plugin;
-    }
-
     @Override
     protected void configure() {
-        this.bind(Plugin.class).toInstance(this.plugin);
         // Safe to register both during Common
         // Note: the order in which the packets are registered will affect everything, register client/server packets in the same order.
         this.packet().bind(ClientboundClaimDataPacket.class, binder -> binder.handler(ClientboundClaimDataPacketHandler.class, Platform.Type.CLIENT));

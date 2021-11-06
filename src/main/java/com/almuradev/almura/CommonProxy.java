@@ -19,20 +19,11 @@ public abstract class CommonProxy {
 
     private Facets facets;
     private Injector injector;
-    private Plugin plugin;
 
     protected final void construct(final Plugin plugin, final Injector injector) {
         this.injector = this.createInjector(plugin, injector);
         this.facets = this.injector.getInstance(Facets.class);
-        this.plugin = plugin;
         this.facets.enable();
-    }
-
-    protected final void preInit() {
-        // Put modules here that are required to load later on in the startup phase.
-        this.injector.getParent().createChildInjector(new ClaimModule(this.plugin));
-        //this.injector = this.injector.createChildInjector(new ClaimModule());
-
     }
 
     final void destruct() {

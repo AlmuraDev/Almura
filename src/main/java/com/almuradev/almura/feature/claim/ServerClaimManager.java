@@ -21,9 +21,10 @@ import com.griefdefender.api.event.ChangeClaimEvent;
 import com.griefdefender.api.event.CreateClaimEvent;
 import com.griefdefender.api.event.RemoveClaimEvent;
 import com.griefdefender.api.event.TaxClaimEvent;
-import net.kyori.text.Component;
+//import net.kyori.text.TextComponent;
+import com.griefdefender.lib.kyori.adventure.text.Component;
+import com.griefdefender.lib.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.text.TextComponent;
-import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.event.group.GroupDataRecalculateEvent;
 import net.minecraftforge.fml.server.FMLServerHandler;
@@ -255,15 +256,14 @@ public final class ServerClaimManager implements Witness {
                     }
 
                     if (claim.getData() != null && claim.getData().getGreeting().isPresent()) {
-                        claimGreeting = LegacyComponentSerializer.legacy().serialize((Component) claim.getData().getGreeting().get());
+                        //claimGreeting = LegacyComponentSerializer.legacy().serialize((com.griefdefender.lib.kyori.adventure.text.Component) claim.getData().getGreeting().get());
 
                     }
 
                     if (claim.getData() != null &&claim.getData().getFarewell().isPresent()) {
-                        claimFarewell = LegacyComponentSerializer.legacy().serialize((Component) claim.getData().getFarewell().get());
+                        //claimFarewell = LegacyComponentSerializer.serialize(claim.getData().getFarewell().get());
                     }
-
-                    if (!claim.getData().getDisplayName().isEmpty()) {
+                    if (!claim.getDisplayName().isEmpty()){
                         claimName = claim.getDisplayName();
 
                         final EconomyService service = Sponge.getServiceManager().provide(EconomyService.class).orElse(null);
@@ -333,9 +333,9 @@ public final class ServerClaimManager implements Witness {
             final boolean isAdmin = player.hasPermission(adminPermission);
 
             if (isOwner || isAdmin) {
-                claim.getData().setDisplayName((net.kyori.adventure.text.Component) TextComponent.builder(claimName).build());
-                claim.getData().setGreeting((net.kyori.adventure.text.Component) TextComponent.builder(claimGreeting).build());
-                claim.getData().setFarewell((net.kyori.adventure.text.Component) TextComponent.builder(claimFarewell).build());
+                claim.getData().setDisplayName((com.griefdefender.lib.kyori.adventure.text.Component) TextComponent.builder(claimName).build());
+                claim.getData().setGreeting((com.griefdefender.lib.kyori.adventure.text.Component) TextComponent.builder(claimGreeting).build());
+                claim.getData().setFarewell((com.griefdefender.lib.kyori.adventure.text.Component) TextComponent.builder(claimFarewell).build());
                 this.sendUpdateTo(player, claim, claim.getPlayers(), false, "saveChanges");
                 this.serverNotificationManager.sendPopupNotification(player, notificationTitle, Text.of("Changed Saved!"), 5);
             } else {
