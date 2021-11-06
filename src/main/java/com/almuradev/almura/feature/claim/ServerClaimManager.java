@@ -22,8 +22,9 @@ import com.griefdefender.api.event.CreateClaimEvent;
 import com.griefdefender.api.event.RemoveClaimEvent;
 import com.griefdefender.api.event.TaxClaimEvent;
 //import net.kyori.text.TextComponent;
-import com.griefdefender.lib.kyori.adventure.text.Component;
-import com.griefdefender.lib.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+//import com.griefdefender.lib.kyori.text.Component;
+import com.griefdefender.lib.kyori.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.event.group.GroupDataRecalculateEvent;
@@ -256,14 +257,14 @@ public final class ServerClaimManager implements Witness {
                     }
 
                     if (claim.getData() != null && claim.getData().getGreeting().isPresent()) {
-                        //claimGreeting = LegacyComponentSerializer.legacy().serialize((com.griefdefender.lib.kyori.adventure.text.Component) claim.getData().getGreeting().get());
+                        claimGreeting = LegacyComponentSerializer.legacy().serialize((com.griefdefender.lib.kyori.text.Component)claim.getData().getGreeting().get());
 
                     }
 
-                    if (claim.getData() != null &&claim.getData().getFarewell().isPresent()) {
-                        //claimFarewell = LegacyComponentSerializer.serialize(claim.getData().getFarewell().get());
+                    if (claim.getData() != null && claim.getData().getFarewell().isPresent()) {
+                        claimFarewell = LegacyComponentSerializer.legacy().serialize((com.griefdefender.lib.kyori.text.Component) claim.getData().getFarewell().get());
                     }
-                    if (!claim.getDisplayName().isEmpty()){
+                    if (claim.getData() != null){
                         claimName = claim.getDisplayName();
 
                         final EconomyService service = Sponge.getServiceManager().provide(EconomyService.class).orElse(null);

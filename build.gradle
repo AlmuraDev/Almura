@@ -129,9 +129,10 @@ dependencies {
     compile "net.kyori:text-serializer-legacy:3.0.2"
     compile "net.kyori:event-api:3.0.0"
     compile "net.kyori:event-method:3.0.0"
-    // 2 following dependencies libraries are to support GD's API which uses re-located libraries....
+    // 3 following dependencies libraries are to support GD's API which uses re-located libraries....
     compile 'com.griefdefender.lib.kyori:examination-api-gd:1.1.0'
-    compile 'com.griefdefender.lib.kyori:adventure-text-serializer-legacy-gd:4.8.0'
+    compile 'com.griefdefender.lib.kyori:text-api-gd:3.0.4'
+    compile 'com.griefdefender.lib.kyori:text-serializer-legacy-gd:3.0.4'
     // GD's API for GD (Sponge) 2.0.1 (11/5/2021), specifically the shaded version which the plugin uses for its relocated libraries...
     compile ("com.github.bloodmc:GriefDefenderAPI-2.0.0-Shaded:2.0.0-20210822.184639-9-shaded")
     // Remember to update this entry for Nucleus if the API gets behind the currently plugin version being used.
@@ -276,9 +277,11 @@ shadowJar {
         include dependency('com.github.bloodmc:GriefDefenderAPI-2.0.0-Shaded')
         // The three following includes are shaded & relocated version of libraries used by GD 2.0 API
         // Found at /config/griefdefender/lib
-        include dependency("com.griefdefender.lib.net.kyori:adventure-api-gd:4.8.0")
-        include dependency("com.griefdefender.lib.kyori:event-api-gd:5.0.0-SNAPSHOT")
+        // You have to look at GDAPI's build.gradle file to figure out which version's he currently using
+        // they don't alway match what he's put into the /config/griefdefender/lib folder....
         include dependency("com.griefdefender.lib.kyori:examination-api-gd:1.1.0")
+        include dependency("com.griefdefender.lib.kyori:text-api-gd:3.0.4")
+        include dependency("com.griefdefender.lib.kyori:text-serializer-legacy-gd:3.0.4")
     }
     afterEvaluate {
         from zipTree(reobfJar.jar)
