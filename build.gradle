@@ -138,7 +138,7 @@ dependencies {
     // Remember to update this entry for Nucleus if the API gets behind the currently plugin version being used.
     compile 'io.github.nucleuspowered:nucleus-api:2.4.0'
     // Remember to update this entry for LuckPerms if the API gets behind the currently plugin version being used.
-    compile "net.luckperms:api:5.0"
+    compile "net.luckperms:api:5.3"
     deobfCompile ('com.almuradev:malisiscore:1.12.2-6.5.3-SNAPSHOT') {
         transitive = false
     }
