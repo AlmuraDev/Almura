@@ -11,6 +11,7 @@ import com.google.inject.Injector;
 import net.minecraft.network.NetworkManager;
 import net.minecraftforge.fml.common.SidedProxy;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.game.state.GameConstructionEvent;
 import org.spongepowered.api.event.game.state.GameStoppingEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
@@ -59,17 +60,5 @@ public class Almura implements com.almuradev.almura.shared.plugin.Plugin {
     @Listener
     public void gameShutdown(final GameStoppingServerEvent event) {
         isShuttingDown = true;
-    }
-
-    @Listener
-    public void onWorldUnload(final UnloadWorldEvent event) {
-        // The following prevents worlds from unloading unless server is shutting down
-        // This is necessary to prevent TerrainControl configs loading more than once
-        // on the dev server.  Live server doesn't have this issue because each world
-        // is kept active by Dynmap holding 1 chunk open per loaded world.
-        if (!isShuttingDown) {
-            System.out.println("Almura prevented unloading of: " + event.getTargetWorld().getName());
-            event.setCancelled(true);
-        }
     }
 }
