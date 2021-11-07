@@ -50,12 +50,12 @@ public final class ServerboundClaimGuiToggleVisualsRequestPacketHandler implemen
                 final boolean isOwner = (claim.getOwnerUniqueId().equals(player.getUniqueId()));
                 final boolean isAdmin = player.hasPermission(ServerClaimManager.adminPermission);
 
-                if (isOwner || isAdmin) {
+                //if (isOwner || isAdmin) {
                     this.serverClaimManager.toggleVisuals(player, claim, message.value);
                     this.serverClaimManager.sendUpdateTo(player, claim, null,false, "claimGuiToggleVisuals");
-                } else {
-                    this.notificationManager.sendPopupNotification(player, ServerClaimManager.notificationTitle, Text.of("Insufficient Permissions!"), 5);
-                }
+                //} else {
+                //    this.notificationManager.sendPopupNotification(player, ServerClaimManager.notificationTitle, Text.of("Insufficient Permissions!"), 5);
+                //}
             }
         }
     }
