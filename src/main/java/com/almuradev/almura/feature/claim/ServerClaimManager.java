@@ -15,6 +15,7 @@ import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
 import com.griefdefender.api.GriefDefender;
 import com.griefdefender.api.claim.Claim;
+import com.griefdefender.api.claim.TrustTypes;
 import com.griefdefender.api.data.PlayerData;
 import com.griefdefender.api.event.BorderClaimEvent;
 import com.griefdefender.api.event.ChangeClaimEvent;
@@ -449,7 +450,6 @@ public final class ServerClaimManager implements Witness {
     }
 
     public void openClientGUI (final Player player){
-        this.network.sendTo(player, new ClientboundClaimGuiResponsePacket(true, true, true));
         if (!Sponge.getPluginManager().isLoaded("griefdefender")) {
             this.serverNotificationManager.sendPopupNotification(player, notificationTitle, Text.of("GriefDefender not detected!"), 2);
             return;
@@ -463,9 +463,7 @@ public final class ServerClaimManager implements Witness {
         final Claim claim = GriefDefender.getCore().getClaimManager(player.getWorld().getUniqueId()).getClaimAt(player.getLocation().getBlockPosition());
         if (claim != null) {
             final boolean isOwner = (claim.getOwnerUniqueId().equals(player.getUniqueId()));
-            //final boolean isTrusted = claim.isUserTrusted(player.getUniqueId());
-            // Todo
-            final boolean isTrusted = false;
+            final boolean isTrusted = claim.isUserTrusted(player.getUniqueId(), TrustTypes.MANAGER);
             final boolean isAdmin = player.hasPermission(adminPermission);
             if (!isAdmin && claim.isWilderness()) {
                 this.serverNotificationManager.sendPopupNotification(player, notificationTitle, Text.of("Insufficient permissions to open Claim Manager in Wilderness"),5);
