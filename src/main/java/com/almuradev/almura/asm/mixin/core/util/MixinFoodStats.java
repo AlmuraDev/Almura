@@ -8,8 +8,12 @@
 package com.almuradev.almura.asm.mixin.core.util;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.play.server.SPacketUpdateHealth;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.FoodStats;
+import net.minecraft.world.EnumDifficulty;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -22,6 +26,7 @@ public class MixinFoodStats {
     @Shadow private float foodExhaustionLevel;
     @Shadow private int foodTimer;
     @Shadow private int prevFoodLevel;
+    private float prevSaturationLevel;
     @Shadow public void addExhaustion(float exhaustion) { };
 
     /**
@@ -31,8 +36,9 @@ public class MixinFoodStats {
 
     @Overwrite
     public void onUpdate(EntityPlayer player) {
-        //EnumDifficulty enumdifficulty = player.world.getDifficulty(); // Not used, kept for posterity sake.
+        EnumDifficulty enumdifficulty = player.world.getDifficulty(); // Not used, kept for posterity sake.
         this.prevFoodLevel = this.foodLevel;
+        this.prevSaturationLevel = this.foodSaturationLevel;
 
         if (this.foodExhaustionLevel > 2.0F) {
             this.foodExhaustionLevel -= 2.0F;
@@ -45,7 +51,6 @@ public class MixinFoodStats {
         }
 
         boolean flag = player.world.getGameRules().getBoolean("naturalRegeneration");
-
         if (flag && this.foodSaturationLevel > 0.0F && player.shouldHeal() && this.foodLevel >= 20) {
             ++this.foodTimer;
 
@@ -67,15 +72,20 @@ public class MixinFoodStats {
             ++this.foodTimer;
 
             if (this.foodTimer >= 80) {
-                //if (player.getHealth() > 10.0F || enumdifficulty == EnumDifficulty.HARD || player.getHealth() > 1.0F && enumdifficulty == EnumDifficulty.NORMAL)
                 // Be aware:  We at AlmuraDev strive to make your life difficult.
-                player.attackEntityFrom(DamageSource.STARVE, 1.0F);
-                //}
+                if ((player.getHealth() > 2 && enumdifficulty == EnumDifficulty.NORMAL) || (player.getHealth() > 1 && enumdifficulty == EnumDifficulty.HARD) || (player.getHealth() > 5 && enumdifficulty == EnumDifficulty.EASY))
+                    player.attackEntityFrom(DamageSource.STARVE, 1.0F);
 
                 this.foodTimer = 0;
             }
         } else {
             this.foodTimer = 0;
+        }
+
+        if (prevSaturationLevel != this.foodSaturationLevel) {
+            if (player instanceof EntityPlayerMP) {
+                ((EntityPlayerMP) player).connection.sendPacket(new SPacketUpdateHealth(player.getHealth(), this.foodLevel, this.foodSaturationLevel));
+            }
         }
     }
 }
