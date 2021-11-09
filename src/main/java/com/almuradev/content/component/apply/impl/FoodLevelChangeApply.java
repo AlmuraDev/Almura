@@ -41,7 +41,7 @@ public final class FoodLevelChangeApply implements Apply<EntityPlayer, ItemApply
             final ItemFood food = (ItemFood) usedStack.getItem();
             final int currentFoodLevel = ((FoodStatsAccessor)entity.getFoodStats()).accessor$getFoodLevel();
 
-            ((FoodStatsAccessor)entity.getFoodStats()).accessor$setFoodSaturationLevel(Math.min(currentFoodLevel + food.getHealAmount(usedStack), 20));
+            ((FoodStatsAccessor)entity.getFoodStats()).accessor$setFoodLevel(Math.min(currentFoodLevel + food.getHealAmount(usedStack), 20));
         }
     }
 
