@@ -122,6 +122,7 @@ public class ItemReturnHelper implements Witness {
                 break;
 
             case "ITEM.ALMURA.NORMAL.INGREDIENT.GLASS_WATER_CRUET":
+            case "ITEM.ALMURA.NORMAL.INGREDIENT.GLASS_MILK_CRUET":
             case "ITEM.GLASS_WATER_CRUET":
             case "ITEM.ALMURA.NORMAL.INGREDIENT.VINEGAR":
             case "ITEM.ALMURA.NORMAL.INGREDIENT.YEAST":
