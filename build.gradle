@@ -126,15 +126,16 @@ dependencies {
     compile 'net.kyori:membrane:1.0.5'
     compile 'net.kyori:violet:1.0.0'
     compile 'net.kyori:text-api:3.0.4'
-    compile "net.kyori:text-serializer-legacy:3.0.2"
+    compile "net.kyori:text-serializer-legacy:3.0.4"
     compile "net.kyori:event-api:3.0.0"
+    compile "net.kyori:event-api:5.0.0-SNAPSHOT"
     compile "net.kyori:event-method:3.0.0"
     // 3 following dependencies libraries are to support GD's API which uses re-located libraries....
-    compile 'com.griefdefender.lib.kyori:examination-api-gd:1.1.0'
-    compile 'com.griefdefender.lib.kyori:text-api-gd:3.0.4'
-    compile 'com.griefdefender.lib.kyori:text-serializer-legacy-gd:3.0.4'
+    //compile 'com.griefdefender.lib.kyori:examination-api-gd:1.1.0'
+    //compile 'com.griefdefender.lib.kyori:text-api-gd:3.0.4'
+    //compile 'com.griefdefender.lib.kyori:text-serializer-legacy-gd:3.0.4'
     // GD's API for GD (Sponge) 2.0.1 (11/5/2021), specifically the shaded version which the plugin uses for its relocated libraries...
-    compile ("com.github.bloodmc:GriefDefenderAPI-2.0.0-Shaded:2.0.0-20210822.184639-9-shaded")
+    //compile ("com.github.bloodmc:GriefDefenderAPI-2.0.0-Shaded:2.0.0-20210822.184639-9-shaded")
     // Remember to update this entry for Nucleus if the API gets behind the currently plugin version being used.
     compile 'io.github.nucleuspowered:nucleus-api:2.4.0'
     // Remember to update this entry for LuckPerms if the API gets behind the currently plugin version being used.
@@ -142,6 +143,9 @@ dependencies {
     deobfCompile ('com.almuradev:malisiscore:1.12.2-6.5.3-SNAPSHOT') {
         transitive = false
     }
+    // Attempt to use GD 2.0.3 API change.
+    compileOnly 'com.github.bloodmc:GriefDefenderAPI:2.0.0-SNAPSHOT'
+    compileOnly "net.kyori:adventure-api:4.8.0"
     compile 'br.net.fabiozumbi12.UltimateChat:UltimateChat-Sponge-56-1.9.1'
     compile 'org.spongepowered:configurate-json:3.5'
     compile 'org.inspirenxe:skills:1.0.0-SNAPSHOT:api'
@@ -256,8 +260,10 @@ shadowJar {
     classifier ''
     exclude 'dummyThing'
     relocate 'com.typesafe.config', 'configurate.typesafe.config'
-    // Relocation of GD libraries isn't needed because we are shading them in below.
 
+    // Relocation of GD libraries here when using GD 2.0.3 (When libraries load in GameConstruct)
+    relocate 'net.kyori.event', 'com.griefdefender.lib.kyori.event'
+    relocate 'net.kyori.adventure', 'com.griefdefender.lib.kyori.adventure'
     dependencies {
 
         include dependency('com.almuradev:toolbox')
@@ -280,9 +286,9 @@ shadowJar {
         // Found at /config/griefdefender/lib
         // You have to look at GDAPI's build.gradle file to figure out which version's he currently using
         // they don't alway match what he's put into the /config/griefdefender/lib folder....
-        include dependency("com.griefdefender.lib.kyori:examination-api-gd:1.1.0")
-        include dependency("com.griefdefender.lib.kyori:text-api-gd:3.0.4")
-        include dependency("com.griefdefender.lib.kyori:text-serializer-legacy-gd:3.0.4")
+        //include dependency("com.griefdefender.lib.kyori:examination-api-gd:1.1.0")
+        //include dependency("com.griefdefender.lib.kyori:text-api-gd:3.0.4")
+        //include dependency("com.griefdefender.lib.kyori:text-serializer-legacy-gd:3.0.4")
     }
     afterEvaluate {
         from zipTree(reobfJar.jar)

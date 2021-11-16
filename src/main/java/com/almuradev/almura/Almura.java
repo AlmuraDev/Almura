@@ -45,10 +45,11 @@ public class Almura implements com.almuradev.almura.shared.plugin.Plugin {
     private static CommonProxy proxy;
     @Inject private Injector injector;
 
-    @Listener
+    @Listener(order = Order.LATE)
     public void gameConstruct(final GameConstructionEvent event) {
         //Note: proxy construct creation has to take place on this event because later phases
         // won't allow the content builder materials to register properly.
+        System.out.println("Creating Almura system level injectors !!!");
         proxy.construct(this, this.injector);
     }
 

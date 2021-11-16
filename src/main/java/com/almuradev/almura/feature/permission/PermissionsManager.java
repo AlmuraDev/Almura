@@ -145,6 +145,7 @@ public final class PermissionsManager implements Witness {
         }
     }
 
+    // This method is for new players getting started at Almura castle, once they leave there it will promose them to Survivor.
     @Listener(order = Order.LAST)
     public void onMovePlayerTeleport(final MoveEntityEvent.Teleport event, @Getter("getTargetEntity") final Player player) {
         if (this.permApi != null && differentExtent(event.getFromTransform(), event.getToTransform())) {
