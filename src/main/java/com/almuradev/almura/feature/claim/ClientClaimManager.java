@@ -23,6 +23,7 @@ import javax.inject.Singleton;
 @Singleton
 public final class ClientClaimManager implements Witness {
 
+    //Note:  these values are set since the client won't receive the update packet inDev, so we set these to make the GUI function.
     private final ChannelBinding.IndexedMessageChannel network;
     public double claimEconBalance = 0.0;
     public double claimTaxes = 0.0;
@@ -30,7 +31,7 @@ public final class ClientClaimManager implements Witness {
     public double claimBlockCost = 0.0;
     public int claimSize = 0;
     public boolean isClaim = false;
-    public boolean isWilderness = false;
+    public boolean isWilderness = true;
     public boolean isTownClaim = false;
     public boolean isAdminClaim = false;
     public boolean isBasicClaim = false;
@@ -42,6 +43,9 @@ public final class ClientClaimManager implements Witness {
     public String claimOwner = "";
     public String claimGreeting = "";
     public String claimFarewell = "";
+    public String dateCreated = "";
+    public String claimType = "";
+    public double claimTaxRate;
     public double claimTaxBalance;
     public double claimSalePrice;
 

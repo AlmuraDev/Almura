@@ -23,9 +23,12 @@ public final class ClientboundClaimDataPacket implements Message {
     public double claimEconBalance;
     public String claimGreeting;
     public String claimFarewell;
+    public String dateCreated;
+    public String claimType;
     public int claimSize;
     public boolean isForSale;
     public boolean showWarnings;
+    public double claimTaxRate;
     public double claimTaxes;
     public double claimBlockCost;
     public double claimBlockSell;
@@ -37,8 +40,8 @@ public final class ClientboundClaimDataPacket implements Message {
     }
 
     public ClientboundClaimDataPacket(final boolean isClaim, final String claimName, final String claimOwner, final boolean isWilderness, final boolean isTownClaim, final boolean isAdminClaim, final boolean isBasicClaim, final boolean isSubdivision,
-            final double claimEconBalance, final String claimGreeting, final String claimFarewell, final int claimSize, final boolean isForSale,
-            final boolean showWarnings, final double claimTaxes, final double claimBlockCost, final double claimBlockSell, final boolean hasWECUI,
+            final double claimEconBalance, final String claimGreeting, final String claimFarewell, final String dateCreated, final String claimType, final int claimSize, final boolean isForSale,
+            final boolean showWarnings, final double claimTaxRate, final double claimTaxes, final double claimBlockCost, final double claimBlockSell, final boolean hasWECUI,
             final double claimTaxBalance, final double claimSalePrice) {
         this.isClaim = isClaim;
         this.claimName = claimName;
@@ -51,9 +54,12 @@ public final class ClientboundClaimDataPacket implements Message {
         this.claimEconBalance = claimEconBalance;
         this.claimGreeting = claimGreeting;
         this.claimFarewell = claimFarewell;
+        this.dateCreated = dateCreated;
+        this.claimType = claimType;
         this.claimSize = claimSize;
         this.isForSale = isForSale;
         this.showWarnings = showWarnings;
+        this.claimTaxRate = claimTaxRate;
         this.claimTaxes = claimTaxes;
         this.claimBlockCost = claimBlockCost;
         this.claimBlockSell = claimBlockSell;
@@ -75,9 +81,12 @@ public final class ClientboundClaimDataPacket implements Message {
         this.claimEconBalance = buf.readDouble();
         this.claimGreeting = buf.readString();
         this.claimFarewell = buf.readString();
+        this.dateCreated = buf.readString();
+        this.claimType = buf.readString();
         this.claimSize = buf.readInteger();
         this.isForSale = buf.readBoolean();
         this.showWarnings = buf.readBoolean();
+        this.claimTaxRate = buf.readDouble();
         this.claimTaxes = buf.readDouble();
         this.claimBlockCost = buf.readDouble();
         this.claimBlockSell = buf.readDouble();
@@ -99,9 +108,12 @@ public final class ClientboundClaimDataPacket implements Message {
         buf.writeDouble(this.claimEconBalance);
         buf.writeString(this.claimGreeting);
         buf.writeString(this.claimFarewell);
+        buf.writeString(this.dateCreated);
+        buf.writeString(this.claimType);
         buf.writeInteger(this.claimSize);
         buf.writeBoolean(this.isForSale);
         buf.writeBoolean(this.showWarnings);
+        buf.writeDouble(this.claimTaxRate);
         buf.writeDouble(this.claimTaxes);
         buf.writeDouble(this.claimBlockCost);
         buf.writeDouble(this.claimBlockSell);

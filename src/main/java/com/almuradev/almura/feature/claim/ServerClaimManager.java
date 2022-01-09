@@ -43,7 +43,9 @@ import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+import org.spongepowered.common.SpongeImplHooks;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -72,12 +74,15 @@ public final class ServerClaimManager implements Witness {
     @Listener
     public void serverStarted(final GameAboutToStartServerEvent event) {
         if (Sponge.getPluginManager().isLoaded("griefdefender")) {
-            GriefDefender.getEventManager().getBus().subscribe(BorderClaimEvent.class, this:: onEnterExitClaim);
-            GriefDefender.getEventManager().getBus().subscribe(ChangeClaimEvent.class, this:: onChangeClaim);
-            GriefDefender.getEventManager().getBus().subscribe(CreateClaimEvent.class, this:: onCreateClaim);
-            GriefDefender.getEventManager().getBus().subscribe(RemoveClaimEvent.class, this:: onDeleteClaim);
-            GriefDefender.getEventManager().getBus().subscribe(TaxClaimEvent.class, this:: onTaxClaim);
-            GriefDefender.getEventManager().getBus().subscribe(SaveClaimEvent.class, this:: onSaveClaim);
+            // GD won't load properly when inDev
+            if (!SpongeImplHooks.isDeobfuscatedEnvironment()) {
+                GriefDefender.getEventManager().getBus().subscribe(BorderClaimEvent.class, this::onEnterExitClaim);
+                GriefDefender.getEventManager().getBus().subscribe(ChangeClaimEvent.class, this::onChangeClaim);
+                GriefDefender.getEventManager().getBus().subscribe(CreateClaimEvent.class, this::onCreateClaim);
+                GriefDefender.getEventManager().getBus().subscribe(RemoveClaimEvent.class, this::onDeleteClaim);
+                GriefDefender.getEventManager().getBus().subscribe(TaxClaimEvent.class, this::onTaxClaim);
+                GriefDefender.getEventManager().getBus().subscribe(SaveClaimEvent.class, this::onSaveClaim);
+            }
 
             LuckPermsProvider.get().getEventBus().subscribe(GroupDataRecalculateEvent.class, this::onLpPermChange);
         }
@@ -227,9 +232,12 @@ public final class ServerClaimManager implements Witness {
                     String claimName = "";
                     String claimGreeting = "";
                     String claimFarewell = "";
+                    String dateCreated = "";
                     String claimOwner = "";
+                    String claimType = "";
 
                     double claimEconBalance = 0.0;
+                    double claimTaxRate = 0.0;
                     double claimTaxes = 0.0;
                     double claimBlockCost = 0.0;
                     double claimBlockSell = 0.0;
@@ -269,28 +277,34 @@ public final class ServerClaimManager implements Witness {
                         claimName = claim.getDisplayName();
                     }
 
+                    claimType = claim.getType().getName();
+                    dateCreated = claim.getData().getDateCreated().toString();
+
                     if (claim.getData() != null){
                         final EconomyService service = Sponge.getServiceManager().provide(EconomyService.class).orElse(null);
                         if (service != null && player != null) {
                             if (claim.getEconomyData().isForSale()) {
                                 isForSale = true;
-                                claimSalePrice = this.claimSalePrice(player, claim);
+                                claimSalePrice = this.claimSalePrice(claim);
                             }
+
                             // Todo: implement the rest of the econ stuffz.
-                            claimTaxes = this.claimTaxes(player, claim);
-                            claimBlockCost = this.claimBlockCost(player, claim);
-                            claimBlockSell = this.claimBlockSell(player, claim);
+                            claimTaxRate = this.claimTaxRate(claim);
+                            claimTaxes = this.claimTaxes(claim);
+                            claimBlockCost = this.claimBlockCost(claim);
+                            claimBlockSell = this.claimBlockSell(claim);
+
                             final Currency currency = service.getDefaultCurrency();
 
                             if (claim.getEconomyData() != null) {
-                                // Todo might be wrong
-                                claimTaxBalance = this.claimTaxBalance(player, claim);
+                                claimTaxBalance = this.claimTaxBalance(claim);
                                 UUID accountID = claim.getEconomyAccountId();
                                 if (!(accountID == null)) {
                                     final UniqueAccount claimAccount = service.getOrCreateAccount(accountID).orElse(null);
                                     claimEconBalance = claimAccount.getBalance(currency).doubleValue();
                                 }
                             }
+
                         }
                     }
 
@@ -306,8 +320,8 @@ public final class ServerClaimManager implements Witness {
                     if (player != null) {
                         if (debug)
                             System.out.println("Sending Claim packet update to: [" + player.getName() + "] for Claim: [" + claim.getDisplayName() +"] Wilderness: [" + isWilderness + "]");
-                        this.network.sendTo(player, new ClientboundClaimDataPacket(isClaim, claimName, claimOwner, isWilderness, isTownClaim, isAdminClaim, isBasicClaim, isSubdivision, claimEconBalance, claimGreeting, claimFarewell, claimSize,
-                                isForSale, showWarnings, claimTaxes, claimBlockCost, claimBlockSell, hasWECUI, claimTaxBalance, claimSalePrice));
+                        this.network.sendTo(player, new ClientboundClaimDataPacket(isClaim, claimName, claimOwner, isWilderness, isTownClaim, isAdminClaim, isBasicClaim, isSubdivision, claimEconBalance, claimGreeting, claimFarewell, dateCreated, claimType, claimSize,
+                                isForSale, showWarnings, claimTaxRate, claimTaxes, claimBlockCost, claimBlockSell, hasWECUI, claimTaxBalance, claimSalePrice));
                     }
                 }
             }
@@ -339,8 +353,6 @@ public final class ServerClaimManager implements Witness {
             final boolean isAdmin = player.hasPermission(adminPermission);
 
             if (isOwner || isAdmin) {
-                System.out.println("Save claim name: " + claimName);
-
                 claim.getData().setDisplayName(Component.text(claimName));
                 claim.getData().setGreeting(Component.text(claimGreeting));
                 claim.getData().setFarewell(Component.text(claimFarewell));
@@ -356,7 +368,7 @@ public final class ServerClaimManager implements Witness {
         }
     }
 
-    public final Claim claimLookup(final Player player, final double x, final double y, final double z, final String worldName) {
+    public Claim claimLookup(final Player player, final double x, final double y, final double z, final String worldName) {
         final World world = Sponge.getServer().getWorld(worldName).orElse(null);
         if (world == null) {
             this.serverNotificationManager
@@ -376,36 +388,45 @@ public final class ServerClaimManager implements Witness {
         return null;
     }
 
-    public final double claimTaxes(final Player player, final Claim claim) {
-        if (claim != null && player != null) {
-            PlayerData playerData = GriefDefender.getCore().getPlayerData(player.getWorld().getUniqueId(), player.getUniqueId());
+    public double claimTaxRate(final Claim claim) {
+        if (claim != null) {
+            PlayerData playerData = GriefDefender.getCore().getPlayerData(claim.getWorldUniqueId(), claim.getOwnerUniqueId());
             final double taxRate = playerData.getTaxRate(claim.getType());
-            final double taxOwed = (claim.getClaimBlocks() / 256) * taxRate;
+            return taxRate;
+        }
+        return 0;
+    }
+
+    public double claimTaxes(final Claim claim) {
+        if (claim != null) {
+            PlayerData playerData = GriefDefender.getCore().getPlayerData(claim.getWorldUniqueId(), claim.getOwnerUniqueId());
+            final double taxRate = playerData.getTaxRate(claim.getType());
+            final double taxOwed = claim.getClaimBlocks() * taxRate;
             return taxOwed;
         }
         return 0;
     }
 
-    public final double claimBlockCost(final Player player, final Claim claim) {
-        if (claim != null && player != null) {
-            PlayerData playerData = GriefDefender.getCore().getPlayerData(player.getWorld().getUniqueId(), player.getUniqueId());
+    public double claimBlockCost(final Claim claim) {
+        if (claim != null) {
+            PlayerData playerData = GriefDefender.getCore().getPlayerData(claim.getWorldUniqueId(), claim.getOwnerUniqueId());
             if (playerData != null)
                 return playerData.getEconomyClaimBlockCost();
         }
         return 0.0;
     }
 
-    public final double claimBlockSell(final Player player, final Claim claim) {
-        if (claim != null && player != null) {
-            PlayerData playerData = GriefDefender.getCore().getPlayerData(player.getWorld().getUniqueId(), player.getUniqueId());
+    public double claimBlockSell(final Claim claim) {
+        if (claim != null) {
+            PlayerData playerData = GriefDefender.getCore().getPlayerData(claim.getWorldUniqueId(), claim.getOwnerUniqueId());
             if (playerData != null)
                 return playerData.getEconomyClaimBlockReturn();
         }
         return 0.0;
     }
 
-    public final double claimTaxBalance(final Player player, final Claim claim) {
-        if (claim != null && player != null) {
+    public double claimTaxBalance(final Claim claim) {
+        if (claim != null) {
             if (claim.getEconomyData() != null) {
                 return claim.getEconomyData().getTaxBalance();
             }
@@ -413,8 +434,8 @@ public final class ServerClaimManager implements Witness {
         return 0.0;
     }
 
-    public final double claimSalePrice(final Player player, final Claim claim) {
-        if (claim != null && player != null) {
+    public double claimSalePrice(final Claim claim) {
+        if (claim != null) {
             if (claim.getEconomyData() != null) {
                 return claim.getEconomyData().getSalePrice();
             }
@@ -423,21 +444,21 @@ public final class ServerClaimManager implements Witness {
     }
 
     // Functions
-    public void abandonClaim(final Player player, final Claim claim) {
-        if (claim != null && player != null) {
+    public void abandonClaim(final Claim claim) {
+        if (claim != null) {
             claim.getClaimManager().deleteClaim(claim);
         }
     }
 
-    public void toggleClaimDenyMessages(final Player player, final Claim claim, final boolean value) {
-        if (claim != null && player != null) {
+    public void toggleClaimDenyMessages(final Claim claim, final boolean value) {
+        if (claim != null) {
             claim.getData().setDenyMessages(value);
             claim.getData().save();
         }
     }
 
-    public void setForSale(final Player player, final Claim claim, boolean forSale, double salePrice) {
-        if (claim != null && player != null) {
+    public void setForSale(final Claim claim, boolean forSale, double salePrice) {
+        if (claim != null) {
             claim.getEconomyData().setForSale(forSale);
             claim.getEconomyData().setSalePrice(salePrice);
             claim.getData().save();
@@ -452,30 +473,35 @@ public final class ServerClaimManager implements Witness {
     }
 
     public void openClientGUI (final Player player){
-        final Claim claim = GriefDefender.getCore().getClaimManager(player.getWorld().getUniqueId()).getClaimAt(player.getLocation().getBlockPosition());
-        if (claim != null) {
-            sendUpdate(player, claim);
-        }
+        // GD won't start completely inDev, so I've added this to allow me to see the gui.
+        if (SpongeImplHooks.isDeobfuscatedEnvironment()) {
+            this.network.sendTo(player, new ClientboundClaimGuiResponsePacket(true, true, true));
+        } else {
+            final Claim claim = GriefDefender.getCore().getClaimManager(player.getWorld().getUniqueId()).getClaimAt(player.getLocation().getBlockPosition());
+            if (claim != null) {
+                sendUpdate(player, claim);
+            }
 
-        if (!Sponge.getPluginManager().isLoaded("griefdefender")) {
-            this.serverNotificationManager.sendPopupNotification(player, notificationTitle, Text.of("GriefDefender not detected!"), 2);
-            return;
-        }
+            if (!Sponge.getPluginManager().isLoaded("griefdefender")) {
+                this.serverNotificationManager.sendPopupNotification(player, notificationTitle, Text.of("GriefDefender not detected!"), 2);
+                return;
+            }
 
-        if (!player.hasPermission(Almura.ID + ".claim.base")) {
-            this.serverNotificationManager.sendPopupNotification(player, notificationTitle, Text.of("Insufficient Permissions to Manage Claim!"), 2);
-            return;
-        }
+            if (!player.hasPermission(Almura.ID + ".claim.base")) {
+                this.serverNotificationManager.sendPopupNotification(player, notificationTitle, Text.of("Insufficient Permissions to Manage Claim!"), 2);
+                return;
+            }
 
-        if (claim != null) {
-            final boolean isOwner = (claim.getOwnerUniqueId().equals(player.getUniqueId()));
-            final boolean isTrusted = claim.isUserTrusted(player.getUniqueId(), TrustTypes.MANAGER);
-            final boolean isAdmin = player.hasPermission(adminPermission);
+            if (claim != null) {
+                final boolean isOwner = (claim.getOwnerUniqueId().equals(player.getUniqueId()));
+                final boolean isTrusted = claim.isUserTrusted(player.getUniqueId(), TrustTypes.MANAGER);
+                final boolean isAdmin = player.hasPermission(adminPermission);
 
-            if (!isAdmin && claim.isWilderness()) {
-                this.serverNotificationManager.sendPopupNotification(player, notificationTitle, Text.of("Insufficient permissions to open Claim Manager in Wilderness"),5);
-            } else {
-                this.network.sendTo(player, new ClientboundClaimGuiResponsePacket(isOwner, isTrusted, isAdmin));
+                if (!isAdmin && claim.isWilderness()) {
+                    this.serverNotificationManager.sendPopupNotification(player, notificationTitle, Text.of("Insufficient permissions to open Claim Manager in Wilderness"), 5);
+                } else {
+                    this.network.sendTo(player, new ClientboundClaimGuiResponsePacket(isOwner, isTrusted, isAdmin));
+                }
             }
         }
     }

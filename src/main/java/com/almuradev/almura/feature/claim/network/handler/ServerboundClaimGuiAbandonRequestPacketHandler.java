@@ -51,7 +51,7 @@ public final class ServerboundClaimGuiAbandonRequestPacketHandler implements Mes
                 final boolean isAdmin = player.hasPermission(ServerClaimManager.adminPermission);
 
                 if (isOwner || isAdmin) {
-                    this.serverClaimManager.abandonClaim(player, claim);
+                    this.serverClaimManager.abandonClaim(claim);
                     this.notificationManager.sendPopupNotification(player, ServerClaimManager.notificationTitle, Text.of("Claim Abandoned!"), 5);
                 } else {
                     this.notificationManager.sendPopupNotification(player, ServerClaimManager.notificationTitle, Text.of("Insufficient Permissions!"), 5);

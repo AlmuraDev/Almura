@@ -51,7 +51,7 @@ public final class ServerboundClaimGuiToggleDenyMessagesRequestPacketHandler imp
                 final boolean isAdmin = player.hasPermission(ServerClaimManager.adminPermission);
 
                 if (isOwner || isAdmin) {
-                    this.serverClaimManager.toggleClaimDenyMessages(player, claim, message.value);
+                    this.serverClaimManager.toggleClaimDenyMessages(claim, message.value);
                     this.serverClaimManager.sendUpdateTo(player, claim, null, true, "claimGuiToggleDenyMessage");
                     if (message.value) {
                         this.notificationManager.sendPopupNotification(player, ServerClaimManager.notificationTitle, Text.of("Deny Messages Enabled!"), 5);

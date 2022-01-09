@@ -37,6 +37,8 @@ public final class ClientboundClaimDataPacketHandler implements MessageHandler<C
                 clientClaimManager.claimOwner = message.claimOwner;
                 clientClaimManager.claimGreeting = message.claimGreeting;
                 clientClaimManager.claimFarewell = message.claimFarewell;
+                clientClaimManager.dateCreated = message.dateCreated;
+                clientClaimManager.claimType = message.claimType;
                 clientClaimManager.claimEconBalance = message.claimEconBalance;
                 clientClaimManager.isForSale = message.isForSale;
                 clientClaimManager.isWilderness = message.isWilderness;
@@ -50,6 +52,7 @@ public final class ClientboundClaimDataPacketHandler implements MessageHandler<C
                 clientClaimManager.claimBlockCost = message.claimBlockCost;
                 clientClaimManager.claimBlockSell = message.claimBlockSell;
                 clientClaimManager.hasWECUI = message.hasWECUI;
+                clientClaimManager.claimTaxRate = message.claimTaxRate;
                 clientClaimManager.claimTaxBalance = message.claimTaxBalance;
                 clientClaimManager.claimSalePrice = message.claimSalePrice;
                 final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
