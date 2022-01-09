@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.crafting;
 
+import com.almuradev.content.type.block.type.crop.CropBlock;
 import com.almuradev.core.event.Witness;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoublePlant;
@@ -25,6 +26,10 @@ import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.block.ChangeBlockEvent;
 
 public class ItemReturnHelper implements Witness {
 
@@ -68,10 +73,17 @@ public class ItemReturnHelper implements Witness {
         }
     }
 
-    // Sunflower Destroy Action Modifier.
+    // Sunflower Destroy Action Modifier & charging the player food/drink for harvesting custom crops.
     @SubscribeEvent
     public void onHarvestBlock(BlockEvent.HarvestDropsEvent event) {
         Block block = event.getState().getBlock();
+        if (block instanceof CropBlock) {
+            EntityPlayer player = event.getHarvester();
+            if (player != null)
+                // This is how we make players use more food/drink...
+                player.addExhaustion(0.01F);
+        }
+
         if (block instanceof BlockDoublePlant) {
             if (block.getMetaFromState(event.getState()) == 0) { // 0 = Sunflower Type.
                 final ItemStack drop = GameRegistry.makeItemStack("almura:food/food/sunflowerseed", 0, 16, null);

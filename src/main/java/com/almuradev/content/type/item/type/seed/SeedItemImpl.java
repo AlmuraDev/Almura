@@ -33,6 +33,8 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import static org.spongepowered.mod.SpongeMod.side;
+
 public final class SeedItemImpl extends ItemSeeds implements SeedItem {
     private final ItemTooltip tooltip = new ItemTooltip.Impl(this);
     private final Delegate<BlockType> cropDelegate;
@@ -58,6 +60,9 @@ public final class SeedItemImpl extends ItemSeeds implements SeedItem {
     @Override
     public EnumActionResult onItemUse(final EntityPlayer player, final World world, final BlockPos pos, final EnumHand hand, final EnumFacing facing, final float hitX, final float hitY, final float hitZ) {
         this.setCatalogsIfNecessary();
+        // This is how we make players use more food/drink...
+        player.addExhaustion(0.01F);
+
         return super.onItemUse(player, world, pos, hand, facing, hitX, hitY, hitZ);
     }
 
