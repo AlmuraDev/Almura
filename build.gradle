@@ -144,8 +144,8 @@ dependencies {
         transitive = false
     }
     // Attempt to use GD 2.0.3 API change.
-    compileOnly 'com.github.bloodmc:GriefDefenderAPI:2.0.0-SNAPSHOT'
-    compileOnly "net.kyori:adventure-api:4.8.0"
+    compile 'com.github.bloodmc:GriefDefenderAPI:2.0.0-SNAPSHOT'
+    compile "net.kyori:adventure-api:4.9.3"
     compile 'br.net.fabiozumbi12.UltimateChat:UltimateChat-Sponge-56-1.9.1'
     compile 'org.spongepowered:configurate-json:3.5'
     compile 'org.inspirenxe:skills:1.0.0-SNAPSHOT:api'
