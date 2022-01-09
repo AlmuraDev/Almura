@@ -19,6 +19,6 @@ public final class ClientOptimizationModule extends AbstractModule implements Cl
     @Override
     protected void configure() {
         this.requestStaticInjection(AlmuraSettings.class);
-        Display.setTitle(Display.getTitle() + " - Almura 3.1");
+        Display.setTitle(Display.getTitle() + " - Almura 3.1 - build 103");
     }
 }
