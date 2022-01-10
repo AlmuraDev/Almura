@@ -10,6 +10,7 @@ package com.almuradev.almura.feature.moc;
 import com.almuradev.core.event.Witness;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -35,6 +36,10 @@ public class MocDrops implements Witness {
 
         // Turkey
         if (entityName.equalsIgnoreCase("turkey")) {
+            // Do not add drops for children entities.
+            if (((EntityAnimal) entity).isChild()) {
+                return;
+            }
             minimum = 4;
 
             for (EntityItem item : event.getDrops()) {
