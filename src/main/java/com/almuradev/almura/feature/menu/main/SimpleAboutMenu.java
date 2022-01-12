@@ -122,7 +122,7 @@ public class SimpleAboutMenu extends BasicContainerScreen {
 
         // Almura
         final PluginContainer almuraContainer = Sponge.getPluginManager().getPlugin("almura").orElseThrow(NullPointerException::new);
-        final UILabel almuraVersionLabel = new UILabel(this, TextFormatting.WHITE + "Almura: " + almuraContainer.getVersion().orElse("dev"));
+        final UILabel almuraVersionLabel = new UILabel(this, TextFormatting.WHITE + "Almura 3.1 - " + Almura.buildNumber);
         almuraVersionLabel.setPosition(4, -4, Anchor.LEFT | Anchor.BOTTOM);
         addToScreen(almuraVersionLabel);
 

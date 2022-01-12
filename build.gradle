@@ -198,7 +198,7 @@ compileJava {
 processResources {
     filesMatching('**/mcmod.info') {
         filter ReplaceTokens, tokens: [
-            'build': project.internalBuild,
+            'build': project.internalBuild,  // this doesn't update unless you clear the /build/ cache folder... thanks gradle....
             'minecraftVersion': project.minecraftVersion
         ]
     }

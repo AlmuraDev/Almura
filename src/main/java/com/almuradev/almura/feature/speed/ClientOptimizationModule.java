@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.speed;
 
+import com.almuradev.almura.Almura;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import net.kyori.violet.AbstractModule;
 import net.minecraftforge.fml.relauncher.Side;
@@ -19,6 +20,6 @@ public final class ClientOptimizationModule extends AbstractModule implements Cl
     @Override
     protected void configure() {
         this.requestStaticInjection(AlmuraSettings.class);
-        Display.setTitle(Display.getTitle() + " - Almura 3.1 - build 103");
+        Display.setTitle(Display.getTitle() + " - Almura 3.1 - " + Almura.buildNumber);
     }
 }
