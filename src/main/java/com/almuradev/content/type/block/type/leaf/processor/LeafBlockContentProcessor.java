@@ -12,7 +12,7 @@ import com.almuradev.content.type.block.type.leaf.LeafBlock;
 import com.almuradev.content.type.block.type.leaf.state.LeafBlockStateDefinition;
 import com.almuradev.content.type.block.type.leaf.state.LeafBlockStateDefinitionBuilder;
 
-public interface LeafContentProcessor extends BlockContentProcessor<LeafBlock, LeafBlock.Builder, LeafBlockStateDefinition, LeafBlockStateDefinitionBuilder> {
+public interface LeafBlockContentProcessor extends BlockContentProcessor<LeafBlock, LeafBlock.Builder, LeafBlockStateDefinition, LeafBlockStateDefinitionBuilder> {
 
     interface AnyState extends BlockContentProcessor.State<LeafBlock, LeafBlock.Builder, LeafBlockStateDefinition, LeafBlockStateDefinitionBuilder> {
 

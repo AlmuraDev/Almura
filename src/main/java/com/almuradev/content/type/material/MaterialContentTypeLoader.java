@@ -31,7 +31,7 @@ public final class MaterialContentTypeLoader extends SingleTypeContentLoader<Mat
         this.build();
 
         for (final Entry<Material, Material.Builder> entry : this.entries.values()) {
-             this.module.registerAdditionalCatalog(entry.value);
+            this.module.registerAdditionalCatalog(entry.value);
         }
     }
 }
