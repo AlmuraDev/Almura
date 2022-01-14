@@ -10,21 +10,30 @@ package com.almuradev.content.type.block.type.leaf;
 import com.almuradev.almura.asm.mixin.accessors.block.BlockAccessor;
 import com.almuradev.almura.asm.mixin.accessors.block.BlockLeavesAccessor;
 import com.almuradev.content.type.block.StateMappedBlock;
+import com.almuradev.content.type.block.state.LazyBlockState;
+import com.almuradev.content.type.block.type.leaf.processor.preventdecay.PreventDecay;
+import com.almuradev.content.type.block.type.leaf.processor.spread.Spread;
 import com.almuradev.content.type.block.type.leaf.state.LeafBlockStateDefinition;
+import com.almuradev.toolbox.util.math.DoubleRange;
+import net.kyori.violet.Lazy;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.statemap.IStateMapper;
 import net.minecraft.client.renderer.block.statemap.StateMap;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.spongepowered.api.block.BlockState;
 
 import java.util.List;
 import java.util.Random;
@@ -35,7 +44,6 @@ public final class LeafBlockImpl extends BlockLeaves implements LeafBlock, State
     @Deprecated private static final int LEGACY_DECAYABLE = 1;
     @Deprecated private static final int LEGACY_CHECK_DECAY = 2;
     private final LeafBlockStateDefinition definition;
-    private int[] metaCache;
 
     LeafBlockImpl(final LeafBlockBuilder builder) {
         ((BlockAccessor) (Object) this).accessor$setDisplayOnCreativeTab(null);
@@ -111,84 +119,114 @@ public final class LeafBlockImpl extends BlockLeaves implements LeafBlock, State
 
     @Override
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
-        //Todo: the following needs to be updated from 1.7.10 to make work with 1.12.2 implementation.
-        // Pulled from : https://github.com/AlmuraDev/Almura/blob/1.7.10/src/main/java/com/almuradev/almura/pack/tree/PackLeaves.java
-        /*
-        if (!worldIn.isRemote && decayNode != null && decayNode.isEnabled()) {
-            byte b0 = 4;
-            int i1 = b0 + 1;
-            byte b1 = 32;
-            int j1 = b1 * b1;
-            int k1 = b1 / 2;
+        if (!worldIn.isRemote)
+        {
+            if (((Boolean)state.getValue(CHECK_DECAY)).booleanValue() && ((Boolean)state.getValue(DECAYABLE)).booleanValue())
+            {
+                int i = 4;
+                int j = 5;
+                int k = pos.getX();
+                int l = pos.getY();
+                int i1 = pos.getZ();
+                int j1 = 32;
+                int k1 = 1024;
+                int l1 = 16;
 
-            int l = this.getMetaFromState(state);
-
-            if ((l & 8) != 0 && (l & 4) == 0) {
-                if (this.metaCache == null) {
-                    this.metaCache = new int[b1 * b1 * b1];
+                if (((BlockLeavesAccessor) (Object) this).accessor$getSurroundings() == null)
+                {
+                    ((BlockLeavesAccessor) (Object) this).accessor$setSurroundings(new int[32768]);
                 }
 
-                int l1;
-                if (((WorldServer) worldIn).getChunkProvider().chunkExists(pos.getX() >> 4, pos.getZ() >> 4)) {
-                    int i2;
-                    int j2;
+                final int[] surroundings = ((BlockLeavesAccessor) (Object) this).accessor$getSurroundings();
 
-                    for (l1 = -b0; l1 <= b0; ++l1) {
-                        for (i2 = -b0; i2 <= b0; ++i2) {
-                            for (j2 = -b0; j2 <= b0; ++j2) {
-                                Block block = worldIn.getBlockState(new BlockPos(pos.getX() + l1, pos.getY() + i2, pos.getZ() + j2)).getBlock();
-                                GameObject found = null;
-                                // Check if we have something that prevents decaying nearby
-                                for (GameObjectProperty prop : decayNode.getPreventDecayProperties()) {
-                                    final Object minecraftObject =
-                                        prop.getSource().minecraftObject instanceof ItemBlock ? ((ItemBlock) prop.getSource().minecraftObject).blockInstance : prop.getSource().minecraftObject;
-                                    if (minecraftObject == block) {
-                                        found = prop.getSource();
-                                        break;
+                if (!worldIn.isAreaLoaded(pos, 1)) return; // Forge: prevent decaying leaves from updating neighbors and loading unloaded chunks
+                if (worldIn.isAreaLoaded(pos, 6)) // Forge: extend range from 5 to 6 to account for neighbor checks in world.markAndNotifyBlock -> world.updateObservingBlocksAt
+                {
+                    BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+
+                    for (int i2 = -4; i2 <= 4; ++i2)
+                    {
+                        for (int j2 = -4; j2 <= 4; ++j2)
+                        {
+                            for (int k2 = -4; k2 <= 4; ++k2)
+                            {
+                                IBlockState iblockstate = worldIn.getBlockState(blockpos$mutableblockpos.setPos(k + i2, l + j2, i1 + k2));
+                                Block block = iblockstate.getBlock();
+
+                                // Almura Start - Ask the leaf for a block that can keep it from decaying. Allow Vanilla logs to have first say
+                                boolean preventDecay = block.canSustainLeaves(iblockstate, worldIn, blockpos$mutableblockpos.setPos(k + i2, l + j2,
+                                        i1 + k2));
+                                if (!preventDecay) {
+                                    final PreventDecay pDecay = this.definition.preventDecay;
+                                    if (pDecay != null) {
+                                        final DoubleRange chanceRoll = pDecay.getOrLoadChanceRangeForBiome(worldIn.getBiome(blockpos$mutableblockpos));
+                                        if (chanceRoll != null) {
+                                            if ((rand.nextDouble() >= (chanceRoll.random(rand) / 100))) {
+                                               // if (pDecay.getBlock().partialTest(iblockstate)) {
+                                               //     preventDecay = true;
+                                               // }
+                                            }
+                                        }
                                     }
                                 }
-
-                                if (found == null) {
-                                    
-                                    if (state.getBlock().isLeaves(state, worldIn, new BlockPos(pos.getX() + l1, pos.getY() + i2, pos.getZ() + j2))) {
-                                        this.metaCache[(l1 + k1) * j1 + (i2 + k1) * b1 + j2 + k1] = -2;
-                                    } else {
-                                        this.metaCache[(l1 + k1) * j1 + (i2 + k1) * b1 + j2 + k1] = -1;
+                                if (!preventDecay)
+                                {
+                                    // Almura End
+                                    if (block.isLeaves(iblockstate, worldIn, blockpos$mutableblockpos.setPos(k + i2, l + j2, i1 + k2)))
+                                    {
+                                        surroundings[(i2 + 16) * 1024 + (j2 + 16) * 32 + k2 + 16] = -2;
                                     }
-                                } else {
-                                    this.metaCache[(l1 + k1) * j1 + (i2 + k1) * b1 + j2 + k1] = 0;
+                                    else
+                                    {
+                                        surroundings[(i2 + 16) * 1024 + (j2 + 16) * 32 + k2 + 16] = -1;
+                                    }
+                                }
+                                else
+                                {
+                                    surroundings[(i2 + 16) * 1024 + (j2 + 16) * 32 + k2 + 16] = 0;
                                 }
                             }
                         }
                     }
 
-                    for (l1 = 1; l1 <= 4; ++l1) {
-                        for (i2 = -b0; i2 <= b0; ++i2) {
-                            for (j2 = -b0; j2 <= b0; ++j2) {
-                                for (int k2 = -b0; k2 <= b0; ++k2) {
-                                    if (this.metaCache[(i2 + k1) * j1 + (j2 + k1) * b1 + k2 + k1] == l1 - 1) {
-                                        if (this.metaCache[(i2 + k1 - 1) * j1 + (j2 + k1) * b1 + k2 + k1] == -2) {
-                                            this.metaCache[(i2 + k1 - 1) * j1 + (j2 + k1) * b1 + k2 + k1] = l1;
+                    for (int i3 = 1; i3 <= 4; ++i3)
+                    {
+                        for (int j3 = -4; j3 <= 4; ++j3)
+                        {
+                            for (int k3 = -4; k3 <= 4; ++k3)
+                            {
+                                for (int l3 = -4; l3 <= 4; ++l3)
+                                {
+                                    if (surroundings[(j3 + 16) * 1024 + (k3 + 16) * 32 + l3 + 16] == i3 - 1)
+                                    {
+                                        if (surroundings[(j3 + 16 - 1) * 1024 + (k3 + 16) * 32 + l3 + 16] == -2)
+                                        {
+                                            surroundings[(j3 + 16 - 1) * 1024 + (k3 + 16) * 32 + l3 + 16] = i3;
                                         }
 
-                                        if (this.metaCache[(i2 + k1 + 1) * j1 + (j2 + k1) * b1 + k2 + k1] == -2) {
-                                            this.metaCache[(i2 + k1 + 1) * j1 + (j2 + k1) * b1 + k2 + k1] = l1;
+                                        if (surroundings[(j3 + 16 + 1) * 1024 + (k3 + 16) * 32 + l3 + 16] == -2)
+                                        {
+                                            surroundings[(j3 + 16 + 1) * 1024 + (k3 + 16) * 32 + l3 + 16] = i3;
                                         }
 
-                                        if (this.metaCache[(i2 + k1) * j1 + (j2 + k1 - 1) * b1 + k2 + k1] == -2) {
-                                            this.metaCache[(i2 + k1) * j1 + (j2 + k1 - 1) * b1 + k2 + k1] = l1;
+                                        if (surroundings[(j3 + 16) * 1024 + (k3 + 16 - 1) * 32 + l3 + 16] == -2)
+                                        {
+                                            surroundings[(j3 + 16) * 1024 + (k3 + 16 - 1) * 32 + l3 + 16] = i3;
                                         }
 
-                                        if (this.metaCache[(i2 + k1) * j1 + (j2 + k1 + 1) * b1 + k2 + k1] == -2) {
-                                            this.metaCache[(i2 + k1) * j1 + (j2 + k1 + 1) * b1 + k2 + k1] = l1;
+                                        if (surroundings[(j3 + 16) * 1024 + (k3 + 16 + 1) * 32 + l3 + 16] == -2)
+                                        {
+                                            surroundings[(j3 + 16) * 1024 + (k3 + 16 + 1) * 32 + l3 + 16] = i3;
                                         }
 
-                                        if (this.metaCache[(i2 + k1) * j1 + (j2 + k1) * b1 + (k2 + k1 - 1)] == -2) {
-                                            this.metaCache[(i2 + k1) * j1 + (j2 + k1) * b1 + (k2 + k1 - 1)] = l1;
+                                        if (surroundings[(j3 + 16) * 1024 + (k3 + 16) * 32 + (l3 + 16 - 1)] == -2)
+                                        {
+                                            surroundings[(j3 + 16) * 1024 + (k3 + 16) * 32 + (l3 + 16 - 1)] = i3;
                                         }
 
-                                        if (this.metaCache[(i2 + k1) * j1 + (j2 + k1) * b1 + k2 + k1 + 1] == -2) {
-                                            this.metaCache[(i2 + k1) * j1 + (j2 + k1) * b1 + k2 + k1 + 1] = l1;
+                                        if (surroundings[(j3 + 16) * 1024 + (k3 + 16) * 32 + l3 + 16 + 1] == -2)
+                                        {
+                                            surroundings[(j3 + 16) * 1024 + (k3 + 16) * 32 + l3 + 16 + 1] = i3;
                                         }
                                     }
                                 }
@@ -197,57 +235,54 @@ public final class LeafBlockImpl extends BlockLeaves implements LeafBlock, State
                     }
                 }
 
-                l1 = this.metaCache[k1 * j1 + k1 * b1 + k1];
+                int l2 = surroundings[16912];
 
-                if (l1 >= 0) {
-                    worldIn.setBlockMetadataWithNotify(x, y, z, l & -9, 4); //old
-                } else {
-                    //Todo: drop leaf as item here?
-                    worldIn.setBlockToAir(pos);
+                if (l2 >= 0)
+                {
+                    worldIn.setBlockState(pos, state.withProperty(CHECK_DECAY, Boolean.valueOf(false)), 4);
+                }
+                else
+                {
+                    ((BlockLeavesAccessor) (Object) this).invoker$destroy(worldIn, pos);
                 }
             }
         }
 
-        if (spreadNode.isEnabled() && !spreadNode.getValue().isEmpty()) {
-            final Block currentBlock = worldIn.getBlockState(pos).getBlock();
-            if (currentBlock == this) {
-                for (ForgeDirection dir : ForgeDirection.values()) {
-                    final BlockPos toPos = pos.offset(dir);
-                    final Block dirBlock = worldIn.getBlockState(pos).getBlock();
-                    final int blockMetadata = dirBlock.getMetaFromState(state);
+        this.updateSpreadTick(worldIn, pos, state, rand);
 
-                    ReplacementProperty matched = null;
+    }
 
-                    for (ReplacementProperty property : spreadNode.getValue()) {
-                        Block toCheck;
+    private void updateSpreadTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
+        if (worldIn.isRemote) {
+            return;
+        }
+        final IBlockState actualBlock = worldIn.getBlockState(pos);
 
-                        if (property.getReplacementObj().minecraftObject instanceof ItemBlock) {
-                            toCheck = ((ItemBlock) property.getReplacementObj().minecraftObject).blockInstance;
-                        } else {
-                            toCheck = (Block) property.getReplacementObj().minecraftObject;
-                        }
+        final Spread spread = this.definition.spread;
+        if (spread == null) {
+            return;
+        }
 
-                        if (toCheck == dirBlock && property.getReplacementObj().data == blockMetadata) {
-                            matched = property;
-                            break;
-                        }
-                    }
+        if (actualBlock.getBlock() != this) {
+            return;
+        }
 
-                    if (matched != null) {
-                        final double chance = matched.getSource().getValueWithinRange();
-                        if (rand.nextDouble() <= (chance / 100)) {
-                            Block toReplace;
+        final Biome biome = worldIn.getBiome(pos);
+        final DoubleRange chanceRoll = spread.getOrLoadChanceRangeForBiome(biome);
+        if (chanceRoll == null) {
+            return;
+        }
+        if (!(rand.nextDouble() <= (chanceRoll.random(rand) / 100))) {
+            return;
+        }
 
-                            if (matched.getWithObj().minecraftObject instanceof ItemBlock) {
-                                toReplace = ((ItemBlock) matched.getWithObj().minecraftObject).blockInstance;
-                            } else {
-                                toReplace = (Block) matched.getWithObj().minecraftObject;
-                            }
-                            worldIn.setBlock(toPos.getX(), toPos.getY(), toPos.getZ(), toReplace, matched.getWithObj().data, 3);
-                        }
-                    }
-                }
+        for (final EnumFacing facing : EnumFacing.values()) {
+            final BlockPos offset = pos.offset(facing);
+            final IBlockState offsetBlock = worldIn.getBlockState(offset);
+            if (offsetBlock.getBlock() == Blocks.AIR) {
+                    worldIn.setBlockState(offset, spread.getBlock().get());
+                    break;
             }
-        } */
+        }
     }
 }

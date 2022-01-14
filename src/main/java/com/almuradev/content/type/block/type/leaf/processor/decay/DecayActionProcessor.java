@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.content.type.block.type.leaf.processor;
+package com.almuradev.content.type.block.type.leaf.processor.decay;
 
 import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.loader.MultiTypeExternalContentProcessor;
@@ -16,6 +16,7 @@ import com.almuradev.content.type.action.ActionGenre;
 import com.almuradev.content.type.action.type.blockdecay.BlockDecayAction;
 import com.almuradev.content.type.block.BlockConfig;
 import com.almuradev.content.type.block.type.leaf.LeafBlock;
+import com.almuradev.content.type.block.type.leaf.processor.LeafBlockContentProcessor;
 import com.almuradev.content.type.block.type.leaf.state.LeafBlockStateDefinitionBuilder;
 import com.almuradev.toolbox.config.tag.ConfigTag;
 import ninja.leaping.configurate.ConfigurationNode;
