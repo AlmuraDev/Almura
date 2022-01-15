@@ -281,6 +281,7 @@ public final class LeafBlockImpl extends BlockLeaves implements LeafBlock, State
             final IBlockState offsetBlock = worldIn.getBlockState(offset);
             if (offsetBlock.getBlock() == Blocks.AIR) {
                     worldIn.setBlockState(offset, spread.getBlock().get());
+                    worldIn.playEvent(2005, pos, 0);
                     break;
             }
         }
