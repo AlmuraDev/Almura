@@ -19,12 +19,14 @@ import net.kyori.violet.Lazy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockPlanks;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.statemap.IStateMapper;
 import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
@@ -50,6 +52,8 @@ public final class LeafBlockImpl extends BlockLeaves implements LeafBlock, State
         builder.fill(this);
         this.definition = builder.singleState();
         this.definition.fill(this);
+
+        this.setSoundType(SoundType.PLANT);
         this.setDefaultState(
                 this.blockState.getBaseState()
                         .withProperty(CHECK_DECAY, true)
@@ -72,7 +76,8 @@ public final class LeafBlockImpl extends BlockLeaves implements LeafBlock, State
 
     @Override
     public boolean isOpaqueCube(IBlockState state) {
-        return !((BlockLeavesAccessor) (Object) this).accessor$getIsLeavesFancy();
+        // Always return false here because our images for leaves are expecting them to be transparent.
+        return false;
     }
 
     @Deprecated
@@ -109,6 +114,12 @@ public final class LeafBlockImpl extends BlockLeaves implements LeafBlock, State
         return new StateMap.Builder()
                 .ignore(CHECK_DECAY, DECAYABLE)
                 .build();
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public BlockRenderLayer getRenderLayer() {
+        return this.leavesFancy ? BlockRenderLayer.CUTOUT_MIPPED : BlockRenderLayer.SOLID;
     }
 
     @Override
