@@ -15,6 +15,7 @@ import com.almuradev.almura.feature.complex.item.almanac.item.FarmersAlmanacItem
 import com.almuradev.almura.feature.complex.item.cruet.GlassCruetItem;
 import com.almuradev.almura.feature.complex.item.cruet.GlassMilkCruetItem;
 import com.almuradev.almura.feature.complex.item.cruet.GlassWaterCruetItem;
+import com.almuradev.almura.feature.complex.item.wand.CollectorWand;
 import com.almuradev.almura.feature.complex.item.wand.LightRepairWand;
 import com.almuradev.core.event.Witness;
 import net.minecraft.block.Block;
@@ -50,6 +51,7 @@ public final class ComplexContentFeature implements Witness {
         // Register Complex Items Here
         event.getRegistry().register(new LightRepairWand());
         event.getRegistry().register(new FarmersAlmanacItem());
+        event.getRegistry().register(new CollectorWand());
 
         event.getRegistry().register(new GlassCruetItem());
         event.getRegistry().register(new GlassWaterCruetItem());
