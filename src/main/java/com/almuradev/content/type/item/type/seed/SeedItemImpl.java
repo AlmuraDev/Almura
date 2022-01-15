@@ -13,6 +13,7 @@ import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.type.item.ItemTooltip;
 import com.almuradev.content.type.item.type.seed.processor.grass.Grass;
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,6 +22,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -62,6 +64,8 @@ public final class SeedItemImpl extends ItemSeeds implements SeedItem {
         this.setCatalogsIfNecessary();
         // This is how we make players use more food/drink...
         player.addExhaustion(0.01F);
+        SoundType soundtype = SoundType.PLANT;
+        world.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
 
         return super.onItemUse(player, world, pos, hand, facing, hitX, hitY, hitZ);
     }

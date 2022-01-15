@@ -17,6 +17,7 @@ import net.kyori.lunar.PrimitiveOptionals;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
 import net.minecraft.block.BlockFarmland;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -60,6 +61,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
         builder.fill(this);
         this.maxAge = builder.age;
         this.seed = builder.seed;
+        this.setSoundType(SoundType.PLANT);
         this.states = new CropBlockStateDefinition[this.maxAge + 1];
         for (final CropBlockStateDefinition state : states) {
             this.states[state.age] = state;
