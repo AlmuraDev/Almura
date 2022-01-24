@@ -122,8 +122,8 @@ public class UIPlayerListPanel extends AbstractPanel {
         if (player.getGameType() == GameType.SPECTATOR) {
             name = TextFormatting.ITALIC + name;
         }
-
-        return name.length() >= MAX_DISPLAY_NAME_LENGTH ? name.substring(0, MAX_DISPLAY_NAME_LENGTH_SUBSTRING) + DISPLAY_NAME_TRAILING_DOTS : name;
+        // TODO Find a way to trim nicknames with formating codes
+        return TextFormatting.getTextWithoutFormattingCodes(name).length() >= MAX_DISPLAY_NAME_LENGTH ? name.substring(0, MAX_DISPLAY_NAME_LENGTH_SUBSTRING) + DISPLAY_NAME_TRAILING_DOTS : name;
     }
 
     private static String getDisplayName(final NetworkPlayerInfo player) {
