@@ -34,7 +34,9 @@ final class ExchangeCommandsCreator {
     private static CommandSpec createManageCommand() {
         return CommandSpec.builder()
             .description(Text.of("Request to manage exchanges"))
-            .arguments(GenericArguments.optional(GenericArguments.requiringPermissionWeak(GenericArguments.player(Text.of("player")), Almura.ID + ".exchange.admin")))
+            .arguments(GenericArguments.optionalWeak(
+                GenericArguments.requiringPermissionWeak(GenericArguments.player(Text.of("player")), Almura.ID + ".exchange.admin"))
+            )
             .permission(Almura.ID + ".exchange.manage")
             .executor((src, args) -> {
                 final Player player = args.<Player>getOne("player").orElse((Player) src);
@@ -52,7 +54,11 @@ final class ExchangeCommandsCreator {
     private static CommandSpec createOpenCommand() {
         return CommandSpec.builder()
             .description(Text.of("Request to open an exchange"))
-            .arguments(GenericArguments.seq(GenericArguments.optional(GenericArguments.requiringPermissionWeak(GenericArguments.player(Text.of("player")), Almura.ID + ".exchange.admin")), GenericArguments.string(Text.of("id"))))
+            .arguments(GenericArguments.seq(
+                GenericArguments.optionalWeak(
+                    GenericArguments.requiringPermissionWeak(GenericArguments.player(Text.of("player")), Almura.ID + ".exchange.admin")),
+                GenericArguments.string(Text.of("id"))
+            ))
             .permission(Almura.ID + ".exchange.open")
             .executor((src, args) -> {
                 final Player player = args.<Player>getOne("player").orElse((Player) src);
