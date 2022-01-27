@@ -36,7 +36,7 @@ final class StoreCommandsCreator {
             .description(Text.of("Request to manage stores"))
             .arguments(
                 GenericArguments.optionalWeak(
-                    GenericArguments.requiringPermissionWeak(GenericArguments.player(Text.of("player")), Almura.ID + ".store.admin"))
+                    GenericArguments.requiringPermissionWeak(GenericArguments.player(Text.of("player")), Almura.ID + ".store.manage.other"))
                 )
             .permission(Almura.ID + ".store.manage")
             .executor((src, args) -> {
@@ -57,7 +57,7 @@ final class StoreCommandsCreator {
             .description(Text.of("Request to open a store"))
             .arguments(GenericArguments.seq(
                 GenericArguments.optionalWeak(
-                    GenericArguments.requiringPermissionWeak(GenericArguments.player(Text.of("player")), Almura.ID + ".store.admin")), 
+                    GenericArguments.requiringPermissionWeak(GenericArguments.player(Text.of("player")), Almura.ID + ".store.open.other")), 
                 GenericArguments.string(Text.of("id"))
             ))
             .permission(Almura.ID + ".store.open")

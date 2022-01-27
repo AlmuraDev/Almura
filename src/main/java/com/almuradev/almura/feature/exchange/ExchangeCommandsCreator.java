@@ -35,7 +35,7 @@ final class ExchangeCommandsCreator {
         return CommandSpec.builder()
             .description(Text.of("Request to manage exchanges"))
             .arguments(GenericArguments.optionalWeak(
-                GenericArguments.requiringPermissionWeak(GenericArguments.player(Text.of("player")), Almura.ID + ".exchange.admin"))
+                GenericArguments.requiringPermissionWeak(GenericArguments.player(Text.of("player")), Almura.ID + ".exchange.manage.other"))
             )
             .permission(Almura.ID + ".exchange.manage")
             .executor((src, args) -> {
@@ -56,7 +56,7 @@ final class ExchangeCommandsCreator {
             .description(Text.of("Request to open an exchange"))
             .arguments(GenericArguments.seq(
                 GenericArguments.optionalWeak(
-                    GenericArguments.requiringPermissionWeak(GenericArguments.player(Text.of("player")), Almura.ID + ".exchange.admin")),
+                    GenericArguments.requiringPermissionWeak(GenericArguments.player(Text.of("player")), Almura.ID + ".exchange.manage.other")),
                 GenericArguments.string(Text.of("id"))
             ))
             .permission(Almura.ID + ".exchange.open")
