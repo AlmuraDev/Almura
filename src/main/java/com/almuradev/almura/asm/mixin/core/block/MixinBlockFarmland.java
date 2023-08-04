@@ -54,7 +54,7 @@ public abstract class MixinBlockFarmland extends Block {
         pipe = Block.getBlockFromName("almura:horizontal/agriculture/pipe");
 
         if (pipe != null) {
-            for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.getAllInBoxMutable(pos.add(-6, 1, -6), pos.add(6, 1, 6))) {
+            for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.getAllInBoxMutable(pos.add(-6, 1, -6), pos.add(6, 6, 6))) {
                 if (((WorldServer) worldIn).getChunkProvider().chunkExists(pos.getX() >> 4, pos.getZ() >> 4) && !irrigationPipeNear) {
                     Block posBlock = worldIn.getBlockState(blockpos$mutableblockpos).getBlock();
                     if (posBlock.getRegistryName().toString().length() > 30 && posBlock.getRegistryName().toString().substring(0,30).equalsIgnoreCase("almura:horizontal/agriculture/")) {

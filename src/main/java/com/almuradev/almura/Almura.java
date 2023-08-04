@@ -15,7 +15,6 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.game.state.GameConstructionEvent;
 import org.spongepowered.api.event.game.state.GameStoppingEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
-import org.spongepowered.api.event.world.UnloadWorldEvent;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 
@@ -36,7 +35,7 @@ public class Almura implements com.almuradev.almura.shared.plugin.Plugin {
     public static boolean debug = true;
     public static boolean isShuttingDown = false;
     public static NetworkManager networkManager;
-    public static String buildNumber = "b107";
+    public static String buildNumber = "b109";
 
     @SidedProxy(
             modId = ID,
