@@ -26,10 +26,6 @@ import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.block.ChangeBlockEvent;
 
 public class ItemReturnHelper implements Witness {
 
@@ -160,6 +156,13 @@ public class ItemReturnHelper implements Witness {
             case "ITEM.ALMURA.NORMAL.INGREDIENT.SALT":
             case "ITEM.ALMURA.NORMAL.INGREDIENT.PEPPER":
                 reusableItem = GameRegistry.makeItemStack("almura:normal/ingredient/glass_jar", 0, 1, null);
+                break;
+
+            case "ITEM.ALMURA.NORMAL.INGREDIENT.GRAVY_BEEF":
+            case "ITEM.ALMURA.NORMAL.INGREDIENT.GRAVY_CHICKEN":
+            case "ITEM.ALMURA.NORMAL.INGREDIENT.GRAVY_PORK":
+            case "ITEM.ALMURA.NORMAL.INGREDIENT.GRAVY_SAUSAGE":
+                reusableItem = GameRegistry.makeItemStack("almura:normal/ingredient/gravy_boat", 0, 1, null);
                 break;
 
             case "ITEM.ALMURA.FOOD.DRINK.BEER_BEER":
