@@ -297,6 +297,19 @@ public class ItemReturnHelper implements Witness {
                 reusableItem = GameRegistry.makeItemStack("minecraft:glass_bottle", 0, 1, null);
                 break;
 
+            case "ITEM.ALMURA.FOOD.FOOD.SOUP_CLAMCHOWDER":
+            case "ITEM.ALMURA.FOOD.FOOD.SOUP_CORN":
+            case "ITEM.ALMURA.FOOD.FOOD.SOUP_CREAMOFMUSHROOM":
+            case "ITEM.ALMURA.FOOD.FOOD.SOUP_MINESTRONE":
+            case "ITEM.ALMURA.FOOD.FOOD.SOUP_ONION":
+            case "ITEM.ALMURA.FOOD.FOOD.SOUP_PEA":
+            case "ITEM.ALMURA.FOOD.FOOD.SOUP_PUMPKIN":
+            case "ITEM.ALMURA.FOOD.FOOD.SOUP_RICEPORRIDGE":
+            case "ITEM.ALMURA.FOOD.FOOD.SOUP_TOMATO":
+            case "ITEM.ALMURA.FOOD.FOOD.SOUP_VEGETABLE":
+                reusableItem = GameRegistry.makeItemStack("minecraft:bowl", 0, 1, null);
+                break;
+
             default:
                 return; //Exit this method because an above wasn't found.
         }
