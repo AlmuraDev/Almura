@@ -7,45 +7,26 @@
  */
 package com.almuradev.almura.feature.exchange.database;
 
-import static com.almuradev.generated.axs.Tables.AXS;
-import static com.almuradev.generated.axs.Tables.AXS_FOR_SALE_ITEM;
-import static com.almuradev.generated.axs.Tables.AXS_LIST_ITEM;
-import static com.almuradev.generated.axs.Tables.AXS_LIST_ITEM_DATA;
-import static com.almuradev.generated.axs.Tables.AXS_TRANSACTION;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
-
 import com.almuradev.almura.shared.database.DatabaseQuery;
 import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.almuradev.almura.shared.util.SerializationUtil;
 import com.almuradev.generated.axs.tables.AxsForSaleItem;
 import com.almuradev.generated.axs.tables.AxsListItem;
 import com.almuradev.generated.axs.tables.AxsListItemData;
-import com.almuradev.generated.axs.tables.records.AxsForSaleItemRecord;
-import com.almuradev.generated.axs.tables.records.AxsListItemDataRecord;
-import com.almuradev.generated.axs.tables.records.AxsListItemRecord;
-import com.almuradev.generated.axs.tables.records.AxsRecord;
-import com.almuradev.generated.axs.tables.records.AxsTransactionRecord;
+import com.almuradev.generated.axs.tables.records.*;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
-import org.jooq.DeleteConditionStep;
-import org.jooq.InsertResultStep;
-import org.jooq.InsertValuesStep2;
-import org.jooq.InsertValuesStep3;
-import org.jooq.InsertValuesStep5;
-import org.jooq.InsertValuesStep6;
-import org.jooq.InsertValuesStep8;
-import org.jooq.Record;
-import org.jooq.SelectConditionStep;
-import org.jooq.SelectWhereStep;
-import org.jooq.UpdateConditionStep;
-import org.jooq.UpdateSetMoreStep;
+import org.jooq.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.UUID;
+
+import static com.almuradev.generated.axs.Tables.*;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 public final class ExchangeQueries {
 
@@ -110,17 +91,16 @@ public final class ExchangeQueries {
             .where(AXS_LIST_ITEM.AXS.eq(id).and(AXS_LIST_ITEM.IS_HIDDEN.eq(isHidden)));
     }
 
-    public static DatabaseQuery<SelectConditionStep<Record>> createFetchListItemsAndDataFor(final UUID seller, final boolean isHidden) {
+    public static DatabaseQuery<SelectConditionStep<Record>> createFetchListItemsAndDataFor(final String id, final UUID seller, final boolean isHidden) {
         checkNotNull(seller);
 
         final byte[] sellerData = SerializationUtil.toBytes(seller);
-
         return context -> context
             .select()
             .from(AXS_LIST_ITEM)
             .leftJoin(AXS_LIST_ITEM_DATA)
             .on(AXS_LIST_ITEM_DATA.LIST_ITEM.eq(AXS_LIST_ITEM.REC_NO))
-            .where(AXS_LIST_ITEM.SELLER.eq(sellerData).and(AXS_LIST_ITEM.IS_HIDDEN.eq(isHidden)));
+            .where(AXS_LIST_ITEM.SELLER.eq(sellerData).and(AXS_LIST_ITEM.AXS.eq(id).and(AXS_LIST_ITEM.IS_HIDDEN.eq(isHidden))));
     }
 
     public static DatabaseQuery<InsertResultStep<AxsListItemRecord>> createInsertListItem(final String id, final Instant created, final UUID seller,
@@ -250,7 +230,7 @@ public final class ExchangeQueries {
             .where(AXS_FOR_SALE_ITEM.IS_HIDDEN.eq(isHidden));
     }
 
-    public static DatabaseQuery<SelectConditionStep<Record>> createFetchForSaleItemsFor(final UUID seller, final boolean isHidden) {
+    public static DatabaseQuery<SelectConditionStep<Record>> createFetchForSaleItemsFor(final String id, final UUID seller, final boolean isHidden) {
         checkNotNull(seller);
 
         final byte[] sellerData = SerializationUtil.toBytes(seller);
@@ -260,7 +240,7 @@ public final class ExchangeQueries {
             .from(AXS_FOR_SALE_ITEM
                 .join(AXS_LIST_ITEM)
                 .onKey())
-            .where(AXS_LIST_ITEM.SELLER.eq(sellerData).and(AXS_FOR_SALE_ITEM.IS_HIDDEN.eq(isHidden)));
+            .where(AXS_LIST_ITEM.SELLER.eq(sellerData).and(AXS_LIST_ITEM.AXS.eq(id).and(AXS_FOR_SALE_ITEM.IS_HIDDEN.eq(isHidden))));
     }
 
     public static DatabaseQuery<InsertResultStep<AxsForSaleItemRecord>> createInsertForSaleItem(

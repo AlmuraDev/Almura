@@ -7,30 +7,17 @@
  */
 package com.almuradev.almura.feature.exchange.client;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
-
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.feature.exchange.Exchange;
-import com.almuradev.almura.feature.exchange.ExchangeModifyType;
-import com.almuradev.almura.feature.exchange.ExchangeModule;
-import com.almuradev.almura.feature.exchange.InventoryAction;
-import com.almuradev.almura.feature.exchange.ListStatusType;
+import com.almuradev.almura.feature.exchange.*;
+import com.almuradev.almura.feature.exchange.basic.listing.BasicForSaleItem;
+import com.almuradev.almura.feature.exchange.basic.listing.BasicListItem;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeManagementScreen;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeOfferScreen;
 import com.almuradev.almura.feature.exchange.client.gui.ExchangeScreen;
-import com.almuradev.almura.feature.exchange.network.ClientboundListItemsSaleStatusPacket;
-import com.almuradev.almura.feature.exchange.network.ServerboundExchangeSpecificOfferRequestPacket;
-import com.almuradev.almura.feature.exchange.network.ServerboundForSaleFilterResponsePacket;
-import com.almuradev.almura.feature.exchange.network.ServerboundListItemsRequestPacket;
-import com.almuradev.almura.feature.exchange.network.ServerboundModifyExchangePacket;
-import com.almuradev.almura.feature.exchange.network.ServerboundModifyForSaleItemListStatusRequestPacket;
-import com.almuradev.almura.feature.exchange.network.ServerboundTransactionRequestPacket;
-import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
 import com.almuradev.almura.feature.exchange.listing.ListItem;
-import com.almuradev.almura.feature.exchange.basic.listing.BasicForSaleItem;
-import com.almuradev.almura.feature.exchange.basic.listing.BasicListItem;
+import com.almuradev.almura.feature.exchange.network.*;
+import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.almuradev.almura.shared.item.BasicVanillaStack;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
@@ -45,6 +32,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,9 +42,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 @Singleton
 @SideOnly(Side.CLIENT)

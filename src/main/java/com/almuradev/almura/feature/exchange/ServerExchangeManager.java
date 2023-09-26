@@ -7,9 +7,6 @@
  */
 package com.almuradev.almura.feature.exchange;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
-
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.exchange.basic.BasicExchange;
 import com.almuradev.almura.feature.exchange.basic.listing.BasicForSaleItem;
@@ -17,13 +14,7 @@ import com.almuradev.almura.feature.exchange.basic.listing.BasicListItem;
 import com.almuradev.almura.feature.exchange.database.ExchangeQueries;
 import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
 import com.almuradev.almura.feature.exchange.listing.ListItem;
-import com.almuradev.almura.feature.exchange.network.ClientboundExchangeGuiResponsePacket;
-import com.almuradev.almura.feature.exchange.network.ClientboundExchangeRegistryPacket;
-import com.almuradev.almura.feature.exchange.network.ClientboundForSaleFilterRequestPacket;
-import com.almuradev.almura.feature.exchange.network.ClientboundForSaleItemsResponsePacket;
-import com.almuradev.almura.feature.exchange.network.ClientboundListItemsResponsePacket;
-import com.almuradev.almura.feature.exchange.network.ClientboundListItemsSaleStatusPacket;
-import com.almuradev.almura.feature.exchange.network.ClientboundTransactionCompletePacket;
+import com.almuradev.almura.feature.exchange.network.*;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.database.DatabaseManager;
 import com.almuradev.almura.shared.database.DatabaseQueue;
@@ -75,25 +66,20 @@ import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 @Singleton
 public final class ServerExchangeManager extends Witness.Impl implements Witness.Lifecycle {
@@ -762,13 +748,13 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                     }
 
                     final Results listItemResults = ExchangeQueries
-                        .createFetchListItemsAndDataFor(seller, false)
+                        .createFetchListItemsAndDataFor(axs.getId(), seller, false)
                         .build(context)
                         .keepStatement(false)
                         .fetchMany();
 
                     final Results forSaleItemResults = ExchangeQueries
-                        .createFetchForSaleItemsFor(seller, false)
+                        .createFetchForSaleItemsFor(axs.getId(), seller, false)
                         .build(context)
                         .keepStatement(false)
                         .fetchMany();
@@ -1390,13 +1376,13 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                     }
 
                     final Results listItemResults = ExchangeQueries
-                        .createFetchListItemsAndDataFor(seller, false)
+                        .createFetchListItemsAndDataFor(axs.getId(), seller, false)
                         .build(context)
                         .keepStatement(false)
                         .fetchMany();
 
                     final Results forSaleItemResults = ExchangeQueries
-                        .createFetchForSaleItemsFor(seller, false)
+                        .createFetchForSaleItemsFor(axs.getId(), seller, false)
                         .build(context)
                         .keepStatement(false)
                         .fetchMany();

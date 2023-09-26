@@ -10,17 +10,17 @@ package com.almuradev.almura.feature.exchange.client.gui;
 import com.almuradev.almura.FeatureSortTypes;
 import com.almuradev.almura.feature.FeatureSortType;
 import com.almuradev.almura.feature.SortType;
+import com.almuradev.almura.feature.exchange.Exchange;
 import com.almuradev.almura.feature.exchange.ExchangeModule;
 import com.almuradev.almura.feature.exchange.ListStatusType;
 import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
-import com.almuradev.almura.feature.exchange.Exchange;
+import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
+import com.almuradev.almura.feature.exchange.listing.ListItem;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.shared.client.ui.component.UIExpandingLabel;
 import com.almuradev.almura.shared.client.ui.component.UISaneTooltip;
 import com.almuradev.almura.shared.feature.FeatureConstants;
-import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
-import com.almuradev.almura.feature.exchange.listing.ListItem;
 import com.almuradev.almura.shared.feature.filter.Direction;
 import com.almuradev.almura.shared.item.VirtualStack;
 import com.almuradev.almura.shared.util.MathUtil;
@@ -51,14 +51,13 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
+import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
 public final class ExchangeScreen extends BasicScreen {
