@@ -34,13 +34,10 @@ final class StoreCommandsCreator {
     private static CommandSpec createManageCommand() {
         return CommandSpec.builder()
             .description(Text.of("Request to manage stores"))
-            .arguments(
-                GenericArguments.optionalWeak(
-                    GenericArguments.requiringPermissionWeak(GenericArguments.player(Text.of("player")), Almura.ID + ".store.manage.other"))
-                )
+            .arguments(GenericArguments.playerOrSource(Text.of("player")))
             .permission(Almura.ID + ".store.manage")
             .executor((src, args) -> {
-                final Player player = args.<Player>getOne("player").orElse((Player) src);
+                final Player player = args.<Player>getOne("player").orElse(null);
                 if (player == null) {
                     return CommandResult.empty();
                 }
@@ -55,14 +52,13 @@ final class StoreCommandsCreator {
     private static CommandSpec createOpenCommand() {
         return CommandSpec.builder()
             .description(Text.of("Request to open a store"))
-            .arguments(GenericArguments.seq(
-                GenericArguments.optionalWeak(
-                    GenericArguments.requiringPermissionWeak(GenericArguments.player(Text.of("player")), Almura.ID + ".store.open.other")), 
-                GenericArguments.string(Text.of("id"))
-            ))
+            .arguments(GenericArguments.seq(GenericArguments.playerOrSource(Text.of("player")), GenericArguments.string(Text.of("id"))))
             .permission(Almura.ID + ".store.open")
             .executor((src, args) -> {
-                final Player player = args.<Player>getOne("player").orElse((Player) src);
+                final Player player = args.<Player>getOne("player").orElse(null);
+                if (player == null) {
+                    return CommandResult.empty();
+                }
 
                 final String id = args.<String>getOne("id").orElse(null);
                 if (id == null) {
