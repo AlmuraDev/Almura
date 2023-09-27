@@ -7,8 +7,6 @@
  */
 package com.almuradev.almura.feature.speed.client.gui;
 
-import com.almuradev.almura.feature.speed.AlmuraSettings;
-import com.almuradev.almura.feature.menu.main.PanoramicMainMenu;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
@@ -28,11 +26,11 @@ import org.lwjgl.input.Keyboard;
 import javax.annotation.Nullable;
 
 @SideOnly(Side.CLIENT)
-public class ApplyTexturePackConfirmGui extends BasicScreen {
+public class AppliedTexturePackGui extends BasicScreen {
 
     private static final int padding = 4;
 
-    public ApplyTexturePackConfirmGui(@Nullable GuiScreen parent) {
+    public AppliedTexturePackGui(@Nullable GuiScreen parent) {
         super(parent, false);
     }
 
@@ -46,15 +44,15 @@ public class ApplyTexturePackConfirmGui extends BasicScreen {
         form.setClosable(false);
         form.setBackgroundAlpha(255);
 
-        final UILabel label0 = new UILabel(this, "We noticed you're not using the preferred texture pack.");
+        final UILabel label0 = new UILabel(this, "We've applied the Almura texture pack.");
         label0.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.0F).build());
         label0.setPosition(0, 10, Anchor.CENTER | Anchor.TOP);
 
-        final UILabel label1 = new UILabel(this, "Do you want to apply the following texture pack?");
+        final UILabel label1 = new UILabel(this, "Please restart the game to continue.");
         label1.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.0F).build());
         label1.setPosition(0, label0.getY() + 15, Anchor.CENTER | Anchor.TOP);
 
-        final UILabel label2 = new UILabel(this, AlmuraSettings.getPreferredTexturePack());
+        final UILabel label2 = new UILabel(this, "Thank you and Welcome to Almura.");
         label2.setFontOptions(FontOptions.builder().from(FontColors.GREEN_FO).shadow(true).scale(1.0F).build());
         label2.setPosition(0, label1.getY() + 15, Anchor.CENTER | Anchor.TOP);
 
@@ -62,18 +60,10 @@ public class ApplyTexturePackConfirmGui extends BasicScreen {
         belowAmountSeparator.setSize(form.getWidth() -5, 1);
         belowAmountSeparator.setPosition(0, -45, Anchor.BOTTOM | Anchor.CENTER);
 
-        final UIButton buttonYes = new UIButtonBuilder(this)
-                .text("Yes")
-                .anchor(Anchor.BOTTOM | Anchor.CENTER)
-                .position(-20, -25)
-                .width(40)
-                .listener(this)
-                .build("button.yes");
-
-        final UIButton buttonNo = new UIButtonBuilder(this)
-            .text("No")
+        final UIButton buttonRestart = new UIButtonBuilder(this)
+                .text(I18n.format("almura.button.restart"))
             .anchor(Anchor.BOTTOM | Anchor.CENTER)
-            .position(20, -25)
+            .position(0, -25)
             .width(40)
             .listener(this)
             .build("button.close");
@@ -90,21 +80,21 @@ public class ApplyTexturePackConfirmGui extends BasicScreen {
                 .listener(this)
                 .build("button.close");
 
-        form.add(buttonClose, label0, label1, label2, aboveCloseSeparator, buttonYes, buttonNo, belowAmountSeparator);
+        form.add(buttonClose, label0, label1, label2, aboveCloseSeparator, buttonRestart, belowAmountSeparator);
 
         addToScreen(form);
+    }
+
+    @Override
+    public void onClose() {
+        this.mc.shutdown();
     }
 
     @Subscribe
     public void onUIButtonClickEvent(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
-            case "button.yes":
-                AlmuraSettings.applyPreferredTexturePack();
-                new AppliedTexturePackGui(null).display();
-                break;
 
             case "button.close":
-                new PanoramicMainMenu(null).display();
                 this.close();
                 break;
         }
