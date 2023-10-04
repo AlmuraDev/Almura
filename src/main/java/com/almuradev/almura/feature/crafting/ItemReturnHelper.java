@@ -99,12 +99,12 @@ public class ItemReturnHelper implements Witness {
 
         for (int i = 0; i < 9; i++) {  // Scan the crafting matrix.
             if (event.craftMatrix.getStackInSlot(i) != null) {
-                returnReusableItem(event.player, event.craftMatrix.getStackInSlot(i).getTranslationKey(), event.craftMatrix.getStackInSlot(i), debug);
+                returnReusableItem(event.player, event.craftMatrix.getStackInSlot(i).getTranslationKey().toUpperCase(), event.craftMatrix.getStackInSlot(i), event.crafting.getTranslationKey(), debug);
             }
         }
     }
 
-    public static void returnReusableItem(EntityPlayer player, String name, ItemStack currentStack, boolean debug) {
+    public static void returnReusableItem(EntityPlayer player, String inputName, ItemStack currentStack, String outputName, boolean debug) {
         if (player != null && player.getEntityWorld().isRemote) {
             return;
         }
@@ -113,10 +113,10 @@ public class ItemReturnHelper implements Witness {
         ItemStack reusableItem;
 
         if (debug) {
-            System.out.println("ItemReturnHelper: Name = " + name.toUpperCase());
+            System.out.println("ItemReturnHelper: Input = " + inputName + " - Output: " + outputName.toUpperCase());
         }
 
-        switch (name.toUpperCase()) {
+        switch (inputName) {
             case "ITEM.ALMURA.NORMAL.TOOL.KNIFE":
             case "ITEM.ALMURA.NORMAL.TOOL.GRINDER":
             case "ITEM.ALMURA.NORMAL.TOOL.GRATER":
@@ -147,6 +147,7 @@ public class ItemReturnHelper implements Witness {
             case "ITEM.ALMURA.NORMAL.INGREDIENT.MATERIALS_SODAWATER":
             case "ITEM.ALMURA.NORMAL.INGREDIENT.MAYONAISE":
             case "ITEM.ALMURA.NORMAL.INGREDIENT.VANILLA_EXTRACT":
+            case "ITEM.ALMURA.FOOD.FOOD.BREAKFAST_SCRAMBLEDEGGS":
                 reusableItem = GameRegistry.makeItemStack("almura:normal/ingredient/glass_cruet", 0, 1, null);
                 break;
 
@@ -307,6 +308,15 @@ public class ItemReturnHelper implements Witness {
             case "ITEM.ALMURA.FOOD.FOOD.SOUP_RICEPORRIDGE":
             case "ITEM.ALMURA.FOOD.FOOD.SOUP_TOMATO":
             case "ITEM.ALMURA.FOOD.FOOD.SOUP_VEGETABLE":
+            case "ITEM.ALMURA.FOOD.FOOD.FARLANDS_SOUP_EGGDROP":
+            case "ITEM.ALMURA.FOOD.FOOD.SOUTHERN_CHILI":
+            case "ITEM.ALMURA.FOOD.FOOD.FARLANDS_RAMEN_SEAFOOD":
+            case "ITEM.ALMURA.FOOD.FOOD.FARLANDS_RAMEN_BEEF":
+            case "ITEM.ALMURA.FOOD.FOOD.FARLANDS_RAMEN_CHICKEN":
+            case "ITEM.ALMURA.FOOD.FOOD.MASHED_POTATOES":
+            case "ITEM.ALMURA.FOOD.FOOD.MASHED_POTATOES_W_BEEF_GRAVY":
+            case "ITEM.ALMURA.FOOD.FOOD.MASHED_POTATOES_W_CHICKEN_GRAVY":
+            case "ITEM.ALMURA.FOOD.FOOD.MASHED_POTATOES_W_PORK_GRAVY":
                 reusableItem = GameRegistry.makeItemStack("minecraft:bowl", 0, 1, null);
                 break;
 

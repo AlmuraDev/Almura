@@ -34,10 +34,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
-
-import javax.annotation.Nullable;
 
 public final class FoodItemImpl extends ItemFood implements FoodItem {
     private final ItemTooltip tooltip = new ItemTooltip.Impl(this);
@@ -103,7 +102,7 @@ public final class FoodItemImpl extends ItemFood implements FoodItem {
             }
 
             // Return Re-Usable Items
-            ItemReturnHelper.returnReusableItem(entityplayer, stack.getTranslationKey(), stack, false);
+            ItemReturnHelper.returnReusableItem(entityplayer, stack.getTranslationKey(), stack, null, false);
         }
 
 
