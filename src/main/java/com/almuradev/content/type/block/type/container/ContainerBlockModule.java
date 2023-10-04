@@ -10,12 +10,14 @@ package com.almuradev.content.type.block.type.container;
 import com.almuradev.content.type.block.BlockGenre;
 import com.almuradev.content.type.block.BlockModule;
 import com.almuradev.content.type.block.type.container.processor.LimitProcessor;
+import com.almuradev.content.type.block.type.container.processor.SlotProcessor;
 
 public final class ContainerBlockModule extends BlockModule.Module {
     @Override
     protected void configure() {
         this.bind(ContainerBlock.Builder.class).to(ContainerBlockBuilder.class);
         this.processors()
-                .only(LimitProcessor.class, BlockGenre.CONTAINER);
+                .only(LimitProcessor.class, BlockGenre.CONTAINER)
+                .only(SlotProcessor.class, BlockGenre.CONTAINER);
     }
 }

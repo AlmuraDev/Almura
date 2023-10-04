@@ -27,6 +27,9 @@ import javax.annotation.Nullable;
 
 public final class MultiSlotTileEntity extends TileEntity {
 
+    private static final String LIMIT_TAG = "Limit";
+    private int limit;
+
     private final MultiSlotItemHandler itemHandler = new MultiSlotItemHandler() {
         @Override
         protected void onContentsChanged(int slot) {
@@ -35,6 +38,7 @@ public final class MultiSlotTileEntity extends TileEntity {
             final World world = MultiSlotTileEntity.this.world;
             final BlockPos pos = MultiSlotTileEntity.this.pos;
             final Block blockType = MultiSlotTileEntity.this.blockType;
+
 
             if (world != null && !world.isRemote) {
                 final IBlockState state = world.getBlockState(pos);
@@ -45,6 +49,10 @@ public final class MultiSlotTileEntity extends TileEntity {
             }
         }
     };
+
+    public MultiSlotTileEntity(int limit) {
+        this.itemHandler.setSlotLimit(limit);
+    }
 
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
@@ -64,6 +72,7 @@ public final class MultiSlotTileEntity extends TileEntity {
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
+        this.limit = compound.getInteger(LIMIT_TAG);
 
         if (compound.hasKey("ForgeCaps")) {
             final NBTTagCompound forgeCaps = compound.getCompoundTag("ForgeCaps");
@@ -78,12 +87,23 @@ public final class MultiSlotTileEntity extends TileEntity {
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         compound = super.writeToNBT(compound);
+        compound.setInteger(LIMIT_TAG, this.limit);
 
         final NBTTagCompound forgeCaps = compound.getCompoundTag("ForgeCaps");
         forgeCaps.setTag(Almura.ID + ":multi_slot", SharedCapabilities.MULTI_SLOT_ITEM_HANDLER_CAPABILITY.writeNBT(this.itemHandler, null));
 
         compound.setTag("ForgeCaps", forgeCaps);
+
         return compound;
+    }
+
+    public void setSizeLimit(int limit) {
+        this.limit = limit;
+    }
+    @Override
+    public boolean hasFastRenderer() {
+        // This should help fast render these since they have no animations.
+        return true;
     }
 
     @Override

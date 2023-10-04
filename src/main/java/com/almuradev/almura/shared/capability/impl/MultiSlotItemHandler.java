@@ -21,7 +21,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nullable;
 
 public class MultiSlotItemHandler extends ItemStackHandler implements IMultiSlotItemHandler {
-
+    private int stackSizeLimit = 64;
     @Override
     public void resize(int slotCount) {
         final NonNullList<ItemStack> stacks = this.stacks;
@@ -34,6 +34,15 @@ public class MultiSlotItemHandler extends ItemStackHandler implements IMultiSlot
             final ItemStack stack = stacks.get(i);
             this.stacks.set(i, stack);
         }
+    }
+
+    @Override
+    public int getSlotLimit(int slot) {
+        return stackSizeLimit;
+    }
+
+    public void setSlotLimit(int size) {
+        this.stackSizeLimit = size;
     }
 
     public static final class Storage implements Capability.IStorage<IMultiSlotItemHandler> {

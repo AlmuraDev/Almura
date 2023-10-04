@@ -15,6 +15,7 @@ import com.almuradev.content.type.block.type.container.state.ContainerBlockState
 
 public final class ContainerBlockBuilder extends AbstractBlockBuilder<ContainerBlock, ContainerBlockStateDefinition, ContainerBlockStateDefinitionBuilder> implements ContainerBlock.Builder {
     int limit;
+    int slots;
 
     public ContainerBlockBuilder() {
         super(BlockGenre.CONTAINER);
@@ -33,5 +34,10 @@ public final class ContainerBlockBuilder extends AbstractBlockBuilder<ContainerB
     @Override
     public void limit(final int limit) {
         this.limit = limit;
+    }
+
+    @Override
+    public void slots(int slots) {
+        this.slots = slots;
     }
 }

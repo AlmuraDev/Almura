@@ -18,5 +18,6 @@ public interface ContainerBlock extends ContentBlock.InInventory {
 
     interface Builder extends ContentBlock.Builder.Single<ContainerBlock, ContainerBlockStateDefinition, ContainerBlockStateDefinitionBuilder> {
         void limit(final int limit);
+        void slots(final int slots);
     }
 }

@@ -14,6 +14,7 @@ import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;
 import com.almuradev.content.type.block.AbstractBlockStateDefinition;
 import com.almuradev.content.type.block.ContentBlock;
 import com.almuradev.content.type.block.mixin.iface.IMixinContentBlock;
+import com.almuradev.content.type.block.type.container.ContainerBlockImpl;
 import com.almuradev.content.type.block.type.crop.CropBlockImpl;
 import com.almuradev.content.type.block.type.flower.FlowerBlockImpl;
 import com.almuradev.content.type.block.type.horizontal.HorizontalBlockImpl;
@@ -47,9 +48,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.asm.mixin.Mixin;
 
-import java.util.Optional;
-
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 @Mixin({
     CropBlockImpl.class,
@@ -60,7 +60,8 @@ import javax.annotation.Nullable;
     NormalBlockImpl.class,
     SaplingBlockImpl.class,
     SlabBlockImpl.class,
-    StairBlockImpl.class
+    StairBlockImpl.class,
+    ContainerBlockImpl.class
 })
 public abstract class MixinContentBlock extends MixinBlock implements ContentBlock, EffectiveOn, IMixinContentBlock, IMixinLazyItemGroup {
     @Nullable private Delegate<ItemGroup> lazyItemGroup;

@@ -110,7 +110,7 @@ public final class StorageBlock extends BlockContainer {
     @Nullable
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
-        final MultiSlotTileEntity mte = new MultiSlotTileEntity();
+        final MultiSlotTileEntity mte = new MultiSlotTileEntity(64);
         final IMultiSlotItemHandler itemHandler = (MultiSlotItemHandler) mte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
         if (this.slotAmount > itemHandler.getSlots()) {
             itemHandler.resize(this.slotAmount);
