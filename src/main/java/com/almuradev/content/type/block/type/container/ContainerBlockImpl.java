@@ -9,6 +9,7 @@ package com.almuradev.content.type.block.type.container;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.shared.capability.IMultiSlotItemHandler;
+import com.almuradev.almura.shared.capability.SharedCapabilities;
 import com.almuradev.almura.shared.capability.impl.MultiSlotItemHandler;
 import com.almuradev.almura.shared.tileentity.MultiSlotTileEntity;
 import com.almuradev.content.type.block.type.container.state.ContainerBlockStateDefinition;
@@ -21,12 +22,17 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 public final class ContainerBlockImpl extends BlockContainer implements ContainerBlock {
@@ -34,6 +40,7 @@ public final class ContainerBlockImpl extends BlockContainer implements Containe
     private final int limit;
     private final int slotAmount;
 
+    private TileEntity containerTe = null;
     ContainerBlockImpl(final ContainerBlockBuilder builder) {
         this(builder, builder.singleState());
         builder.fill(this);
@@ -45,7 +52,6 @@ public final class ContainerBlockImpl extends BlockContainer implements Containe
         this.limit = builder.limit;
         this.slotAmount = builder.slots;
     }
-
 
     @Override
     public ContainerBlockStateDefinition definition(final IBlockState state) {
@@ -66,6 +72,13 @@ public final class ContainerBlockImpl extends BlockContainer implements Containe
         player.openGui(Almura.ID, 0, world, pos.getX(), pos.getY(), pos.getZ());
 
         return true;
+    }
+
+    @Deprecated
+    @Override
+    public float getBlockHardness(final IBlockState state, final World world, final BlockPos pos) {
+        final ContainerBlockStateDefinition definition = this.definition(state);
+        return definition.hardness.isPresent() ? (float) definition.hardness.getAsDouble() : super.getBlockHardness(state, world, pos);
     }
 
     @Override
@@ -128,22 +141,114 @@ public final class ContainerBlockImpl extends BlockContainer implements Containe
     }
 
     @Override
-    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        MultiSlotTileEntity mte = (MultiSlotTileEntity)worldIn.getTileEntity(pos);
-        final IMultiSlotItemHandler itemHandler = (MultiSlotItemHandler) mte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
+        if (player.isSneaking()) {
+            MultiSlotTileEntity mte = (MultiSlotTileEntity)world.getTileEntity(pos);
+            final IMultiSlotItemHandler itemHandler = (MultiSlotItemHandler) mte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 
-        if (mte instanceof MultiSlotTileEntity) {
-            for (int i = 0; i < itemHandler.getSlots(); ++i) {
-                ItemStack itemstack = itemHandler.getStackInSlot(i);
+            if (mte instanceof MultiSlotTileEntity) {
+                for (int i = 0; i < itemHandler.getSlots(); ++i) {
+                    ItemStack itemstack = itemHandler.getStackInSlot(i);
 
-                if (!itemstack.isEmpty()) {
-                    InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), itemstack);
+                    if (!itemstack.isEmpty()) {
+                        if (!world.isRemote) {
+                            InventoryHelper.spawnItemStack(world, pos.getX(), pos.getY(), pos.getZ(), itemstack);
+                        }
+                    }
                 }
+
+                world.updateComparatorOutputLevel(pos, this);
+            }
+        } else {
+            this.onBlockHarvested(world, pos, state, player);
+        }
+        this.containerTe = world.getTileEntity(pos);
+        return world.setBlockState(pos, net.minecraft.init.Blocks.AIR.getDefaultState(), world.isRemote ? 11 : 3);
+    }
+
+    @Override
+    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+        super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
+
+        if (!worldIn.isRemote) {
+            final TileEntity te = worldIn.getTileEntity(pos);
+
+            if (!(te instanceof MultiSlotTileEntity)) {
+                return;
             }
 
-            worldIn.updateComparatorOutputLevel(pos, this);
+            final MultiSlotTileEntity cte = (MultiSlotTileEntity) te;
+
+            addStacksToContainer(stack, cte);
+        }
+    }
+
+    public static void addStacksToContainer(final ItemStack stack, final MultiSlotTileEntity cte) {
+        final IMultiSlotItemHandler itemHandler = (IMultiSlotItemHandler) cte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,
+                null);
+
+        if (itemHandler == null) {
+            return;
         }
 
-        super.breakBlock(worldIn, pos, state);
+        final NBTTagCompound compound = stack.getSubCompound("tag");
+        if (compound == null) {
+            return;
+        }
+        if (compound.hasKey("ForgeCaps")) {
+            final NBTTagCompound forgeCaps = compound.getCompoundTag("ForgeCaps");
+
+            if (forgeCaps.hasKey(Almura.ID + ":multi_slot")) {
+                final NBTBase tag = forgeCaps.getTag(Almura.ID + ":multi_slot");
+                SharedCapabilities.MULTI_SLOT_ITEM_HANDLER_CAPABILITY.readNBT(itemHandler, null, tag);
+            }
+        }
     }
+
+    @Override
+    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+        if (!(world instanceof WorldServer) || ((WorldServer) world).isRemote) {
+            return;
+        }
+
+        final ItemStack toDrop = new ItemStack(this, 1, 0);
+
+        drops.add(toDrop);
+
+        TileEntity te = world.getTileEntity(pos);
+
+        if (te == null) {
+            te = this.containerTe;
+        }
+
+        if (!(te instanceof MultiSlotTileEntity)) {
+            return;
+        }
+
+        final MultiSlotTileEntity cte = (MultiSlotTileEntity) te;
+
+        addContainerToStack(toDrop, cte);
+        this.containerTe = null;
+    }
+
+    private static ItemStack addContainerToStack(final ItemStack targetStack, final MultiSlotTileEntity cte) {
+        final IMultiSlotItemHandler itemHandler = (IMultiSlotItemHandler) cte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,null);
+
+        if (itemHandler == null) {
+            return targetStack;
+        }
+
+        final NBTTagCompound compound = new NBTTagCompound();
+        final NBTTagCompound tagCompound = compound.getCompoundTag("tag");
+        final NBTTagCompound forgeCaps = tagCompound.getCompoundTag("ForgeCaps");
+
+        forgeCaps.setTag(Almura.ID + ":multi_slot", SharedCapabilities.MULTI_SLOT_ITEM_HANDLER_CAPABILITY.writeNBT(itemHandler, null));
+
+        tagCompound.setTag("ForgeCaps", forgeCaps);
+        compound.setTag("tag", tagCompound);
+        targetStack.setTagCompound(compound);
+
+        return targetStack;
+    }
+
 }

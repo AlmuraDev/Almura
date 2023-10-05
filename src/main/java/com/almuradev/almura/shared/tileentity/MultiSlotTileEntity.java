@@ -12,6 +12,7 @@ import com.almuradev.almura.feature.storage.block.StorageBlock;
 import com.almuradev.almura.shared.capability.IMultiSlotItemHandler;
 import com.almuradev.almura.shared.capability.SharedCapabilities;
 import com.almuradev.almura.shared.capability.impl.MultiSlotItemHandler;
+import com.almuradev.content.type.block.type.container.ContainerBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTBase;
@@ -49,7 +50,9 @@ public final class MultiSlotTileEntity extends TileEntity {
             }
         }
     };
-
+    public MultiSlotTileEntity() {
+        this.itemHandler.setSlotLimit(64);
+    }
     public MultiSlotTileEntity(int limit) {
         this.itemHandler.setSlotLimit(limit);
     }
@@ -111,8 +114,14 @@ public final class MultiSlotTileEntity extends TileEntity {
         final IMultiSlotItemHandler itemHandler = (IMultiSlotItemHandler) this.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
         final IBlockState state = this.world.getBlockState(this.pos);
         final Block block = state.getBlock();
+
         if (block instanceof StorageBlock) {
             final int slotCount = ((StorageBlock) block).getSlotCount();
+            itemHandler.resize(slotCount);
+        }
+
+        if (block instanceof ContainerBlock) {
+            final int slotCount = ((ContainerBlock) block).getSlotCount();
             itemHandler.resize(slotCount);
         }
     }

@@ -14,6 +14,7 @@ import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;
 import com.almuradev.content.type.block.AbstractBlockStateDefinition;
 import com.almuradev.content.type.block.ContentBlock;
 import com.almuradev.content.type.block.mixin.iface.IMixinContentBlock;
+import com.almuradev.content.type.block.type.container.ContainerBlock;
 import com.almuradev.content.type.block.type.container.ContainerBlockImpl;
 import com.almuradev.content.type.block.type.crop.CropBlockImpl;
 import com.almuradev.content.type.block.type.flower.FlowerBlockImpl;
@@ -152,11 +153,19 @@ public abstract class MixinContentBlock extends MixinBlock implements ContentBlo
     // Almura Start - Handle drops
     @Override
     public void harvestBlock(final World world, final EntityPlayer player, final BlockPos pos, final IBlockState state, @Nullable final TileEntity te, final ItemStack stack) {
+        if (state.getBlock() instanceof ContainerBlock) {
+            super.harvestBlock(world, player, pos, state, te, stack);
+            return;
+        }
         BlockUtil.handleHarvest(this, world, player, pos, state, te, stack);
     }
 
     @Override
     public void dropBlockAsItemWithChance(final World world, final BlockPos pos, final IBlockState state, final float chance, final int fortune) {
+        if (state.getBlock() instanceof ContainerBlock) {
+            super.dropBlockAsItemWithChance(world, pos, state, chance, fortune);
+            return;
+        }
         BlockUtil.handleDropBlockAsItemWithChance(this, world, pos, state, chance, fortune);
     }
     // Almura End - Handle drops

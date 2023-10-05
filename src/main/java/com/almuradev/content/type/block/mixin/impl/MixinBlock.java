@@ -30,9 +30,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-import java.util.Optional;
-
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 @Mixin(value = Block.class, priority = 998)
 public abstract class MixinBlock implements ContentBlock, IMixinBlock {
@@ -40,9 +39,9 @@ public abstract class MixinBlock implements ContentBlock, IMixinBlock {
     @Shadow public abstract CreativeTabs getCreativeTab();
     @Shadow protected SoundType blockSoundType;
     @Shadow(remap = false) protected ThreadLocal<EntityPlayer> harvesters;
-    @Shadow public abstract void harvestBlock(final World world, final EntityPlayer player, final BlockPos pos, final IBlockState state, @Nullable final TileEntity te, final ItemStack stack);
+    @Shadow public void harvestBlock(final World world, final EntityPlayer player, final BlockPos pos, final IBlockState state, @Nullable final TileEntity te, final ItemStack stack) { }
     @Shadow public void dropBlockAsItem(final World world, final BlockPos pos, final IBlockState state, final int fortune) { }
-    @Shadow public abstract void dropBlockAsItemWithChance(final World world, final BlockPos pos, final IBlockState state, final float chance, final int fortune);
+    @Shadow public void dropBlockAsItemWithChance(final World world, final BlockPos pos, final IBlockState state, final float chance, final int fortune) { }
     @Shadow(remap = false) public SoundType getSoundType(final IBlockState state, final World world, final BlockPos pos, @Nullable final Entity
             entity) { return null; }
     @Shadow public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) { return null; }
