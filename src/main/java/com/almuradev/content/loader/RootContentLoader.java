@@ -26,6 +26,9 @@ import org.slf4j.Logger;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
@@ -33,14 +36,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 @Singleton
 public final class RootContentLoader implements Witness {
     private static final boolean FORCE_SEARCH_JARS = Boolean.getBoolean(ContentConfig.SYSTEM_PROPERTY_PREFIX + "loader.searchJars");
-    public static final String FILESYSTEM_ASSETS = "fs_4";
+    public static final String FILESYSTEM_ASSETS = "fs_5";
     public static final String MANAGED_ASSETS = "managed";
     private final Path assets;
     private final Injector injector;
