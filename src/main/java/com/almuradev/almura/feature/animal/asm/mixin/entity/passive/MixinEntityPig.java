@@ -63,4 +63,15 @@ public abstract class MixinEntityPig extends EntityAnimal {
         this.tasks.addTask(7, new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F));
         this.tasks.addTask(8, new EntityAILookIdle(this));
     }
+
+    /**
+     * @author Dockter
+     * Purpose: overwrite the AT init method to customize the temptations list.
+     */
+    @Overwrite // Intended to bring compatibility to FarmingForBlockHeads.
+    // Note: required to overwrite how EntityPig normally implements this.
+    public boolean isBreedingItem(ItemStack stack) {
+        // Call the super which has our custom handler in it.
+        return super.isBreedingItem(stack);
+    }
 }

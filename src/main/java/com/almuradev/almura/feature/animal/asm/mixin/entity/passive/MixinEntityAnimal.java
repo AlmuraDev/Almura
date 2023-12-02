@@ -6,17 +6,10 @@
  * All Rights Reserved.
  */
 package com.almuradev.almura.feature.animal.asm.mixin.entity.passive;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.passive.EntityChicken;
-import net.minecraft.entity.passive.EntityCow;
-import net.minecraft.entity.passive.EntityOcelot;
-import net.minecraft.entity.passive.EntityPig;
-import net.minecraft.entity.passive.EntityRabbit;
-import net.minecraft.entity.passive.EntitySheep;
-import net.minecraft.entity.passive.EntityWolf;
-import net.minecraft.entity.passive.IAnimals;
+import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -30,9 +23,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
-import java.util.UUID;
-
 import javax.annotation.Nullable;
+import java.util.UUID;
 
 
 @Mixin(EntityAnimal.class)
@@ -77,14 +69,19 @@ public abstract class MixinEntityAnimal extends EntityAgeable implements IAnimal
     /**
      * @author Dockter
      */
-    @Overwrite // Intended to bring compatibility to FarmingForBlockHeads.
+    @Overwrite
+    // Notes:
+    // This method is used by EntityCow and EntityAnimal only.
+    // This method is typically only used when the "processInteract" method is called.
+    // This method is not called within other child classes that extend EntityAnimal and override this method itself.
+    // EntityPig and EntityCow have their own Mixin Overwrite for this functionality.
+
     public boolean isBreedingItem(ItemStack stack) {
         return isCustomBreedingItem(stack);
     }
 
     private boolean isCustomBreedingItem(ItemStack stack) {
         final String itemName = stack.getTranslationKey();
-        //System.out.println("Breed Item: " + itemName);
         final Entity animal = this;
 
         if (animal instanceof EntityCow) {
@@ -101,6 +98,7 @@ public abstract class MixinEntityAnimal extends EntityAgeable implements IAnimal
         }
 
         if (animal instanceof EntityPig) {
+            // Note:  must update MixinEntityPig if you change this check.
             switch (itemName.toUpperCase()) {
                 case "ITEM.ALMURA.FOOD.FOOD.CORN":
                 case "ITEM.ALMURA.FOOD.FOOD.SOYBEAN":
@@ -114,8 +112,8 @@ public abstract class MixinEntityAnimal extends EntityAgeable implements IAnimal
 
         if (animal instanceof EntitySheep) {
             switch (itemName.toUpperCase()) {
-                case "ITEM.ALMURA.FOOD.FOOD.CORN":
-                case "ITEM.ALMURA.FOOD.FOOD.SOYBEAN":
+                case "ITEM.ALMURA.NORMAL.INGREDIENT.OAT":
+                case "ITEM.ALMURA.NORMAL.CROP.ALFALFA_ITEM":
                 case "ITEM.WHEAT":
                     return true;
 
@@ -125,6 +123,7 @@ public abstract class MixinEntityAnimal extends EntityAgeable implements IAnimal
         }
 
         if (animal instanceof EntityChicken) {
+            // Note: must update MixinEntityChicken if you change this check.
             switch (itemName.toUpperCase()) {
                 case "ITEM.ALMURA.FOOD.FOOD.CORN":
                 case "ITEM.ALMURA.FOOD.FOOD.SOYBEAN":
