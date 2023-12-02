@@ -99,10 +99,10 @@ repositories {
         name = "LuckPerms"
         url = "https://repo.lucko.me/"
     }
-    maven {
-        name = 'jitpack'
-        url = 'https://jitpack.io'
-    }
+    //maven {
+    //    name = 'jitpack'
+    //    url = 'https://jitpack.io'
+    //}
     maven {
         name = 'glare'
         url = 'https://repo.glaremasters.me/repository/bloodshot'
