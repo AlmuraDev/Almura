@@ -35,7 +35,7 @@ public class Almura implements com.almuradev.almura.shared.plugin.Plugin {
     public static boolean debug = true;
     public static boolean isShuttingDown = false;
     public static NetworkManager networkManager;
-    public static String buildNumber = "b111";
+    public static String buildNumber = "b112";
 
     @SidedProxy(
             modId = ID,
