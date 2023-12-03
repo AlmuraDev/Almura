@@ -39,6 +39,7 @@ public final class ContainerBlockImpl extends BlockContainer implements Containe
     private final ContainerBlockStateDefinition definition;
     private final int limit;
     private final int slotAmount;
+    private String acceptedItem;
 
     private TileEntity containerTe = null;
     ContainerBlockImpl(final ContainerBlockBuilder builder) {
@@ -51,6 +52,7 @@ public final class ContainerBlockImpl extends BlockContainer implements Containe
         this.definition = definition;
         this.limit = builder.limit;
         this.slotAmount = builder.slots;
+        this.acceptedItem = builder.acceptedItem;
     }
 
     @Override

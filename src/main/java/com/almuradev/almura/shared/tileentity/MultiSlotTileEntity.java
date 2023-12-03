@@ -60,6 +60,8 @@ public final class MultiSlotTileEntity extends TileEntity {
             String blockName =  state.getBlock().getTranslationKey();
             String stackName = stack.getTranslationKey();
 
+            //System.out.println("New: " + stack.getItem().getRegistryName()); // almura:seed/basil_seed
+
             //Todo: look at adding the accepted itemStack to the container content config file?
 
             if (blockName.equalsIgnoreCase("tile.almura.container.agave_seed_barrel")) {
