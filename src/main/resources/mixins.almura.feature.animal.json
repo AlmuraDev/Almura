@@ -10,6 +10,8 @@
         "MixinEntityCow",
         "MixinEntityPig",
         "MixinEntityChicken",
-        "MixinEntitySheep"
+        "MixinEntitySheep",
+        "MixinEntityAIEatGrass",
+        "MixinModelCow"
     ]
 }

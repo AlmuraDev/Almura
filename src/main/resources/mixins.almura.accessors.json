@@ -8,6 +8,7 @@
     "compatibilityLevel": "JAVA_8",
     "mixins": [
         "block.BlockAccessor",
+        "block.BlockCropAccessor",
         "block.BlockLeavesAccessor",
         "item.ItemAccessor",
         "item.ItemBlockAccessor",
@@ -29,6 +30,7 @@
         "client.resources.LanguageManagerAccessor",
         "client.resources.LocaleAccessor",
         "world.biome.BiomeColorHelperAccessor",
-        "client.resources.ResourcePackRepositoryAccessor"
+        "client.resources.ResourcePackRepositoryAccessor",
+
      ]
 }

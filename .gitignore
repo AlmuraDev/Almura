@@ -72,3 +72,4 @@ nb-configuration.xml
 *.ipr
 *.iws
 src/main/generated/
+/build-old

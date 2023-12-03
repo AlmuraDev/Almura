@@ -41,11 +41,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.common.SpongeImplHooks;
 
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Random;
-
-import javax.annotation.Nullable;
 
 @SuppressWarnings("deprecation")
 public final class CropBlockImpl extends BlockCrops implements CropBlock {
@@ -361,8 +360,9 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
 
                 // Can we grow? Yes? Awesome!
                 if (randomValue <= growthChance && this.isGrowthEven(world, pos, age)) {
-                    // If growth will be even, grow
-                    world.setBlockState(pos, this.withAge(age + 1), BlockUpdateFlag.UPDATE_CLIENTS);
+
+                    // Todo: determine why this existed, I don't understand why we would be setting this twice, especially outside of the even check.
+                    //world.setBlockState(pos, this.withAge(age + 1), BlockUpdateFlag.UPDATE_CLIENTS);
 
                     if (ForgeHooks.onCropsGrowPre(world, pos, state, true)) {
                         // If growth will be even, grow
