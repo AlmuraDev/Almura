@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.animal.asm.mixin.entity.passive;
 
+import com.almuradev.almura.asm.mixin.interfaces.IMixinEntityCow;
 import net.minecraft.client.model.ModelCow;
 import net.minecraft.client.model.ModelQuadruped;
 import net.minecraft.entity.Entity;
@@ -24,10 +25,8 @@ public class MixinModelCow extends ModelQuadruped {
 
     public void setLivingAnimations(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTickTime) {
         super.setLivingAnimations(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTickTime);
-        // Todo:  This doesn't work because I'm injecting getHeadTotationPointY and the proceding method in MixinEntityCow and you cant reference it directly.
-
-        //this.head.rotationPointY = 6.0F + ((EntityCow)entitylivingbaseIn).getHeadRotationPointY(partialTickTime) * 9.0F;
-        //this.headRotationAngleX = ((EntityCow)entitylivingbaseIn).getHeadRotationAngleX(partialTickTime);
+        this.head.rotationPointY = 2.0F + ((IMixinEntityCow)entitylivingbaseIn).getHeadRotationPointY(partialTickTime) * 5.0F;
+        this.headRotationAngleX = ((IMixinEntityCow)entitylivingbaseIn).getHeadRotationAngleX(partialTickTime);
     }
 
     public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {

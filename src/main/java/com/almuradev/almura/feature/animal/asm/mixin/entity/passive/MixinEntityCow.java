@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.animal.asm.mixin.entity.passive;
 
+import com.almuradev.almura.asm.mixin.interfaces.IMixinEntityCow;
 import com.google.common.collect.Sets;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.passive.EntityAnimal;
@@ -28,7 +29,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 import java.util.Set;
 
 @Mixin(EntityCow.class)
-public abstract class MixinEntityCow extends EntityAnimal {
+public abstract class MixinEntityCow extends EntityAnimal implements IMixinEntityCow {
 
     private EntityAIEatGrass entityAIEatGrass;
     private int cowTimer;
