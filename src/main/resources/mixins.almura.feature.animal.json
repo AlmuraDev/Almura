@@ -11,7 +11,9 @@
         "MixinEntityPig",
         "MixinEntityChicken",
         "MixinEntitySheep",
-        "MixinEntityAIEatGrass",
+        "MixinEntityAIEatGrass"
+    ],
+    "client": [
         "MixinModelCow"
     ]
 }
