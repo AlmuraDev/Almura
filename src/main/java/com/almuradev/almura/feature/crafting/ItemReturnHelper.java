@@ -112,8 +112,20 @@ public class ItemReturnHelper implements Witness {
         int damage = 0;
         ItemStack reusableItem;
 
+        if (inputName != null)
+            inputName = inputName.toUpperCase();
+
+        if (outputName != null)
+            outputName = outputName.toUpperCase();
+
         if (debug) {
-            System.out.println("ItemReturnHelper: Input = " + inputName + " - Output: " + outputName.toUpperCase());
+            if (inputName != null) {
+                System.out.println("ItemReturnHelper: Input = " + inputName);
+            }
+
+            if (outputName != null) {
+                System.out.println("ItemReturnHelper: Output: " + outputName);
+            }
         }
 
         switch (inputName) {

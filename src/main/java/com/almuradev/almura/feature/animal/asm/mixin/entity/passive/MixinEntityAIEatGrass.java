@@ -60,7 +60,7 @@ public abstract class MixinEntityAIEatGrass extends EntityAIBase {
         boolean executeTask = false;
 
         // Cows
-        if (this.grassEaterEntity instanceof EntityCow && this.grassEaterEntity.getRNG().nextInt(this.grassEaterEntity.isChild() ? 25 : 50) == 0) {
+        if (this.grassEaterEntity instanceof EntityCow && this.grassEaterEntity.getRNG().nextInt(this.grassEaterEntity.isChild() ? 50 : 150) == 0) {
             executeTask = true;
         }
 
