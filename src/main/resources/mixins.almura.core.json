@@ -20,6 +20,7 @@
         "client.gui.MixinGuiOptions",
         "client.renderer.tileentity.MixinRenderItemFrame",
         "client.renderer.tileentity.MixinTileEntitySignRenderer",
-        "client.renderer.tileentity.MixinTileEntityChestRenderer"
+        "client.renderer.tileentity.MixinTileEntityChestRenderer",
+        "client.MixinChunkProviderClient"
     ]
 }

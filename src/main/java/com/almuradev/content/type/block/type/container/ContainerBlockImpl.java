@@ -151,7 +151,6 @@ public final class ContainerBlockImpl extends BlockContainer implements Containe
             if (mte instanceof MultiSlotTileEntity) {
                 for (int i = 0; i < itemHandler.getSlots(); ++i) {
                     ItemStack itemstack = itemHandler.getStackInSlot(i);
-
                     if (!itemstack.isEmpty()) {
                         if (!world.isRemote) {
                             InventoryHelper.spawnItemStack(world, pos.getX(), pos.getY(), pos.getZ(), itemstack);

@@ -70,4 +70,7 @@ public final class GeneralCategory {
 
     @Setting(value = "display-guide-on-login", comment = "When enabled the Guide window will open automatically upon server login.")
     public boolean displayGuideOnLogin = true;
+
+    @Setting(value = "extended-view", comment = "When enabled client will render all chunks in view distance once loaded regardless of server view distance.")
+    public boolean extendedView = false;
 }

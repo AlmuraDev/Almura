@@ -7,11 +7,11 @@
  */
 package com.almuradev.almura.feature.menu;
 
-import com.almuradev.almura.feature.speed.AlmuraSettings;
 import com.almuradev.almura.asm.ClientStaticAccess;
 import com.almuradev.almura.core.client.config.ClientConfiguration;
 import com.almuradev.almura.core.client.config.category.GeneralCategory;
 import com.almuradev.almura.feature.hud.HUDType;
+import com.almuradev.almura.feature.speed.AlmuraSettings;
 import com.almuradev.toolbox.config.map.MappedConfiguration;
 import com.google.common.base.Converter;
 import com.google.common.eventbus.Subscribe;
@@ -35,9 +35,8 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.Arrays;
-
 import javax.annotation.Nullable;
+import java.util.Arrays;
 
 @SideOnly(Side.CLIENT)
 public final class SimpleOptionsMenu extends BasicScreen {
@@ -147,6 +146,14 @@ public final class SimpleOptionsMenu extends BasicScreen {
         checkboxDisplayGuideOnLogin.register(this);
         this.updatePosition(checkboxDisplayGuideOnLogin, Anchor.LEFT);
 
+        final boolean extendedView = general.extendedView;
+        final UICheckBox checkboxExtendedView = new UICheckBox(this);
+        checkboxExtendedView.setText(TextFormatting.WHITE + "Enable/Disable Extended View");
+        checkboxExtendedView.setChecked(extendedView);
+        checkboxExtendedView.setName("checkbox.extended-view");
+        checkboxExtendedView.register(this);
+        this.updatePosition(checkboxExtendedView, Anchor.LEFT);
+
         // Reset for new column
         this.lastComponent = null;
 
@@ -241,7 +248,7 @@ public final class SimpleOptionsMenu extends BasicScreen {
 
         optionsContainer.add(this.buttonOptimized, this.buttonHudType, this.sliderOriginHudOpacity, checkboxWorldCompassWidget, checkboxLocationWidget,
                 checkboxNumericHUDValues, checkboxDisplayNames, checkboxDisplayHealthbars, checkboxDisableOffhandTorchPlacement, checkboxDisplayGuideOnLogin,
-                sliderChestDistance, sliderSignTextDistance, sliderItemFrameDistance, sliderPlayerNameRenderDistance,
+                checkboxExtendedView, sliderChestDistance, sliderSignTextDistance, sliderItemFrameDistance, sliderPlayerNameRenderDistance,
                 sliderEnemyNameRenderDistance, sliderAnimalNameRenderDistance, buttonDone);
         addToScreen(optionsContainer);
     }
@@ -344,7 +351,9 @@ public final class SimpleOptionsMenu extends BasicScreen {
             case "checkbox.display_guide_on_login":
                 configuration.general.displayGuideOnLogin = (boolean) event.getNewValue();
                 break;
-
+            case "checkbox.extended-view":
+                configuration.general.extendedView = (boolean) event.getNewValue();
+                break;
         }
 
         saveAndLoad();
