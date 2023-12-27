@@ -72,7 +72,7 @@ final class ExchangeCommandsCreator {
                     return CommandResult.success();
                 }
 
-                if (!player.hasPermission(axs.getPermission())) {
+                if (!player.hasPermission(axs.getPermission() + ".open")) {
                     notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Exchange"), Text.of("You do not have permission!"), 5);
                     return CommandResult.success();
                 }

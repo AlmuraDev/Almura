@@ -219,14 +219,13 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
     void openExchangeSpecific(final Player player, final Exchange axs) {
         checkNotNull(player);
         checkNotNull(axs);
-
-        if (!player.hasPermission(axs.getPermission())) {
+        if (!player.hasPermission(axs.getPermission() + ".open")) {
             this.notificationManager.sendPopupNotification(player, Text.of(TextColors.RED, "Exchange"), Text.of("You do not have permission "
               + "to open this exchange!"), 5);
             return;
         }
 
-        this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.SPECIFIC, axs.getId(), this.getListingsLimit(player)));
+        this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.SPECIFIC, axs.getId(), this.getListingsLimit(player, axs)));
 
         if (!axs.isLoaded()) {
             this.playerSpecificInitiatorIds.add(player.getUniqueId());
@@ -289,9 +288,14 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                     + "exchange registry...", player.getName(), id);
             this.syncExchangeRegistryTo(player);
             return;
+        } else {
+            if (getListingsLimit(player, axs) > 0) {
+                // Check specific axs for permissions and slot limit.  If returned value is greater than zero, proceed.
+                this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.SPECIFIC_OFFER, id));
+            } else {
+                this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("You lack sufficient permissions *slots* to list anything!"));
+            }
         }
-
-        this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.SPECIFIC_OFFER, id));
     }
 
     public void handleExchangeAdd(final Player player, final String id, final String name, final String permission, final boolean isHidden) {
@@ -951,7 +955,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             return;
         }
 
-        if (forSaleItems != null && forSaleItems.size() + 1 > this.getListingsLimit(player)) {
+        if (forSaleItems != null && forSaleItems.size() + 1 > this.getListingsLimit(player, axs)) {
             this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("You have reached your listing limit."));
             return;
         }
@@ -1518,40 +1522,41 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         return forSaleItems;
     }
 
-    private int getListingsLimit(final Player player) {
+    private int getListingsLimit(final Player player, final Exchange axs) {
         // TODO Do this better when released standalone
         int slots = 0;
+        String axsBasePermission = axs.getPermission();
 
-        if (player.hasPermission("almura.exchange.admin")) {
+        if (player.hasPermission(axsBasePermission + "admin")) {
             return 1000000;
         }
 
-        if (player.hasPermission("almura.exchange.slots.5000")) {
+        if (player.hasPermission(axsBasePermission + ".slots.5000")) {
             return 5000;
         }
 
-        if (player.hasPermission("almura.exchange.slots.500")) {
+        if (player.hasPermission(axsBasePermission + ".slots.500")) {
             return 500;
         }
 
-        if (player.hasPermission("almura.exchange.slots.100")) {
+        if (player.hasPermission(axsBasePermission + ".slots.100")) {
             return 100;
         }
 
-        if (player.hasPermission("almura.exchange.slots.50")) {
+        if (player.hasPermission(axsBasePermission + ".slots.50")) {
             return 50;
         }
 
-        if (player.hasPermission("almura.exchange.slots.25")) {
+        if (player.hasPermission(axsBasePermission + "slots.25")) {
             return 25;
         }
 
-        if (player.hasPermission("almura.exchange.slots.10")) {
+        if (player.hasPermission(axsBasePermission + ".slots.10")) {
             return 10;
         }
 
         if (slots == 0) {
-            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("You lack sufficient permissions *slots* to list anything!"));
+            //this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("You lack sufficient permissions *slots* to list anything!"));
         }
 
         return slots;
