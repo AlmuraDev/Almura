@@ -1093,10 +1093,10 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                                     sellerForSaleItems.remove(forSaleItem);
 
                                     found.setForSaleItem(null);
-                                    this.logger.info("Admin '{}' delisted item '{}' for exchange '{}'", player.getName(), listItemRecNo, id);
+                                    this.logger.info("Admin '{}' delisted item '{}' for '{}' on exchange '{}'", player.getName(), found.getSellerName().get(), listItemRecNo, id);
 
                                     // Send the updated list to the client if for some reason the seller and player are the same person.
-                                    if (found.getSeller() == player.getUniqueId()) {
+                                    if (found.getSeller().equals(player.getUniqueId())) {
                                         this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), sellerForSaleItems, null));
                                     }
 
@@ -1360,7 +1360,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         final UUID buyer = player.getUniqueId();
 
         // Disabling this check for now, that way a player can purchase from their own Exchange.
-        
+
         /*
         if (buyer.equals(seller)) {
         //    this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("You cannot purchase your own items."));

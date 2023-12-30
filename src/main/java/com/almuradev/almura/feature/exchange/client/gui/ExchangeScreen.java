@@ -54,10 +54,7 @@ import org.slf4j.Logger;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @SideOnly(Side.CLIENT)
 public final class ExchangeScreen extends BasicScreen {
@@ -354,7 +351,6 @@ public final class ExchangeScreen extends BasicScreen {
             form.add(searchContainer, buyContainer);
         }
         addToScreen(form);
-
         this.itemDisplayNameSearchBox.focus();
     }
 
@@ -681,10 +677,11 @@ public final class ExchangeScreen extends BasicScreen {
 
             int maxPlayerTextWidth = 0;
 
-            if (limit > 0) {
+            boolean isSeller = Minecraft.getMinecraft().player.getUniqueID().equals(item.getListItem().getSeller());
+
+            if (limit > 0 && !isSeller) {
                 maxPlayerTextWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth("9999999999999999");
             }
-
 
             this.sellerLabel = new UILabel(gui, TextFormatting.GRAY + "" + TextFormatting.ITALIC
               + this.item.getListItem().getSellerName().orElse(I18n.format("almura.feature.common.text.unknown")));
@@ -706,11 +703,13 @@ public final class ExchangeScreen extends BasicScreen {
                     - maxPlayerTextWidth
                     - 10;
 
-            if (limit > 0) {
+            if (limit > 0 && !isSeller) {
                 this.add(this.sellerLabel, this.priceLabel);
             } else {
                 this.add(this.priceLabel);
+                this.setBorder(FontColors.AQUA, 1, 255);
             }
+
             this.refreshDisplayName();
         }
     }
