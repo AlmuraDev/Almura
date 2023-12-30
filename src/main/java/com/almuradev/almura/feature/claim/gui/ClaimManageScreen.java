@@ -8,12 +8,7 @@
 package com.almuradev.almura.feature.claim.gui;
 
 import com.almuradev.almura.feature.claim.ClientClaimManager;
-import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiAbandonRequestPacket;
-import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiForSaleRequestPacket;
-import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiSaveRequestPacket;
-import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiSetSpawnRequestPacket;
-import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiToggleDenyMessagesRequestPacket;
-import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiToggleVisualsRequestPacket;
+import com.almuradev.almura.feature.claim.network.*;
 import com.almuradev.almura.feature.hud.HeadUpDisplay;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.google.common.eventbus.Subscribe;
@@ -40,11 +35,10 @@ import org.lwjgl.input.Mouse;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 
+import javax.inject.Inject;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
-
-import javax.inject.Inject;
 
 @SideOnly(Side.CLIENT)
 public final class ClaimManageScreen extends BasicScreen {
@@ -249,16 +243,6 @@ public final class ClaimManageScreen extends BasicScreen {
         this.claimTaxBalanceField.setPosition(125, this.claimTaxBalanceLabel.getY() - 2, Anchor.LEFT | Anchor.TOP);
         this.claimTaxBalanceField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
-        this.claimForSaleLabel = new UILabel(this, "<- Claim is For Sale ->");
-        this.claimForSaleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
-        this.claimForSaleLabel.setPosition(0, 0, Anchor.CENTER | Anchor.BOTTOM);
-        this.claimForSaleLabel.setVisible(true);
-        this.claimForSaleLabel.setFontOptions(FontOptions.builder()
-            .from(FontColors.GREEN_FO)
-            .shadow(false)
-            .scale(1.2F)
-            .build());
-
         this.forSaleLabel = new UILabel(this, "For Sale Price:");
         this.forSaleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         this.forSaleLabel.setPosition(15, claimTaxBalanceLabel.getY() + 20, Anchor.LEFT | Anchor.TOP);
@@ -271,7 +255,7 @@ public final class ClaimManageScreen extends BasicScreen {
         this.forSalePriceField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
         this.econArea.add(econSeparator, econSeparator, econTitleLabel, claimValueLabel, this.claimValueField, this.claimTaxLabel,
-            this.claimTaxField, this.claimForSaleLabel, this.claimTaxBalanceLabel, this.claimTaxBalanceField, this.claimSizeLabel,
+            this.claimTaxField, this.claimTaxBalanceLabel, this.claimTaxBalanceField, this.claimSizeLabel,
             this.claimSizeField, this.forSaleLabel, this.forSalePriceField, this.taxRateLabel, this.claimTaxRateField);
 
         // Functions Container
@@ -332,7 +316,17 @@ public final class ClaimManageScreen extends BasicScreen {
             .visible(true)
             .build("button.setspawnlocation");
 
-        this.functionsArea.add(claimFunctionsLabel, functionsSeparator, buttonAbandon, buttonSetForSale, buttonSetSpawnLocation, buttonVisuals);
+        this.claimForSaleLabel = new UILabel(this, "Claim For Sale");
+        this.claimForSaleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
+        this.claimForSaleLabel.setPosition(0, 0, Anchor.CENTER | Anchor.BOTTOM);
+        this.claimForSaleLabel.setVisible(true);
+        this.claimForSaleLabel.setFontOptions(FontOptions.builder()
+                .from(FontColors.GREEN_FO)
+                .shadow(false)
+                .scale(1.2F)
+                .build());
+
+        this.functionsArea.add(claimFunctionsLabel, functionsSeparator, buttonAbandon, buttonSetForSale, buttonSetSpawnLocation, buttonVisuals, claimForSaleLabel);
 
         this.showWarningsCheckbox = new UICheckBox(this);
         this.showWarningsCheckbox.setText(TextFormatting.WHITE + "Show Permission Denied Messages");
@@ -400,8 +394,7 @@ public final class ClaimManageScreen extends BasicScreen {
                 break;
 
             case "button.toggleforsale":
-                Double value = Double.valueOf(this.forSalePriceField.getText().replace("$","").replace("§b","").trim());
-
+                Double value = Double.valueOf(this.forSalePriceField.getText().replaceAll("[^0-9.]", ""));
                 if (!clientClaimManager.isWilderness) {
                     if (!clientClaimManager.isForSale) {
                         BasicMessageBox.showDialog(this, "List Claim For Sale",
@@ -466,9 +459,6 @@ public final class ClaimManageScreen extends BasicScreen {
         if (closeOnAbandon) {
             this.close();
         }
-
-        this.forSaleLabel.setVisible(clientClaimManager.isForSale);
-        this.forSalePriceField.setVisible(clientClaimManager.isForSale);
 
         final DecimalFormat dFormat = new DecimalFormat("###,###,##0.00");
         this.claimForSaleLabel.setVisible(clientClaimManager.isForSale);
