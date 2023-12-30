@@ -345,8 +345,14 @@ public final class ExchangeScreen extends BasicScreen {
 
         listableItemsContainer.add(listableItemsLabel, listTopLine, this.listItemList, this.buttonList, this.labelLimit, buttonOffer, listBottomLine);
 
-        form.add(searchContainer, buyContainer, listableItemsContainer);
-
+        if (limit > 0) {
+            // Display full Exchange window with List Contianer
+            form.add(searchContainer, buyContainer, listableItemsContainer);
+        } else {
+            // Display only half the Exchange Window, no List Container because the player can't list things here
+            form.setWidth(301);
+            form.add(searchContainer, buyContainer);
+        }
         addToScreen(form);
 
         this.itemDisplayNameSearchBox.focus();
