@@ -224,6 +224,7 @@ public class GuidePageViewScreen extends BasicScreen {
     }
 
     public void refreshPage() {
+        Keyboard.enableRepeatEvents(true);
         this.snapshotCursor();
         this.tbContent.getTextBox().setText(TextUtil.asFriendlyText(manager.getPage() == null ? "" : manager.getPage().getContent()));
         this.tbContent.getTextBox().getCursorPosition().jumpToBeginning();
