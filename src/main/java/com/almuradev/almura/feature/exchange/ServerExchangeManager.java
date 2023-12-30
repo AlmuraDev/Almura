@@ -1359,10 +1359,13 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         final UUID seller = found.getSeller();
         final UUID buyer = player.getUniqueId();
 
-        //if (buyer.equals(seller)) {
+        // Disabling this check for now, that way a player can purchase from their own Exchange.
+        
+        /*
+        if (buyer.equals(seller)) {
         //    this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("You cannot purchase your own items."));
         //    return;
-        //}
+        }*/
 
         final UniqueAccount sellerAccount = economyService.getOrCreateAccount(seller).orElse(null);
         if (sellerAccount == null) {
