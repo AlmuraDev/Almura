@@ -18,11 +18,8 @@ import com.griefdefender.api.claim.Claim;
 import com.griefdefender.api.claim.TrustTypes;
 import com.griefdefender.api.data.PlayerData;
 import com.griefdefender.api.event.*;
-//import com.griefdefender.lib.kyori.adventure.text.Component;
-//import com.griefdefender.lib.kyori.adventure.text.TextComponent;
-//import com.griefdefender.lib.kyori.adventure.text.serializer.ComponentSerializer;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import com.griefdefender.lib.kyori.adventure.text.Component;
+import com.griefdefender.lib.kyori.adventure.text.TextComponent;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.event.group.GroupDataRecalculateEvent;
 import net.minecraftforge.fml.server.FMLServerHandler;
@@ -45,12 +42,10 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.common.SpongeImplHooks;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.List;
+import java.util.UUID;
 
 @Singleton
 public final class ServerClaimManager implements Witness {
@@ -155,7 +150,7 @@ public final class ServerClaimManager implements Witness {
         // Lookup claim where player or players is standing
         if (claim == null) {
             if (player != null) {
-                claim = GriefDefender.getCore().getClaimManager(player.getWorld().getUniqueId()).getClaimAt(player.getLocation().getPosition().toInt());
+                claim = GriefDefender.getCore().getClaimManager(player.getWorld().getUniqueId()).getClaimAt(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
             }
             if (players != null) {
                 for (UUID playerUUID : players) {
@@ -196,7 +191,7 @@ public final class ServerClaimManager implements Witness {
         if (player == null && players == null && claim == null && everyone) {
             for (final Player onlinePlayer : Sponge.getServer().getOnlinePlayers()) {
                 if (onlinePlayer != null && onlinePlayer.getWorld() != null) {
-                    claim = GriefDefender.getCore().getClaimManager(onlinePlayer.getWorld().getUniqueId()).getClaimAt(onlinePlayer.getLocation().getPosition().toInt());
+                    claim = GriefDefender.getCore().getClaimManager(onlinePlayer.getWorld().getUniqueId()).getClaimAt(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
                     if (claim != null) {
                         final Claim finalClaim = claim;
                         Task.builder().delayTicks(10).execute(t -> this.sendUpdate(onlinePlayer, finalClaim)).submit(this.container);
@@ -221,7 +216,7 @@ public final class ServerClaimManager implements Witness {
             if (GriefDefender.getPermissionManager() != null) {
                 if (claim == null) {
                     // This is intended to catch when a delayed task is sent to this method and claim is purposely left null.
-                    claim = GriefDefender.getCore().getClaimManager(player.getWorld().getUniqueId()).getClaimAt(player.getLocation().getPosition().toInt());
+                    claim = GriefDefender.getCore().getClaimManager(player.getWorld().getUniqueId()).getClaimAt(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
                 }
                 if (claim != null) {
                     boolean isClaim = true;
@@ -380,7 +375,7 @@ public final class ServerClaimManager implements Witness {
             this.serverNotificationManager
                 .sendPopupNotification(player, notificationTitle, Text.of("Invalid location sent to server.  Changes not saved!"), 5);
         } else {
-            final Claim claim = GriefDefender.getCore().getClaimManager(player.getWorld().getUniqueId()).getClaimAt(location.getBlockPosition());
+            final Claim claim = GriefDefender.getCore().getClaimManager(player.getWorld().getUniqueId()).getClaimAt(location.getBlockX(), location.getBlockY(), location.getBlockZ());
             if (claim != null) {
                 return claim;
             }
@@ -477,7 +472,7 @@ public final class ServerClaimManager implements Witness {
         if (SpongeImplHooks.isDeobfuscatedEnvironment()) {
             this.network.sendTo(player, new ClientboundClaimGuiResponsePacket(true, true, true));
         } else {
-            final Claim claim = GriefDefender.getCore().getClaimManager(player.getWorld().getUniqueId()).getClaimAt(player.getLocation().getBlockPosition());
+            final Claim claim = GriefDefender.getCore().getClaimManager(player.getWorld().getUniqueId()).getClaimAt(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
             if (claim != null) {
                 sendUpdate(player, claim);
             }
