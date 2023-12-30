@@ -296,7 +296,7 @@ public final class ServerClaimManager implements Witness {
                                 UUID accountID = claim.getEconomyAccountId();
                                 if (!(accountID == null)) {
                                     final UniqueAccount claimAccount = service.getOrCreateAccount(accountID).orElse(null);
-                                    claimEconBalance = claimAccount.getBalance(currency).doubleValue();
+                                    claimEconBalance = claimAccount != null ? claimAccount.getBalance(currency).doubleValue() : 0;
                                 }
                             }
 
@@ -386,8 +386,7 @@ public final class ServerClaimManager implements Witness {
     public double claimTaxRate(final Claim claim) {
         if (claim != null) {
             PlayerData playerData = GriefDefender.getCore().getPlayerData(claim.getWorldUniqueId(), claim.getOwnerUniqueId());
-            final double taxRate = playerData.getTaxRate(claim.getType());
-            return taxRate;
+            return playerData != null ? playerData.getTaxRate(claim.getType()) : 0;
         }
         return 0;
     }
@@ -395,9 +394,8 @@ public final class ServerClaimManager implements Witness {
     public double claimTaxes(final Claim claim) {
         if (claim != null) {
             PlayerData playerData = GriefDefender.getCore().getPlayerData(claim.getWorldUniqueId(), claim.getOwnerUniqueId());
-            final double taxRate = playerData.getTaxRate(claim.getType());
-            final double taxOwed = claim.getClaimBlocks() * taxRate;
-            return taxOwed;
+            final double taxRate = playerData != null ? playerData.getTaxRate(claim.getType()) : 0;
+            return claim.getClaimBlocks() * taxRate;
         }
         return 0;
     }
