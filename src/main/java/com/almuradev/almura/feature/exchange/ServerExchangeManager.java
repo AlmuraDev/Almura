@@ -1617,8 +1617,11 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                 .orElse(null);
 
             if (found == null) {
-                this.logger.error("A for sale listing at record number '{}' is being loaded but the listing no longer exists. Somehow an entity has"
-                    + " tampered with the structure of the database. Report to an AlmuraDev developer ASAP.", recNo);
+                // This check shouldn't be required, result contains the entire exchange item list for every exchange.
+                // Whereas ListItems is only the exchange that was loaded.
+
+                //this.logger.error("A for sale listing at record number '{}' is being loaded but the listing no longer exists. Somehow an entity has"
+                //    + " tampered with the structure of the database. Report to an AlmuraDev developer ASAP.", recNo);
             } else {
                 final Timestamp created = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.CREATED);
                 final BigDecimal price = record.getValue(AxsForSaleItem.AXS_FOR_SALE_ITEM.PRICE);
