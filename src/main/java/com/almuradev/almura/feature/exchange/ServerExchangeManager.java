@@ -1004,6 +1004,113 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             .submit(this.container);
     }
 
+    public void handleAdminDelistForSaleItem(final Player player, final String id, final int listItemRecNo) {
+        checkNotNull(player);
+        checkNotNull(id);
+        checkState(listItemRecNo >= 0);
+
+        final Exchange axs = this.getExchange(id).orElse(null);
+        if (axs == null) {
+            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical error encountered, check the "
+                    + "server console for more details!"));
+            this.logger.error("Admin '{}' attempted to de-list list item '{}' for exchange '{}' but the server has no knowledge of it. Syncing "
+                    + "exchange registry...", player.getName(), listItemRecNo, id);
+            this.syncExchangeRegistryTo(player);
+            return;
+        }
+
+        if (!player.hasPermission(axs.getPermission() +".admin")) {
+            return;
+        }
+
+        ListItem findItem = null;
+
+        for (final Map.Entry<UUID, List<ListItem>> kv : axs.getListItems().entrySet()) {
+            final ListItem listItem = kv.getValue().stream().filter(item -> item.getRecord() == listItemRecNo).findAny().orElse(null);
+            if (listItem != null) {
+                findItem = listItem;
+                break;
+            }
+        }
+
+        final ListItem found = findItem;
+
+        if (found == null) {
+            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical error encountered, check the "
+                    + "server console for more details!"));
+            this.logger.error("Admin '{}' attempted to de-list list item '{}' for exchange '{}' but the server has no record of the listing. "
+                    + "Syncing list items...", player.getName(), listItemRecNo, id);
+            return;
+        }
+
+        final ForSaleItem forSaleItem = found.getForSaleItem().orElse(null);
+        final List<ForSaleItem> sellerForSaleItems = axs.getForSaleItemsFor(found.getSeller()).orElse(null);
+
+        if (forSaleItem == null) {
+            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical error encountered, check the "
+                    + "server console for more details!"));
+            this.logger.error("Admin '{}' attempted to de-list list item '{}' for exchange '{}' but the server doesn't have a listing for "
+                    + "that item. Syncing list items sale status...", player.getName(), listItemRecNo, id);
+            return;
+        }
+
+        if (sellerForSaleItems == null) {
+            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical error encountered, check the "
+                    + "server console for more details!"));
+            this.logger.error("Admin '{}' attempted to de-list list item '{}' for exchange '{}' but the server has no record of any listings for "
+                    + "that player. Syncing list items sale status...", player.getName(), listItemRecNo, id);
+            this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(id, null, null));
+            return;
+        }
+
+        this.scheduler
+                .createTaskBuilder()
+                .async()
+                .execute(() -> {
+                    try (final DSLContext context = this.databaseManager.createContext(true)) {
+                        final int result = ExchangeQueries
+                                .createUpdateForSaleItemIsHidden(forSaleItem.getRecord(), true)
+                                .build(context)
+                                .keepStatement(false)
+                                .execute();
+
+                        if (result == 0) {
+                            this.logger.error("Admin '{}' attempted to de-list list item '{}' for exchange '{}' to the database but it failed. "
+                                    + "Discarding changes...", player.getName(), listItemRecNo, id);
+                            return;
+                        }
+
+                        ExchangeQueries
+                                .createUpdateListItemLastKnownPrice(listItemRecNo, forSaleItem.getPrice())
+                                .build(context)
+                                .execute();
+
+                        this.scheduler
+                                .createTaskBuilder()
+                                .execute(() -> {
+                                    found.setLastKnownPrice(forSaleItem.getPrice());
+
+                                    sellerForSaleItems.remove(forSaleItem);
+
+                                    found.setForSaleItem(null);
+                                    this.logger.info("Admin '{}' delisted item '{}' for exchange '{}'", player.getName(), listItemRecNo, id);
+
+                                    // Send the updated list to the client if for some reason the seller and player are the same person.
+                                    if (found.getSeller() == player.getUniqueId()) {
+                                        this.network.sendTo(player, new ClientboundListItemsSaleStatusPacket(axs.getId(), sellerForSaleItems, null));
+                                    }
+
+                                    this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(axs.getId()));
+                                })
+                                .submit(this.container);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                })
+                .submit(this.container);
+
+    }
+
     public void handleDelistForSaleItem(final Player player, final String id, final int listItemRecNo) {
         checkNotNull(player);
         checkNotNull(id);
@@ -1252,10 +1359,10 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         final UUID seller = found.getSeller();
         final UUID buyer = player.getUniqueId();
 
-        if (buyer.equals(seller)) {
-            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("You cannot purchase your own items."));
-            return;
-        }
+        //if (buyer.equals(seller)) {
+        //    this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("You cannot purchase your own items."));
+        //    return;
+        //}
 
         final UniqueAccount sellerAccount = economyService.getOrCreateAccount(seller).orElse(null);
         if (sellerAccount == null) {
@@ -1527,7 +1634,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
         int slots = 0;
         String axsBasePermission = axs.getPermission();
 
-        if (player.hasPermission(axsBasePermission + "admin")) {
+        if (player.hasPermission(axsBasePermission + ".admin")) {
             return 1000000;
         }
 

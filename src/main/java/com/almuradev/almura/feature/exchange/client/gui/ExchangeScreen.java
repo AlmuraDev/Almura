@@ -359,6 +359,16 @@ public final class ExchangeScreen extends BasicScreen {
     }
 
     @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        if (isCtrlKeyDown()) {
+            this.buttonBuyOne.setText(I18n.format("almura.feature.common.button.delist"));
+        } else {
+            this.buttonBuyOne.setText(I18n.format("almura.feature.common.button.buy.one"));
+        }
+    }
+
+    @Override
     public boolean doesGuiPauseGame() {
         return false; // Can't stop the game otherwise the Sponge Scheduler also stops.
     }
@@ -416,7 +426,11 @@ public final class ExchangeScreen extends BasicScreen {
     private void buy(final int value) {
         final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
         if (forSaleItem != null) {
-            exchangeManager.purchase(this.axs.getId(), forSaleItem.getListItem().getRecord(), value);
+            if (isCtrlKeyDown()) {
+                exchangeManager.modifyListStatus(ListStatusType.ADMIN_DE_LIST, this.axs.getId(), forSaleItem.getListItem().getRecord(), null);
+            } else {
+                exchangeManager.purchase(this.axs.getId(), forSaleItem.getListItem().getRecord(), value);
+            }
         }
     }
 

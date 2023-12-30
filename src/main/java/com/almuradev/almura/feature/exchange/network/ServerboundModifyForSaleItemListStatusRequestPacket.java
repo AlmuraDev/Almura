@@ -7,19 +7,17 @@
  */
 package com.almuradev.almura.feature.exchange.network;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
-
 import com.almuradev.almura.feature.exchange.ListStatusType;
 import com.almuradev.almura.shared.util.ByteBufUtil;
-import com.almuradev.almura.shared.util.SerializationUtil;
 import io.netty.buffer.ByteBuf;
 import org.spongepowered.api.network.ChannelBuf;
 import org.spongepowered.api.network.Message;
 
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
 
-import javax.annotation.Nullable;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 public final class ServerboundModifyForSaleItemListStatusRequestPacket implements Message {
 
@@ -41,7 +39,7 @@ public final class ServerboundModifyForSaleItemListStatusRequestPacket implement
         this.listItemRecNo = listItemRecNo;
         this.type = type;
 
-        if (this.type != ListStatusType.DE_LIST) {
+        if (this.type == ListStatusType.LIST || this.type == ListStatusType.ADJUST_PRICE) {
             checkNotNull(price);
             checkState(price.doubleValue() >= 0);
             this.price = price;
@@ -54,7 +52,7 @@ public final class ServerboundModifyForSaleItemListStatusRequestPacket implement
         this.id = buf.readString();
         this.listItemRecNo = buf.readInteger();
 
-        if (this.type != ListStatusType.DE_LIST) {
+        if (this.type == ListStatusType.LIST || this.type == ListStatusType.ADJUST_PRICE) {
             this.price = ByteBufUtil.readBigDecimal((ByteBuf) buf);
         }
     }
@@ -69,7 +67,7 @@ public final class ServerboundModifyForSaleItemListStatusRequestPacket implement
         buf.writeString(this.id);
         buf.writeInteger(this.listItemRecNo);
 
-        if (this.type != ListStatusType.DE_LIST) {
+        if (this.type == ListStatusType.LIST || this.type == ListStatusType.ADJUST_PRICE) {
             checkNotNull(this.price);
             checkState(this.price.doubleValue() >= 0);
 

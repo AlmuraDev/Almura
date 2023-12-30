@@ -10,5 +10,6 @@ package com.almuradev.almura.feature.exchange;
 public enum ListStatusType {
     LIST,
     DE_LIST,
-    ADJUST_PRICE
+    ADJUST_PRICE,
+    ADMIN_DE_LIST
 }

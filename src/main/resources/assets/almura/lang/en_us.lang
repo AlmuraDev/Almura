@@ -132,6 +132,7 @@ almura.feature.common.button.sell.stack=Sell %d
 almura.feature.common.button.sell=Sell
 almura.feature.common.button.modify=Modify
 almura.feature.common.button.unlist=Unlist
+almura.feature.common.button.delist=Delist
 almura.feature.common.text.add_feature=Are you sure you want to add this %s?
 almura.feature.common.text.admin=Admin
 almura.feature.common.text.created=Created

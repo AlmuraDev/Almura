@@ -7,8 +7,6 @@
  */
 package com.almuradev.almura.feature.exchange.network.handler;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.almuradev.almura.feature.exchange.ServerExchangeManager;
 import com.almuradev.almura.feature.exchange.network.ServerboundModifyForSaleItemListStatusRequestPacket;
 import com.almuradev.almura.shared.util.PacketUtil;
@@ -22,6 +20,8 @@ import org.spongepowered.api.network.RemoteConnection;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 @Singleton
 public final class ServerboundModifyForSaleItemListStatusRequestPacketHandler
@@ -53,6 +53,9 @@ public final class ServerboundModifyForSaleItemListStatusRequestPacketHandler
                     break;
                 case ADJUST_PRICE:
                     this.exchangeManager.handleAdjustPriceForSaleItem(player, message.id, message.listItemRecNo, message.price);
+                    break;
+                case ADMIN_DE_LIST:
+                    this.exchangeManager.handleAdminDelistForSaleItem(player, message.id, message.listItemRecNo);
                     break;
                 default:
                     throw new UnsupportedOperationException(message.type + " is not supported yet!");
