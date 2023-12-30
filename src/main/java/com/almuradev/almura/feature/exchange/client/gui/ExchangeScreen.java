@@ -71,7 +71,7 @@ public final class ExchangeScreen extends BasicScreen {
     @Inject private static ClientExchangeManager exchangeManager;
 
     private final Exchange axs;
-    public final int limit;
+    public static int limit;
 
     private UIButton buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage, buttonBuyStack, buttonBuyOne,
     buttonBuyAll, buttonBuyQuantity, buttonList;
@@ -86,7 +86,7 @@ public final class ExchangeScreen extends BasicScreen {
 
     public ExchangeScreen(final Exchange axs, final int limit) {
         this.axs = axs;
-        this.limit = limit;
+        ExchangeScreen.limit = limit;
     }
 
     @Override
@@ -665,7 +665,12 @@ public final class ExchangeScreen extends BasicScreen {
         protected void construct(final MalisisGui gui) {
             super.construct(gui);
 
-            final int maxPlayerTextWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth("9999999999999999");
+            int maxPlayerTextWidth = 0;
+
+            if (limit > 0) {
+                maxPlayerTextWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth("9999999999999999");
+            }
+
 
             this.sellerLabel = new UILabel(gui, TextFormatting.GRAY + "" + TextFormatting.ITALIC
               + this.item.getListItem().getSellerName().orElse(I18n.format("almura.feature.common.text.unknown")));
@@ -687,8 +692,11 @@ public final class ExchangeScreen extends BasicScreen {
                     - maxPlayerTextWidth
                     - 10;
 
-            this.add(this.sellerLabel, this.priceLabel);
-
+            if (limit > 0) {
+                this.add(this.sellerLabel, this.priceLabel);
+            } else {
+                this.add(this.priceLabel);
+            }
             this.refreshDisplayName();
         }
     }
