@@ -357,10 +357,12 @@ public final class ExchangeScreen extends BasicScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
-        if (isCtrlKeyDown()) {
-            this.buttonBuyOne.setText(I18n.format("almura.feature.common.button.delist"));
-        } else {
-            this.buttonBuyOne.setText(I18n.format("almura.feature.common.button.buy.one"));
+        if (this.buttonBuyOne != null) {
+            if (isCtrlKeyDown()) {
+                this.buttonBuyOne.setText(I18n.format("almura.feature.common.button.delist"));
+            } else {
+                this.buttonBuyOne.setText(I18n.format("almura.feature.common.button.buy.one"));
+            }
         }
     }
 
@@ -707,6 +709,9 @@ public final class ExchangeScreen extends BasicScreen {
                 this.add(this.sellerLabel, this.priceLabel);
             } else {
                 this.add(this.priceLabel);
+            }
+
+            if (isSeller) {
                 this.setBorder(FontColors.AQUA, 1, 255);
             }
 

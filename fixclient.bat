@@ -1,1 +1,2 @@
-rmdir c:\users\mike\.gradle\caches\modules-2\files-2.1\com.google.guava\guava\27.1-jre /s /q
+rem rmdir c:\users\mike\.gradle\caches\modules-2\files-2.1\com.google.guava\guava\27.1-jre /s /q
+copy c:\projects\almura\fixclient\guava-27.1-jre.jar C:\Users\mike\.gradle\caches\modules-2\files-2.1\com.google.guava\guava\27.1-jre\e47b59c893079b87743cdcfb6f17ca95c08c592c /y

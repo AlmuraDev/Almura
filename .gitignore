@@ -73,3 +73,5 @@ nb-configuration.xml
 *.iws
 src/main/generated/
 /build-old
+/out-old
+/FixClient
