@@ -13,6 +13,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import javax.inject.Singleton;
 
 @Singleton
@@ -21,6 +25,8 @@ public class HeadUpDisplay {
     private static final String COMPASS_CHARACTERS = "S.......W.......N.......E.......";
 
     public String worldName = "";
+    // World name of each online player, for the player list (tab)
+    public final Map<UUID, String> playerWorlds = new HashMap<>();
     public int onlinePlayerCount = 0;
     public int maxPlayerCount = 0;
 

@@ -11,6 +11,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerCountPacket;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerCurrencyPacket;
+import com.almuradev.almura.feature.hud.network.ClientboundPlayerWorldsPacket;
 import com.almuradev.almura.feature.hud.network.ClientboundWorldNamePacket;
 import com.almuradev.almura.feature.nick.ServerNickManager;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
@@ -48,6 +49,10 @@ import org.spongepowered.api.world.World;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public final class ServerHeadUpDisplayManager extends Witness.Impl implements Activatable, Witness.Lifecycle {
 
@@ -86,6 +91,14 @@ public final class ServerHeadUpDisplayManager extends Witness.Impl implements Ac
 
         this.network.sendTo(player, this.createWorldNamePacket(player.getTransform()));
 
+        // Player list (tab): the joining player gets everyone's world, everyone else learns the joining player's world
+        final Map<UUID, String> worlds = new HashMap<>();
+        for (final Player online : this.game.getServer().getOnlinePlayers()) {
+            worlds.put(online.getUniqueId(), online.getWorld().getName());
+        }
+        this.network.sendTo(player, new ClientboundPlayerWorldsPacket(true, worlds));
+        this.sendPlayerWorldToOthers(player, player.getWorld().getName());
+
         final ClientboundPlayerCountPacket packet = this.createPlayerCountPacket(false);
 
         for (final Player viewer : this.game.getServer().getOnlinePlayers()) {
@@ -113,12 +126,16 @@ public final class ServerHeadUpDisplayManager extends Witness.Impl implements Ac
 
             this.network.sendTo(viewer, packet);
         }
+
+        // Empty world name = remove from the player list
+        this.sendPlayerWorldToOthers(player, "");
     }
 
     @Listener(order = Order.LAST)
     public void playerMove(final MoveEntityEvent.Teleport event, @Getter("getTargetEntity") final Player player) {
         if (differentExtent(event.getFromTransform(), event.getToTransform())) {
             this.network.sendTo(player, this.createWorldNamePacket(event.getToTransform()));
+            this.sendPlayerWorldToAll(player, event.getToTransform().getExtent().getName());
         }
     }
 
@@ -126,6 +143,23 @@ public final class ServerHeadUpDisplayManager extends Witness.Impl implements Ac
     public void respawnPlayer(final RespawnPlayerEvent event) {
         if (differentExtent(event.getFromTransform(), event.getToTransform())) {
             this.network.sendTo(event.getTargetEntity(), this.createWorldNamePacket(event.getToTransform()));
+            this.sendPlayerWorldToAll(event.getTargetEntity(), event.getToTransform().getExtent().getName());
+        }
+    }
+
+    private void sendPlayerWorldToAll(final Player player, final String worldName) {
+        final ClientboundPlayerWorldsPacket packet = new ClientboundPlayerWorldsPacket(false, Collections.singletonMap(player.getUniqueId(), worldName));
+        for (final Player viewer : this.game.getServer().getOnlinePlayers()) {
+            this.network.sendTo(viewer, packet);
+        }
+    }
+
+    private void sendPlayerWorldToOthers(final Player player, final String worldName) {
+        final ClientboundPlayerWorldsPacket packet = new ClientboundPlayerWorldsPacket(false, Collections.singletonMap(player.getUniqueId(), worldName));
+        for (final Player viewer : this.game.getServer().getOnlinePlayers()) {
+            if (!viewer.getUniqueId().equals(player.getUniqueId())) {
+                this.network.sendTo(viewer, packet);
+            }
         }
     }
 
