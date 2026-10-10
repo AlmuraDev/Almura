@@ -38,6 +38,11 @@ apply plugin: 'org.spongepowered.gradle'
 apply plugin: 'org.spongepowered.plugin'
 apply plugin: 'nu.studer.jooq'
 
+// Minecraft 1.12 needs Guava 21; SpongeForge's Guice would otherwise pull in 27.1 and crash the dev client
+configurations.all {
+    resolutionStrategy.force 'com.google.guava:guava:21.0'
+}
+
 defaultTasks 'clean', 'licenseFormat', 'sortAccessTransformers', 'sortClassFields', 'build'
 
 sourceCompatibility = '1.8'

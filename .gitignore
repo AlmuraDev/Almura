@@ -75,3 +75,10 @@ src/main/generated/
 /build-old
 /out-old
 /FixClient
+
+# Claude #
+##########
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+.mcp.json

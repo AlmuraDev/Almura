@@ -8,15 +8,8 @@
 package com.almuradev.content.model.obj;
 
 import com.almuradev.content.mixin.iface.IMixinTextureAtlasSprite;
-import com.almuradev.content.model.obj.geometry.Face;
-import com.almuradev.content.model.obj.geometry.Group;
-import com.almuradev.content.model.obj.geometry.Vertex;
-import com.almuradev.content.model.obj.geometry.VertexDefinition;
-import com.almuradev.content.model.obj.geometry.VertexNormal;
-import com.almuradev.content.model.obj.geometry.VertexTextureCoordinate;
+import com.almuradev.content.model.obj.geometry.*;
 import com.almuradev.content.model.obj.material.MaterialDefinition;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -24,6 +17,7 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
+import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
@@ -35,44 +29,100 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-
 import javax.annotation.Nullable;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector4f;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
+/**
+ * All quads are baked once, up front, in the constructor. {@link #getQuads} only reads immutable data so it
+ * is allocation-free and safe to call from the chunk builder threads.
+ */
 @SideOnly(Side.CLIENT)
 public class OBJBakedModel implements IBakedModel {
+
+    /**
+     * Maps [meta][side ordinal] to the face index (of group 0) rendered on that side for simple (6 faced) models.
+     * Side ordinals are DOWN, UP, NORTH, SOUTH, WEST, EAST. Metas outside 0-3 render face 0 on every side.
+     * Todo: Remove this when we can figure out how to sort out this non-sense.
+     */
+    private static final int[][] FACE_INDEX_BY_META_AND_SIDE = {
+            {5, 0, 4, 2, 1, 3},
+            {5, 0, 1, 3, 2, 4},
+            {5, 0, 2, 4, 3, 1},
+            {5, 0, 3, 1, 4, 2}
+    };
+    private static final int[] DEFAULT_FACE_INDEX = {0, 0, 0, 0, 0, 0};
 
     private final OBJModel model;
     private final IModelState state;
     private final VertexFormat format;
     @Nullable
-    private TextureAtlasSprite spriteOverride;
-    @Nullable
-    private List<BakedQuad> quadCache;
-    private Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter;
-    private TextureAtlasSprite particleDiffuseSprite = ModelLoader.White.INSTANCE;
+    private final TextureAtlasSprite spriteOverride;
+    private final Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter;
 
+    // True when no group has exactly 6 faces (or group 0 can't be used per-side); all quads are rendered in the general pass.
+    private final boolean isComplex;
+    // Every quad of every group.
+    private final List<BakedQuad> allQuads;
+    // One quad list per face of group 0, only populated for simple models.
+    private final List<List<BakedQuad>> simpleFaceQuads;
+    private final TextureAtlasSprite particleDiffuseSprite;
+    // Block breaking retextures every frame, so keep one model per damage stage sprite.
+    private final Map<TextureAtlasSprite, OBJBakedModel> damageModels = new ConcurrentHashMap<>();
 
     OBJBakedModel(final OBJModel model, final IModelState state, final VertexFormat format, final Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
+        this(model, state, format, bakedTextureGetter, null);
+    }
+
+    OBJBakedModel(final OBJModel model, final IModelState state, final VertexFormat format, final TextureAtlasSprite sprite) {
+        this(model, state, format, resourceLocation -> sprite, sprite);
+    }
+
+    private OBJBakedModel(final OBJModel model, final IModelState state, final VertexFormat format,
+            final Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter, @Nullable final TextureAtlasSprite spriteOverride) {
         this.model = model;
         this.state = state;
         this.format = format;
         this.bakedTextureGetter = bakedTextureGetter;
-        this.spriteOverride = null;
-    }
+        this.spriteOverride = spriteOverride;
 
-    OBJBakedModel(final OBJModel mode, final IModelState state, final VertexFormat format, final TextureAtlasSprite sprite) {
-        this.model = mode;
-        this.state = state;
-        this.format = format;
-        this.bakedTextureGetter = resourceLocation -> sprite;
-        this.spriteOverride = sprite;
+        final List<Group> groups = model.getGroups();
+
+        boolean hasSixFacedGroup = false;
+        for (final Group group : groups) {
+            if (group.getFaces().size() == 6) {
+                hasSixFacedGroup = true;
+                break;
+            }
+        }
+        // Per-side rendering always reads group 0, so it must have all 6 faces.
+        this.isComplex = !hasSixFacedGroup || groups.isEmpty() || groups.get(0).getFaces().size() < 6;
+
+        final Baker baker = new Baker();
+        final List<BakedQuad> all = new ArrayList<>();
+        final List<List<BakedQuad>> perFace = new ArrayList<>();
+
+        for (int g = 0; g < groups.size(); g++) {
+            final Group group = groups.get(g);
+            final TextureAtlasSprite diffuseSprite = this.resolveDiffuseSprite(group.getMaterialDefinition().orElse(null));
+
+            for (final Face face : group.getFaces()) {
+                final BakedQuad quad = baker.bake(face, diffuseSprite);
+                all.add(quad);
+                if (g == 0 && !this.isComplex) {
+                    perFace.add(Collections.singletonList(quad));
+                }
+            }
+        }
+
+        this.allQuads = Collections.unmodifiableList(all);
+        this.simpleFaceQuads = Collections.unmodifiableList(perFace);
+        // For now, last face = particle generation
+        this.particleDiffuseSprite = baker.lastFace == null ? ModelLoader.White.INSTANCE
+                : this.createParticleSpriteFor(baker.lastFace, baker.lastSprite);
     }
 
     @Override
@@ -88,298 +138,173 @@ public class OBJBakedModel implements IBakedModel {
         // Todo:  for some reason ambient occlusion is not working properly.
         // Note: this method is called 7 times per block.  Side == null, down, up north, south, west, east.
 
-        boolean isComplex = true;
-        boolean fallback = false;
-        boolean cachedInventory = false;
-
-        for (Group group : this.model.getGroups()) {
-            if (group.getFaces().size() == 6) {
-                isComplex = false;
-                break;
-            }
+        // Inventory / item rendering.
+        if (blockState == null) {
+            return this.allQuads;
         }
 
-        if (blockState != null && !isComplex) {
-            if (!blockState.isOpaqueCube()) { // We know that if any block is NOT complex but isOpague is FALL, then assume the model facing direction is broken...
-                fallback = true;
-            }
+        // We know that if any block is NOT complex but isOpaque is FALSE, then assume the model facing direction is broken...
+        if (this.isComplex || !blockState.isOpaqueCube()) {
+            // Complex (or fallback), render everything once in the general pass.
+            return side == null ? this.allQuads : Collections.emptyList();
         }
 
-        if (blockState == null && this.quadCache != null) {
-            cachedInventory = true;
+        if (side == null) {
+            return Collections.emptyList();
         }
 
-        if (isComplex || fallback || cachedInventory) {
-            //System.out.println("Checking cache for: " + blockState);
-            if (this.quadCache != null) {
-                // Skip re-calculating quads as they are cached.
-                //System.out.println("Found cache for state: " + blockState + " face: " + side);
-                //Thread.dumpStack();
-                return this.quadCache;
-            }
-        }
-
-        if (blockState != null) {
-            if (side != null && isComplex) {
-                // Skip rendering
-                return new LinkedList<>();
-            }
-        }
-
-        final List<BakedQuad> quads = new ArrayList<>();
-
-        if (blockState == null || isComplex || fallback) {
-            // Complex, return all.
-            //System.out.println("Complex, return all faces");
-            this.model.getGroups().forEach(group -> {
-                final MaterialDefinition materialDefinition = group.getMaterialDefinition().orElse(null);
-                group.getFaces().forEach(face -> this.populateQuadsByFace(materialDefinition, face, quads));
-            });
-            this.quadCache = quads;
-        } else if (side != null) {
-            final Group group = this.model.getGroups().get(0);
-            if (group != null) {
-                final MaterialDefinition materialDefinition = group.getMaterialDefinition().orElse(null);
-                int meta = blockState.getBlock().getMetaFromState(blockState);
-                int index = 0;
-                // Meta values looked up because the facing direction also dictates which face gets rendered and which one doesn't.
-                // Todo: Remove this when we can figure out how to sort out this non-sense.
-                if (meta == 0) {
-                    switch (side) {
-                        case DOWN:
-                            index = 5;
-                            break;
-                        case UP:
-                            index = 0;
-                            break;
-                        case NORTH:
-                            index = 4;
-                            break;
-                        case SOUTH:
-                            index = 2;
-                            break;
-                        case WEST:
-                            index = 1;
-                            break;
-                        case EAST:
-                            index = 3;
-                            break;
-                    }
-                }
-
-                if (meta == 1) {
-                    switch (side) {
-                        case DOWN:
-                            index = 5;
-                            break;
-                        case UP:
-                            index = 0;
-                            break;
-                        case NORTH:
-                            index = 1;
-                            break;
-                        case SOUTH:
-                            index = 3;
-                            break;
-                        case WEST:
-                            index = 2;
-                            break;
-                        case EAST:
-                            index = 4;
-                            break;
-                    }
-                }
-
-                if (meta == 2) {
-                    switch (side) {
-                        case DOWN:
-                            index = 5;
-                            break;
-                        case UP:
-                            index = 0;
-                            break;
-                        case NORTH:
-                            index = 2;
-                            break;
-                        case SOUTH:
-                            index = 4;
-                            break;
-                        case WEST:
-                            index = 3;
-                            break;
-                        case EAST:
-                            index = 1;
-                            break;
-                    }
-                }
-
-                if (meta == 3) {
-                    switch (side) {
-                        case DOWN:
-                            index = 5;
-                            break;
-                        case UP:
-                            index = 0;
-                            break;
-                        case NORTH:
-                            index = 3;
-                            break;
-                        case SOUTH:
-                            index = 1;
-                            break;
-                        case WEST:
-                            index = 4;
-                            break;
-                        case EAST:
-                            index = 2;
-                            break;
-                    }
-                }
-
-                final Face face = group.getFaces().get(index);
-                if (face != null) {
-                    this.populateQuadsByFace(materialDefinition, face, quads);
-                }
-            }
-        }
-        return quads;
+        // Meta values looked up because the facing direction also dictates which face gets rendered and which one doesn't.
+        final int meta = blockState.getBlock().getMetaFromState(blockState);
+        final int[] faceIndices = meta >= 0 && meta < FACE_INDEX_BY_META_AND_SIDE.length ? FACE_INDEX_BY_META_AND_SIDE[meta] : DEFAULT_FACE_INDEX;
+        return this.simpleFaceQuads.get(faceIndices[side.ordinal()]);
     }
 
-    private void populateQuadsByFace(@Nullable MaterialDefinition materialDefinition, Face face, List<BakedQuad> quads) {
-        Face particleFace;
-        TextureAtlasSprite particleAtlasSprite;
-
-        final TRSRTransformation transformation = this.state.apply(Optional.empty()).orElse(null);
-
+    private TextureAtlasSprite resolveDiffuseSprite(@Nullable final MaterialDefinition materialDefinition) {
         TextureAtlasSprite diffuseSprite = this.spriteOverride;
 
-        if (diffuseSprite == null) {
-            if (materialDefinition != null) {
-                if (materialDefinition.getDiffuseTexture().isPresent()) {
-                    final ResourceLocation diffuseLocation = materialDefinition.getDiffuseTexture().orElse(null);
+        if (diffuseSprite == null && materialDefinition != null) {
+            final ResourceLocation diffuseLocation = materialDefinition.getDiffuseTexture().orElse(null);
 
-                    if (diffuseLocation != null) {
+            if (diffuseLocation != null) {
+                final String path = diffuseLocation.getPath();
+                if (path.endsWith(".png")) {
+                    final int dot = path.indexOf('.');
+                    diffuseSprite = this.bakedTextureGetter.apply(new ResourceLocation(diffuseLocation.getNamespace(), path.substring(0, dot)));
+                } else {
+                    diffuseSprite = this.bakedTextureGetter.apply(diffuseLocation);
+                }
+            }
+        }
 
-                        if (diffuseLocation.getPath().endsWith(".png")) {
-                            diffuseSprite = this.bakedTextureGetter.apply(new ResourceLocation(diffuseLocation.getNamespace(), diffuseLocation.getPath().split("\\.")[0]));
-                        } else {
-                            diffuseSprite = this.bakedTextureGetter.apply(diffuseLocation);
-                        }
+        return diffuseSprite == null ? ModelLoader.White.INSTANCE : diffuseSprite;
+    }
+
+    /**
+     * Holds the per-model state that is identical for every face, so it is computed once per bake instead of once per face/vertex.
+     */
+    private final class Baker {
+
+        private final VertexFormatElement.EnumUsage[] usages;
+        @Nullable
+        private final Matrix4f transform;
+        private final Vector4f position = new Vector4f();
+        private final Vector4f transformed = new Vector4f();
+
+        @Nullable
+        Face lastFace;
+        @Nullable
+        TextureAtlasSprite lastSprite;
+
+        Baker() {
+            final VertexFormat format = OBJBakedModel.this.format;
+            this.usages = new VertexFormatElement.EnumUsage[format.getElementCount()];
+            for (int e = 0; e < this.usages.length; e++) {
+                this.usages[e] = format.getElement(e).getUsage();
+            }
+
+            final TRSRTransformation transformation = OBJBakedModel.this.state.apply(Optional.empty()).orElse(null);
+            this.transform = transformation == null ? null : transformation.getMatrix();
+        }
+
+        BakedQuad bake(final Face face, final TextureAtlasSprite diffuseSprite) {
+            final UnpackedBakedQuad.Builder quadBuilder = new UnpackedBakedQuad.Builder(OBJBakedModel.this.format);
+            quadBuilder.setContractUVs(true);
+            quadBuilder.setTexture(diffuseSprite);
+            VertexNormal normal = null;
+
+            for (final VertexDefinition vertexDef : face.getVertices()) {
+                if (normal == null) {
+                    normal = vertexDef.getNormal().orElse(null);
+                }
+
+                for (int e = 0; e < this.usages.length; e++) {
+                    switch (this.usages[e]) {
+                        case POSITION:
+                            final Vertex vertex = vertexDef.getVertex();
+                            if (this.transform != null) {
+                                this.position.set(vertex.getX(), vertex.getY(), vertex.getZ(), 1f);
+                                this.transform.transform(this.position, this.transformed);
+                                quadBuilder.put(e, this.transformed.getX(), this.transformed.getY(), this.transformed.getZ());
+                            } else {
+                                quadBuilder.put(e, vertex.getX(), vertex.getY(), vertex.getZ());
+                            }
+
+                            break;
+                        case UV:
+                            final float u;
+                            final float v;
+
+                            if (OBJBakedModel.this.spriteOverride == null) {
+                                final VertexTextureCoordinate textureCoordinate = vertexDef.getTextureCoordinate().orElse(null);
+
+                                if (textureCoordinate != null) {
+                                    u = textureCoordinate.getU();
+                                    v = 1f - textureCoordinate.getV();
+                                } else {
+                                    u = 0f;
+                                    v = 1f;
+                                }
+
+                            } else {
+
+                                /*
+                                 * 0: (0, 0)       3: (0, 1)
+                                 *
+                                 *
+                                 * 1: (1, 0)       2: (1, 1)
+                                 */
+
+                                switch (vertexDef.getIndex()) {
+                                    case 1:
+                                        u = 0f;
+                                        v = 0f;
+                                        break;
+                                    case 2:
+                                        u = 1f;
+                                        v = 0f;
+                                        break;
+                                    case 3:
+                                        u = 1f;
+                                        v = 1f;
+                                        break;
+                                    case 4:
+                                        u = 0f;
+                                        v = 1f;
+                                        break;
+                                    default:
+                                        u = 0f;
+                                        v = 0f;
+                                }
+                            }
+
+                            quadBuilder.put(e, diffuseSprite.getInterpolatedU(u * 16f), diffuseSprite.getInterpolatedV(v * 16f));
+                            break;
+                        case NORMAL:
+                            if (normal != null) {
+                                quadBuilder.put(e, normal.getX(), normal.getY(), normal.getZ());
+                            }
+                            break;
+                        case COLOR:
+                            quadBuilder.put(e, 1f, 1f, 1f, 1f);
+                            break;
+                        default:
+                            quadBuilder.put(e);
                     }
                 }
             }
-        }
 
-        if (diffuseSprite == null) {
-            diffuseSprite = ModelLoader.White.INSTANCE;
-        }
-
-        particleAtlasSprite = diffuseSprite;
-
-        particleFace = face;
-
-        final UnpackedBakedQuad.Builder quadBuilder = new UnpackedBakedQuad.Builder(this.format);
-        quadBuilder.setContractUVs(true);
-        quadBuilder.setTexture(diffuseSprite);
-        VertexNormal normal = null;
-
-        for (final VertexDefinition vertexDef : face.getVertices()) {
-            if (normal == null) {
-                normal = vertexDef.getNormal().orElse(null);
+            if (normal != null) {
+                quadBuilder.setQuadOrientation(EnumFacing.getFacingFromVector(normal.getX(), normal.getY(), normal.getZ()));
             }
 
-            for (int e = 0; e < this.format.getElementCount(); e++) {
-                switch (this.format.getElement(e).getUsage()) {
-                    case POSITION:
-                        final Vertex vertex = vertexDef.getVertex();
-                        if (transformation != null) {
-                            final Matrix4f transform = transformation.getMatrix();
-                            final Vector4f position = new Vector4f(vertex.getX(), vertex.getY(), vertex.getZ(), 1f);
-                            final Vector4f transformed = new Vector4f();
-                            transform.transform(position, transformed);
-                            quadBuilder.put(e, transformed.getX(), transformed.getY(), transformed.getZ());
-                        } else {
-                            quadBuilder.put(e, vertex.getX(), vertex.getY(), vertex.getZ());
-                        }
-
-                        break;
-                    case UV:
-                        final float u;
-                        final float v;
-
-                        if (this.spriteOverride == null) {
-                            final VertexTextureCoordinate textureCoordinate = vertexDef.getTextureCoordinate().orElse(null);
-
-                            if (textureCoordinate != null) {
-                                u = textureCoordinate.getU();
-                                v = 1f - textureCoordinate.getV();
-                            } else {
-                                u = 0f;
-                                v = 1f;
-                            }
-
-                        } else {
-
-                            /*
-                             * 0: (0, 0)       3: (0, 1)
-                             *
-                             *
-                             * 1: (1, 0)       2: (1, 1)
-                             */
-
-                            switch (vertexDef.getIndex()) {
-                                case 1:
-                                    u = 0f;
-                                    v = 0f;
-                                    break;
-                                case 2:
-                                    u = 1f;
-                                    v = 0f;
-                                    break;
-                                case 3:
-                                    u = 1f;
-                                    v = 1f;
-                                    break;
-                                case 4:
-                                    u = 0f;
-                                    v = 1f;
-                                    break;
-                                default:
-                                    u = 0f;
-                                    v = 0f;
-                            }
-                        }
-
-                        quadBuilder.put(e, diffuseSprite.getInterpolatedU(u * 16f), diffuseSprite.getInterpolatedV(v * 16f));
-                        break;
-                    case NORMAL:
-                        if (normal != null) {
-                            quadBuilder.put(e, normal.getX(), normal.getY(), normal.getZ());
-                        }
-                        break;
-                    case COLOR:
-                        quadBuilder.put(e, 1f, 1f, 1f, 1f);
-                        break;
-                    default:
-                        quadBuilder.put(e);
-                }
-            }
-        }
-
-        if (normal != null) {
-            quadBuilder.setQuadOrientation(EnumFacing.getFacingFromVector(normal.getX(), normal.getY(), normal.getZ()));
-        }
-
-        quads.add(quadBuilder.build());
-
-        if (particleFace != null && particleAtlasSprite != null) {
-            // For now, last face = particle generation
-            this.particleDiffuseSprite = this.createParticleSpriteFor(particleFace, particleAtlasSprite);
+            this.lastFace = face;
+            this.lastSprite = diffuseSprite;
+            return quadBuilder.build();
         }
     }
 
     public OBJBakedModel retextureQuadsFor(final TextureAtlasSprite damageSprite) {
-        return new OBJBakedModel(this.model, this.state, this.format, damageSprite);
+        return this.damageModels.computeIfAbsent(damageSprite, sprite -> new OBJBakedModel(this.model, this.state, this.format, sprite));
     }
 
     private TextureAtlasSprite createParticleSpriteFor(final Face face, final TextureAtlasSprite diffuseSprite) {
@@ -428,7 +353,7 @@ public class OBJBakedModel implements IBakedModel {
 
     @Override
     public boolean isAmbientOcclusion() {
-        return false;
+        return true;
     }
 
     @Override
