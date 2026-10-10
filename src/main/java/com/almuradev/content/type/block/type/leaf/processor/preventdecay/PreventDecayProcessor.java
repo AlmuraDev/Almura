@@ -15,7 +15,7 @@ import com.almuradev.toolbox.config.tag.ConfigTag;
 import ninja.leaping.configurate.ConfigurationNode;
 
 public final class PreventDecayProcessor implements LeafBlockContentProcessor.AnyState {
-    private static final ConfigTag TAG = ConfigTag.create(LeafBlockConfig.SPREAD);
+    private static final ConfigTag TAG = ConfigTag.create(LeafBlockConfig.PREVENT_DECAY);
 
     @Override
     public ConfigTag tag() {
