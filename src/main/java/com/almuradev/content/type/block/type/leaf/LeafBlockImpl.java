@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Random;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public final class LeafBlockImpl extends BlockLeaves implements LeafBlock, StateMappedBlock {
     @Deprecated private static final int LEGACY_DECAYABLE = 1;
@@ -155,6 +156,20 @@ public final class LeafBlockImpl extends BlockLeaves implements LeafBlock, State
                 {
                     BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
 
+                    // Almura Start - PreventDecay: roll the biome chance once per decay check. When it passes, the configured block acts like a log
+                    // for this leaf for the scan below. Chance is the chance to prevent decay (roll <= chance), matching Spread and Growth.
+                    @Nullable LazyBlockState preventDecayState = null;
+                    @Nullable Block preventDecayBlock = null;
+                    final PreventDecay preventDecayConfig = this.definition.preventDecay;
+                    if (preventDecayConfig != null) {
+                        final DoubleRange chanceRoll = preventDecayConfig.getOrLoadChanceRangeForBiome(worldIn.getBiome(pos));
+                        if (chanceRoll != null && rand.nextDouble() <= (chanceRoll.random(rand) / 100)) {
+                            preventDecayState = preventDecayConfig.getBlock();
+                            preventDecayBlock = preventDecayState.block();
+                        }
+                    }
+                    // Almura End
+
                     for (int i2 = -4; i2 <= 4; ++i2)
                     {
                         for (int j2 = -4; j2 <= 4; ++j2)
@@ -165,25 +180,14 @@ public final class LeafBlockImpl extends BlockLeaves implements LeafBlock, State
                                 Block block = iblockstate.getBlock();
 
                                 // Almura Start - Ask the leaf for a block that can keep it from decaying. Allow Vanilla logs to have first say
-                                boolean preventDecay = block.canSustainLeaves(iblockstate, worldIn, blockpos$mutableblockpos.setPos(k + i2, l + j2,
-                                        i1 + k2));
-                                if (!preventDecay) {
-                                    final PreventDecay pDecay = this.definition.preventDecay;
-                                    if (pDecay != null) {
-                                        final DoubleRange chanceRoll = pDecay.getOrLoadChanceRangeForBiome(worldIn.getBiome(blockpos$mutableblockpos));
-                                        if (chanceRoll != null) {
-                                            if ((rand.nextDouble() >= (chanceRoll.random(rand) / 100))) {
-                                               // if (pDecay.getBlock().partialTest(iblockstate)) {
-                                               //     preventDecay = true;
-                                               // }
-                                            }
-                                        }
-                                    }
-                                }
+                                // (canSustainLeaves), then the PreventDecay block if its chance passed above. Block identity is checked first so the
+                                // state test only runs on candidate blocks.
+                                final boolean preventDecay = block.canSustainLeaves(iblockstate, worldIn, blockpos$mutableblockpos)
+                                        || (block == preventDecayBlock && preventDecayState.partialTest(iblockstate));
                                 if (!preventDecay)
                                 {
                                     // Almura End
-                                    if (block.isLeaves(iblockstate, worldIn, blockpos$mutableblockpos.setPos(k + i2, l + j2, i1 + k2)))
+                                    if (block.isLeaves(iblockstate, worldIn, blockpos$mutableblockpos))
                                     {
                                         surroundings[(i2 + 16) * 1024 + (j2 + 16) * 32 + k2 + 16] = -2;
                                     }
@@ -244,18 +248,20 @@ public final class LeafBlockImpl extends BlockLeaves implements LeafBlock, State
                             }
                         }
                     }
-                }
 
-                int l2 = surroundings[16912];
+                    int l2 = surroundings[16912];
 
-                if (l2 >= 0)
-                {
-                    worldIn.setBlockState(pos, state.withProperty(CHECK_DECAY, Boolean.valueOf(false)), 4);
+                    if (l2 >= 0)
+                    {
+                        worldIn.setBlockState(pos, state.withProperty(CHECK_DECAY, Boolean.valueOf(false)), 4);
+                    }
+                    else
+                    {
+                        ((BlockLeavesAccessor) (Object) this).invoker$destroy(worldIn, pos);
+                    }
                 }
-                else
-                {
-                    ((BlockLeavesAccessor) (Object) this).invoker$destroy(worldIn, pos);
-                }
+                // Almura - When the scan area isn't loaded, leave CHECK_DECAY set and decide on a later tick. Vanilla falls through and decides
+                // from the shared surroundings array, which still holds the previous leaf's scan and can wrongly decay this leaf.
             }
         }
 
@@ -267,14 +273,15 @@ public final class LeafBlockImpl extends BlockLeaves implements LeafBlock, State
         if (worldIn.isRemote) {
             return;
         }
-        final IBlockState actualBlock = worldIn.getBlockState(pos);
 
+        // Runs on every random tick of every leaf, so bail out on the cheap check first
         final Spread spread = this.definition.spread;
         if (spread == null) {
             return;
         }
 
-        if (actualBlock.getBlock() != this) {
+        // The decay check above may have just destroyed this leaf
+        if (worldIn.getBlockState(pos).getBlock() != this) {
             return;
         }
 
@@ -287,13 +294,20 @@ public final class LeafBlockImpl extends BlockLeaves implements LeafBlock, State
             return;
         }
 
-        for (final EnumFacing facing : EnumFacing.values()) {
+        for (final EnumFacing facing : EnumFacing.VALUES) {
             final BlockPos offset = pos.offset(facing);
+            // Leaves on a chunk edge must not load the neighbouring chunk just to look for air
+            if (!worldIn.isBlockLoaded(offset)) {
+                continue;
+            }
             final IBlockState offsetBlock = worldIn.getBlockState(offset);
             if (offsetBlock.getBlock() == Blocks.AIR) {
-                    worldIn.setBlockState(offset, spread.getBlock().get());
+                final IBlockState spreadState = spread.getBlock().get();
+                if (spreadState != null) {
+                    worldIn.setBlockState(offset, spreadState);
                     worldIn.playEvent(2005, pos, 0);
-                    break;
+                }
+                break;
             }
         }
     }
