@@ -9,11 +9,14 @@ package com.almuradev.almura.feature.hud;
 
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerCountPacket;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerCurrencyPacket;
+import com.almuradev.almura.feature.hud.network.ClientboundPlayerWorldsPacket;
 import com.almuradev.almura.feature.hud.network.ClientboundWorldNamePacket;
 import com.almuradev.almura.feature.hud.network.handler.ClientboundPlayerCountPacketHandler;
 import com.almuradev.almura.feature.hud.network.handler.ClientboundPlayerCurrencyPacketHandler;
+import com.almuradev.almura.feature.hud.network.handler.ClientboundPlayerWorldsPacketHandler;
 import com.almuradev.almura.feature.hud.network.handler.ClientboundWorldNamePacketHandler;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIDetailsPanel;
+import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIPlayerListPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIUserPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIWorldPanel;
 import com.almuradev.almura.shared.inject.ClientBinder;
@@ -31,7 +34,8 @@ public final class HeadUpDisplayModule extends AbstractModule implements CommonB
         this.packet()
                 .bind(ClientboundWorldNamePacket.class, binder -> binder.handler(ClientboundWorldNamePacketHandler.class, Platform.Type.CLIENT))
                 .bind(ClientboundPlayerCountPacket.class, binder -> binder.handler(ClientboundPlayerCountPacketHandler.class, Platform.Type.CLIENT))
-                .bind(ClientboundPlayerCurrencyPacket.class, binder -> binder.handler(ClientboundPlayerCurrencyPacketHandler.class, Platform.Type.CLIENT));
+                .bind(ClientboundPlayerCurrencyPacket.class, binder -> binder.handler(ClientboundPlayerCurrencyPacketHandler.class, Platform.Type.CLIENT))
+                .bind(ClientboundPlayerWorldsPacket.class, binder -> binder.handler(ClientboundPlayerWorldsPacketHandler.class, Platform.Type.CLIENT));
         this.facet().add(ServerHeadUpDisplayManager.class);
 
         this.on(Platform.Type.CLIENT, () -> {
@@ -43,6 +47,7 @@ public final class HeadUpDisplayModule extends AbstractModule implements CommonB
                     this.facet().add(ClientHeadUpDisplayManager.class);
                     this.requestStaticInjection(UIDetailsPanel.class);
                     this.requestStaticInjection(UIWorldPanel.class);
+                    this.requestStaticInjection(UIPlayerListPanel.class);
                     this.requestStaticInjection(UIUserPanel.class);
                     this.requestStaticInjection(GuiIngame.class);
                 }
