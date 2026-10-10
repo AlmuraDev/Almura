@@ -150,70 +150,40 @@ public final class Growth {
 
     @Nullable
     public DoubleRange getOrLoadChanceRangeForBiome(final Biome biome) {
-        @Nullable DoubleRange found = this.biomeChanceRanges.get(biome);
-        if (found == null) {
-            for (final Map.Entry<FunctionPredicate<Biome, ResourceLocation>, DoubleRange> entry : this.biomeChancePredicates.entrySet()) {
-                final FunctionPredicate<Biome, ResourceLocation> predicate = entry.getKey();
-                if (predicate.test(biome)) {
-                    final DoubleRange range = entry.getValue();
-                    this.biomeChanceRanges.put(biome, range);
-                    found = range;
-                    break;
-                }
-            }
-        }
-
-        if (found == null && this.globalChanceRange != null) {
-            this.biomeChanceRanges.put(biome, this.globalChanceRange);
-            found = this.globalChanceRange;
-        }
-
-        return found;
+        return getOrLoadRangeForBiome(this.biomeChanceRanges, this.biomeChancePredicates, this.globalChanceRange, biome);
     }
 
     @Nullable
     public DoubleRange getOrLoadTemperatureRequiredRangeForBiome(final Biome biome) {
-        @Nullable DoubleRange found = this.biomeTemperatureRequiredRanges.get(biome);
-        if (found == null) {
-            for (final Map.Entry<FunctionPredicate<Biome, ResourceLocation>, DoubleRange> entry : this.biomeTemperatureRequiredPredicates.entrySet()) {
-                final FunctionPredicate<Biome, ResourceLocation> predicate = entry.getKey();
-                if (predicate.test(biome)) {
-                    final DoubleRange range = entry.getValue();
-                    this.biomeTemperatureRequiredRanges.put(biome, range);
-                    found = range;
-                    break;
-                }
-            }
-        }
-
-        if (found == null && this.globalTemperatureRequiredRange != null) {
-            this.biomeTemperatureRequiredRanges.put(biome, this.globalTemperatureRequiredRange);
-            found = this.globalTemperatureRequiredRange;
-        }
-
-        return found;
+        return getOrLoadRangeForBiome(this.biomeTemperatureRequiredRanges, this.biomeTemperatureRequiredPredicates, this.globalTemperatureRequiredRange, biome);
     }
 
     @Nullable
     public DoubleRange getOrLoadLightRangeForBiome(final Biome biome) {
-        @Nullable DoubleRange found = this.biomeLightRanges.get(biome);
-        if (found == null) {
-            for (final Map.Entry<FunctionPredicate<Biome, ResourceLocation>, DoubleRange> entry : this.biomeLightPredicates.entrySet()) {
-                final FunctionPredicate<Biome, ResourceLocation> predicate = entry.getKey();
-                if (predicate.test(biome)) {
-                    final DoubleRange range = entry.getValue();
-                    this.biomeLightRanges.put(biome, range);
-                    found = range;
-                    break;
-                }
+        return getOrLoadRangeForBiome(this.biomeLightRanges, this.biomeLightPredicates, this.globalLightRange, biome);
+    }
+
+    // Called every crop tick. Caches misses too (as null) so biomes with no matching range don't rescan every predicate each tick.
+    @Nullable
+    private static DoubleRange getOrLoadRangeForBiome(final Map<Biome, DoubleRange> cache, final Map<FunctionPredicate<Biome, ResourceLocation>, DoubleRange> predicates,
+            @Nullable final DoubleRange globalRange, final Biome biome) {
+        @Nullable DoubleRange found = cache.get(biome);
+        if (found != null || cache.containsKey(biome)) {
+            return found;
+        }
+
+        for (final Map.Entry<FunctionPredicate<Biome, ResourceLocation>, DoubleRange> entry : predicates.entrySet()) {
+            if (entry.getKey().test(biome)) {
+                found = entry.getValue();
+                break;
             }
         }
 
-        if (found == null && this.globalLightRange != null) {
-            this.biomeLightRanges.put(biome, this.globalLightRange);
-            found = this.globalLightRange;
+        if (found == null) {
+            found = globalRange;
         }
 
+        cache.put(biome, found);
         return found;
     }
 
