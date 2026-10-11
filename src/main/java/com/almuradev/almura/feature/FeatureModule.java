@@ -30,6 +30,7 @@ import com.almuradev.almura.feature.skills.SkillsModule;
 import com.almuradev.almura.feature.storage.StorageModule;
 import com.almuradev.almura.feature.store.StoreModule;
 import com.almuradev.almura.feature.title.TitleModule;
+import com.almuradev.almura.feature.treefeller.TreeFellerModule;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import com.almuradev.almura.shared.util.UchatUtil;
@@ -60,6 +61,7 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.install(new BiomeModule());
         this.install(new FeaturesModule());
         this.install(new AnimalModule());
+        this.install(new TreeFellerModule());
         this.facet().add(SignEditFeature.class);
         this.facet().add(ItemReturnHelper.class);
         this.nerfVanillaFood();

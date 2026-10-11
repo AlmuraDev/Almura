@@ -17,6 +17,8 @@ import org.spongepowered.api.util.PEBKACException;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 public interface Tree extends CatalogedContent {
     @Override
     default String getId() {
@@ -27,6 +29,22 @@ public interface Tree extends CatalogedContent {
     default String getName() {
         throw new PEBKACException("api");
     }
+
+    /**
+     * The block used for the trunk.
+     */
+    LazyBlockState logState();
+
+    /**
+     * The block used for the leaves.
+     */
+    LazyBlockState leavesState();
+
+    /**
+     * The block used for fruit leaves, or null if this tree does not bear fruit.
+     */
+    @Nullable
+    LazyBlockState fruitState();
 
     interface Builder extends ContentBuilder<Tree> {
         void big(final boolean big);

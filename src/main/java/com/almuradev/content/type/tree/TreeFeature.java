@@ -44,6 +44,22 @@ public final class TreeFeature extends WorldGenAbstractTree implements AbstractT
     }
 
     @Override
+    public LazyBlockState logState() {
+        return this.log;
+    }
+
+    @Override
+    public LazyBlockState leavesState() {
+        return this.leaves;
+    }
+
+    @Nullable
+    @Override
+    public LazyBlockState fruitState() {
+        return this.fruit == null ? null : this.fruit.getKey();
+    }
+
+    @Override
     public boolean generate(final World world, final Random random, final BlockPos origin) {
         return this.generate(world, random, origin, Collections.emptyList());
     }
