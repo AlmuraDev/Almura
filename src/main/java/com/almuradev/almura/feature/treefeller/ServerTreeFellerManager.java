@@ -7,7 +7,6 @@
  */
 package com.almuradev.almura.feature.treefeller;
 
-import com.almuradev.almura.asm.mixin.accessors.block.BlockLeavesAccessor;
 import com.almuradev.content.type.block.state.LazyBlockState;
 import com.almuradev.content.type.tree.Tree;
 import com.almuradev.core.event.Witness;
@@ -25,6 +24,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
+import org.spongepowered.api.event.cause.EventContextKeys;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
@@ -46,7 +46,7 @@ import javax.inject.Inject;
 
 /**
  * Fells fruit trees: when a player breaks the log of a tree that bears fruit, every connected log at or above the cut is broken and every
- * leaf / fruit leaf that no longer has a log within reach drops its items where it was and disappears.
+ * leaf / fruit leaf that no longer has a log within reach drops its "destroy" items (as if broken by hand) where it was and disappears.
  *
  * <p>Fruit trees are the {@link Tree}s that configure a fruit block. Only natural (decayable) leaves count, so player placed leaves are
  * never touched, and a cluster of fruit logs that isn't touching natural fruit tree leaves (a build) is left alone.</p>
@@ -79,6 +79,11 @@ public final class ServerTreeFellerManager extends Witness.Impl {
 
     @Listener(order = Order.POST)
     public void onBlockBreak(final ChangeBlockEvent.Break event, @Root final Player player) {
+        // Only a player actually breaking the block counts, not other player caused changes (commands like /fill or /setblock)
+        if (!event.getContext().containsKey(EventContextKeys.PLAYER_BREAK)) {
+            return;
+        }
+
         for (final Transaction<BlockSnapshot> transaction : event.getTransactions()) {
             if (!transaction.isValid()) {
                 continue;
@@ -327,9 +332,12 @@ public final class ServerTreeFellerManager extends Witness.Impl {
         if (block == log) {
             // Drops the log's normal items where it was
             world.destroyBlock(pos, true);
-        } else if (leafBlocks.contains(block) && block instanceof BlockLeaves && isNatural(state)) {
-            // Same path as natural decay: drops the leaf's configured decay items (fruit, saplings) where it was
-            ((BlockLeavesAccessor) (Object) block).invoker$destroy(world, pos);
+        } else if (leafBlocks.contains(block) && isNatural(state)) {
+            // Drops the leaf's configured "destroy" items (as if broken by hand, e.g. 3 cherries per fruit leaf) where it was. The "decay"
+            // drops are chance based and meant for slow natural decay, so most fruit leaves would give nothing. No break particles or sound
+            // per leaf, like decay.
+            block.dropBlockAsItem(world, pos, state, 0);
+            world.setBlockToAir(pos);
         }
     }
 
