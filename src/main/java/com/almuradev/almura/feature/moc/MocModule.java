@@ -15,5 +15,6 @@ public final class MocModule extends AbstractModule implements CommonBinder {
     @Override
     protected void configure() {
         this.facet().add(MocDrops.class);
+        this.facet().add(MocFishing.class);
     }
 }

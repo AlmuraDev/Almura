@@ -64,6 +64,10 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.install(new AnimalModule());
         this.install(new TreeFellerModule());
         this.install(new MachineModule());
+        // Mo' Creatures drops and fishing: on any side (dedicated server and single player), not just server-side modules
+        if (Loader.isModLoaded("mocreatures")) {
+            this.install(new MocModule());
+        }
         this.facet().add(SignEditFeature.class);
         this.facet().add(ItemReturnHelper.class);
         this.nerfVanillaFood();
@@ -102,9 +106,6 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
     private void loadServerSideModules() {
         if (Sponge.getPluginManager().isLoaded("luckperms")) {
             this.install(new PermissionsModule());
-        }
-        if (Loader.isModLoaded("mocreatures")) {
-            this.install(new MocModule());
         }
         if (Sponge.getPluginManager().isLoaded("ultimatechat")) {
             this.facet().add(UchatUtil.class);
