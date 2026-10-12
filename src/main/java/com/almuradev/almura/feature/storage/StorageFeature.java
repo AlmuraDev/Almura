@@ -9,6 +9,7 @@ package com.almuradev.almura.feature.storage;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.storage.block.StorageBlocks;
+import com.almuradev.almura.shared.inventory.AlmuraGuiHandler;
 import com.almuradev.almura.shared.tileentity.MultiSlotTileEntity;
 import com.almuradev.core.event.Witness;
 import net.minecraft.block.Block;
@@ -20,7 +21,6 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -46,7 +46,7 @@ public final class StorageFeature extends Witness.Impl implements Witness.Lifecy
 
     @Listener
     public void onGamePreInitialization(GamePreInitializationEvent event) {
-        NetworkRegistry.INSTANCE.registerGuiHandler(this.plugin, new CapabilityDualItemHandlerGuiHandler());
+        AlmuraGuiHandler.register(this.plugin, AlmuraGuiHandler.STORAGE, new CapabilityDualItemHandlerGuiHandler());
         GameRegistry.registerTileEntity(MultiSlotTileEntity.class, Almura.ID + ":storage");
     }
 
