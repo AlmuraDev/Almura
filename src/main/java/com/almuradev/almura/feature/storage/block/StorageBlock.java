@@ -10,6 +10,7 @@ package com.almuradev.almura.feature.storage.block;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.shared.capability.IMultiSlotItemHandler;
 import com.almuradev.almura.shared.capability.impl.MultiSlotItemHandler;
+import com.almuradev.almura.shared.inventory.AlmuraGuiHandler;
 import com.almuradev.almura.shared.tileentity.MultiSlotTileEntity;
 import com.almuradev.content.type.itemgroup.ItemGroup;
 import net.minecraft.block.BlockContainer;
@@ -70,7 +71,7 @@ public final class StorageBlock extends BlockContainer {
             return true;
         }
 
-        player.openGui(plugin, 0, world, pos.getX(), pos.getY(), pos.getZ());
+        player.openGui(plugin, AlmuraGuiHandler.STORAGE, world, pos.getX(), pos.getY(), pos.getZ());
 
         return true;
     }

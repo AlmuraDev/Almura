@@ -112,6 +112,10 @@ repositories {
         name = 'glare'
         url = 'https://repo.glaremasters.me/repository/bloodshot'
     }
+    maven {
+        name = 'ic2'
+        url = 'https://maven.ic2.player.to/'
+    }
 }
 
 configurations.all {
@@ -150,6 +154,8 @@ dependencies {
     }
     // Attempt to use GD 2.0.3 API change.
     compile 'com.griefdefender:api:2.1.0-SNAPSHOT'
+    // IndustrialCraft 2 energy API for machines. Optional at runtime: only used when IC2 is installed, so it's neither shaded nor required.
+    compileOnly 'net.industrial-craft:industrialcraft-2:2.8.220-ex112:api'
     compile "net.kyori:adventure-api:4.9.3"
     compile 'br.net.fabiozumbi12.UltimateChat:UltimateChat-Sponge-56-1.9.1'
     compile 'org.spongepowered:configurate-json:3.5'
