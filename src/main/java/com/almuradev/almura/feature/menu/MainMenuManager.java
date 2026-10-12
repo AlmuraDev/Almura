@@ -14,11 +14,13 @@ import com.almuradev.almura.core.client.config.category.GeneralCategory;
 import com.almuradev.almura.feature.menu.game.SimpleIngameMenu;
 import com.almuradev.almura.feature.menu.main.DisconnectedGui;
 import com.almuradev.almura.feature.menu.main.PanoramicMainMenu;
+import com.almuradev.almura.feature.menu.main.SinglePlayerLoadingGui;
 import com.almuradev.core.event.Witness;
 import com.almuradev.toolbox.config.map.MappedConfiguration;
 import com.google.inject.Inject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiDisconnected;
+import net.minecraft.client.gui.GuiDownloadTerrain;
 import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiMainMenu;
@@ -58,6 +60,10 @@ public class MainMenuManager implements Witness {
             } else if (screen.getClass().equals(GuiIngameMenu.class)) {
                 event.setCanceled(true);
                 new SimpleIngameMenu().display();
+            } else if (screen.getClass().equals(GuiDownloadTerrain.class) && Minecraft.getMinecraft().isIntegratedServerRunning()) {
+                // Joining a single player world
+                event.setCanceled(true);
+                new SinglePlayerLoadingGui().display();
             } else if (screen.getClass().equals(GuiGameOver.class)) {
                 event.setCanceled(true);
                // Cancel this, packet sent to client opens the DeathGUI
