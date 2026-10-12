@@ -9,22 +9,32 @@ package com.almuradev.almura.feature.moc;
 
 import com.almuradev.core.event.Witness;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class MocDrops implements Witness {
 
+    private static final String MOC_MOD_ID = "mocreatures";
+
     boolean debug = false;
 
     @SubscribeEvent
     public void onGetDrops(final LivingDropsEvent event) {
         // This class was built to modify the drops list of MoCreature animals to fit the requirements of Almura.
-        String entityName = event.getEntity().getName();
         Entity entity = event.getEntity();
+        // Match on the registry id (e.g. mocreatures:cod), not the display name, so name-tagged creatures still get their drops and other
+        // mobs can't get them by being named "Cod".
+        final ResourceLocation id = EntityList.getKey(entity);
+        if (id == null || !MOC_MOD_ID.equals(id.getNamespace())) {
+            return;
+        }
+        String entityName = id.getPath();
         int minimum = 4;
         int quantityFound = 0;
         ItemStack dropStack = null;
