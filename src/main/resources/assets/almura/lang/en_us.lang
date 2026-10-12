@@ -2,6 +2,7 @@
 # ---- menu ----
 # --------------
 
+almura.menu.loading.please_wait=Please wait...
 almura.menu.about.person.blood.description=Acknowledgement for past contributions to Almura such as Cauldron.
 almura.menu.about.person.blood.name=Blood
 almura.menu.about.person.blood.titles.0=Developer and co-founder of SpongePowered

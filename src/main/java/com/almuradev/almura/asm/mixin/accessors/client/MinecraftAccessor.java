@@ -18,4 +18,7 @@ import java.util.List;
 public interface MinecraftAccessor {
     // public net.minecraft.client.Minecraft field_110449_ao # defaultResourcePacks
     @Accessor("defaultResourcePacks") List<IResourcePack> accessor$getDefaultResourcePacks();
+
+    // Whether the game is still running (false while it's closing)
+    @Accessor("running") boolean accessor$isRunning();
 }
