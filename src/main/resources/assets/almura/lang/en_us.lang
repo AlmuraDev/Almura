@@ -71,6 +71,7 @@ almura.menu_button.other=Other
 tile.machine.membership_exchange.name=Membership Exchange
 tile.machine.coin_exchange.name=Coin Exchange
 tile.machine.seed_processor.name=Seed Processor
+item.armor.lighted_helmet.name=Lighted Helmet
 
 gui.almura.machine.energy=Energy: %s / %s EU
 gui.almura.machine.no_power_required=No power required
