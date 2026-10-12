@@ -9,6 +9,7 @@ package com.almuradev.almura.feature;
 
 import com.almuradev.almura.asm.mixin.accessors.item.ItemFoodAccessor;
 import com.almuradev.almura.feature.animal.AnimalModule;
+import com.almuradev.almura.feature.armor.ArmorModule;
 import com.almuradev.almura.feature.biome.BiomeModule;
 import com.almuradev.almura.feature.cache.CacheModule;
 import com.almuradev.almura.feature.claim.ClaimModule;
@@ -64,6 +65,7 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.install(new AnimalModule());
         this.install(new TreeFellerModule());
         this.install(new MachineModule());
+        this.install(new ArmorModule());
         // Mo' Creatures drops and fishing: on any side (dedicated server and single player), not just server-side modules
         if (Loader.isModLoaded("mocreatures")) {
             this.install(new MocModule());

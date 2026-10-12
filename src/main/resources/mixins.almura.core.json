@@ -23,6 +23,8 @@
         "client.renderer.tileentity.MixinTileEntitySignRenderer",
         "client.renderer.tileentity.MixinTileEntityChestRenderer",
         "client.MixinChunkProviderClient",
-        "client.MixinLoadingScreenRenderer"
+        "client.MixinLoadingScreenRenderer",
+        "client.MixinWorld_DynamicLight",
+        "client.MixinChunkCache_DynamicLight"
     ]
 }
