@@ -7,14 +7,28 @@
  */
 package com.almuradev.almura.feature.machine;
 
-import com.almuradev.almura.feature.machine.seedprocessor.SeedProcessorBlock;
+import com.almuradev.almura.feature.machine.processing.MachineType;
+import com.almuradev.almura.feature.machine.processing.ProcessingBlock;
+
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Map;
 
 /**
  * Holder so the blocks are only created when first used during block registration, once Almura's item groups (creative tabs) exist.
  */
 public final class MachineBlocks {
 
-    public static final SeedProcessorBlock SEED_PROCESSOR = new SeedProcessorBlock();
+    /** One block per machine type. */
+    public static final Map<MachineType, ProcessingBlock> PROCESSING;
+
+    static {
+        final Map<MachineType, ProcessingBlock> blocks = new EnumMap<>(MachineType.class);
+        for (final MachineType type : MachineType.values()) {
+            blocks.put(type, new ProcessingBlock(type));
+        }
+        PROCESSING = Collections.unmodifiableMap(blocks);
+    }
 
     private MachineBlocks() {
     }

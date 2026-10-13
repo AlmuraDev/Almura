@@ -1,0 +1,4 @@
+newmtl kitchen_slicer
+
+map_Kd almura:block/machine/kitchen_slicer.png
+map_d almura:block/machine/kitchen_slicer.png

@@ -71,11 +71,15 @@ almura.menu_button.other=Other
 tile.machine.membership_exchange.name=Membership Exchange
 tile.machine.coin_exchange.name=Coin Exchange
 tile.machine.seed_processor.name=Seed Processor
+tile.machine.kitchen_slicer.name=Kitchen Slicer & Shredder
+tile.machine.kitchen_grinder.name=Kitchen Grinder
 item.armor.lighted_helmet.name=Lighted Helmet
 
 gui.almura.machine.energy=Energy: %s / %s EU
 gui.almura.machine.no_power_required=No power required
 gui.almura.machine.progress=Progress: %s%%
+gui.almura.machine.start=Start
+gui.almura.machine.stop=Stop
 
 # ----------------------
 # ----    caches    ----

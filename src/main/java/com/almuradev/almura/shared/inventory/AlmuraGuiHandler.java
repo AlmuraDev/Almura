@@ -27,6 +27,10 @@ public final class AlmuraGuiHandler implements IGuiHandler {
     public static final int STORAGE = 0;
     /** The seed processor machine. */
     public static final int SEED_PROCESSOR = 1;
+    /** The kitchen slicer machine. */
+    public static final int KITCHEN_SLICER = 2;
+    /** The kitchen grinder machine. */
+    public static final int KITCHEN_GRINDER = 3;
 
     private static final Map<Integer, IGuiHandler> HANDLERS = new HashMap<>();
     private static boolean registered;

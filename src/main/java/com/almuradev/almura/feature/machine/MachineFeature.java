@@ -8,9 +8,9 @@
 package com.almuradev.almura.feature.machine;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.feature.machine.seedprocessor.SeedProcessorBlock;
-import com.almuradev.almura.feature.machine.seedprocessor.SeedProcessorGuiHandler;
-import com.almuradev.almura.feature.machine.seedprocessor.SeedProcessorTileEntity;
+import com.almuradev.almura.feature.machine.processing.MachineType;
+import com.almuradev.almura.feature.machine.processing.ProcessingBlock;
+import com.almuradev.almura.feature.machine.processing.ProcessingGuiHandler;
 import com.almuradev.almura.shared.inventory.AlmuraGuiHandler;
 import com.almuradev.core.event.Witness;
 import net.minecraft.block.Block;
@@ -31,7 +31,8 @@ import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import javax.inject.Inject;
 
 /**
- * Registers Almura's machines: the seed processor block, its item, tile entity and GUI.
+ * Registers Almura's machines: for every {@link MachineType} (seed processor, kitchen slicer, kitchen grinder) its block, item, tile entity
+ * and GUI.
  */
 public final class MachineFeature extends Witness.Impl implements Witness.Lifecycle {
 
@@ -49,27 +50,31 @@ public final class MachineFeature extends Witness.Impl implements Witness.Lifecy
 
     @Listener
     public void onGamePreInitialization(final GamePreInitializationEvent event) {
-        AlmuraGuiHandler.register(this.plugin, AlmuraGuiHandler.SEED_PROCESSOR, new SeedProcessorGuiHandler());
-        GameRegistry.registerTileEntity(SeedProcessorTileEntity.class, SeedProcessorBlock.ID);
+        for (final MachineType type : MachineType.values()) {
+            AlmuraGuiHandler.register(this.plugin, type.guiId(), new ProcessingGuiHandler());
+            GameRegistry.registerTileEntity(type.tileEntityClass(), type.id());
+        }
     }
 
     @SubscribeEvent
     public void onRegisterBlocks(final RegistryEvent.Register<Block> event) {
-        event.getRegistry().register(MachineBlocks.SEED_PROCESSOR);
+        MachineBlocks.PROCESSING.values().forEach(event.getRegistry()::register);
     }
 
     @SubscribeEvent
     public void onRegisterItems(final RegistryEvent.Register<Item> event) {
-        final ItemBlock item = (ItemBlock) new ItemBlock(MachineBlocks.SEED_PROCESSOR).setRegistryName(SeedProcessorBlock.ID);
-        event.getRegistry().register(item);
+        for (final ProcessingBlock block : MachineBlocks.PROCESSING.values()) {
+            final ItemBlock item = (ItemBlock) new ItemBlock(block).setRegistryName(block.type().id());
+            event.getRegistry().register(item);
 
-        if (FMLCommonHandler.instance().getSide().isClient()) {
-            this.registerInventoryModel(item);
+            if (FMLCommonHandler.instance().getSide().isClient()) {
+                this.registerInventoryModel(item);
+            }
         }
     }
 
     @SideOnly(Side.CLIENT)
     private void registerInventoryModel(final ItemBlock item) {
-        ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(SeedProcessorBlock.ID, "inventory"));
+        ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory"));
     }
 }
