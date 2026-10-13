@@ -44,16 +44,17 @@ import javax.inject.Inject;
 public final class ProcessingBlock extends BlockContainer {
 
     public static final PropertyBool ACTIVE = PropertyBool.create("active");
-    // Hitbox of machines with a shaped model (fits the kitchen slicer, which is about 0.8 blocks tall; the same in every facing)
-    private static final AxisAlignedBB CUSTOM_MODEL_BOX = new AxisAlignedBB(0.04D, 0.0D, 0.04D, 0.96D, 0.8D, 0.96D);
 
     @Inject private static Almura plugin;
 
     private final MachineType type;
+    // Hitbox of a shaped model (the same in every facing)
+    private final AxisAlignedBB modelBox;
 
     public ProcessingBlock(final MachineType type) {
         super(Material.IRON);
         this.type = type;
+        this.modelBox = new AxisAlignedBB(0.04D, 0.0D, 0.04D, 0.96D, Math.min(1.0D, type.modelHeight()), 0.96D);
         if (type.customModel()) {
             // Block's constructor worked these out from isOpaqueCube() before the type was set (as a full cube): correct them
             this.fullBlock = false;
@@ -161,7 +162,7 @@ public final class ProcessingBlock extends BlockContainer {
     @Deprecated
     @Override
     public AxisAlignedBB getBoundingBox(final IBlockState state, final IBlockAccess source, final BlockPos pos) {
-        return this.hasCustomModel() ? CUSTOM_MODEL_BOX : FULL_BLOCK_AABB;
+        return this.hasCustomModel() ? this.modelBox : FULL_BLOCK_AABB;
     }
 
     @Override

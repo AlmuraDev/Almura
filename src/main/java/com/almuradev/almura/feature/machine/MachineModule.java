@@ -7,8 +7,8 @@
  */
 package com.almuradev.almura.feature.machine;
 
-import com.almuradev.almura.feature.machine.kitchen.client.KitchenMachinesClient;
 import com.almuradev.almura.feature.machine.processing.ProcessingBlock;
+import com.almuradev.almura.feature.machine.processing.client.MachinePartsClient;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
@@ -30,8 +30,8 @@ public final class MachineModule extends AbstractModule implements CommonBinder 
                 @Override
                 @SideOnly(Side.CLIENT)
                 protected void configure() {
-                    // The kitchen machines' spinning parts
-                    this.facet().add(KitchenMachinesClient.class);
+                    // The machines' spinning parts
+                    this.facet().add(MachinePartsClient.class);
                 }
             }
             this.install(new ClientModule());

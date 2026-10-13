@@ -24,31 +24,32 @@ import java.util.function.Supplier;
 public enum MachineType {
 
     /** Crops and ingredients into the seeds a crafting table would give. */
-    SEED_PROCESSOR("machine/seed_processor", AlmuraGuiHandler.SEED_PROCESSOR, SeedProcessorRecipes.INSTANCE, false, false,
+    SEED_PROCESSOR("machine/seed_processor", AlmuraGuiHandler.SEED_PROCESSOR, SeedProcessorRecipes.INSTANCE, false, 1.0D,
             SeedProcessorTileEntity.class, SeedProcessorTileEntity::new),
     /** Replaces crafting with the knife and the grater. */
     KITCHEN_SLICER("machine/kitchen_slicer", AlmuraGuiHandler.KITCHEN_SLICER,
-            new ToolRecipes("almura:normal/tool/knife", "almura:normal/tool/grater"), true, true,
+            new ToolRecipes("almura:normal/tool/knife", "almura:normal/tool/grater"), true, 0.8D,
             KitchenSlicerTileEntity.class, KitchenSlicerTileEntity::new),
     /** Replaces crafting with the grinder. */
-    KITCHEN_GRINDER("machine/kitchen_grinder", AlmuraGuiHandler.KITCHEN_GRINDER, new ToolRecipes("almura:normal/tool/grinder"), true, true,
+    KITCHEN_GRINDER("machine/kitchen_grinder", AlmuraGuiHandler.KITCHEN_GRINDER, new ToolRecipes("almura:normal/tool/grinder"), true, 0.8D,
             KitchenGrinderTileEntity.class, KitchenGrinderTileEntity::new);
 
     private final ResourceLocation id;
     private final int guiId;
     private final ProcessingRecipes recipes;
     private final boolean startOnChoice;
-    private final boolean customModel;
+    // Height of the shaped (OBJ) model's hitbox, 0 for a plain full cube
+    private final double modelHeight;
     private final Class<? extends ProcessingTileEntity> tileEntityClass;
     private final Supplier<? extends ProcessingTileEntity> tileEntityFactory;
 
-    MachineType(final String path, final int guiId, final ProcessingRecipes recipes, final boolean startOnChoice, final boolean customModel,
+    MachineType(final String path, final int guiId, final ProcessingRecipes recipes, final boolean startOnChoice, final double modelHeight,
             final Class<? extends ProcessingTileEntity> tileEntityClass, final Supplier<? extends ProcessingTileEntity> tileEntityFactory) {
         this.id = new ResourceLocation(Almura.ID, path);
         this.guiId = guiId;
         this.recipes = recipes;
         this.startOnChoice = startOnChoice;
-        this.customModel = customModel;
+        this.modelHeight = modelHeight;
         this.tileEntityClass = tileEntityClass;
         this.tileEntityFactory = tileEntityFactory;
     }
@@ -66,7 +67,14 @@ public enum MachineType {
      * neighbouring blocks) and its hitbox follows the model.
      */
     public boolean customModel() {
-        return this.customModel;
+        return this.modelHeight > 0;
+    }
+
+    /**
+     * The height of a shaped model's hitbox, in blocks.
+     */
+    public double modelHeight() {
+        return this.modelHeight;
     }
 
     /** The block, item and tile entity registry name. */
