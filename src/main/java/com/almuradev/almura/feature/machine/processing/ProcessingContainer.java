@@ -5,7 +5,7 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.machine.seedprocessor;
+package com.almuradev.almura.feature.machine.processing;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -23,30 +23,40 @@ import java.util.Arrays;
 import javax.annotation.Nonnull;
 
 /**
- * Input slot above, output slot below (laid out to match the seed processor GUI texture), then the player's inventory. Progress and
- * energy are synced to the client as window properties.
+ * Input slot above, output slot below (laid out to match the machine GUI texture), then the player's inventory. Progress, energy and the
+ * selected output are synced to the client as window properties; the GUI's output selector buttons come back through
+ * {@link #enchantItem} (vanilla's container button message, as the enchanting table uses), so no extra packets are needed.
  */
-public final class SeedProcessorContainer extends Container {
+public final class ProcessingContainer extends Container {
 
     public static final int PROPERTY_PROGRESS = 0;
     public static final int PROPERTY_ENERGY = 1;
     public static final int PROPERTY_CAPACITY = 2;
     public static final int PROPERTY_REQUIRES_POWER = 3;
-    private static final int PROPERTY_COUNT = 4;
+    public static final int PROPERTY_SELECTED = 4;
+    public static final int PROPERTY_STARTED = 5;
+    private static final int PROPERTY_COUNT = 6;
+
+    /** Output selector button: previous output. */
+    public static final int BUTTON_PREVIOUS = 0;
+    /** Output selector button: next output. */
+    public static final int BUTTON_NEXT = 1;
+    /** Start / Stop (when the input has a choice of outputs). */
+    public static final int BUTTON_START_STOP = 2;
 
     private static final int MACHINE_SLOTS = 2;
     private static final int PLAYER_SLOTS = 36;
 
-    private final SeedProcessorTileEntity machine;
+    private final ProcessingTileEntity machine;
     // Last values sent to listeners (server) / received from the server (client)
     private final int[] properties = new int[PROPERTY_COUNT];
 
-    public SeedProcessorContainer(final InventoryPlayer playerInventory, final SeedProcessorTileEntity machine) {
+    public ProcessingContainer(final InventoryPlayer playerInventory, final ProcessingTileEntity machine) {
         this.machine = machine;
 
         final IItemHandler inventory = machine.getInventory();
-        this.addSlotToContainer(new SlotItemHandler(inventory, SeedProcessorTileEntity.INPUT_SLOT, 127, 17));
-        this.addSlotToContainer(new SlotItemHandler(inventory, SeedProcessorTileEntity.OUTPUT_SLOT, 127, 62) {
+        this.addSlotToContainer(new SlotItemHandler(inventory, ProcessingTileEntity.INPUT_SLOT, 127, 17));
+        this.addSlotToContainer(new SlotItemHandler(inventory, ProcessingTileEntity.OUTPUT_SLOT, 127, 62) {
             @Override
             public boolean isItemValid(@Nonnull final ItemStack stack) {
                 // Output only
@@ -67,9 +77,26 @@ public final class SeedProcessorContainer extends Container {
         Arrays.fill(this.properties, -1);
     }
 
+    public ProcessingTileEntity machine() {
+        return this.machine;
+    }
+
     @Override
     public boolean canInteractWith(final EntityPlayer player) {
         return this.machine.isUsableByPlayer(player);
+    }
+
+    @Override
+    public boolean enchantItem(final EntityPlayer player, final int id) {
+        if (id == BUTTON_PREVIOUS || id == BUTTON_NEXT) {
+            this.machine.cycleSelection(id == BUTTON_NEXT ? 1 : -1);
+            return true;
+        }
+        if (id == BUTTON_START_STOP) {
+            this.machine.toggleStarted();
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -80,7 +107,9 @@ public final class SeedProcessorContainer extends Container {
                 this.machine.getProgress(),
                 (int) this.machine.getEnergy().stored(),
                 (int) this.machine.getEnergy().capacity(),
-                this.machine.getEnergy().requiresPower() ? 1 : 0
+                this.machine.getEnergy().requiresPower() ? 1 : 0,
+                this.machine.getSelected(),
+                this.machine.isStarted() ? 1 : 0
         };
 
         for (int i = 0; i < current.length; i++) {
@@ -124,9 +153,9 @@ public final class SeedProcessorContainer extends Container {
                 return ItemStack.EMPTY;
             }
             slot.onSlotChange(stack, original);
-        } else if (SeedProcessorRecipes.isInput(stack)) {
+        } else if (this.machine.type().recipes().isInput(stack)) {
             // Player -> input slot
-            if (!this.mergeItemStack(stack, SeedProcessorTileEntity.INPUT_SLOT, SeedProcessorTileEntity.INPUT_SLOT + 1, false)) {
+            if (!this.mergeItemStack(stack, ProcessingTileEntity.INPUT_SLOT, ProcessingTileEntity.INPUT_SLOT + 1, false)) {
                 return ItemStack.EMPTY;
             }
         } else if (index < MACHINE_SLOTS + 27) {

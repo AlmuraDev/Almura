@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.crafting;
 
+import com.almuradev.almura.feature.machine.processing.ProcessingBlock;
 import com.almuradev.content.type.block.type.crop.CropBlock;
 import com.almuradev.core.event.Witness;
 import net.minecraft.block.Block;
@@ -14,6 +15,7 @@ import net.minecraft.block.BlockDoublePlant;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.storage.loot.LootEntry;
 import net.minecraft.world.storage.loot.LootEntryItem;
@@ -94,6 +96,11 @@ public class ItemReturnHelper implements Witness {
     @SubscribeEvent
     public void onItemCraftedEvent(PlayerEvent.ItemCraftedEvent event) {
         if (!(event.craftMatrix instanceof InventoryCrafting)) {
+            return;
+        }
+
+        // Crafting a processing machine (e.g. the kitchen slicer from a knife) uses its tool up: nothing is handed back
+        if (event.crafting.getItem() instanceof ItemBlock && ((ItemBlock) event.crafting.getItem()).getBlock() instanceof ProcessingBlock) {
             return;
         }
 

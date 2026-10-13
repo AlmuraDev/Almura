@@ -1,0 +1,32 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "model": "almura:machine/kitchen_grinder.obj",
+        "transform": "forge:default-block"
+    },
+    "variants": {
+        "inventory": [
+            {
+                "model": "almura:machine/kitchen_grinder.obj"
+            }
+        ],
+        "facing": {
+            "south": {
+                "y": 180.0
+            },
+            "west": {
+                "y": 270.0
+            },
+            "north": {},
+            "east": {
+                "y": 90.0
+            }
+        },
+        "active": {
+            "false": {},
+            "true": {
+                "model": "almura:machine/kitchen_grinder.obj"
+            }
+        }
+    }
+}
