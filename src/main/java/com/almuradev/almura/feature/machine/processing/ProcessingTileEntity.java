@@ -92,8 +92,11 @@ public abstract class ProcessingTileEntity extends TileEntity implements ITickab
     // Whether the block currently shows its active textures; read from the block state on the first tick so it isn't toggled needlessly
     private boolean active;
     private boolean activeKnown;
-    /** Client only: the angle of the machine's spinning part (if it has one), kept when it stops so the part doesn't snap back. */
-    public float spinAngle;
+    /**
+     * Client only: how long the machine's spinning parts (if it has any) have turned for, in ticks; kept when it stops so the parts don't
+     * snap back.
+     */
+    public float spinTicks;
 
     /**
      * Which machine this is.

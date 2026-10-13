@@ -5,13 +5,15 @@
  *
  * All Rights Reserved.
  */
-package com.almuradev.almura.feature.machine.kitchen.client;
+package com.almuradev.almura.feature.machine.processing.client;
 
 import com.almuradev.almura.feature.machine.processing.ProcessingBlock;
 import com.almuradev.almura.feature.machine.processing.ProcessingTileEntity;
+import com.google.common.collect.ImmutableList;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BlockModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -19,58 +21,32 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import javax.annotation.Nullable;
+import java.util.List;
 
 /**
- * Draws a machine's moving part (e.g. the slicer's blade or the grinder's cutting plate, kept out of the block model) every frame, spinning
- * around its axle while the machine is running. When it stops the part stays where it was.
+ * Draws a machine's moving parts (see {@link SpinningPart}) every frame, each spinning around its own axle while the machine is running.
+ * When it stops the parts stay where they were.
  */
 @SideOnly(Side.CLIENT)
 public final class SpinningPartRenderer<T extends ProcessingTileEntity> extends TileEntitySpecialRenderer<T> {
 
-    private final ResourceLocation modelLocation;
-    // A point on the axle and its direction, in block units (matching the models, which face north)
-    private final float axleX;
-    private final float axleY;
-    private final float axleZ;
-    private final float axisX;
-    private final float axisY;
-    private final float axisZ;
-    private final float degreesPerTick;
+    private final List<SpinningPart> parts;
 
-    /** Baked when models are (see KitchenMachinesClient); null until then. */
-    @Nullable IBakedModel model;
-
-    /**
-     * @param modelLocation the part's OBJ model
-     * @param axle a point on the axle (x, y, z)
-     * @param axis the axle's direction (x, y, z)
-     * @param degreesPerTick spin speed while running
-     */
-    SpinningPartRenderer(final ResourceLocation modelLocation, final float[] axle, final float[] axis, final float degreesPerTick) {
-        this.modelLocation = modelLocation;
-        this.axleX = axle[0];
-        this.axleY = axle[1];
-        this.axleZ = axle[2];
-        this.axisX = axis[0];
-        this.axisY = axis[1];
-        this.axisZ = axis[2];
-        this.degreesPerTick = degreesPerTick;
+    SpinningPartRenderer(final SpinningPart... parts) {
+        this.parts = ImmutableList.copyOf(parts);
     }
 
-    ResourceLocation modelLocation() {
-        return this.modelLocation;
+    List<SpinningPart> parts() {
+        return this.parts;
     }
 
     @Override
     public void render(final T te, final double x, final double y, final double z, final float partialTicks, final int destroyStage,
             final float alpha) {
-        final IBakedModel model = this.model;
-        if (model == null || !te.hasWorld()) {
+        if (!te.hasWorld()) {
             return;
         }
 
@@ -79,9 +55,9 @@ public final class SpinningPartRenderer<T extends ProcessingTileEntity> extends 
             return;
         }
 
-        // Spin while running; when stopped, stay at the last angle rather than snapping back
+        // Spin while running; when stopped, stay where they were rather than snapping back
         if (state.getValue(ProcessingBlock.ACTIVE)) {
-            te.spinAngle = ((te.getWorld().getTotalWorldTime() + partialTicks) * this.degreesPerTick) % 360.0F;
+            te.spinTicks = te.getWorld().getTotalWorldTime() + partialTicks;
         }
 
         this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
@@ -93,18 +69,26 @@ public final class SpinningPartRenderer<T extends ProcessingTileEntity> extends 
         GlStateManager.rotate(-facingDegrees(state.getValue(BlockHorizontal.FACING)), 0.0F, 1.0F, 0.0F);
         GlStateManager.translate(-0.5F, 0.0F, -0.5F);
 
-        // Spin around the axle
-        GlStateManager.translate(this.axleX, this.axleY, this.axleZ);
-        GlStateManager.rotate(te.spinAngle, this.axisX, this.axisY, this.axisZ);
-        GlStateManager.translate(-this.axleX, -this.axleY, -this.axleZ);
-
-        // Lit like the block it's in
+        // Lit like the block they're in
         RenderHelper.disableStandardItemLighting();
         final int light = te.getWorld().getCombinedLight(te.getPos(), 0);
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, light % 65536, light / 65536);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
-        Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelRenderer().renderModelBrightnessColor(model, 1.0F, 1.0F, 1.0F, 1.0F);
+        final BlockModelRenderer renderer = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelRenderer();
+        for (final SpinningPart part : this.parts) {
+            final IBakedModel model = part.model;
+            if (model == null) {
+                continue;
+            }
+            // Spin around the part's axle
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(part.axleX, part.axleY, part.axleZ);
+            GlStateManager.rotate((te.spinTicks * part.degreesPerTick) % 360.0F, part.axisX, part.axisY, part.axisZ);
+            GlStateManager.translate(-part.axleX, -part.axleY, -part.axleZ);
+            renderer.renderModelBrightnessColor(model, 1.0F, 1.0F, 1.0F, 1.0F);
+            GlStateManager.popMatrix();
+        }
 
         RenderHelper.enableStandardItemLighting();
         GlStateManager.popMatrix();
