@@ -1,13 +1,13 @@
 {
     "forge_marker": 1,
     "defaults": {
-        "model": "almura:machine/seed_processor",
+        "model": "almura:machine/seed_processor.obj",
         "transform": "forge:default-block"
     },
     "variants": {
         "inventory": [
             {
-                "model": "almura:machine/seed_processor"
+                "model": "almura:machine/seed_processor.obj"
             }
         ],
         "facing": {
@@ -25,7 +25,7 @@
         "active": {
             "false": {},
             "true": {
-                "model": "almura:machine/seed_processor_active"
+                "model": "almura:machine/seed_processor.obj"
             }
         }
     }
