@@ -36,6 +36,28 @@ public abstract class ProcessingRecipes {
     protected abstract Entry entryFor(IRecipe recipe);
 
     /**
+     * Adds recipes that don't come from crafting (e.g. the wash plant's), alongside those from {@link #entryFor}.
+     */
+    protected void addFixedEntries(final List<Entry> entries) {
+    }
+
+    /**
+     * @return the outputs the player picks between up front, the same whatever the input (e.g. the wash plant's gravel / gold / iron
+     * modes), in {@link #recipesFor} order; empty when the choice depends on the input instead
+     */
+    public List<ProcessingRecipe> modes() {
+        return Collections.emptyList();
+    }
+
+    /**
+     * @return what the GUI's selector chooses between: the {@link #modes} if there are any, otherwise the input's recipes
+     */
+    public final List<ProcessingRecipe> selectable(final ItemStack input) {
+        final List<ProcessingRecipe> modes = this.modes();
+        return modes.isEmpty() ? this.recipesFor(input) : modes;
+    }
+
+    /**
      * @return what the machine can make from {@code input}: the same list in the same order on the client and the server (the GUI's output
      * selector refers to it by index). When several recipes make the same output, only the one using the fewest inputs is kept.
      */
@@ -89,6 +111,7 @@ public abstract class ProcessingRecipes {
                     found.add(entry);
                 }
             }
+            this.addFixedEntries(found);
             this.entries = found;
             this.recipeCount = count;
         }
@@ -135,8 +158,12 @@ public abstract class ProcessingRecipes {
         final ProcessingRecipe recipe;
 
         public Entry(final Ingredient input, final int inputCount, final ItemStack output) {
+            this(input, inputCount, output, 1);
+        }
+
+        public Entry(final Ingredient input, final int inputCount, final ItemStack output, final double chance) {
             this.input = input;
-            this.recipe = new ProcessingRecipe(inputCount, output.copy());
+            this.recipe = new ProcessingRecipe(inputCount, output.copy(), chance);
         }
     }
 }

@@ -12,6 +12,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.almuradev.almura.feature.hud.ClientHeadUpDisplayManager;
 import com.almuradev.almura.feature.hud.screen.AbstractHUD;
 import com.almuradev.almura.feature.hud.screen.origin.OriginHUD;
+import com.almuradev.almura.feature.notification.history.ClientNotificationHistory;
+import com.almuradev.almura.feature.notification.history.NotificationRecord;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.feature.notification.type.WindowNotification;
 import com.almuradev.core.event.Witness;
@@ -43,10 +45,12 @@ public final class ClientNotificationManager implements Witness {
     private long fadeout = 0L;
 
     private final ClientHeadUpDisplayManager manager;
+    private final ClientNotificationHistory history;
 
     @Inject
-    public ClientNotificationManager(final ClientHeadUpDisplayManager manager) {
+    public ClientNotificationManager(final ClientHeadUpDisplayManager manager, final ClientNotificationHistory history) {
         this.manager = manager;
+        this.history = history;
     }
 
     @SubscribeEvent
@@ -97,11 +101,14 @@ public final class ClientNotificationManager implements Witness {
     public void handlePopup(final PopupNotification notification) {
         checkNotNull(notification);
 
+        this.history.record(NotificationRecord.TYPE_POPUP, notification.getTitle(), notification.getMessage());
         this.popupNotifications.offer(notification);
     }
 
     public void handleWindow(final WindowNotification notification) {
         checkNotNull(notification);
+
+        this.history.record(NotificationRecord.TYPE_WINDOW, notification.getTitle(), notification.getMessage());
 
         final AbstractHUD hud = this.manager.getHUDDirect();
 

@@ -25,6 +25,10 @@ public final class MachineBlocks {
     static {
         final Map<MachineType, ProcessingBlock> blocks = new EnumMap<>(MachineType.class);
         for (final MachineType type : MachineType.values()) {
+            // Machines whose required mod is missing (the wash plant without IndustrialCraft 2) don't exist
+            if (!type.available()) {
+                continue;
+            }
             blocks.put(type, new ProcessingBlock(type));
         }
         PROCESSING = Collections.unmodifiableMap(blocks);

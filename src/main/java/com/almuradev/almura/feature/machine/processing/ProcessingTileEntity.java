@@ -16,15 +16,27 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.fluids.FluidActionResult;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidTankProperties;
+import net.minecraftforge.fluids.capability.templates.EmptyFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.List;
+import java.util.Random;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,6 +45,8 @@ import javax.annotation.Nullable;
  * A furnace-like processing machine: turns the input into what its {@link MachineType}'s crafting recipes make, over {@link #PROCESS_TICKS}
  * ticks, using {@link #ENERGY_PER_TICK} EU per tick while working when IndustrialCraft 2 is installed (free otherwise). Progress pauses while
  * there is no power and resets when the input is removed. When the input has several recipes, the player picks the output in the GUI.
+ * Machines that use water (see {@link MachineType#usesWater}) also need {@link MachineType#waterPerOperation} mB of water per operation, from
+ * a tank filled by pipes from above or by water containers (buckets, cells, ...) put in the GUI.
  *
  * <p>Each machine has a small subclass only so it can be registered as its own tile entity.</p>
  */
@@ -40,6 +54,9 @@ public abstract class ProcessingTileEntity extends TileEntity implements ITickab
 
     public static final int INPUT_SLOT = 0;
     public static final int OUTPUT_SLOT = 1;
+    // Machines that use water (see MachineType#usesWater) also have a slot for water containers and one for the emptied containers
+    public static final int WATER_INPUT_SLOT = 2;
+    public static final int WATER_OUTPUT_SLOT = 3;
 
     // About 1.65 seconds per operation
     public static final int PROCESS_TICKS = 33;
@@ -50,14 +67,21 @@ public abstract class ProcessingTileEntity extends TileEntity implements ITickab
     // IC2 tier 1 = LV, up to 32 EU/t
     public static final int ENERGY_TIER = 1;
 
+    private static final Random RANDOM = new Random();
+    // How often a machine with a working sound plays it while working
+    private static final int SOUND_INTERVAL = 20;
     private static final String TAG_INVENTORY = "Inventory";
     private static final String TAG_PROGRESS = "Progress";
     private static final String TAG_SELECTED = "Selected";
     private static final String TAG_STARTED = "Started";
+    private static final String TAG_WATER = "Water";
 
-    private final ItemStackHandler inventory = new ItemStackHandler(2) {
+    private final ItemStackHandler inventory = new ItemStackHandler(this.type().usesWater() ? 4 : 2) {
         @Override
         public boolean isItemValid(final int slot, @Nonnull final ItemStack stack) {
+            if (slot == WATER_INPUT_SLOT) {
+                return isWaterContainer(stack);
+            }
             return slot == INPUT_SLOT && ProcessingTileEntity.this.type().recipes().isInput(stack);
         }
 
@@ -76,6 +100,11 @@ public abstract class ProcessingTileEntity extends TileEntity implements ITickab
     // Power from the rear, top or bottom
     private final MachineEnergy energy = MachineEnergy.create(this, ENERGY_CAPACITY, ENERGY_TIER,
             side -> side == EnumFacing.UP || side == EnumFacing.DOWN || side == this.facing().getOpposite());
+
+    // Water, for machines that use it: only water goes in, and nothing outside the machine can take it back out
+    @Nullable private final FluidTank water = this.type().usesWater() ? new WaterTank(this.type().waterCapacity()) : null;
+    // Pipes fill the tank from above
+    private final IFluidHandler waterAccess = new WaterAccess();
 
     private int progress;
     // Which of the input's recipes is made (the GUI's output selector)
@@ -108,6 +137,13 @@ public abstract class ProcessingTileEntity extends TileEntity implements ITickab
         return this.energy;
     }
 
+    /**
+     * @return the water in the tank, in mB (0 for machines that don't use water)
+     */
+    public int getWater() {
+        return this.water == null ? 0 : this.water.getFluidAmount();
+    }
+
     public int getProgress() {
         return this.progress;
     }
@@ -120,7 +156,7 @@ public abstract class ProcessingTileEntity extends TileEntity implements ITickab
      * Picks the previous ({@code -1}) or next ({@code 1}) output for the current input, starting the operation over.
      */
     public void cycleSelection(final int direction) {
-        final List<ProcessingRecipe> recipes = this.type().recipes().recipesFor(this.inventory.getStackInSlot(INPUT_SLOT));
+        final List<ProcessingRecipe> recipes = this.type().recipes().selectable(this.inventory.getStackInSlot(INPUT_SLOT));
         if (recipes.size() < 2) {
             return;
         }
@@ -163,6 +199,7 @@ public abstract class ProcessingTileEntity extends TileEntity implements ITickab
         }
 
         this.energy.update();
+        this.fillFromContainer();
         this.refreshRecipe();
 
         boolean worked = false;
@@ -177,6 +214,10 @@ public abstract class ProcessingTileEntity extends TileEntity implements ITickab
             // Without power progress simply pauses
             worked = true;
             this.progress++;
+            final SoundEvent sound = this.type().sound();
+            if (sound != null && this.world.getTotalWorldTime() % SOUND_INTERVAL == 0) {
+                this.world.playSound(null, this.pos, sound, SoundCategory.BLOCKS, 1f, 1f);
+            }
             if (this.progress >= PROCESS_TICKS) {
                 this.process();
                 this.progress = 0;
@@ -202,8 +243,10 @@ public abstract class ProcessingTileEntity extends TileEntity implements ITickab
         this.recipeDirty = false;
 
         final ItemStack input = this.inventory.getStackInSlot(INPUT_SLOT);
-        // An empty slot keeps the selection (and Start), so refills of the same item carry on; a different item starts over
-        if (!input.isEmpty() && !ItemHandlerHelper.canItemStacksStack(input, this.selectedFor)) {
+        // An empty slot keeps the selection (and Start), so refills of the same item carry on; a different item starts over.
+        // Machines with modes keep the mode whatever goes in.
+        if (!input.isEmpty() && this.type().recipes().modes().isEmpty()
+                && !ItemHandlerHelper.canItemStacksStack(input, this.selectedFor)) {
             this.selected = 0;
             this.started = false;
             this.selectedFor = ItemHandlerHelper.copyStackWithSize(input, 1);
@@ -229,6 +272,10 @@ public abstract class ProcessingTileEntity extends TileEntity implements ITickab
         if (this.needsStart && !this.started) {
             return false;
         }
+        // Machines that use water wait until there's enough for an operation
+        if (this.water != null && this.water.getFluidAmount() < this.type().waterPerOperation()) {
+            return false;
+        }
 
         final ItemStack output = this.recipe.output();
         final ItemStack current = this.inventory.getStackInSlot(OUTPUT_SLOT);
@@ -246,17 +293,75 @@ public abstract class ProcessingTileEntity extends TileEntity implements ITickab
             return;
         }
 
-        final ItemStack output = recipe.output();
-        final ItemStack current = this.inventory.getStackInSlot(OUTPUT_SLOT);
-        if (current.isEmpty()) {
-            this.inventory.setStackInSlot(OUTPUT_SLOT, output);
-        } else {
-            final ItemStack grown = current.copy();
-            grown.grow(output.getCount());
-            this.inventory.setStackInSlot(OUTPUT_SLOT, grown);
+        // Chance recipes (the wash plant's nuggets) use up the input whether or not they make anything
+        if (recipe.chance() >= 1 || RANDOM.nextDouble() < recipe.chance()) {
+            final ItemStack output = recipe.output();
+            final ItemStack current = this.inventory.getStackInSlot(OUTPUT_SLOT);
+            if (current.isEmpty()) {
+                this.inventory.setStackInSlot(OUTPUT_SLOT, output);
+            } else {
+                final ItemStack grown = current.copy();
+                grown.grow(output.getCount());
+                this.inventory.setStackInSlot(OUTPUT_SLOT, grown);
+            }
         }
 
         this.inventory.extractItem(INPUT_SLOT, recipe.inputCount(), false);
+        if (this.water != null) {
+            this.water.drain(this.type().waterPerOperation(), true);
+        }
+    }
+
+    /**
+     * Empties one water container (bucket, cell, ...) from the water slot into the tank, if it all fits and the emptied container has
+     * somewhere to go.
+     */
+    private void fillFromContainer() {
+        if (this.water == null) {
+            return;
+        }
+        final ItemStack container = this.inventory.getStackInSlot(WATER_INPUT_SLOT);
+        final int space = this.water.getCapacity() - this.water.getFluidAmount();
+        if (container.isEmpty() || space <= 0) {
+            return;
+        }
+
+        final FluidActionResult simulated = FluidUtil.tryEmptyContainer(container, this.water, space, null, false);
+        if (!simulated.isSuccess() || !this.fitsWaterOutput(simulated.getResult())) {
+            return;
+        }
+
+        final FluidActionResult result = FluidUtil.tryEmptyContainer(container, this.water, space, null, true);
+        if (!result.isSuccess()) {
+            return;
+        }
+        this.inventory.extractItem(WATER_INPUT_SLOT, 1, false);
+        final ItemStack emptied = result.getResult();
+        if (!emptied.isEmpty()) {
+            final ItemStack current = this.inventory.getStackInSlot(WATER_OUTPUT_SLOT);
+            if (current.isEmpty()) {
+                this.inventory.setStackInSlot(WATER_OUTPUT_SLOT, emptied);
+            } else {
+                final ItemStack grown = current.copy();
+                grown.grow(emptied.getCount());
+                this.inventory.setStackInSlot(WATER_OUTPUT_SLOT, grown);
+            }
+        }
+        this.markDirty();
+    }
+
+    private boolean fitsWaterOutput(final ItemStack emptied) {
+        if (emptied.isEmpty()) {
+            return true;
+        }
+        final ItemStack current = this.inventory.getStackInSlot(WATER_OUTPUT_SLOT);
+        return current.isEmpty() || (ItemHandlerHelper.canItemStacksStack(current, emptied)
+                && current.getCount() + emptied.getCount() <= current.getMaxStackSize());
+    }
+
+    static boolean isWaterContainer(final ItemStack stack) {
+        final FluidStack contained = FluidUtil.getFluidContained(stack);
+        return contained != null && contained.getFluid() == FluidRegistry.WATER;
     }
 
     @Override
@@ -293,6 +398,9 @@ public abstract class ProcessingTileEntity extends TileEntity implements ITickab
         final ItemStack input = this.inventory.getStackInSlot(INPUT_SLOT);
         this.selectedFor = input.isEmpty() ? ItemStack.EMPTY : ItemHandlerHelper.copyStackWithSize(input, 1);
         this.energy.readFromNBT(compound);
+        if (this.water != null) {
+            this.water.readFromNBT(compound.getCompoundTag(TAG_WATER));
+        }
         this.recipeDirty = true;
     }
 
@@ -304,6 +412,9 @@ public abstract class ProcessingTileEntity extends TileEntity implements ITickab
         compound.setInteger(TAG_SELECTED, this.selected);
         compound.setBoolean(TAG_STARTED, this.started);
         this.energy.writeToNBT(compound);
+        if (this.water != null) {
+            compound.setTag(TAG_WATER, this.water.writeToNBT(new NBTTagCompound()));
+        }
         return compound;
     }
 
@@ -339,6 +450,9 @@ public abstract class ProcessingTileEntity extends TileEntity implements ITickab
 
     @Override
     public boolean hasCapability(@Nonnull final Capability<?> capability, @Nullable final EnumFacing facing) {
+        if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && this.water != null && facing == EnumFacing.UP) {
+            return true;
+        }
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             return this.itemAccess(facing) != null;
         }
@@ -348,6 +462,9 @@ public abstract class ProcessingTileEntity extends TileEntity implements ITickab
     @Nullable
     @Override
     public <T> T getCapability(@Nonnull final Capability<T> capability, @Nullable final EnumFacing facing) {
+        if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && this.water != null && facing == EnumFacing.UP) {
+            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(this.waterAccess);
+        }
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             final IItemHandler handler = this.itemAccess(facing);
             return handler == null ? null : CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(handler);
@@ -396,6 +513,51 @@ public abstract class ProcessingTileEntity extends TileEntity implements ITickab
         @Override
         public int getSlotLimit(final int slot) {
             return ProcessingTileEntity.this.inventory.getSlotLimit(this.slot);
+        }
+    }
+
+    /**
+     * A tank that only holds water.
+     */
+    private static final class WaterTank extends FluidTank {
+
+        WaterTank(final int capacity) {
+            super(capacity);
+        }
+
+        @Override
+        public boolean canFillFluidType(final FluidStack fluid) {
+            return fluid != null && fluid.getFluid() == FluidRegistry.WATER;
+        }
+    }
+
+    /**
+     * The tank as pipes see it: water can be piped in, never out.
+     */
+    private final class WaterAccess implements IFluidHandler {
+
+        @Override
+        public IFluidTankProperties[] getTankProperties() {
+            final FluidTank tank = ProcessingTileEntity.this.water;
+            return tank == null ? EmptyFluidHandler.EMPTY_TANK_PROPERTIES_ARRAY : tank.getTankProperties();
+        }
+
+        @Override
+        public int fill(final FluidStack resource, final boolean doFill) {
+            final FluidTank tank = ProcessingTileEntity.this.water;
+            return tank == null ? 0 : tank.fill(resource, doFill);
+        }
+
+        @Nullable
+        @Override
+        public FluidStack drain(final FluidStack resource, final boolean doDrain) {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public FluidStack drain(final int maxDrain, final boolean doDrain) {
+            return null;
         }
     }
 }

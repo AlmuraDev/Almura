@@ -33,6 +33,12 @@ public interface BlockStateDefinition {
 
         void lightOpacity(final int opacity);
 
+        void drip(final boolean drip);
+
+        void flicker(final boolean flicker);
+
+        void rotatePlacement(final boolean rotatePlacement);
+
         void opaque(final boolean opaque);
 
         void resistance(final float resistance);

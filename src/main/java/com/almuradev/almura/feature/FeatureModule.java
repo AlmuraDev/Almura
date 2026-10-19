@@ -20,6 +20,7 @@ import com.almuradev.almura.feature.exchange.ExchangeModule;
 import com.almuradev.almura.feature.guide.GuideModule;
 import com.almuradev.almura.feature.hud.HeadUpDisplayModule;
 import com.almuradev.almura.feature.machine.MachineModule;
+import com.almuradev.almura.feature.lighting.FlickerLightModule;
 import com.almuradev.almura.feature.membership.MembershipModule;
 import com.almuradev.almura.feature.menu.ingame.FeaturesModule;
 import com.almuradev.almura.feature.moc.MocModule;
@@ -76,6 +77,7 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.install(new ClaimModule());
         this.install(new MembershipModule());
         this.install(new SkillsModule());
+        this.install(new FlickerLightModule());
 
         if (SpongeImplHooks.isDeobfuscatedEnvironment()) {
             this.loadServerSideModules(); // Force loading this because it will fail the Platform.Type checks below during normal startup.

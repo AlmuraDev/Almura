@@ -149,7 +149,7 @@ dependencies {
     compile 'io.github.nucleuspowered:nucleus-api:2.4.0'
     // Remember to update this entry for LuckPerms if the API gets behind the currently plugin version being used.
     compile "net.luckperms:api:5.3"
-    deobfCompile ('com.almuradev:malisiscore:1.12.2-6.5.3-SNAPSHOT') {
+    deobfProvided ('com.almuradev:malisiscore:1.12.2-6.5.3-SNAPSHOT') {
         transitive = false
     }
     // Attempt to use GD 2.0.3 API change.
@@ -157,7 +157,9 @@ dependencies {
     // IndustrialCraft 2 energy API for machines. Optional at runtime: only used when IC2 is installed, so it's neither shaded nor required.
     compileOnly 'net.industrial-craft:industrialcraft-2:2.8.220-ex112:api'
     compile "net.kyori:adventure-api:4.9.3"
-    compile 'br.net.fabiozumbi12.UltimateChat:UltimateChat-Sponge-56-1.9.1'
+    // UltimateChat is a server plugin: compile against it, but don't load it in the dev client (its startup fails without a server).
+    // Almura only uses it when the plugin is installed (see UchatUtil).
+    compileOnly 'br.net.fabiozumbi12.UltimateChat:UltimateChat-Sponge-56-1.9.1'
     compile 'org.spongepowered:configurate-json:3.5'
     compile 'org.inspirenxe:skills:1.0.0-SNAPSHOT:api'
     compile 'com.almuradev:toolbox:1.0.0-SNAPSHOT'

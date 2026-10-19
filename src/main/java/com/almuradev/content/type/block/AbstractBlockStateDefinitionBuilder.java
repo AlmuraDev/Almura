@@ -30,6 +30,9 @@ public abstract class AbstractBlockStateDefinitionBuilder<D extends BlockStateDe
     protected OptionalDouble lightEmission = OptionalDouble.empty();
     protected OptionalInt lightOpacity = OptionalInt.empty();
     protected @Nullable Boolean opaque;
+    protected @Nullable Boolean drip;
+    protected @Nullable Boolean flicker;
+    protected @Nullable Boolean rotatePlacement;
     protected OptionalDouble resistance = OptionalDouble.empty();
     @Nullable protected Delegate<BlockSoundGroup> sound;
     @Nullable protected Delegate<BlockDestroyAction> destroyAction;
@@ -81,6 +84,21 @@ public abstract class AbstractBlockStateDefinitionBuilder<D extends BlockStateDe
     @Override
     public void lightOpacity(final int opacity) {
         this.lightOpacity = OptionalInt.of(opacity);
+    }
+
+    @Override
+    public void rotatePlacement(final boolean rotatePlacement) {
+        this.rotatePlacement = rotatePlacement;
+    }
+
+    @Override
+    public void flicker(final boolean flicker) {
+        this.flicker = flicker;
+    }
+
+    @Override
+    public void drip(final boolean drip) {
+        this.drip = drip;
     }
 
     @Override
@@ -136,6 +154,9 @@ public abstract class AbstractBlockStateDefinitionBuilder<D extends BlockStateDe
             if (!that.lightEmission.isPresent() && this.lightEmission.isPresent()) that.lightEmission = this.lightEmission;
             if (!that.lightOpacity.isPresent() && this.lightOpacity.isPresent()) that.lightOpacity = this.lightOpacity;
             if (that.opaque == null && this.opaque != null) that.opaque = this.opaque;
+            if (that.drip == null && this.drip != null) that.drip = this.drip;
+            if (that.flicker == null && this.flicker != null) that.flicker = this.flicker;
+            if (that.rotatePlacement == null && this.rotatePlacement != null) that.rotatePlacement = this.rotatePlacement;
             if (!that.resistance.isPresent() && this.resistance.isPresent()) that.resistance = this.resistance;
             if (that.sound == null && this.sound != null) that.sound = this.sound;
             if (that.destroyAction == null && this.destroyAction != null) that.destroyAction = this.destroyAction;

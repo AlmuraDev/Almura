@@ -42,6 +42,9 @@ public interface BlockConfig {
          * @see Light
          */
         String LIGHT = "light";
+        String DRIP = "drip";
+        String FLICKER = "flicker";
+        String ROTATE_PLACEMENT = "rotate_placement";
         String OPAQUE = "opaque";
         String RESISTANCE = "resistance";
         /**

@@ -1,0 +1,32 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "model": "almura:machine/washplant",
+        "transform": "forge:default-block"
+    },
+    "variants": {
+        "inventory": [
+            {
+                "model": "almura:machine/washplant"
+            }
+        ],
+        "facing": {
+            "south": {
+                "y": 180.0
+            },
+            "west": {
+                "y": 270.0
+            },
+            "north": {},
+            "east": {
+                "y": 90.0
+            }
+        },
+        "active": {
+            "false": {},
+            "true": {
+                "model": "almura:machine/washplant_active"
+            }
+        }
+    }
+}

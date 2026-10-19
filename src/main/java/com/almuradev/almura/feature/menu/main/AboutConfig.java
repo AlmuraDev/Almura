@@ -38,8 +38,6 @@ public final class AboutConfig {
             new Entry("grinch", UUID.fromString("7c104888-df99-4224-a8ba-2c4e15dbc777"), TextColors.DARK_GREEN, 3),
             // Wifee
             new Entry("wifee", UUID.fromString("5f757396-8bc7-4dff-8b1f-37fd454a86b7"), TextColors.LIGHT_PURPLE, 1),
-            // Wolfeyeamd0
-            new Entry("chimwolfeye", UUID.fromString("fa1ee43f-8949-41c6-ab61-e50bd864943a"), TextColors.RED, 2),
             // Mumfrey
             new Entry("mumfrey", UUID.fromString("e8e0361e-9b3b-481a-b06a-5c314a6c1ef0"), TextColors.GRAY, 2),
             // KratosKnox

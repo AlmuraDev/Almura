@@ -35,7 +35,9 @@ public final class ProcessingContainer extends Container {
     public static final int PROPERTY_REQUIRES_POWER = 3;
     public static final int PROPERTY_SELECTED = 4;
     public static final int PROPERTY_STARTED = 5;
-    private static final int PROPERTY_COUNT = 6;
+    public static final int PROPERTY_WATER = 6;
+    public static final int PROPERTY_WATER_CAPACITY = 7;
+    private static final int PROPERTY_COUNT = 8;
 
     /** Output selector button: previous output. */
     public static final int BUTTON_PREVIOUS = 0;
@@ -44,15 +46,17 @@ public final class ProcessingContainer extends Container {
     /** Start / Stop (when the input has a choice of outputs). */
     public static final int BUTTON_START_STOP = 2;
 
-    private static final int MACHINE_SLOTS = 2;
     private static final int PLAYER_SLOTS = 36;
 
     private final ProcessingTileEntity machine;
+    // Input and output, plus the water container slots on machines that use water
+    private final int machineSlots;
     // Last values sent to listeners (server) / received from the server (client)
     private final int[] properties = new int[PROPERTY_COUNT];
 
     public ProcessingContainer(final InventoryPlayer playerInventory, final ProcessingTileEntity machine) {
         this.machine = machine;
+        this.machineSlots = machine.type().usesWater() ? 4 : 2;
 
         final IItemHandler inventory = machine.getInventory();
         this.addSlotToContainer(new SlotItemHandler(inventory, ProcessingTileEntity.INPUT_SLOT, 127, 17));
@@ -63,6 +67,16 @@ public final class ProcessingContainer extends Container {
                 return false;
             }
         });
+        if (machine.type().usesWater()) {
+            // Water containers go in on the left, the emptied containers come out below
+            this.addSlotToContainer(new SlotItemHandler(inventory, ProcessingTileEntity.WATER_INPUT_SLOT, 60, 17));
+            this.addSlotToContainer(new SlotItemHandler(inventory, ProcessingTileEntity.WATER_OUTPUT_SLOT, 60, 62) {
+                @Override
+                public boolean isItemValid(@Nonnull final ItemStack stack) {
+                    return false;
+                }
+            });
+        }
 
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
@@ -109,7 +123,9 @@ public final class ProcessingContainer extends Container {
                 (int) this.machine.getEnergy().capacity(),
                 this.machine.getEnergy().requiresPower() ? 1 : 0,
                 this.machine.getSelected(),
-                this.machine.isStarted() ? 1 : 0
+                this.machine.isStarted() ? 1 : 0,
+                this.machine.getWater(),
+                this.machine.type().waterCapacity()
         };
 
         for (int i = 0; i < current.length; i++) {
@@ -147,23 +163,28 @@ public final class ProcessingContainer extends Container {
         final ItemStack stack = slot.getStack();
         final ItemStack original = stack.copy();
 
-        if (index < MACHINE_SLOTS) {
+        if (index < this.machineSlots) {
             // Machine -> player inventory
-            if (!this.mergeItemStack(stack, MACHINE_SLOTS, MACHINE_SLOTS + PLAYER_SLOTS, true)) {
+            if (!this.mergeItemStack(stack, this.machineSlots, this.machineSlots + PLAYER_SLOTS, true)) {
                 return ItemStack.EMPTY;
             }
             slot.onSlotChange(stack, original);
+        } else if (this.machine.type().usesWater() && ProcessingTileEntity.isWaterContainer(stack)) {
+            // Player -> water container slot
+            if (!this.mergeItemStack(stack, ProcessingTileEntity.WATER_INPUT_SLOT, ProcessingTileEntity.WATER_INPUT_SLOT + 1, false)) {
+                return ItemStack.EMPTY;
+            }
         } else if (this.machine.type().recipes().isInput(stack)) {
             // Player -> input slot
             if (!this.mergeItemStack(stack, ProcessingTileEntity.INPUT_SLOT, ProcessingTileEntity.INPUT_SLOT + 1, false)) {
                 return ItemStack.EMPTY;
             }
-        } else if (index < MACHINE_SLOTS + 27) {
+        } else if (index < this.machineSlots + 27) {
             // Main inventory -> hotbar
-            if (!this.mergeItemStack(stack, MACHINE_SLOTS + 27, MACHINE_SLOTS + PLAYER_SLOTS, false)) {
+            if (!this.mergeItemStack(stack, this.machineSlots + 27, this.machineSlots + PLAYER_SLOTS, false)) {
                 return ItemStack.EMPTY;
             }
-        } else if (!this.mergeItemStack(stack, MACHINE_SLOTS, MACHINE_SLOTS + 27, false)) {
+        } else if (!this.mergeItemStack(stack, this.machineSlots, this.machineSlots + 27, false)) {
             // Hotbar -> main inventory
             return ItemStack.EMPTY;
         }

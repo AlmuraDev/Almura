@@ -44,6 +44,7 @@ import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
 import com.almuradev.almura.feature.exchange.listing.ListItem;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
+import com.almuradev.almura.shared.util.ItemNameUtil;
 import net.kyori.violet.AbstractModule;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -106,10 +107,10 @@ public final class ExchangeModule extends AbstractModule implements CommonBinder
 
         FilterRegistry.instance
             .<ListItem>registerFilter(ID + "_item_display_name", (target, value) ->
-                    target.asRealStack().getDisplayName().toLowerCase().contains(value.toLowerCase()))
+                    ItemNameUtil.getDisplayName(target.asRealStack()).toLowerCase().contains(value.toLowerCase()))
             .<ListItem>registerFilter(ID + "_seller_name", (target, value) ->
                     target.getSellerName().isPresent() && target.getSellerName().get().toLowerCase().contains(value.toLowerCase()))
-            .<ListItem>registerComparator(ID + "_item_display_name", Comparator.comparing(k -> k.asRealStack().getDisplayName().toLowerCase()))
+            .<ListItem>registerComparator(ID + "_item_display_name", Comparator.comparing(k -> ItemNameUtil.getDisplayName(k.asRealStack()).toLowerCase()))
             .<ListItem>registerComparator(ID + "_seller_name", Comparator.comparing(v -> v.getSellerName().orElse("").toLowerCase()))
             .<ListItem>registerComparator(ID + "_price", Comparator.comparing(l -> {
                     final ForSaleItem item = l.getForSaleItem().orElse(null);

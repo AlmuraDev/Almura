@@ -13,6 +13,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @ConfigSerializable
 @SideOnly(Side.CLIENT)
 public final class GeneralCategory {
@@ -55,6 +58,12 @@ public final class GeneralCategory {
 
     @Setting(value = "display-location-widget", comment = "Toggles the right-side location widget of the Origin HUD")
     public boolean displayLocationWidget = true;
+
+    @Setting(value = "flickering-lights", comment = "Toggles the flicker of flickering lights. When off they shine steadily")
+    public boolean flickeringLights = true;
+
+    @Setting(value = "hud-skills", comment = "Skills shown in the bottom-right corner of the Origin HUD (crafting, digger, farming, mining, woodcutting)")
+    public List<String> hudSkills = new ArrayList<>();
 
     @Setting(value = "display-numeric-hud-values", comment = "Toggles the display of numeric values in the Origin HUD")
     public boolean displayNumericHUDValues = true;

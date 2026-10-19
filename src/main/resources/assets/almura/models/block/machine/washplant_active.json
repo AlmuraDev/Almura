@@ -1,0 +1,8 @@
+{
+    "parent": "almura:block/machine/washplant",
+    "textures": {
+        "north": "almura:block/machine/washplant_front_active",
+        "east": "almura:block/machine/washplant_side_active",
+        "west": "almura:block/machine/washplant_side_active"
+    }
+}

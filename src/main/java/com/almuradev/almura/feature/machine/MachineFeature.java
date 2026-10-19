@@ -11,12 +11,15 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.machine.processing.MachineType;
 import com.almuradev.almura.feature.machine.processing.ProcessingBlock;
 import com.almuradev.almura.feature.machine.processing.ProcessingGuiHandler;
+import com.almuradev.almura.feature.machine.washplant.WashPlantCraftingRecipe;
 import com.almuradev.almura.shared.inventory.AlmuraGuiHandler;
 import com.almuradev.core.event.Witness;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.util.SoundEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -51,6 +54,9 @@ public final class MachineFeature extends Witness.Impl implements Witness.Lifecy
     @Listener
     public void onGamePreInitialization(final GamePreInitializationEvent event) {
         for (final MachineType type : MachineType.values()) {
+            if (!type.available()) {
+                continue;
+            }
             AlmuraGuiHandler.register(this.plugin, type.guiId(), new ProcessingGuiHandler());
             GameRegistry.registerTileEntity(type.tileEntityClass(), type.id());
         }
@@ -59,6 +65,24 @@ public final class MachineFeature extends Witness.Impl implements Witness.Lifecy
     @SubscribeEvent
     public void onRegisterBlocks(final RegistryEvent.Register<Block> event) {
         MachineBlocks.PROCESSING.values().forEach(event.getRegistry()::register);
+    }
+
+    @SubscribeEvent
+    public void onRegisterSounds(final RegistryEvent.Register<SoundEvent> event) {
+        for (final ProcessingBlock block : MachineBlocks.PROCESSING.values()) {
+            final SoundEvent sound = block.type().sound();
+            if (sound != null) {
+                event.getRegistry().register(sound);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onRegisterRecipes(final RegistryEvent.Register<IRecipe> event) {
+        // The wash plant recipe uses IC2's items, so its class is only touched when IC2 is installed
+        if (MachineType.WASHPLANT.available()) {
+            WashPlantCraftingRecipe.register();
+        }
     }
 
     @SubscribeEvent

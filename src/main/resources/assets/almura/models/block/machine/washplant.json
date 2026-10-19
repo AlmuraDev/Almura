@@ -1,0 +1,12 @@
+{
+    "parent": "minecraft:block/cube",
+    "textures": {
+        "particle": "almura:block/machine/washplant",
+        "down": "almura:block/machine/washplant",
+        "up": "almura:block/machine/washplant",
+        "south": "almura:block/machine/washplant",
+        "north": "almura:block/machine/washplant_front",
+        "east": "almura:block/machine/washplant_side",
+        "west": "almura:block/machine/washplant_side"
+    }
+}

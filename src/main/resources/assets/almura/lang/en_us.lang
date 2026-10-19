@@ -3,7 +3,7 @@
 # --------------
 
 almura.menu.loading.please_wait=Please wait...
-almura.menu.about.person.blood.description=Acknowledgement for past contributions to Almura such as Cauldron.
+almura.menu.about.person.blood.description=Acknowledgement for past contributions to Almura such as Cauldron and Sponge.
 almura.menu.about.person.blood.name=Blood
 almura.menu.about.person.blood.titles.0=Developer and co-founder of SpongePowered
 almura.menu.about.person.blood.titles.1=Former owner/developer of Cauldron
@@ -28,10 +28,7 @@ almura.menu.about.person.mumfrey.titles.1=Creator and maintainer of Mixin ASM fo
 almura.menu.about.person.wifee.description=Wifee is the designer behind a majority of graphics and models seen in Almura.
 almura.menu.about.person.wifee.name=Wifee
 almura.menu.about.person.wifee.titles.0=Lead Graphics and Model artist for Almura
-almura.menu.about.person.chimwolfeye.description=Chimwolfeye has stuck with Almura through both good and bad times. She is by far the most loyal person to Almura.
-almura.menu.about.person.chimwolfeye.name=Chimwolfeye
-almura.menu.about.person.chimwolfeye.titles.0=Lead Moderator
-almura.menu.about.person.chimwolfeye.titles.1=Destroyer of Worlds
+almura.menu.about.person.wifee.titles.1=Destroyer of Worlds
 almura.menu.about.person.zidane.description=Zidane is the biggest driving force behind Almura. Without him this project would simply not be where it stands today.
 almura.menu.about.person.zidane.name=Zidane
 almura.menu.about.person.zidane.titles.0=Lead developer and co-founder of SpongePowered
@@ -39,7 +36,7 @@ almura.menu.about.person.zidane.titles.1=Lead developer and Co-Owner of Almura D
 almura.menu.about.person.zidane.titles.2=Former Spoutcraft/Spout developer
 almura.menu.about.titles=Titles
 
-almura.menu.main.copyright=Almura Development Studios, Copyright 2012-2024
+almura.menu.main.copyright=Almura Development Studios, Copyright 2012-2027
 almura.menu.main.opengl.0=Warning! This graphics card does not support OpenGL 2.0.
 almura.menu.main.opengl.1=Future versions of Minecraft may not be compatible.
 almura.menu.main.trademark=Minecraft is a registered trademark of Mojang AB
@@ -73,6 +70,7 @@ tile.machine.coin_exchange.name=Coin Exchange
 tile.machine.seed_processor.name=Seed Processor
 tile.machine.kitchen_slicer.name=Kitchen Slicer & Shredder
 tile.machine.kitchen_grinder.name=Kitchen Grinder
+tile.machine.washplant.name=Wash Plant
 item.armor.lighted_helmet.name=Lighted Helmet
 
 gui.almura.machine.energy=Energy: %s / %s EU
@@ -80,6 +78,8 @@ gui.almura.machine.no_power_required=No power required
 gui.almura.machine.progress=Progress: %s%%
 gui.almura.machine.start=Start
 gui.almura.machine.stop=Stop
+gui.almura.machine.chance=%s%% chance per wash
+gui.almura.machine.water=Water: %s / %s mB (%s mB per wash)
 
 # ----------------------
 # ----    caches    ----
@@ -263,3 +263,5 @@ item.glass_cruet.name=Glass Cruet
 item.glass_water_cruet.name=Water Filled Cruet
 item.glass_milk_cruet.name=Milk Filled Cruet
 item.collector_wand.name=Collector Wand
+almura.subtitle.light.flicker=Light flickers
+almura.subtitle.machine.washplant=Wash plant churns

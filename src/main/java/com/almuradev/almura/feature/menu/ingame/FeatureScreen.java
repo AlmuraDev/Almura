@@ -12,6 +12,8 @@ import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.feature.guide.ClientPageManager;
 import com.almuradev.almura.feature.membership.ClientMembershipManager;
 import com.almuradev.almura.feature.nick.ClientNickManager;
+import com.almuradev.almura.feature.notification.history.NotificationHistoryScreen;
+import com.almuradev.almura.feature.skills.client.gui.SkillsScreen;
 import com.almuradev.almura.feature.store.client.ClientStoreManager;
 import com.almuradev.almura.feature.title.ClientTitleManager;
 import net.malisis.core.client.gui.Anchor;
@@ -39,7 +41,7 @@ public final class FeatureScreen extends BasicScreen {
   private int lastUpdate = 0;
   private boolean unlockMouse = true;
   private boolean isAdmin;
-  private UIButton guideButton, titleButton, nicknameButton, manageExchangeButton, manageStoreButton, accessoriesButton, claimButton, membershipButton;
+  private UIButton guideButton, titleButton, nicknameButton, manageExchangeButton, manageStoreButton, accessoriesButton, claimButton, membershipButton, skillsButton, notificationsButton;
 
   private World world;
   private EntityPlayerSP player;
@@ -64,10 +66,10 @@ public final class FeatureScreen extends BasicScreen {
     Keyboard.enableRepeatEvents(true);
 
     // Main Panel
-    final BasicForm form = new BasicForm(this, 150, 220, "Almura Features");
+    final BasicForm form = new BasicForm(this, 150, 256, "Almura Features");
 
     if (!isAdmin) {
-      form.setSize(form.getWidth(), 150);
+      form.setSize(form.getWidth(), 186);
     }
 
     // Guide button
@@ -125,9 +127,27 @@ public final class FeatureScreen extends BasicScreen {
         .onClick(() -> membershipManager.requestMembershipGUI())
         .build("button.memberships");
 
+    // Skills button
+    skillsButton = new UIButtonBuilder(this)
+        .width(100)
+        .anchor(Anchor.TOP | Anchor.CENTER)
+        .position(0, membershipButton.getY() + 18)
+        .text("Skills")
+        .onClick(() -> new SkillsScreen(this).display())
+        .build("button.skills");
+
+    // Notifications button
+    notificationsButton = new UIButtonBuilder(this)
+        .width(100)
+        .anchor(Anchor.TOP | Anchor.CENTER)
+        .position(0, skillsButton.getY() + 18)
+        .text("Notifications")
+        .onClick(() -> new NotificationHistoryScreen(this).display())
+        .build("button.notifications");
+
     final UISeparator functionsSeparator = new UISeparator(this);
     functionsSeparator.setSize(form.getWidth(), 1);
-    functionsSeparator.setPosition(0, membershipButton.getY() + 22, Anchor.TOP | Anchor.CENTER);
+    functionsSeparator.setPosition(0, notificationsButton.getY() + 22, Anchor.TOP | Anchor.CENTER);
     functionsSeparator.setVisible(isAdmin);
 
     final UILabel adminLabel = new UILabel(this, "Administrator");
@@ -137,7 +157,7 @@ public final class FeatureScreen extends BasicScreen {
 
     final UISeparator functionsSeparator2 = new UISeparator(this);
     functionsSeparator2.setSize(form.getWidth(), 1);
-    functionsSeparator2.setPosition(0, membershipButton.getY() + 37, Anchor.TOP | Anchor.CENTER);
+    functionsSeparator2.setPosition(0, notificationsButton.getY() + 37, Anchor.TOP | Anchor.CENTER);
     functionsSeparator2.setVisible(isAdmin);
 
     // Manage Exchange button
@@ -168,7 +188,7 @@ public final class FeatureScreen extends BasicScreen {
         .onClick(this::close)
         .build("button.close");
 
-    form.add(guideButton, manageExchangeButton, titleButton, nicknameButton, functionsSeparator, adminLabel, functionsSeparator2, accessoriesButton, membershipButton, manageStoreButton, claimButton, buttonClose);
+    form.add(guideButton, manageExchangeButton, titleButton, nicknameButton, functionsSeparator, adminLabel, functionsSeparator2, accessoriesButton, membershipButton, skillsButton, notificationsButton, manageStoreButton, claimButton, buttonClose);
 
     addToScreen(form);
   }

@@ -15,6 +15,7 @@ import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIBossBarP
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIDetailsPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UINotificationPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIPlayerListPanel;
+import com.almuradev.almura.feature.hud.screen.origin.component.panel.UISkillsPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIUserPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.UIWorldPanel;
 import com.almuradev.almura.feature.hud.screen.origin.component.panel.debug.InformationDebugPanel;
@@ -47,6 +48,7 @@ public class OriginHUD extends AbstractHUD {
     private LookingDebugPanel debugBlockPanel;
     private UIDetailsPanel detailsPanel;
     private UIPlayerListPanel playerListPanel;
+    private UISkillsPanel skillsPanel;
     private UIUserPanel userPanel;
     private UIWorldPanel worldPanel;
     public UINotificationPanel notificationPanel;
@@ -97,8 +99,12 @@ public class OriginHUD extends AbstractHUD {
         this.playerListPanel = new UIPlayerListPanel(this, 150, 16);
         this.playerListPanel.setPosition(0, 40, Anchor.TOP | Anchor.CENTER);
 
+        // Skills panel
+        this.skillsPanel = new UISkillsPanel(this, 124);
+        this.skillsPanel.setPosition(0, 0, Anchor.BOTTOM | Anchor.RIGHT);
+
         addToScreen(this.userPanel, this.debugBlockPanel, this.notificationPanel, this.worldPanel, this.detailsPanel, this.debugDetailsPanel, this.bossBarPanel,
-                this.playerListPanel);
+                this.playerListPanel, this.skillsPanel);
     }
 
     public boolean handleScroll() {
@@ -119,6 +125,9 @@ public class OriginHUD extends AbstractHUD {
         this.detailsPanel.setAlpha(general.originHudOpacity);
 
         this.worldPanel.setVisible(general.displayWorldCompassWidget);
+
+        this.skillsPanel.refresh();
+        this.skillsPanel.setAlpha(general.originHudOpacity);
 
         if (manager.getCurrent() == null) {
             this.notificationPanel.setAlpha(Math.max(this.notificationPanel.getAlpha() - 2, 0));

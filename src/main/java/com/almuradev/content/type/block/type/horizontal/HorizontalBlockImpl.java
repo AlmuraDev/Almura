@@ -7,6 +7,8 @@
  */
 package com.almuradev.content.type.block.type.horizontal;
 
+import com.almuradev.content.type.block.flicker.FlickerLightTileEntity;
+import com.almuradev.content.type.block.flicker.FlickerLights;
 import com.almuradev.content.type.block.type.horizontal.state.HorizontalBlockStateDefinition;
 import net.kyori.lunar.PrimitiveOptionals;
 import net.minecraft.block.BlockHorizontal;
@@ -15,8 +17,10 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Explosion;
@@ -28,6 +32,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.annotation.Nullable;
 
@@ -134,7 +139,12 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
     @Override
     public int getLightValue(final IBlockState state, final IBlockAccess world, final BlockPos pos) {
         if (state != null) {
-            return this.getLightValue(state);
+            final int lightValue = this.getLightValue(state);
+            // Flickering lights only dim on the client; the server always gets the steady light
+            if (this.isFlicker(state)) {
+                return FlickerLights.getLightValue(world, pos, lightValue);
+            }
+            return lightValue;
         } else {
             //System.out.println("getLightValue Fallback2 = 0");
             return 0;
@@ -178,7 +188,13 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
     @Deprecated
     @Override
     public IBlockState getStateForPlacement(final World world, final BlockPos pos, final EnumFacing facing, final float hitX, final float hitY, final float hitZ, final int meta, final EntityLivingBase placer) {
-        return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
+        EnumFacing placed = placer.getHorizontalFacing().getOpposite();
+        // e.g. straight pipes, whose model runs across the facing: placed against the side of a block (such as the end of another pipe),
+        // turn them so they continue out from that block. Placed on a floor or ceiling, they keep the usual facing.
+        if (facing.getAxis().isHorizontal() && this.definition(EnumFacing.NORTH).rotatePlacement) {
+            placed = facing.rotateY();
+        }
+        return this.getDefaultState().withProperty(FACING, placed);
     }
 
     @Deprecated
@@ -202,5 +218,43 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
     @Override
     public boolean isTopSolid(IBlockState state) {
         return true;
+    }
+
+    private boolean isFlicker(final IBlockState state) {
+        // Can be asked before the states are filled in during construction
+        if (this.states == null) {
+            return false;
+        }
+        final HorizontalBlockStateDefinition definition = this.definition(state);
+        return definition != null && definition.flicker;
+    }
+    @Override
+    public boolean hasTileEntity(final IBlockState state) {
+        return this.isFlicker(state);
+    }
+
+    @Nullable
+    @Override
+    public TileEntity createTileEntity(final World world, final IBlockState state) {
+        return this.isFlicker(state) ? new FlickerLightTileEntity() : null;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void randomDisplayTick(final IBlockState state, final World world, final BlockPos pos, final Random random) {
+        final EnumFacing facing = state.getValue(FACING);
+        final HorizontalBlockStateDefinition definition = this.definition(facing);
+        // Same odds as water dripping through the block below it
+        if (!definition.drip || random.nextInt(10) != 0) {
+            return;
+        }
+
+        // Drip from the underside of the block's shape, near its middle where the pipe runs
+        final AxisAlignedBB box = definition.box(facing);
+        final double bottom = box != null ? box.minY : 0;
+        final double x = pos.getX() + 0.35 + random.nextDouble() * 0.3;
+        final double y = pos.getY() + bottom - 0.05;
+        final double z = pos.getZ() + 0.35 + random.nextDouble() * 0.3;
+        world.spawnParticle(EnumParticleTypes.DRIP_WATER, x, y, z, 0, 0, 0);
     }
 }

@@ -28,6 +28,12 @@ public abstract class AbstractBlockStateDefinition<B extends BlockAABB.Box, C ex
     public final OptionalDouble lightEmission;
     public final OptionalInt lightOpacity;
     public final @Nullable Boolean opaque;
+    /** Whether water drips from the bottom of this block, like water above stone or dirt. */
+    public final boolean drip;
+    /** Whether the block is a light that flickers on the client (the server always sees its steady light). */
+    public final boolean flicker;
+    /** Whether the block, placed against the side of another block, is turned a quarter so it continues out from that block (e.g. straight pipes). */
+    public final boolean rotatePlacement;
     public final OptionalDouble resistance;
     @Nullable public final Delegate<BlockSoundGroup> sound;
     @Nullable public final Delegate<BlockDestroyAction> destroyAction;
@@ -43,6 +49,9 @@ public abstract class AbstractBlockStateDefinition<B extends BlockAABB.Box, C ex
         this.lightEmission = builder.lightEmission;
         this.lightOpacity = builder.lightOpacity;
         this.opaque = builder.opaque;
+        this.drip = builder.drip != null && builder.drip;
+        this.flicker = builder.flicker != null && builder.flicker;
+        this.rotatePlacement = builder.rotatePlacement != null && builder.rotatePlacement;
         this.resistance = builder.resistance;
         this.sound = builder.sound;
         this.destroyAction = builder.destroyAction;
