@@ -7,66 +7,40 @@
  */
 package com.almuradev.almura.feature.biome.asm.mixin.core.world.biome;
 
+import com.almuradev.almura.feature.biome.BiomeColors;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+/**
+ * Gives grass and leaves the colors of the TerrainControl biome at that position.
+ *
+ * <p>Injects instead of overwriting (the old overwrites were disabled because they didn't work with
+ * OptiFine), so other mods that hook these methods still run. BiomeSwamp and BiomeMesa have their own
+ * versions of these methods, see {@link MixinBiomeSwamp} and {@link MixinBiomeMesa}.</p>
+ */
+@SideOnly(Side.CLIENT)
 @Mixin(Biome.class)
 public abstract class MixinBiome {
 
-    /**
-     * @author Zidane - Chris Sanders
-     * @reason Have Grass color use temperature/rainfall.
-     */
-
-    //Todo: this code works as long as you don't use optifine...
-    /*
-    @Overwrite
-    @SideOnly(Side.CLIENT)
-    public int getGrassColorAtPos(BlockPos pos) {
-        final BiomeChunk chunk = BiomeUtil.getChunk(pos);
-
-        float temperature;
-        float rainfall;
-
-        if (chunk == null) {
-            temperature = ((Biome) (Object) this).getTemperature(pos);
-            rainfall = ((Biome) (Object) this).getRainfall();
-        } else {
-            temperature = chunk.getTemperature(pos, (Biome) (Object) this);
-            rainfall = chunk.getRainfall(pos, (Biome) (Object) this);
+    @Inject(method = "getGrassColorAtPos", at = @At("HEAD"), cancellable = true)
+    private void almura$onGetGrassColorAtPos(final BlockPos pos, final CallbackInfoReturnable<Integer> cir) {
+        final Integer color = BiomeColors.getGrassColor((Biome) (Object) this, pos);
+        if (color != null) {
+            cir.setReturnValue(color);
         }
+    }
 
-        double d0 = (double) MathHelper.clamp(temperature, 0.0F, 1.0F);
-        double d1 = (double) MathHelper.clamp(rainfall, 0.0F, 1.0F);
-        return ((Biome) (Object) this).getModdedBiomeGrassColor(ColorizerGrass.getGrassColor(d0, d1));
-    } */
-
-    /**
-     * @author Zidane - Chris Sanders
-     * @reason Have Foilage color use temperature/rainfall.
-     */
-
-    //Todo: this code works as long as you don't use optifine...
-
-    /*
-    @Overwrite
-    @SideOnly(Side.CLIENT)
-    public int getFoliageColorAtPos(BlockPos pos) {
-        final BiomeChunk chunk = BiomeUtil.getChunk(pos);
-
-        float temperature;
-        float rainfall;
-
-        if (chunk == null) {
-            temperature = ((Biome) (Object) this).getTemperature(pos);
-            rainfall = ((Biome) (Object) this).getRainfall();
-        } else {
-            temperature = chunk.getTemperature(pos, (Biome) (Object) this);
-            rainfall = chunk.getRainfall(pos, (Biome) (Object) this);
+    @Inject(method = "getFoliageColorAtPos", at = @At("HEAD"), cancellable = true)
+    private void almura$onGetFoliageColorAtPos(final BlockPos pos, final CallbackInfoReturnable<Integer> cir) {
+        final Integer color = BiomeColors.getFoliageColor((Biome) (Object) this, pos);
+        if (color != null) {
+            cir.setReturnValue(color);
         }
-
-        double d0 = (double) MathHelper.clamp(temperature, 0.0F, 1.0F);
-        double d1 = (double) MathHelper.clamp(rainfall, 0.0F, 1.0F);
-        return ((Biome) (Object) this).getModdedBiomeFoliageColor(ColorizerFoliage.getFoliageColor(d0, d1));
-    } */
+    }
 }

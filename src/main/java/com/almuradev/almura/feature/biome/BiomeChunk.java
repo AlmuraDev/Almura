@@ -15,6 +15,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 @SideOnly(Side.CLIENT)
 public final class BiomeChunk {
 
@@ -85,6 +87,14 @@ public final class BiomeChunk {
         }
 
         return config.getWaterColor();
+    }
+
+    /**
+     * @return The server's config for the biome at this position, or null if the server didn't send one
+     */
+    @Nullable
+    public BiomeConfig getConfig(final BlockPos pos) {
+        return this.configs.get(this.getBiomeId(pos));
     }
 
     private int getBiomeId(final BlockPos pos) {

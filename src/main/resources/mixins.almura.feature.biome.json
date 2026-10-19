@@ -16,6 +16,8 @@
         "minecraftforge.client.MixinForgeHooksClient",
         "world.MixinWorld",
         "world.biome.MixinBiome",
-        "world.biome.MixinBiomeColorHelper"
+        "world.biome.MixinBiomeColorHelper",
+        "world.biome.MixinBiomeMesa",
+        "world.biome.MixinBiomeSwamp"
     ]
 }
