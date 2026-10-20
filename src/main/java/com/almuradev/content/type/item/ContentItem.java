@@ -34,6 +34,8 @@ public interface ContentItem extends CatalogedContent, ItemGrouped {
     }
 
     interface Builder<C extends ContentItem> extends ContentBuilder<C> {
+        void container(final ItemContainer container);
+
         void durability(final int durability);
 
         void itemGroup(final Delegate<ItemGroup> itemGroup);

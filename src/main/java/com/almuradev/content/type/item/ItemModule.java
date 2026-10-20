@@ -9,6 +9,7 @@ package com.almuradev.content.type.item;
 
 import com.almuradev.content.ContentType;
 import com.almuradev.content.loader.MultiTypeProcessorBinder;
+import com.almuradev.content.type.item.processor.ContainerProcessor;
 import com.almuradev.content.type.item.processor.DurabilityProcessor;
 import com.almuradev.content.type.item.processor.ItemGroupProcessor;
 import com.almuradev.content.type.item.processor.MaxStackSizeProcessor;
@@ -36,6 +37,7 @@ public final class ItemModule extends AbstractModule implements CoreBinder {
             @Override
             protected void configure() {
                 this.processors()
+                        .all(ContainerProcessor.class)
                         .all(DurabilityProcessor.class)
                         .all(ItemGroupProcessor.class)
                         .all(MaxStackSizeProcessor.class);

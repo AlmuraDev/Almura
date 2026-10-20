@@ -1,5 +1,6 @@
 {
     "recipes": {
-        "cache_shaped": "com.almuradev.almura.feature.cache.recipe.CacheRecipeFactory"
+        "cache_shaped": "com.almuradev.almura.feature.cache.recipe.CacheRecipeFactory",
+        "shaped_consume_tools": "com.almuradev.almura.feature.machine.processing.ConsumeToolsRecipeFactory"
     }
 }

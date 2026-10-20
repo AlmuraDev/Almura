@@ -11,28 +11,25 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.complex.item.ComplexItem;
 import com.almuradev.content.type.itemgroup.ItemGroup;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.fluids.FluidActionResult;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Sponge;
@@ -41,9 +38,11 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+/**
+ * Water filled cruet. Right click to place the water (not in dimensions where water evaporates, like the Nether); tanks and machines
+ * can empty it through its fluid handler. Recipes using it leave the empty cruet behind.
+ */
 public final class GlassWaterCruetItem extends ComplexItem {
-
-    private final Block containedBlock = Blocks.WATER; // This will change based on the type of item.
 
     public GlassWaterCruetItem() {
         super(new ResourceLocation(Almura.ID, "normal/ingredient/glass_water_cruet"), "glass_water_cruet");
@@ -61,76 +60,50 @@ public final class GlassWaterCruetItem extends ComplexItem {
         return false;
     }
 
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
-        ItemStack itemstack = playerIn.getHeldItem(handIn);
-        RayTraceResult raytraceresult = this.rayTrace(worldIn, playerIn, false);
-
-        if (raytraceresult == null) {
-            return new ActionResult<>(EnumActionResult.PASS, itemstack);
-        } else if (raytraceresult.typeOfHit != RayTraceResult.Type.BLOCK) {
-            return new ActionResult<>(EnumActionResult.PASS, itemstack);
-        } else {
-
-            BlockPos blockpos = raytraceresult.getBlockPos();
-            if (!worldIn.isBlockModifiable(playerIn, blockpos)) {
-                return new ActionResult<>(EnumActionResult.FAIL, itemstack);
-            } else {
-                boolean flag1 = worldIn.getBlockState(blockpos).getBlock().isReplaceable(worldIn, blockpos);
-                BlockPos blockpos1 = flag1 && raytraceresult.sideHit == EnumFacing.UP ? blockpos : blockpos.offset(raytraceresult.sideHit);
-
-                if (!playerIn.canPlayerEdit(blockpos1, raytraceresult.sideHit, itemstack)) {
-                    return new ActionResult<>(EnumActionResult.FAIL, itemstack);
-                } else if (this.tryPlaceContainedLiquid(playerIn, worldIn, blockpos1)) {
-                    if (playerIn instanceof EntityPlayerMP) {
-                        CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP) playerIn, blockpos1, itemstack);
-                    }
-                    ItemStack glass_cruet = GameRegistry.makeItemStack("almura:normal/ingredient/glass_cruet", 0, 1, null);
-
-                    return new ActionResult<>(EnumActionResult.SUCCESS, this.emptyCruet(itemstack, playerIn, glass_cruet.getItem()));
-                } else {
-                    return new ActionResult<>(EnumActionResult.FAIL, itemstack);
-                }
-            }
-        }
-    }
-
-    private ItemStack emptyCruet(ItemStack glass_water_cruet, EntityPlayer player, Item glass_cruet) {
-        if (player.capabilities.isCreativeMode) {
-            return glass_water_cruet;
-        } else {
-            glass_water_cruet.shrink(1);
-
-            if (glass_water_cruet.isEmpty()) {
-                return new ItemStack(glass_cruet);
-            } else {
-                if (!player.inventory.addItemStackToInventory(new ItemStack(glass_cruet))) {
-                    player.dropItem(new ItemStack(glass_cruet), false);
-                }
-
-                return glass_water_cruet;
-            }
-        }
-    }
-
-    private boolean tryPlaceContainedLiquid(@Nullable EntityPlayer player, World worldIn, BlockPos posIn) {
-        IBlockState iblockstate = worldIn.getBlockState(posIn);
-        Material material = iblockstate.getMaterial();
-        boolean solidMaterial = !material.isSolid();
-        boolean isReplaceable = iblockstate.getBlock().isReplaceable(worldIn, posIn);
-
-        if (!worldIn.isAirBlock(posIn) && !solidMaterial && !isReplaceable) {
-            return false;
-        } else {
-            if (!worldIn.isRemote && (solidMaterial || isReplaceable) && !material.isLiquid()) {
-                worldIn.destroyBlock(posIn, true);
-            }
-
-            SoundEvent soundevent = SoundEvents.ITEM_BUCKET_EMPTY;
-            worldIn.playSound(player, posIn, soundevent, SoundCategory.BLOCKS, 1.0F, 1.0F);
-            worldIn.setBlockState(posIn, this.containedBlock.getDefaultState(), 11);
-        }
-
+    @Override
+    public boolean hasContainerItem(final ItemStack stack) {
         return true;
+    }
+
+    @Override
+    public ItemStack getContainerItem(final ItemStack stack) {
+        return Cruets.empty();
+    }
+
+    @Override
+    public ICapabilityProvider initCapabilities(final ItemStack stack, @Nullable final NBTTagCompound nbt) {
+        return new CruetFluidHandler(stack);
+    }
+
+    @Override
+    public ActionResult<ItemStack> onItemRightClick(final World world, final EntityPlayer player, final EnumHand hand) {
+        final ItemStack held = player.getHeldItem(hand);
+        final RayTraceResult hit = this.rayTrace(world, player, false);
+        if (hit == null || hit.typeOfHit != RayTraceResult.Type.BLOCK) {
+            return new ActionResult<>(EnumActionResult.PASS, held);
+        }
+
+        final BlockPos clicked = hit.getBlockPos();
+        if (!world.isBlockModifiable(player, clicked)) {
+            return new ActionResult<>(EnumActionResult.FAIL, held);
+        }
+
+        final boolean replaceable = world.getBlockState(clicked).getBlock().isReplaceable(world, clicked);
+        final BlockPos target = replaceable && hit.sideHit == EnumFacing.UP ? clicked : clicked.offset(hit.sideHit);
+        if (!player.canPlayerEdit(target, hit.sideHit, held)) {
+            return new ActionResult<>(EnumActionResult.FAIL, held);
+        }
+
+        // Places the water through the cruet's fluid handler (handles evaporating dimensions and the empty sound)
+        final FluidActionResult result = FluidUtil.tryPlaceFluid(player, world, target, held, new FluidStack(FluidRegistry.WATER, Cruets.CAPACITY));
+        if (!result.isSuccess()) {
+            return new ActionResult<>(EnumActionResult.FAIL, held);
+        }
+
+        if (player instanceof EntityPlayerMP) {
+            CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP) player, target, held);
+        }
+        return new ActionResult<>(EnumActionResult.SUCCESS, Cruets.exchange(held, player, result.getResult()));
     }
 
     @SideOnly(Side.CLIENT)

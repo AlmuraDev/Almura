@@ -10,6 +10,8 @@ package com.almuradev.content.type.item.mixin.impl;
 import com.almuradev.almura.asm.mixin.accessors.item.ItemAccessor;
 import com.almuradev.content.component.delegate.Delegate;
 import com.almuradev.content.type.item.ContentItem;
+import com.almuradev.content.type.item.ItemContainer;
+import com.almuradev.content.type.item.mixin.iface.IMixinContainerItem;
 import com.almuradev.content.type.item.type.food.FoodItemImpl;
 import com.almuradev.content.type.item.type.normal.NormalItemImpl;
 import com.almuradev.content.type.item.type.seed.SeedItemImpl;
@@ -21,6 +23,7 @@ import com.almuradev.content.type.item.type.tool.type.sickle.SickleToolItemImpl;
 import com.almuradev.content.type.itemgroup.ItemGroup;
 import com.almuradev.content.type.itemgroup.mixin.iface.IMixinLazyItemGroup;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 
 import java.util.Optional;
@@ -37,8 +40,24 @@ import javax.annotation.Nullable;
     SlabItemImpl.class,
     SickleToolItemImpl.class
 })
-public abstract class MixinContentItem extends MixinItem implements ContentItem, IMixinLazyItemGroup {
+public abstract class MixinContentItem extends MixinItem implements ContentItem, IMixinLazyItemGroup, IMixinContainerItem {
     @Nullable private Delegate<ItemGroup> lazyItemGroup;
+    @Nullable private ItemContainer almura$container;
+
+    @Override
+    public void container(@Nullable final ItemContainer container) {
+        this.almura$container = container;
+    }
+
+    // Forge container item: what a recipe leaves behind in the crafting grid when it uses this item (see ItemContainer)
+
+    public boolean hasContainerItem(final ItemStack stack) {
+        return this.almura$container != null;
+    }
+
+    public ItemStack getContainerItem(final ItemStack stack) {
+        return this.almura$container == null ? ItemStack.EMPTY : this.almura$container.getContainerFor(stack);
+    }
 
     @Override
     public Optional<ItemGroup> itemGroup() {

@@ -9,7 +9,6 @@ package com.almuradev.content.type.item.type.food;
 
 import com.almuradev.almura.asm.mixin.accessors.item.ItemAccessor;
 import com.almuradev.almura.asm.mixin.accessors.item.ItemFoodAccessor;
-import com.almuradev.almura.feature.crafting.ItemReturnHelper;
 import com.almuradev.content.component.apply.Apply;
 import com.almuradev.content.component.apply.context.ItemOnlyApplyContext;
 import com.almuradev.content.component.apply.impl.FoodLevelChangeApply;
@@ -101,8 +100,13 @@ public final class FoodItemImpl extends ItemFood implements FoodItem {
                 CriteriaTriggers.CONSUME_ITEM.trigger((EntityPlayerMP)entityplayer, stack);
             }
 
-            // Return Re-Usable Items
-            ItemReturnHelper.returnReusableItem(entityplayer, stack.getTranslationKey(), stack, null, false);
+            // Hand back the bottle, bowl, ... (the item's container, the same one crafting leaves behind)
+            if (!worldIn.isRemote && this.hasContainerItem(stack)) {
+                final ItemStack container = this.getContainerItem(stack);
+                if (!container.isEmpty() && !entityplayer.inventory.addItemStackToInventory(container)) {
+                    entityplayer.dropItem(container, false);
+                }
+            }
         }
 
 
