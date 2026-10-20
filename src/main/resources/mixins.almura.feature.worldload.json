@@ -1,0 +1,11 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "com.almuradev.almura.feature.worldload.asm.mixin",
+    "refmap": "mixins.almura.refmap.json",
+    "target": "@env(DEFAULT)",
+    "compatibilityLevel": "JAVA_8",
+    "mixins": [
+        "MixinAnvilSaveHandler"
+    ]
+}

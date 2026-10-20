@@ -34,6 +34,7 @@ import com.almuradev.almura.feature.storage.StorageModule;
 import com.almuradev.almura.feature.store.StoreModule;
 import com.almuradev.almura.feature.title.TitleModule;
 import com.almuradev.almura.feature.treefeller.TreeFellerModule;
+import com.almuradev.almura.feature.worldload.WorldLoadModule;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import com.almuradev.almura.shared.util.UchatUtil;
@@ -78,6 +79,7 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.install(new MembershipModule());
         this.install(new SkillsModule());
         this.install(new FlickerLightModule());
+        this.install(new WorldLoadModule());
 
         if (SpongeImplHooks.isDeobfuscatedEnvironment()) {
             this.loadServerSideModules(); // Force loading this because it will fail the Platform.Type checks below during normal startup.

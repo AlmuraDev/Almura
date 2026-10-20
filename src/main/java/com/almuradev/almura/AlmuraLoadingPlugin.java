@@ -39,7 +39,8 @@ public final class AlmuraLoadingPlugin implements IFMLLoadingPlugin {
                 "mixins.almura.feature.title.json",
                 "mixins.almura.feature.biome.json",
                 "mixins.almura.feature.offhand.json",
-                "mixins.almura.feature.nick.json"
+                "mixins.almura.feature.nick.json",
+                "mixins.almura.feature.worldload.json"
         );
     }
 
