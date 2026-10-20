@@ -13,6 +13,7 @@ import com.almuradev.content.type.action.component.drop.Droppable;
 import com.almuradev.content.type.action.component.drop.ItemDrop;
 import com.almuradev.toolbox.config.ConfigurationNodeDeserializer;
 import com.almuradev.toolbox.util.math.DoubleRange;
+import com.google.common.base.MoreObjects;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.item.Item;
@@ -96,5 +97,14 @@ public final class ItemDefinition implements Droppable, ItemAcceptable {
     @Override
     public ItemDrop asDrop(final DoubleRange amount, @Nullable final DoubleRange bonusAmount, @Nullable final DoubleRange bonusChance) {
         return new ItemDrop(amount, bonusAmount, bonusChance, this);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("item", this.item)
+            .add("quantity", this.quantity)
+            .add("meta", this.meta)
+            .toString();
     }
 }

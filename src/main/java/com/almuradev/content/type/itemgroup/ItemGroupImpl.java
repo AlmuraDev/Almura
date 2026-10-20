@@ -14,13 +14,18 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 
 public final class ItemGroupImpl extends CreativeTabs {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ItemGroupImpl.class);
     @Nullable private final String translation;
+    private boolean warnedIcon;
     private final ItemDefinition icon;
     private final boolean sort;
 
@@ -38,8 +43,25 @@ public final class ItemGroupImpl extends CreativeTabs {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public ItemStack createIcon() {
-        return this.icon.create();
+        final ItemStack configured = this.icon.create();
+        if (!configured.isEmpty()) {
+            return configured;
+        }
+
+        // The configured icon item doesn't resolve (unknown id, or not registered yet): show the first item in the tab instead
+        if (!this.warnedIcon) {
+            this.warnedIcon = true;
+            LOGGER.warn("Creative tab '{}' has an icon ({}) that could not be resolved, using the first item in the tab instead.",
+                    this.getTabLabel(), this.icon);
+        }
+        for (final Item item : ForgeRegistries.ITEMS) {
+            if (item.getCreativeTab() == this) {
+                return new ItemStack(item);
+            }
+        }
+        return configured;
     }
 
     @Override

@@ -24,6 +24,7 @@
         "client.renderer.tileentity.MixinTileEntityChestRenderer",
         "client.MixinChunkProviderClient",
         "client.MixinLoadingScreenRenderer",
+        "client.MixinModelLoader",
         "client.MixinWorld_DynamicLight",
         "client.MixinChunkCache_DynamicLight"
     ]
