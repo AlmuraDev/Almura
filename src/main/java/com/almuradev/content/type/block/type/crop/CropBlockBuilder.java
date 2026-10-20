@@ -36,6 +36,7 @@ public final class CropBlockBuilder extends AbstractParsedBlockBuilder<CropBlock
     private static final int MAXIMUM_AGE = 7;
     int age;
     Delegate<ItemType> seed;
+    int sackHarvestResetAge = -1;
 
     public CropBlockBuilder() {
         super(BlockGenre.CROP);
@@ -54,6 +55,11 @@ public final class CropBlockBuilder extends AbstractParsedBlockBuilder<CropBlock
     @Override
     public void seed(final Delegate<ItemType> seed) {
         this.seed = seed;
+    }
+
+    @Override
+    public void sackHarvestResetAge(final int resetAge) {
+        this.sackHarvestResetAge = resetAge;
     }
 
     @Override

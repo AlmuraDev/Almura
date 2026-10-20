@@ -13,7 +13,12 @@ import com.almuradev.content.type.block.BlockConfig;
  * @see BlockConfig
  */
 public interface CropBlockConfig {
+    String SACK_HARVEST = "sack_harvest";
     String SEED = "seed";
+
+    interface SackHarvest {
+        String RESET_AGE = "reset_age";
+    }
 
     interface State {
         String CAN_ROLLBACK = "can_rollback";

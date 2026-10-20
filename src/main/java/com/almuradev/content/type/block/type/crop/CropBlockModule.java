@@ -10,6 +10,7 @@ package com.almuradev.content.type.block.type.crop;
 import com.almuradev.content.type.block.BlockGenre;
 import com.almuradev.content.type.block.BlockModule;
 import com.almuradev.content.type.block.type.crop.processor.CanRollbackProcessor;
+import com.almuradev.content.type.block.type.crop.processor.SackHarvestProcessor;
 import com.almuradev.content.type.block.type.crop.processor.SeedProcessor;
 import com.almuradev.content.type.block.type.crop.processor.fertilizer.FertilizerProcessor;
 import com.almuradev.content.type.block.type.crop.processor.growth.GrowthProcessor;
@@ -24,6 +25,7 @@ public final class CropBlockModule extends BlockModule.Module {
                 .only(FertilizerProcessor.class, BlockGenre.CROP)
                 .only(GrowthProcessor.class, BlockGenre.CROP)
                 .only(HydrationProcessor.class, BlockGenre.CROP)
+                .only(SackHarvestProcessor.class, BlockGenre.CROP)
                 .only(SeedProcessor.class, BlockGenre.CROP);
     }
 }

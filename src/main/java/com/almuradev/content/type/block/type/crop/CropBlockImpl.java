@@ -8,6 +8,9 @@
 package com.almuradev.content.type.block.type.crop;
 
 import com.almuradev.content.component.delegate.Delegate;
+import com.almuradev.content.type.action.component.drop.Drop;
+import com.almuradev.content.type.action.component.drop.ItemDrop;
+import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;
 import com.almuradev.content.type.block.BlockUpdateFlag;
 import com.almuradev.content.type.block.type.crop.processor.fertilizer.Fertilizer;
 import com.almuradev.content.type.block.type.crop.processor.growth.Growth;
@@ -53,6 +56,8 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
     private final CropBlockStateDefinition[] states;
     private final int maxAge;
     private final Delegate<ItemType> seed;
+    // Age a ripe crop is set back to when picked with a harvesting sack, -1 when it can't be
+    private final int sackHarvestResetAge;
     @SuppressWarnings("NullableProblems")
     private PropertyInteger age;
 
@@ -60,6 +65,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
         builder.fill(this);
         this.maxAge = builder.age;
         this.seed = builder.seed;
+        this.sackHarvestResetAge = builder.sackHarvestResetAge < 0 ? -1 : Math.min(builder.sackHarvestResetAge, Math.max(0, this.maxAge - 1));
         this.setSoundType(SoundType.PLANT);
         this.states = new CropBlockStateDefinition[this.maxAge + 1];
         for (final CropBlockStateDefinition state : states) {
@@ -111,6 +117,56 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
 
     public CropBlockStateDefinition state(final int age) {
         return this.states[age];
+    }
+
+    /**
+     * @return True if this crop is configured for harvesting sacks ({@code sack_harvest}), at any age
+     */
+    public boolean isSackHarvestable() {
+        return this.sackHarvestResetAge >= 0;
+    }
+
+    /**
+     * @return True if this crop is configured for harvesting sacks ({@code sack_harvest}) and the state is ripe
+     */
+    public boolean canSackHarvest(final IBlockState state) {
+        return this.sackHarvestResetAge >= 0 && state.getBlock() == this && this.isMaxAge(state);
+    }
+
+    /**
+     * @return The state a ripe crop is set back to after being picked with a harvesting sack
+     */
+    public IBlockState sackHarvestedState() {
+        return this.withAge(Math.max(0, this.sackHarvestResetAge));
+    }
+
+    /**
+     * @return True if the stack is something this sack harvestable crop can drop (its seed or an item of a stage's destroy drops)
+     */
+    public boolean isSackHarvestItem(final ItemStack stack) {
+        if (this.sackHarvestResetAge < 0 || stack.isEmpty()) {
+            return false;
+        }
+
+        final ItemType seed = this.seed == null ? null : this.seed.get();
+        if (seed != null && stack.getItem() == (Item) seed) {
+            return true;
+        }
+
+        for (final CropBlockStateDefinition state : this.states) {
+            final BlockDestroyAction destroy = state == null || state.destroyAction == null ? null : state.destroyAction.get();
+            if (destroy == null) {
+                continue;
+            }
+            for (final BlockDestroyAction.Entry entry : destroy.entries()) {
+                for (final Drop drop : entry.drops()) {
+                    if (drop instanceof ItemDrop && ((ItemDrop) drop).item().test(stack)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     @Deprecated

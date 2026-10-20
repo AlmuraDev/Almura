@@ -33,6 +33,8 @@ public final class AlmuraGuiHandler implements IGuiHandler {
     public static final int KITCHEN_GRINDER = 3;
     /** The wash plant machine (only when IndustrialCraft 2 is installed). */
     public static final int WASHPLANT = 4;
+    /** A harvesting sack held by the player (x = the hand). */
+    public static final int HARVEST_SACK = 5;
 
     private static final Map<Integer, IGuiHandler> HANDLERS = new HashMap<>();
     private static boolean registered;

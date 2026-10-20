@@ -20,5 +20,7 @@ public interface CropBlock extends ContentBlock {
 
     interface Builder extends ContentBlock.Builder<CropBlock, CropBlockStateDefinition, CropBlockStateDefinitionBuilder> {
         void seed(final Delegate<ItemType> seed);
+
+        void sackHarvestResetAge(final int resetAge);
     }
 }

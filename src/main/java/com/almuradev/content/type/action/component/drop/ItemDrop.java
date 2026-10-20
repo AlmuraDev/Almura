@@ -26,6 +26,10 @@ public final class ItemDrop extends Drop {
         this.item = item;
     }
 
+    public ItemDefinition item() {
+        return this.item;
+    }
+
     public void fill(final List<ItemStack> items, final Random random) {
         final ItemStack drop = this.item.create();
         drop.setCount(this.flooredAmount(random));
