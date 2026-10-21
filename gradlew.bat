@@ -16,6 +16,14 @@ set APP_HOME=%DIRNAME%
 @rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
 set DEFAULT_JVM_OPTS=
 
+@rem Almura builds with Java 8 (this Gradle can't run on newer Java): use JAVA8_HOME if set, otherwise the default JDK 8 install,
+@rem whatever JAVA_HOME points to. Only applies inside this script.
+if defined JAVA8_HOME (
+    set "JAVA_HOME=%JAVA8_HOME%"
+) else if exist "C:\Program Files\Java\jdk1.8.0_361\bin\java.exe" (
+    set "JAVA_HOME=C:\Program Files\Java\jdk1.8.0_361"
+)
+
 @rem Find java.exe
 if defined JAVA_HOME goto findJavaFromJavaHome
 

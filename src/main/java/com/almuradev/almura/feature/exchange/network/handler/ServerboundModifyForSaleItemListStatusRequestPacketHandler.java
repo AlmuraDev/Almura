@@ -54,6 +54,9 @@ public final class ServerboundModifyForSaleItemListStatusRequestPacketHandler
                 case ADJUST_PRICE:
                     this.exchangeManager.handleAdjustPriceForSaleItem(player, message.id, message.listItemRecNo, message.price);
                     break;
+                case ADMIN_ADJUST_PRICE:
+                    this.exchangeManager.handleAdminAdjustPriceForSaleItem(player, message.id, message.listItemRecNo, message.price);
+                    break;
                 case ADMIN_DE_LIST:
                     this.exchangeManager.handleAdminDelistForSaleItem(player, message.id, message.listItemRecNo);
                     break;

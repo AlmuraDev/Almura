@@ -186,6 +186,13 @@ almura.feature.store.text.no_items_for_purchase=There are no items available for
 # ---------------
 
 almura.feature.exchange.name=Exchange
+almura.feature.exchange.menu.admin_change_price=Change price (admin)
+almura.feature.exchange.menu.admin_delist=Delist (admin)
+almura.feature.exchange.menu.buy_quantity=Buy quantity...
+almura.feature.exchange.menu.change_price=Change price...
+almura.feature.exchange.menu.list=List...
+almura.feature.exchange.menu.search_item=Search for this item
+almura.feature.exchange.menu.search_seller=Search this seller
 almura.feature.exchange.text.inventory=Inventory
 almura.feature.exchange.text.item_name=Item Name
 almura.feature.exchange.text.searching_for_criteria=Searching for criteria
@@ -197,6 +204,7 @@ almura.feature.exchange.title.enter_a_price=Enter a price
 almura.feature.exchange.title.enter_a_quantity=Enter a Quantity
 almura.feature.exchange.title.listable_items=Listable Items
 almura.feature.exchange.title.offer=Offer
+almura.feature.exchange.tooltip.clear_filters=Clear the item name and seller filters
 almura.feature.exchange.tooltip.move_all=Moves all items to the %s
 almura.feature.exchange.tooltip.move_single=Move one of the selected item to the %s
 almura.feature.exchange.tooltip.move_stack=Move the selected stack of items to the %s

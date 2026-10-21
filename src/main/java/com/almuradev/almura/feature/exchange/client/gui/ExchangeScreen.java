@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.exchange.client.gui;
 
 import com.almuradev.almura.FeatureSortTypes;
+import com.almuradev.almura.asm.ClientStaticAccess;
 import com.almuradev.almura.feature.FeatureSortType;
 import com.almuradev.almura.feature.SortType;
 import com.almuradev.almura.feature.exchange.Exchange;
@@ -18,12 +19,14 @@ import com.almuradev.almura.feature.exchange.listing.ForSaleItem;
 import com.almuradev.almura.feature.exchange.listing.ListItem;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
+import com.almuradev.almura.shared.client.ui.component.UIContextMenu;
 import com.almuradev.almura.shared.client.ui.component.UIExpandingLabel;
 import com.almuradev.almura.shared.client.ui.component.UISaneTooltip;
 import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.almuradev.almura.shared.feature.filter.Direction;
 import com.almuradev.almura.shared.item.VirtualStack;
 import com.almuradev.almura.shared.util.MathUtil;
+import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.MalisisGui;
@@ -69,6 +72,8 @@ public final class ExchangeScreen extends BasicScreen {
 
     private final Exchange axs;
     public static int limit;
+    // Exchange admins may change the price of and delist any listing
+    private final boolean isAdmin;
 
     private UIButton buttonFirstPage, buttonPreviousPage, buttonNextPage, buttonLastPage, buttonBuyStack, buttonBuyOne,
     buttonBuyAll, buttonBuyQuantity, buttonList;
@@ -78,12 +83,25 @@ public final class ExchangeScreen extends BasicScreen {
     private int currentPage = 1;
     private int pages;
 
+    // Column headers above the for sale list
+    // The header strip between the separator and the list; the header text is centred in it
+    private static final int HEADER_HEIGHT = 12;
+    private static final int HEADER_TEXT_OFFSET = 2;
+    // UIExpandingLabel (the prices) is 5 wider than its text, so right aligned prices end 5 short of their position
+    private static final int EXPANDING_LABEL_PADDING = 5;
+    private static final int HEADER_ITEM_X = 24;
+    private static final int HEADER_RIGHT_INSET = innerPadding + 3;
+    private UILabel headerItemName, headerPrice, headerSeller;
+    // Width of the widest seller name on the current page: prices are right aligned this far from the sellers
+    private static int pageSellerWidth;
+
     public BasicList<ListItem> listItemList;
     public BasicList<ForSaleItem> forSaleList;
 
-    public ExchangeScreen(final Exchange axs, final int limit) {
+    public ExchangeScreen(final Exchange axs, final int limit, final boolean isAdmin) {
         this.axs = axs;
         ExchangeScreen.limit = limit;
+        this.isAdmin = isAdmin;
     }
 
     @Override
@@ -118,7 +136,7 @@ public final class ExchangeScreen extends BasicScreen {
         this.itemDisplayNameSearchBox.setAcceptsTab(false);
         this.itemDisplayNameSearchBox.setTabIndex(0);
         this.itemDisplayNameSearchBox.setOnEnter((tb) -> this.search());
-        this.itemDisplayNameSearchBox.setSize(145, 0);
+        this.itemDisplayNameSearchBox.setSize(110, 0);
         this.itemDisplayNameSearchBox.setPosition(itemSearchLabel.getWidth() + innerPadding, 2, Anchor.LEFT | Anchor.TOP);
         this.itemDisplayNameSearchBox.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
@@ -132,7 +150,7 @@ public final class ExchangeScreen extends BasicScreen {
         this.sellerSearchTextBox.setAcceptsTab(false);
         this.sellerSearchTextBox.setTabIndex(1);
         this.sellerSearchTextBox.setOnEnter(tb -> this.search());
-        this.sellerSearchTextBox.setSize(145, 0);
+        this.sellerSearchTextBox.setSize(110, 0);
         this.sellerSearchTextBox.setPosition(this.itemDisplayNameSearchBox.getX(), getPaddedY(this.itemDisplayNameSearchBox, 4), Anchor.LEFT | Anchor.TOP);
         this.sellerSearchTextBox.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
@@ -150,17 +168,40 @@ public final class ExchangeScreen extends BasicScreen {
           ExchangeSortTypes.SELLER_NAME_DESC
         ));
         this.comboBoxSortType.setLabelFunction(type -> type == null ? "" : type.getName()); // Because that's reasonable.
-        this.comboBoxSortType.select(FeatureSortTypes.CREATED_ASC);
+        this.comboBoxSortType.select(defaultSortType());
         this.comboBoxSortType.setPosition(-(innerPadding + 1), 2, Anchor.RIGHT | Anchor.TOP);
+        this.comboBoxSortType.register(this);
 
         // Search button
         final UIButton buttonSearch = new UIButtonBuilder(this)
-                .width(80)
+                .width(60)
                 .anchor(Anchor.RIGHT | Anchor.TOP)
                 .position(-innerPadding, this.sellerSearchTextBox.getY() - 1)
                 .text(I18n.format("almura.feature.common.button.search"))
                 .onClick(this::search)
                 .build("button.search");
+
+        // Options button
+        final UIButton buttonOptions = new UIButtonBuilder(this)
+                .width(46)
+                .anchor(Anchor.RIGHT | Anchor.TOP)
+                .position(-(innerPadding + 62), this.sellerSearchTextBox.getY() - 1)
+                .text("Options")
+                .onClick(() -> new ExchangeOptionsScreen(this).display())
+                .build("button.options");
+
+        // Clear button: empties the item name and seller filters and searches again
+        final UIButton buttonClearFilters = new UIButtonBuilder(this)
+                .anchor(Anchor.LEFT | Anchor.TOP)
+                // Text boxes draw their border a pixel above their position: line up with it
+                .position(BasicScreen.getPaddedX(this.itemDisplayNameSearchBox, 3), this.itemDisplayNameSearchBox.getY() - 1)
+                .text(TextFormatting.RED + "X")
+                .tooltip(I18n.format("almura.feature.exchange.tooltip.clear_filters"))
+                .onClick(() -> this.searchFor("", ""))
+                .build("button.clear_filters");
+        // Buttons draw 2 smaller than their size (right and bottom): 14 shows as the text box's 12, with the X centred in it
+        buttonClearFilters.setAutoSize(false);
+        buttonClearFilters.setSize(14, 14);
 
         // Separator
         final BasicContainer<?> forSaleTopLine = new BasicContainer<>(this, searchContainer.getRawWidth() - 2, 1);
@@ -168,8 +209,19 @@ public final class ExchangeScreen extends BasicScreen {
         forSaleTopLine.setBackgroundAlpha(185);
         forSaleTopLine.setPosition(0, BasicScreen.getPaddedY(this.sellerSearchTextBox, 4), Anchor.CENTER | Anchor.TOP);
 
-        this.forSaleList = new BasicList<>(this, UIComponent.INHERITED, 254);
-        this.forSaleList.setPosition(0, BasicScreen.getPaddedY(forSaleTopLine, 2));
+        // Column headers: click to sort by the column, ascending, click again for descending
+        final int headerTop = BasicScreen.getPaddedY(forSaleTopLine, 1);
+        final int headerY = headerTop + HEADER_TEXT_OFFSET;
+        this.headerItemName = this.createHeader("Item Name");
+        this.headerItemName.setPosition(HEADER_ITEM_X, headerY, Anchor.LEFT | Anchor.TOP);
+        this.headerSeller = this.createHeader("Seller");
+        this.headerSeller.setPosition(-HEADER_RIGHT_INSET, headerY, Anchor.RIGHT | Anchor.TOP);
+        this.headerPrice = this.createHeader("Price");
+        this.headerPrice.setPosition(-(priceColumnInset() + EXPANDING_LABEL_PADDING), headerY, Anchor.RIGHT | Anchor.TOP);
+        this.updateHeaders();
+
+        this.forSaleList = new BasicList<>(this, UIComponent.INHERITED, 242);
+        this.forSaleList.setPosition(0, headerTop + HEADER_HEIGHT);
         this.forSaleList.setItemComponentFactory(ForSaleItemComponent::new);
         this.forSaleList.setItemComponentSpacing(1);
         this.forSaleList.setSelectConsumer((i) -> this.updateControls());
@@ -229,7 +281,7 @@ public final class ExchangeScreen extends BasicScreen {
         forSaleBottomLine.setPosition(0, BasicScreen.getPaddedY(this.buttonFirstPage, 2, Anchor.BOTTOM), Anchor.CENTER | Anchor.BOTTOM);
 
         // Add Elements of Search Area
-        searchContainer.add(itemSearchLabel, this.itemDisplayNameSearchBox, sellerSearchLabel, this.sellerSearchTextBox, buttonSearch,
+        searchContainer.add(this.headerItemName, this.headerPrice, this.headerSeller, buttonOptions, buttonClearFilters, itemSearchLabel, this.itemDisplayNameSearchBox, sellerSearchLabel, this.sellerSearchTextBox, buttonSearch,
                 this.comboBoxSortType, this.buttonFirstPage, this.buttonPreviousPage, this.buttonNextPage, this.buttonLastPage, this.forSaleList,
                 this.noResultsLabel, this.labelSearchPage, forSaleTopLine, forSaleBottomLine);
 
@@ -352,13 +404,16 @@ public final class ExchangeScreen extends BasicScreen {
         }
         addToScreen(form);
         this.itemDisplayNameSearchBox.focus();
+
+        // Query with this screen's sort and options (hide own listings)
+        this.search();
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
         if (this.buttonBuyOne != null) {
-            if (isCtrlKeyDown()) {
+            if (this.isAdmin && isCtrlKeyDown()) {
                 this.buttonBuyOne.setText(I18n.format("almura.feature.common.button.delist"));
             } else {
                 this.buttonBuyOne.setText(I18n.format("almura.feature.common.button.buy.one"));
@@ -388,10 +443,103 @@ public final class ExchangeScreen extends BasicScreen {
         exchangeManager.queryForSaleItemsCached(this.axs.getId(), (this.currentPage - 1) * 10, 10);
     }
 
+    private UILabel createHeader(final String text) {
+        final UILabel header = new UILabel(this, text);
+        header.setFontOptions(FontOptions.builder().from(FontColors.GRAY_FO).shadow(true).scale(0.9F).build());
+        return header;
+    }
+
+    /**
+     * @return How far from the right edge of a row the prices end: past the sellers (widest on the page) and a gap
+     */
+    private static int priceColumnInset() {
+        return HEADER_RIGHT_INSET + (pageSellerWidth > 0 ? pageSellerWidth + 8 : 0);
+    }
+
+    /**
+     * Shows which column the list is sorted by (white, with an arrow for the direction); the others are gray.
+     */
+    private void updateHeaders() {
+        if (this.headerItemName == null || this.comboBoxSortType == null) {
+            return;
+        }
+        final SortType sort = this.comboBoxSortType.getSelectedValue();
+        this.setHeader(this.headerItemName, "Item Name", sort, FeatureSortTypes.ITEM_DISPLAY_NAME_ASC.getTypeId());
+        this.setHeader(this.headerPrice, "Price", sort, FeatureSortTypes.PRICE_ASC.getTypeId());
+        this.setHeader(this.headerSeller, "Seller", sort, ExchangeSortTypes.SELLER_NAME_ASC.getTypeId());
+    }
+
+    private void setHeader(final UILabel header, final String text, @Nullable final SortType sort, final String typeId) {
+        final boolean active = sort != null && sort.getTypeId().equals(typeId);
+        header.setText(active ? TextFormatting.WHITE + text + (sort.getDirection() == Direction.ASCENDING ? " ▲" : " ▼") : text);
+    }
+
+    /**
+     * Sorts by a column: ascending, or descending when it already is sorted ascending by it.
+     */
+    private void sortBy(final SortType ascending, final SortType descending) {
+        final SortType current = this.comboBoxSortType.getSelectedValue();
+        this.comboBoxSortType.select(current == ascending ? descending : ascending);
+        this.updateHeaders();
+        this.search();
+    }
+
+    @Override
+    protected void mouseClicked(final int x, final int y, final int button) {
+        if (button == 0 && this.headerItemName != null) {
+            if (this.headerItemName.isInsideBounds(x, y)) {
+                this.sortBy(FeatureSortTypes.ITEM_DISPLAY_NAME_ASC, FeatureSortTypes.ITEM_DISPLAY_NAME_DESC);
+                return;
+            }
+            if (this.headerPrice.isInsideBounds(x, y)) {
+                this.sortBy(FeatureSortTypes.PRICE_ASC, FeatureSortTypes.PRICE_DESC);
+                return;
+            }
+            if (this.headerSeller.isInsideBounds(x, y)) {
+                this.sortBy(ExchangeSortTypes.SELLER_NAME_ASC, ExchangeSortTypes.SELLER_NAME_DESC);
+                return;
+            }
+        }
+        super.mouseClicked(x, y, button);
+    }
+
+    @Subscribe
+    public void onSortSelected(final UISelect.SelectEvent<SortType> event) {
+        // The dropdown changes before this event's value is applied, refresh the headers once it is
+        Minecraft.getMinecraft().addScheduledTask(this::updateHeaders);
+    }
+
+    /**
+     * @return The ascending sort for the "default sort order" option
+     */
+    static SortType defaultSortType() {
+        switch (ClientStaticAccess.configAdapter.get().general.exchangeDefaultSort) {
+            case "price":
+                return FeatureSortTypes.PRICE_ASC;
+            case "seller":
+                return ExchangeSortTypes.SELLER_NAME_ASC;
+            default:
+                return FeatureSortTypes.ITEM_DISPLAY_NAME_ASC;
+        }
+    }
+
+    /**
+     * Called when the options change: sorts by the default sort order and searches again.
+     */
+    void applyOptions() {
+        this.comboBoxSortType.select(defaultSortType());
+        this.updateHeaders();
+        this.search();
+    }
+
     private void search() {
         final Map<String, Object> filterQueryMap = new HashMap<>();
         filterQueryMap.put("item_display_name", this.itemDisplayNameSearchBox.getText());
         filterQueryMap.put("seller_name", this.sellerSearchTextBox.getText());
+        if (ClientStaticAccess.configAdapter.get().general.exchangeHideOwnListings) {
+            // Option: hide my listed items in search
+            filterQueryMap.put("not_seller", Minecraft.getMinecraft().player.getUniqueID().toString());
+        }
 
         final Map<String, String> sortQueryMap = new HashMap<>();
         sortQueryMap.put(this.comboBoxSortType.getSelectedValue().getTypeId(), this.comboBoxSortType.getSelectedValue().getDirection().getId());
@@ -424,7 +572,7 @@ public final class ExchangeScreen extends BasicScreen {
     private void buy(final int value) {
         final ForSaleItem forSaleItem = this.forSaleList.getSelectedItem();
         if (forSaleItem != null) {
-            if (isCtrlKeyDown()) {
+            if (this.isAdmin && isCtrlKeyDown()) {
                 exchangeManager.modifyListStatus(ListStatusType.ADMIN_DE_LIST, this.axs.getId(), forSaleItem.getListItem().getRecord(), null);
             } else {
                 exchangeManager.purchase(this.axs.getId(), forSaleItem.getListItem().getRecord(), value);
@@ -443,6 +591,77 @@ public final class ExchangeScreen extends BasicScreen {
                 new ExchangeListPriceScreen(this, this.axs, item).display();
             }
         }
+    }
+
+    /**
+     * The right click menu of a for sale row: buying, searching for the item or seller and, for the seller or an exchange admin, changing
+     * the price or delisting.
+     */
+    private UIContextMenu forSaleMenu(final ForSaleItem item) {
+        this.forSaleList.setSelectedItem(item, false);
+
+        final ListItem listItem = item.getListItem();
+        final String exchangeId = this.axs.getId();
+        final int quantity = item.getQuantity();
+        final int stackSize = item.asRealStack().getMaxStackSize();
+        final boolean isSeller = Minecraft.getMinecraft().player.getUniqueID().equals(listItem.getSeller());
+        final String sellerName = listItem.getSellerName().orElse("");
+
+        final UIContextMenu menu = new UIContextMenu(this)
+            .add(I18n.format("almura.feature.common.button.buy.one"), () -> exchangeManager.purchase(exchangeId, listItem.getRecord(), 1))
+            .add(I18n.format("almura.feature.common.button.buy.stack", stackSize),
+                () -> exchangeManager.purchase(exchangeId, listItem.getRecord(), stackSize), () -> quantity > 1 && quantity >= stackSize)
+            .add(I18n.format("almura.feature.exchange.menu.buy_quantity"), () -> new ExchangeBuyQuantityScreen(this, this.axs, item).display(),
+                () -> quantity > 1)
+            .add(I18n.format("almura.feature.common.button.buy.all"), () -> exchangeManager.purchase(exchangeId, listItem.getRecord(), quantity),
+                () -> quantity > 1)
+            .separator()
+            .add(I18n.format("almura.feature.exchange.menu.search_item"), () -> this.searchFor(item.asRealStack().getDisplayName(), ""))
+            .add(I18n.format("almura.feature.exchange.menu.search_seller"), () -> this.searchFor("", sellerName), () -> !sellerName.isEmpty());
+
+        if (isSeller) {
+            menu.separator()
+                .add(I18n.format("almura.feature.exchange.menu.change_price"), () -> new ExchangeListPriceScreen(this, this.axs, listItem,
+                    ListStatusType.ADJUST_PRICE, item.getPrice()).display())
+                .add(I18n.format("almura.feature.common.button.unlist"),
+                    () -> exchangeManager.modifyListStatus(ListStatusType.DE_LIST, exchangeId, listItem.getRecord(), null));
+        } else if (this.isAdmin) {
+            menu.separator()
+                .add(I18n.format("almura.feature.exchange.menu.admin_change_price"), () -> new ExchangeListPriceScreen(this, this.axs, listItem,
+                    ListStatusType.ADMIN_ADJUST_PRICE, item.getPrice()).display())
+                .add(I18n.format("almura.feature.exchange.menu.admin_delist"),
+                    () -> exchangeManager.modifyListStatus(ListStatusType.ADMIN_DE_LIST, exchangeId, listItem.getRecord(), null));
+        }
+        return menu;
+    }
+
+    /**
+     * The right click menu of a listable item: list it, or change its price or unlist it when it is listed.
+     */
+    private UIContextMenu listItemMenu(final ListItem item) {
+        this.listItemList.setSelectedItem(item, false);
+
+        final UIContextMenu menu = new UIContextMenu(this);
+        final ForSaleItem forSaleItem = item.getForSaleItem().orElse(null);
+        if (forSaleItem == null) {
+            menu.add(I18n.format("almura.feature.exchange.menu.list"), () -> new ExchangeListPriceScreen(this, this.axs, item).display());
+        } else {
+            menu.add(I18n.format("almura.feature.exchange.menu.change_price"), () -> new ExchangeListPriceScreen(this, this.axs, item,
+                    ListStatusType.ADJUST_PRICE, forSaleItem.getPrice()).display())
+                .add(I18n.format("almura.feature.common.button.unlist"),
+                    () -> exchangeManager.modifyListStatus(ListStatusType.DE_LIST, this.axs.getId(), item.getRecord(), null));
+        }
+        return menu;
+    }
+
+    /**
+     * Searches from the first page for an item name and/or seller (an empty value matches everything).
+     */
+    private void searchFor(final String itemName, final String sellerName) {
+        this.itemDisplayNameSearchBox.setText(itemName);
+        this.sellerSearchTextBox.setText(sellerName);
+        this.currentPage = 1;
+        this.search();
     }
 
     private void updateControls() {
@@ -524,6 +743,19 @@ public final class ExchangeScreen extends BasicScreen {
         final ForSaleItem currentItem = this.forSaleList.getSelectedItem() == null ? null : this.forSaleList.getSelectedItem().copy();
 
         this.forSaleList.clearItems();
+
+        // Line the prices up just left of the widest seller name on this page, before the rows are built
+        pageSellerWidth = 0;
+        if (forSaleItems != null && limit > 0) {
+            final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
+            for (final ForSaleItem item : forSaleItems) {
+                pageSellerWidth = Math.max(pageSellerWidth, fontRenderer.getStringWidth(
+                        item.getListItem().getSellerName().orElse(I18n.format("almura.feature.common.text.unknown"))));
+            }
+        }
+        if (this.headerPrice != null) {
+            this.headerPrice.setPosition(-(priceColumnInset() + EXPANDING_LABEL_PADDING), this.headerPrice.getY(), Anchor.RIGHT | Anchor.TOP);
+        }
 
         if (forSaleItems != null) {
             this.forSaleList.addItems(forSaleItems);
@@ -613,6 +845,7 @@ public final class ExchangeScreen extends BasicScreen {
         public ListItemComponent(final MalisisGui gui, final BasicList<ListItem> parent, final ListItem item) {
             super(gui, parent, item);
             this.setOnDoubleClickConsumer(i -> ((ExchangeScreen) getGui()).list());
+            UIContextMenu.attach(this, c -> ((ExchangeScreen) getGui()).listItemMenu(this.item));
         }
 
         @Override
@@ -671,19 +904,16 @@ public final class ExchangeScreen extends BasicScreen {
         public ForSaleItemComponent(final MalisisGui gui, final BasicList<ForSaleItem> parent, final ForSaleItem item) {
             super(gui, parent, item);
             this.setOnDoubleClickConsumer(i -> ((ExchangeScreen) getGui()).buy(1));
+            UIContextMenu.attach(this, c -> ((ExchangeScreen) getGui()).forSaleMenu(this.item));
         }
 
         @Override
         protected void construct(final MalisisGui gui) {
             super.construct(gui);
+            // A pixel shorter than the other lists' rows, making room for the column headers
+            this.setSize(0, 23);
 
-            int maxPlayerTextWidth = 0;
-
-            boolean isSeller = Minecraft.getMinecraft().player.getUniqueID().equals(item.getListItem().getSeller());
-
-            if (limit > 0 && !isSeller) {
-                maxPlayerTextWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth("9999999999999999");
-            }
+            final boolean isSeller = Minecraft.getMinecraft().player.getUniqueID().equals(item.getListItem().getSeller());
 
             this.sellerLabel = new UILabel(gui, TextFormatting.GRAY + "" + TextFormatting.ITALIC
               + this.item.getListItem().getSellerName().orElse(I18n.format("almura.feature.common.text.unknown")));
@@ -691,9 +921,11 @@ public final class ExchangeScreen extends BasicScreen {
 
             final double price = this.item.getPrice().doubleValue();
 
+            // Prices end just left of the widest seller name on the page (lined up, leaving the item name the rest of the row)
+            final int maxPlayerTextWidth = pageSellerWidth > 0 ? pageSellerWidth + 8 : 0;
             this.priceLabel = new UIExpandingLabel(gui, TextFormatting.GOLD + FeatureConstants.withSuffix(price) + TextFormatting.GRAY + "/ea");
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
-            this.priceLabel.setPosition(-maxPlayerTextWidth + 6, 0, Anchor.RIGHT | Anchor.MIDDLE);
+            this.priceLabel.setPosition(-(innerPadding + maxPlayerTextWidth), 0, Anchor.RIGHT | Anchor.MIDDLE);
 
             // Exact value
             this.priceLabel.setTooltip(I18n.format("almura.feature.exchange.tooltip.total")

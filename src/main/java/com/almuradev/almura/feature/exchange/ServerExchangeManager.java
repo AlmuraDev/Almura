@@ -225,7 +225,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             return;
         }
 
-        this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.SPECIFIC, axs.getId(), this.getListingsLimit(player, axs)));
+        this.network.sendTo(player, new ClientboundExchangeGuiResponsePacket(ExchangeGuiType.SPECIFIC, axs.getId(), this.getListingsLimit(player, axs),
+            this.isExchangeAdmin(player, axs)));
 
         if (!axs.isLoaded()) {
             this.playerSpecificInitiatorIds.add(player.getUniqueId());
@@ -1004,6 +1005,95 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             .submit(this.container);
     }
 
+    /**
+     * @return True if the player administers the exchange: the exchange's own admin permission, or almura.exchange.admin
+     */
+    public boolean isExchangeAdmin(final Player player, final Exchange axs) {
+        return player.hasPermission(axs.getPermission() + ".admin") || player.hasPermission(Almura.ID + ".exchange.admin");
+    }
+
+    /**
+     * An admin changing the price of any seller's for sale item.
+     */
+    public void handleAdminAdjustPriceForSaleItem(final Player player, final String id, final int listItemRecNo, final BigDecimal price) {
+        checkNotNull(player);
+        checkNotNull(id);
+        checkState(listItemRecNo >= 0);
+        checkNotNull(price);
+        checkState(price.doubleValue() > 0);
+
+        final Exchange axs = this.getExchange(id).orElse(null);
+        if (axs == null) {
+            this.notificationManager.sendWindowMessage(player, Text.of("Exchange"), Text.of("Critical error encountered, check the "
+                + "server console for more details!"));
+            this.logger.error("Admin '{}' attempted to adjust the price for list item '{}' for exchange '{}' but the server has no knowledge of "
+                + "it. Syncing exchange registry...", player.getName(), listItemRecNo, id);
+            this.syncExchangeRegistryTo(player);
+            return;
+        }
+
+        if (!this.isExchangeAdmin(player, axs)) {
+            return;
+        }
+
+        ListItem found = null;
+        for (final Map.Entry<UUID, List<ListItem>> kv : axs.getListItems().entrySet()) {
+            found = kv.getValue().stream().filter(item -> item.getRecord() == listItemRecNo).findAny().orElse(null);
+            if (found != null) {
+                break;
+            }
+        }
+
+        final ForSaleItem forSaleItem = found == null ? null : found.getForSaleItem().orElse(null);
+        if (forSaleItem == null) {
+            // Sold or unlisted meanwhile: refresh the admin's results
+            this.network.sendTo(player, new ClientboundForSaleFilterRequestPacket(axs.getId()));
+            return;
+        }
+
+        final ListItem listItem = found;
+        final UUID seller = listItem.getSeller();
+        this.scheduler
+            .createTaskBuilder()
+            .async()
+            .execute(() -> {
+                try (final DSLContext context = this.databaseManager.createContext(true)) {
+                    final int result = ExchangeQueries
+                        .createUpdateForSaleItemPrice(forSaleItem.getRecord(), price)
+                        .build(context)
+                        .execute();
+
+                    if (result == 0) {
+                        this.logger.error("Admin '{}' attempted to adjust the price for list item '{}' for exchange '{}' to the database but it "
+                            + "failed. Discarding changes...", player.getName(), listItemRecNo, id);
+                        return;
+                    }
+
+                    ExchangeQueries
+                        .createUpdateListItemLastKnownPrice(listItem.getRecord(), forSaleItem.getPrice())
+                        .build(context)
+                        .execute();
+
+                    this.scheduler
+                        .createTaskBuilder()
+                        .execute(() -> {
+                            listItem.setLastKnownPrice(forSaleItem.getPrice());
+                            ((BasicForSaleItem) forSaleItem).setPrice(price);
+
+                            // The seller's own listings show the new price
+                            Sponge.getServer().getPlayer(seller).ifPresent(sellerPlayer -> this.network.sendTo(sellerPlayer,
+                                new ClientboundListItemsSaleStatusPacket(axs.getId(), axs.getForSaleItemsFor(seller).orElse(null),
+                                    Lists.newArrayList(listItem))));
+                            this.network.sendToAll(new ClientboundForSaleFilterRequestPacket(axs.getId()));
+                        })
+                        .submit(this.container);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            })
+            .submit(this.container);
+    }
+
     public void handleAdminDelistForSaleItem(final Player player, final String id, final int listItemRecNo) {
         checkNotNull(player);
         checkNotNull(id);
@@ -1019,7 +1109,7 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
             return;
         }
 
-        if (!player.hasPermission(axs.getPermission() +".admin")) {
+        if (!this.isExchangeAdmin(player, axs)) {
             return;
         }
 
@@ -1093,7 +1183,8 @@ public final class ServerExchangeManager extends Witness.Impl implements Witness
                                     sellerForSaleItems.remove(forSaleItem);
 
                                     found.setForSaleItem(null);
-                                    this.logger.info("Admin '{}' delisted item '{}' for '{}' on exchange '{}'", player.getName(), found.getSellerName().get(), listItemRecNo, id);
+                                    this.logger.info("Admin '{}' delisted item '{}' for '{}' on exchange '{}'", player.getName(), listItemRecNo,
+                                        found.getSellerName().orElse(found.getSeller().toString()), id);
 
                                     // Send the updated list to the client if for some reason the seller and player are the same person.
                                     if (found.getSeller().equals(player.getUniqueId())) {

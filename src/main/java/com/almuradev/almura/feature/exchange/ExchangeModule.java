@@ -110,6 +110,8 @@ public final class ExchangeModule extends AbstractModule implements CommonBinder
                     ItemNameUtil.getDisplayName(target.asRealStack()).toLowerCase().contains(value.toLowerCase()))
             .<ListItem>registerFilter(ID + "_seller_name", (target, value) ->
                     target.getSellerName().isPresent() && target.getSellerName().get().toLowerCase().contains(value.toLowerCase()))
+            // Leaves out one seller's items (a player hiding their own listings from their search)
+            .<ListItem>registerFilter(ID + "_not_seller", (target, value) -> !target.getSeller().toString().equalsIgnoreCase(value))
             .<ListItem>registerComparator(ID + "_item_display_name", Comparator.comparing(k -> ItemNameUtil.getDisplayName(k.asRealStack()).toLowerCase()))
             .<ListItem>registerComparator(ID + "_seller_name", Comparator.comparing(v -> v.getSellerName().orElse("").toLowerCase()))
             .<ListItem>registerComparator(ID + "_price", Comparator.comparing(l -> {

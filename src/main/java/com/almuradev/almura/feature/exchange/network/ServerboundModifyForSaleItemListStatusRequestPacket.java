@@ -39,7 +39,7 @@ public final class ServerboundModifyForSaleItemListStatusRequestPacket implement
         this.listItemRecNo = listItemRecNo;
         this.type = type;
 
-        if (this.type == ListStatusType.LIST || this.type == ListStatusType.ADJUST_PRICE) {
+        if (this.type == ListStatusType.LIST || this.type == ListStatusType.ADJUST_PRICE || this.type == ListStatusType.ADMIN_ADJUST_PRICE) {
             checkNotNull(price);
             checkState(price.doubleValue() >= 0);
             this.price = price;
@@ -52,7 +52,7 @@ public final class ServerboundModifyForSaleItemListStatusRequestPacket implement
         this.id = buf.readString();
         this.listItemRecNo = buf.readInteger();
 
-        if (this.type == ListStatusType.LIST || this.type == ListStatusType.ADJUST_PRICE) {
+        if (this.type == ListStatusType.LIST || this.type == ListStatusType.ADJUST_PRICE || this.type == ListStatusType.ADMIN_ADJUST_PRICE) {
             this.price = ByteBufUtil.readBigDecimal((ByteBuf) buf);
         }
     }
@@ -67,7 +67,7 @@ public final class ServerboundModifyForSaleItemListStatusRequestPacket implement
         buf.writeString(this.id);
         buf.writeInteger(this.listItemRecNo);
 
-        if (this.type == ListStatusType.LIST || this.type == ListStatusType.ADJUST_PRICE) {
+        if (this.type == ListStatusType.LIST || this.type == ListStatusType.ADJUST_PRICE || this.type == ListStatusType.ADMIN_ADJUST_PRICE) {
             checkNotNull(this.price);
             checkState(this.price.doubleValue() >= 0);
 

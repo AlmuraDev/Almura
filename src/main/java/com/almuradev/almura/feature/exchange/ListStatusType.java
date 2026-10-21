@@ -11,5 +11,6 @@ public enum ListStatusType {
     LIST,
     DE_LIST,
     ADJUST_PRICE,
-    ADMIN_DE_LIST
+    ADMIN_DE_LIST,
+    ADMIN_ADJUST_PRICE
 }

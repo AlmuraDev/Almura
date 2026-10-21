@@ -16,9 +16,11 @@
         "world.MixinBossBarColor"
     ],
     "client": [
+        "client.gui.MixinBasicListItemComponent",
         "client.gui.MixinGuiBossOverlay",
         "client.gui.MixinGuiIngame",
         "client.gui.MixinGuiOptions",
+        "client.gui.MixinUIComponent",
         "client.renderer.tileentity.MixinRenderItemFrame",
         "client.renderer.tileentity.MixinTileEntitySignRenderer",
         "client.renderer.tileentity.MixinTileEntityChestRenderer",

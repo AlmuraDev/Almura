@@ -65,6 +65,12 @@ public final class GeneralCategory {
     @Setting(value = "hud-skills", comment = "Skills shown in the bottom-right corner of the Origin HUD (crafting, digger, farming, mining, woodcutting)")
     public List<String> hudSkills = new ArrayList<>();
 
+    @Setting(value = "exchange-hide-own-listings", comment = "Hides your own listed items from Exchange search results")
+    public boolean exchangeHideOwnListings = true;
+
+    @Setting(value = "exchange-default-sort", comment = "The Exchange's default sort order. Valid options are 'item_name', 'price' and 'seller'")
+    public String exchangeDefaultSort = "item_name";
+
     @Setting(value = "display-numeric-hud-values", comment = "Toggles the display of numeric values in the Origin HUD")
     public boolean displayNumericHUDValues = true;
 

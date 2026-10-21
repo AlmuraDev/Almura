@@ -29,6 +29,8 @@ import net.malisis.core.client.gui.event.ComponentEvent;
 import net.malisis.core.util.FontColors;
 import net.minecraft.client.resources.I18n;
 
+import javax.annotation.Nullable;
+
 import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
 
@@ -40,6 +42,9 @@ public class ExchangeListPriceScreen extends BasicScreen {
 
     private final Exchange axs;
     private final ListItem toList;
+    // LIST, or ADJUST_PRICE / ADMIN_ADJUST_PRICE to change the price of a listed item
+    private final ListStatusType type;
+    @Nullable private final BigDecimal currentPrice;
 
     private UIButton buttonList, buttonCancel;
     private UILabel eaLabel;
@@ -47,10 +52,16 @@ public class ExchangeListPriceScreen extends BasicScreen {
     private BasicForm form;
 
     public ExchangeListPriceScreen(ExchangeScreen parent, Exchange axs, ListItem toList) {
+        this(parent, axs, toList, ListStatusType.LIST, null);
+    }
+
+    public ExchangeListPriceScreen(ExchangeScreen parent, Exchange axs, ListItem toList, ListStatusType type, @Nullable BigDecimal currentPrice) {
         super(parent, true);
 
         this.axs = axs;
         this.toList = toList;
+        this.type = type;
+        this.currentPrice = currentPrice;
     }
 
     @Override
@@ -61,7 +72,8 @@ public class ExchangeListPriceScreen extends BasicScreen {
         this.form.setZIndex(10); // Fixes issue overlapping draws from parent
         this.form.setBackgroundAlpha(255);
 
-        this.pricePerTextBox = new BasicTextBox(this, this.toList.getLastKnownPrice().orElse(BigDecimal.ZERO).toString());
+        final BigDecimal startPrice = this.currentPrice != null ? this.currentPrice : this.toList.getLastKnownPrice().orElse(null);
+        this.pricePerTextBox = new BasicTextBox(this, startPrice == null ? BigDecimal.ZERO.toString() : startPrice.toString());
         this.pricePerTextBox.setSize(65, 0);
         this.pricePerTextBox.setFilter(s -> {
             // TODO: Maybe make a fancy regex for some of this
@@ -103,11 +115,11 @@ public class ExchangeListPriceScreen extends BasicScreen {
         this.eaLabel.setPosition(BasicScreen.getPaddedX(this.pricePerTextBox, 2), 1, Anchor.MIDDLE | Anchor.LEFT);
 
         this.buttonList = new UIButtonBuilder(this)
-                .text(I18n.format("almura.feature.common.button.list"))
+                .text(I18n.format("almura.feature.common.button." + (this.type == ListStatusType.LIST ? "list" : "modify")))
                 .width(40)
                 .position(-2, -2)
                 .anchor(Anchor.RIGHT | Anchor.BOTTOM)
-                .enabled(this.toList.getLastKnownPrice().isPresent())
+                .enabled(startPrice != null)
                 .onClick(this::list)
                 .build("button.list");
 
@@ -148,7 +160,7 @@ public class ExchangeListPriceScreen extends BasicScreen {
         if (!this.buttonList.isEnabled()) {
             return;
         }
-        exchangeManager.modifyListStatus(ListStatusType.LIST, this.axs.getId(), toList.getRecord(),
+        exchangeManager.modifyListStatus(this.type, this.axs.getId(), toList.getRecord(),
                 new BigDecimal(this.pricePerTextBox.getText()));
         ((ExchangeScreen) this.parent).refreshListItems();
         this.close();
