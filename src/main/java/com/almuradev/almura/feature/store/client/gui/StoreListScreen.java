@@ -34,6 +34,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -295,6 +296,13 @@ public class StoreListScreen extends BasicScreen {
         }
     }
 
+    /**
+     * @return The index that puts a newly listed item at the bottom of the shop order
+     */
+    private static int nextIndex(final List<? extends StoreItem> items) {
+        return items.stream().mapToInt(StoreItem::getIndex).max().orElse(0) + 1;
+    }
+
     private void listOrModify() {
         if (!this.buttonList.isEnabled()) {
             return;
@@ -308,13 +316,13 @@ public class StoreListScreen extends BasicScreen {
             // We're modifying an existing listing
             if (this.toModifyBuy != null) {
                 final int newBuyQuantity = Integer.valueOf(this.buyQtyTextBox.getText());
-                storeManager.requestModifyBuyingItem(this.store.getId(), this.toModifyBuy.getRecord(), newBuyQuantity, 0,
+                storeManager.requestModifyBuyingItem(this.store.getId(), this.toModifyBuy.getRecord(), newBuyQuantity, this.toModifyBuy.getIndex(),
                   new BigDecimal(this.buyPricePerTextBox.getText()));
             } else { // We're adding a new listing
                 final VanillaStack toListBuy = new BasicVanillaStack(this.toList);
                 toListBuy.setQuantity(Integer.valueOf(this.buyQtyTextBox.getText()));
 
-                storeManager.requestListBuyingItem(this.store.getId(), toListBuy, 0, new BigDecimal(this.buyPricePerTextBox.getText()));
+                storeManager.requestListBuyingItem(this.store.getId(), toListBuy, nextIndex(this.store.getBuyingItems()), new BigDecimal(this.buyPricePerTextBox.getText()));
             }
         } else if (this.toModifyBuy != null) { // We're unlisting an existing listing
             storeManager.requestDelistBuyingItem(this.store.getId(), this.toModifyBuy.getRecord());
@@ -324,13 +332,13 @@ public class StoreListScreen extends BasicScreen {
             // We're modifying an existing listing
             if (this.toModifySell != null) {
                 final int newQuantity = Integer.valueOf(this.sellQtyTextBox.getText());
-                storeManager.requestModifySellingItem(this.store.getId(), this.toModifySell.getRecord(), newQuantity, 0,
+                storeManager.requestModifySellingItem(this.store.getId(), this.toModifySell.getRecord(), newQuantity, this.toModifySell.getIndex(),
                   new BigDecimal(this.sellPricePerTextBox.getText()));
             } else { // We're adding a new listing
                 final VanillaStack toListSell = new BasicVanillaStack(this.toList);
                 toListSell.setQuantity(Integer.valueOf(this.sellQtyTextBox.getText()));
 
-                storeManager.requestListSellingItem(this.store.getId(), toListSell, 0, new BigDecimal(this.sellPricePerTextBox.getText()));
+                storeManager.requestListSellingItem(this.store.getId(), toListSell, nextIndex(this.store.getSellingItems()), new BigDecimal(this.sellPricePerTextBox.getText()));
             }
         } else if (this.toModifySell != null) { // We're unlisting an existing listing
             storeManager.requestDelistSellingItem(this.store.getId(), this.toModifySell.getRecord());

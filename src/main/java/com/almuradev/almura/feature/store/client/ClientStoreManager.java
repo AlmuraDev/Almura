@@ -148,6 +148,18 @@ public final class ClientStoreManager implements Witness {
     }
 
     /**
+     * Changes several listed items of a segment at once (e.g. their indexes, to reorder them).
+     */
+    public void requestModifyItems(final String id, final StoreItemSegmentType segment, final List<ServerboundModifyItemsPacket.ModifyCandidate>
+        candidates) {
+        checkNotNull(id);
+        checkNotNull(segment);
+        if (!candidates.isEmpty()) {
+            this.network.sendToServer(new ServerboundModifyItemsPacket(id, segment, candidates));
+        }
+    }
+
+    /**
      * SellingItem
      */
 

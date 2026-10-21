@@ -71,6 +71,9 @@ public final class GeneralCategory {
     @Setting(value = "exchange-default-sort", comment = "The Exchange's default sort order. Valid options are 'item_name', 'price' and 'seller'")
     public String exchangeDefaultSort = "item_name";
 
+    @Setting(value = "store-edit-mode", comment = "Store admins: when disabled stores open without the admin pane, as players see them")
+    public boolean storeEditMode = true;
+
     @Setting(value = "display-numeric-hud-values", comment = "Toggles the display of numeric values in the Origin HUD")
     public boolean displayNumericHUDValues = true;
 

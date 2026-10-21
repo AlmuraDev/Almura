@@ -81,7 +81,10 @@ public final class StoreModule extends AbstractModule implements CommonBinder {
             target.asRealStack().getDisplayName().toLowerCase().contains(value.toLowerCase()))
           .<StoreItem>registerComparator(ID + "_item_display_name", Comparator.comparing(k -> k.asRealStack().getDisplayName().toLowerCase()))
           .registerComparator(ID + "_price", Comparator.comparing(StoreItem::getPrice))
-          .registerComparator(ID + "_created", Comparator.comparing(StoreItem::getCreated));
+          .registerComparator(ID + "_created", Comparator.comparing(StoreItem::getCreated))
+          // Shop order: as arranged by store admins, items with the same index by name
+          .<StoreItem>registerComparator(ID + "_index", Comparator.<StoreItem>comparingInt(StoreItem::getIndex)
+            .thenComparing(k -> k.asRealStack().getDisplayName().toLowerCase()));
 
         this.on(Platform.Type.CLIENT, () -> {
             final class ClientModule extends AbstractModule implements ClientBinder {

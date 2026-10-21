@@ -7,10 +7,16 @@
  */
 package com.almuradev.almura.feature.store.client.gui;
 
+import com.almuradev.almura.asm.ClientStaticAccess;
+import com.almuradev.almura.Almura;
 import com.almuradev.almura.FeatureSortTypes;
+import com.almuradev.almura.feature.FeatureSortType;
 import com.almuradev.almura.feature.SortType;
 import com.almuradev.almura.feature.store.SideType;
 import com.almuradev.almura.feature.store.Store;
+import com.almuradev.almura.feature.store.StoreItemSegmentType;
+import com.almuradev.almura.feature.store.network.ServerboundModifyItemsPacket;
+import com.almuradev.almura.shared.feature.filter.Direction;
 import com.almuradev.almura.feature.store.StoreModule;
 import com.almuradev.almura.feature.store.client.ClientStoreManager;
 import com.almuradev.almura.feature.store.listing.BuyingItem;
@@ -29,10 +35,13 @@ import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.container.BasicList;
 import net.malisis.core.client.gui.component.decoration.BasicLine;
 import net.malisis.core.client.gui.component.decoration.UIImage;
+import net.malisis.core.client.gui.GuiTexture;
+import net.minecraft.util.ResourceLocation;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.decoration.UITooltip;
 import net.malisis.core.client.gui.component.interaction.BasicTextBox;
 import net.malisis.core.client.gui.component.interaction.UIButton;
+import net.malisis.core.client.gui.component.interaction.UICheckBox;
 import net.malisis.core.client.gui.component.interaction.UISelect;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
@@ -74,6 +83,14 @@ public class StoreScreen extends BasicScreen {
     private static final int hoveredTabColor = 0x3C3C3C;
     private static final int innerPadding = 2;
     private static final Map<ItemFinder, Object> itemFinderRelationshipMap = new LinkedHashMap<>();
+    // The admin pane and the gap before it
+    private static final int ADMIN_PANE_WIDTH = 224;
+    private static final SortType SHOP_ORDER =
+      new FeatureSortType("index", I18n.format("almura.feature.store.text.sort.shop_order"), Direction.ASCENDING);
+    private static final ResourceLocation ARROW_UP = new ResourceLocation(Almura.ID, "textures/gui/guide_arrow_up.png");
+    private static final ResourceLocation ARROW_DOWN = new ResourceLocation(Almura.ID, "textures/gui/guide_arrow_down.png");
+    // Move arrow buttons, black outline included; the price moves left by their width and a gap
+    private static final int ARROW_BUTTON_WIDTH = 15, ARROW_BUTTON_HEIGHT = 11, ARROW_GAP = 4;
 
     private final Store store;
     private final boolean isAdmin;
@@ -93,6 +110,13 @@ public class StoreScreen extends BasicScreen {
     private BasicTextBox itemDisplayNameSearchBox;
     private BasicTextBox adminSearchTextBox;
     private UISelect<SortType> comboBoxSortType;
+    // Admins: the admin pane, shown in edit mode (otherwise the store looks as it does to players)
+    private BasicForm form;
+    private BasicContainer<?> adminContainer;
+    private int playerFormWidth;
+    private boolean editMode;
+    // The list shows every item of the side in shop order (as last searched), so its items can be moved up and down
+    private boolean listInShopOrder;
 
     public StoreScreen(final Store store, final boolean isAdmin) {
         this.store = store;
@@ -192,6 +216,7 @@ public class StoreScreen extends BasicScreen {
         this.comboBoxSortType = new UISelect<>(this, 78);
         this.comboBoxSortType.setPosition(BasicScreen.getPaddedX(this.itemDisplayNameSearchBox, innerPadding), searchY + 1);
         this.comboBoxSortType.setOptions(Arrays.asList(
+          SHOP_ORDER,
           FeatureSortTypes.ITEM_DISPLAY_NAME_ASC,
           FeatureSortTypes.ITEM_DISPLAY_NAME_DESC,
           FeatureSortTypes.PRICE_ASC,
@@ -199,7 +224,8 @@ public class StoreScreen extends BasicScreen {
         ));
         this.comboBoxSortType.setOptionsWidth(UISelect.LONGEST_OPTION);
         this.comboBoxSortType.setLabelFunction(type -> type == null ? "" : type.getName()); // Because that's reasonable.
-        this.comboBoxSortType.select(FeatureSortTypes.ITEM_DISPLAY_NAME_ASC);
+        // The order store admins arrange with the move arrows
+        this.comboBoxSortType.select(SHOP_ORDER);
 
         // Search button
         final UIButton buttonSearch = new UIButtonBuilder(this)
@@ -289,11 +315,12 @@ public class StoreScreen extends BasicScreen {
 
         // Logic for admin pane
         if (this.isAdmin) {
-            // Adjust form width
-            form.setWidth(form.getWidth() + 224);
+            this.form = form;
+            this.playerFormWidth = form.getWidth();
 
             // Create admin pane
             final BasicContainer<?> adminContainer = new BasicContainer(this, 220, UIComponent.INHERITED);
+            this.adminContainer = adminContainer;
             adminContainer.setPosition(BasicScreen.getPaddedX(storeContainer, 4), 0);
             adminContainer.setBorder(FontColors.WHITE, 1, 185);
             adminContainer.setPadding(3);
@@ -352,11 +379,87 @@ public class StoreScreen extends BasicScreen {
 
             form.add(adminContainer);
 
+            // Edit mode, at the left of the title bar: off shows the store as players see it
+            final UICheckBox editMode = new UICheckBox(this, I18n.format("almura.feature.store.checkbox.edit_mode"));
+            editMode.setName("checkbox.edit_mode");
+            editMode.setFontOptions(FontColors.WHITE_FO.toBuilder().shadow(false).build());
+            editMode.setTooltip(I18n.format("almura.feature.store.checkbox.edit_mode.tooltip"));
+            editMode.setPosition(0, -16, Anchor.TOP | Anchor.LEFT);
+            editMode.setChecked(ClientStaticAccess.configAdapter.get().general.storeEditMode);
+            editMode.register(this);
+            form.add(editMode);
+
             // Select the first item
             this.locationSelect.selectFirst();
+
+            this.setEditMode(editMode.isChecked());
         }
 
         addToScreen(form);
+    }
+
+    @Subscribe
+    private void onEditModeChange(final UICheckBox.CheckEvent event) {
+        if (!"checkbox.edit_mode".equals(event.getComponent().getName())) {
+            return;
+        }
+        ClientStaticAccess.configAdapter.get().general.storeEditMode = event.getNewValue();
+        ClientStaticAccess.configAdapter.save();
+        this.setEditMode(event.getNewValue());
+    }
+
+    /**
+     * Shows the admin pane (and widens the window for it), or hides it so the store looks as it does to players.
+     */
+    private void setEditMode(final boolean editMode) {
+        this.editMode = editMode;
+        this.adminContainer.setVisible(editMode);
+        this.form.setWidth(this.playerFormWidth + (editMode ? ADMIN_PANE_WIDTH : 0));
+        // The rows show their move arrows in edit mode
+        if (this.itemList != null) {
+            this.search();
+        }
+    }
+
+    /**
+     * Moves an item one place up (-1) or down (1) the shop order of its side: swaps its index with its neighbour's. If the indexes repeat,
+     * so the order can't be told apart, they are numbered 1, 2, 3... first. The server saves it and sends everyone the new order.
+     */
+    private void moveItem(final StoreItem item, final int direction) {
+        if (!this.listInShopOrder) {
+            return;
+        }
+        final List<StoreItem> order = new ArrayList<>(this.itemList.getItems());
+        int from = -1;
+        for (int i = 0; i < order.size(); i++) {
+            if (order.get(i).getRecord() == item.getRecord()) {
+                from = i;
+            }
+        }
+        final int to = from + direction;
+        if (from < 0 || to < 0 || to >= order.size()) {
+            return;
+        }
+
+        final int[] indexes = new int[order.size()];
+        final boolean renumber = order.stream().mapToInt(StoreItem::getIndex).distinct().count() < order.size();
+        for (int i = 0; i < order.size(); i++) {
+            indexes[i] = renumber ? i + 1 : order.get(i).getIndex();
+        }
+        final int swap = indexes[from];
+        indexes[from] = indexes[to];
+        indexes[to] = swap;
+
+        final List<ServerboundModifyItemsPacket.ModifyCandidate> changed = new ArrayList<>();
+        for (int i = 0; i < order.size(); i++) {
+            final StoreItem storeItem = order.get(i);
+            if (indexes[i] != storeItem.getIndex()) {
+                changed.add(new ServerboundModifyItemsPacket.ModifyCandidate(storeItem.getRecord(), storeItem.getQuantity(), indexes[i],
+                    storeItem.getPrice()));
+            }
+        }
+        storeManager.requestModifyItems(this.store.getId(), this.currentSide == SideType.BUY ? StoreItemSegmentType.BUYING
+          : StoreItemSegmentType.SELLING, changed);
     }
 
     @Override
@@ -439,7 +542,7 @@ public class StoreScreen extends BasicScreen {
           ? new UITooltip(this, I18n.format("almura.feature.store.text.no_items_for_sale"))
           : null);
         this.sellTabContainer.setTooltip(this.store.getSellingItems().size() == 0
-          ? new UITooltip(this, "almura.feature.store.text.no_items_for_purchase")
+          ? new UITooltip(this, I18n.format("almura.feature.store.text.no_items_for_purchase"))
           : null);
 
         this.search();
@@ -483,6 +586,8 @@ public class StoreScreen extends BasicScreen {
 
         // Store current selection
         final int currentRecord = this.itemList.getSelectedItem() != null ? this.itemList.getSelectedItem().getRecord() : -1;
+
+        this.listInShopOrder = this.comboBoxSortType.getSelectedValue() == SHOP_ORDER && filterQuery == null;
 
         // Update the item list to have the current filtered items
         this.itemList.setItems(storeManager.filterLocalItems(this.store.getId(), filterQuery, sortQuery, this.currentSide));
@@ -722,6 +827,7 @@ public class StoreScreen extends BasicScreen {
         protected int itemNameSpaceAvailable;
         private UILabel soldOutLabel;
         private BasicContainer<?> soldOutContainer;
+        private boolean hasMoveArrows;
 
         public StoreItemComponent(final MalisisGui gui, final BasicList<T> parent, final T item) {
             super(gui, parent, item);
@@ -768,13 +874,56 @@ public class StoreScreen extends BasicScreen {
                 this.itemLabel.setTooltip(new UISaneTooltip(gui, FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getQuantity())));
             }
 
+            // Store admins in edit mode get move arrows right of the price
+            final StoreScreen screen = (StoreScreen) gui;
+            this.hasMoveArrows = screen.isAdmin && screen.editMode;
+
             this.priceLabel = new UIExpandingLabel(gui, "");
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
-            this.priceLabel.setPosition(-6, 0, Anchor.RIGHT | Anchor.MIDDLE);
+            this.priceLabel.setPosition(-(this.hasMoveArrows ? ARROW_BUTTON_WIDTH + ARROW_GAP : 6), 0, Anchor.RIGHT | Anchor.MIDDLE);
 
             this.add(this.image, this.itemLabel, this.priceLabel, this.soldOutContainer);
 
+            // After the sold out cover, so they stay clickable on sold out items
+            if (this.hasMoveArrows) {
+                this.addMoveArrows(gui, screen);
+            }
+
             this.update();
+        }
+
+        /**
+         * Up and down arrows that move this item in the shop order; only clickable while the list shows the whole side in shop order.
+         */
+        private void addMoveArrows(final MalisisGui gui, final StoreScreen screen) {
+            final List<StoreItem> order = screen.itemList.getItems();
+            final boolean first = order.isEmpty() || order.get(0).getRecord() == this.item.getRecord();
+            final boolean last = order.isEmpty() || order.get(order.size() - 1).getRecord() == this.item.getRecord();
+            final String disabledTooltip = screen.listInShopOrder ? null : I18n.format("almura.feature.store.button.move.shop_order_only");
+
+            // Stacked on the row's middle, sharing the outline row between them
+            final int half = ARROW_BUTTON_HEIGHT / 2;
+            this.add(this.arrowButton(gui, screen, ARROW_UP, -1, -half, screen.listInShopOrder && !first, disabledTooltip),
+                this.arrowButton(gui, screen, ARROW_DOWN, 1, ARROW_BUTTON_HEIGHT - 1 - half, screen.listInShopOrder && !last, disabledTooltip));
+        }
+
+        private UIButton arrowButton(final MalisisGui gui, final StoreScreen screen, final ResourceLocation texture, final int direction,
+            final int y, final boolean enabled, @Nullable final String disabledTooltip) {
+            final UIImage arrow = new UIImage(gui, new GuiTexture(texture), null);
+            arrow.setSize(9, 5);
+            final UIButton button = new UIButtonBuilder(gui)
+                .image(arrow)
+                .anchor(Anchor.MIDDLE | Anchor.RIGHT)
+                .position(0, y)
+                .enabled(enabled)
+                .tooltip(disabledTooltip != null ? disabledTooltip
+                    : I18n.format(direction < 0 ? "almura.feature.store.button.move_up" : "almura.feature.store.button.move_down"))
+                .onClick(() -> screen.moveItem(this.item, direction))
+                .build("button.move." + (direction < 0 ? "up" : "down"));
+            // The button graphic has a 1 pixel black outline: at 15 x 11 the 9 x 5 arrow sits in the middle of the grey inside it
+            button.setAutoSize(false);
+            button.setSize(ARROW_BUTTON_WIDTH, ARROW_BUTTON_HEIGHT);
+            return button;
         }
 
         protected void refreshDisplayName() {
@@ -811,6 +960,7 @@ public class StoreScreen extends BasicScreen {
             this.itemNameSpaceAvailable = this.getWidth()
                     - (this.priceLabel.isVisible() ? this.priceLabel.getWidth() : 0)
                     - (this.image.isVisible() ? this.image.getWidth() : 0)
+                    - (this.hasMoveArrows ? ARROW_BUTTON_WIDTH + ARROW_GAP : 0)
                     - 16; // Static amount for spacing
 
             this.refreshDisplayName();

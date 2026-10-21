@@ -175,11 +175,17 @@ almura.feature.common.text.sort.price_desc=Price (Desc.)
 # ---------------
 
 almura.feature.store.name=Store
+almura.feature.store.text.sort.shop_order=Shop order
+almura.feature.store.button.move_up=Move up
+almura.feature.store.button.move_down=Move down
+almura.feature.store.button.move.shop_order_only=Sort by Shop order with no search to move items
+almura.feature.store.checkbox.edit_mode=Edit mode
+almura.feature.store.checkbox.edit_mode.tooltip=Off shows the store as players see it
 almura.feature.store.itemfinder.store=Store
 almura.feature.store.itemfinder.inventory=Inventory
 almura.feature.store.text.soldout=Sold Out!
-almura.feature.store.text.no_items_for_sale=There are no items for sale.
-almura.feature.store.text.no_items_for_purchase=There are no items available for purchase.
+almura.feature.store.text.no_items_for_sale=This shop is not selling items at this time.
+almura.feature.store.text.no_items_for_purchase=This shop is not buying items at this time.
 
 # ---------------
 # -- exchange ---
