@@ -34,9 +34,9 @@ public final class ClientboundGuideOpenResponsePacketHandler implements MessageH
             }
             if (PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
                 if (message.type == GuideOpenType.PLAYER_LOGGED_IN && (!Minecraft.getMinecraft().isIntegratedServerRunning())) {
-                    new GuidePageViewScreen(message.canAdd, message.canRemove, message.canModify).display();
+                    new GuidePageViewScreen(message.canAdd, message.canRemove, message.canModify, message.canAddPlayer).display();
                 } else if (message.type != GuideOpenType.PLAYER_LOGGED_IN) {
-                    new GuidePageViewScreen(message.canAdd, message.canRemove, message.canModify).display();
+                    new GuidePageViewScreen(message.canAdd, message.canRemove, message.canModify, message.canAddPlayer).display();
                 }
             }
         }

@@ -13,6 +13,11 @@ public interface GuideConfig {
 
     String DIR_GUIDE_PAGES = "pages";
 
+    // Player guides: guide/player_pages/<owner uuid>/<id>.conf, known in game as player/<owner uuid>/<id>
+    String DIR_GUIDE_PLAYER_PAGES = "player_pages";
+
+    String PLAYER_ID_PREFIX = "player/";
+
     String EXT_CONFIG = ".conf";
 
     String EXT_CONFIG_PAGE = ".conf";

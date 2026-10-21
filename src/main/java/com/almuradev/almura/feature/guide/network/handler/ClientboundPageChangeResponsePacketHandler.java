@@ -15,6 +15,7 @@ import com.almuradev.almura.feature.guide.network.ServerboundGuideOpenRequestPac
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.api.Platform;
@@ -35,6 +36,12 @@ public final class ClientboundPageChangeResponsePacketHandler implements Message
     @SideOnly(Side.CLIENT)
     @Override
     public void handleMessage(ClientboundPageChangeResponsePacket message, RemoteConnection connection, Platform.Type side) {
+        // Tell the player why it didn't work (e.g. no permission or guide limit reached)
+        if (side.isClient() && !message.success && PacketUtil.checkThreadAndEnqueue(Minecraft.getMinecraft(), message, this, connection, side)) {
+            this.manager.showError(I18n.format(message.message));
+            return;
+        }
+
         if (side.isClient() && message.success) {
 
             final Minecraft client = Minecraft.getMinecraft();

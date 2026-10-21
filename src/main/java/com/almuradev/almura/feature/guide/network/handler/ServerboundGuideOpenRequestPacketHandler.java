@@ -70,18 +70,10 @@ public final class ServerboundGuideOpenRequestPacketHandler implements MessageHa
                 }
 
                 // Open the GUI
-                this.network.sendTo(player, new ClientboundGuideOpenResponsePacket(
-                        GuideOpenType.PLAYER_INVOKED_KEYBIND,
-                        player.hasPermission("almura.guide.add"),
-                        player.hasPermission("almura.guide.remove"),
-                        player.hasPermission("almura.guide.modify"),
-                        true));
+                this.network.sendTo(player, this.manager.createOpenResponse(player, GuideOpenType.PLAYER_INVOKED_KEYBIND, true));
 
-                final Map<String, Page> pagesToSend = this.manager.getAvailablePagesFor(player);
-                if (pagesToSend.size() > 0) {
-
-                    final List<PageListEntry> playerListings = pagesToSend.entrySet().stream().map(entry -> new PageListEntry
-                            (entry.getKey(), entry.getValue().getName())).collect(Collectors.toList());
+                final List<PageListEntry> playerListings = this.manager.getListingsFor(player);
+                if (playerListings.size() > 0) {
                     final PageListEntry switchToPageEntry = playerListings.stream().findFirst().orElse(null);
 
                     // Send the list of pages

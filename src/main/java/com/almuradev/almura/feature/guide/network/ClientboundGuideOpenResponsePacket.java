@@ -19,15 +19,19 @@ public final class ClientboundGuideOpenResponsePacket implements Message {
     public boolean canRemove;
     public boolean canModify;
     public boolean requestedFromClient;
+    // May create player guides
+    public boolean canAddPlayer;
 
     public ClientboundGuideOpenResponsePacket() {
     }
 
-    public ClientboundGuideOpenResponsePacket(GuideOpenType type, final boolean canAdd, final boolean canRemove, final boolean canModify, final boolean requestedFromClient) {
+    public ClientboundGuideOpenResponsePacket(GuideOpenType type, final boolean canAdd, final boolean canRemove, final boolean canModify,
+            final boolean canAddPlayer, final boolean requestedFromClient) {
         this.type = type;
         this.canAdd = canAdd;
         this.canRemove = canRemove;
         this.canModify = canModify;
+        this.canAddPlayer = canAddPlayer;
         this.requestedFromClient = requestedFromClient;
     }
 
@@ -37,6 +41,7 @@ public final class ClientboundGuideOpenResponsePacket implements Message {
         this.canAdd = buf.readBoolean();
         this.canRemove = buf.readBoolean();
         this.canModify = buf.readBoolean();
+        this.canAddPlayer = buf.readBoolean();
         this.requestedFromClient = buf.readBoolean();
     }
 
@@ -46,6 +51,7 @@ public final class ClientboundGuideOpenResponsePacket implements Message {
         buf.writeBoolean(this.canAdd);
         buf.writeBoolean(this.canRemove);
         buf.writeBoolean(this.canModify);
+        buf.writeBoolean(this.canAddPlayer);
         buf.writeBoolean(this.requestedFromClient);
     }
 }

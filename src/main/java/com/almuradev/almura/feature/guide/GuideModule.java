@@ -16,6 +16,7 @@ import com.almuradev.almura.feature.guide.network.ClientboundPageListingsPacket;
 import com.almuradev.almura.feature.guide.network.ClientboundPageOpenResponsePacket;
 import com.almuradev.almura.feature.guide.network.ServerboundGuideOpenRequestPacket;
 import com.almuradev.almura.feature.guide.network.ServerboundPageChangeRequestPacket;
+import com.almuradev.almura.feature.guide.network.ServerboundPageMoveRequestPacket;
 import com.almuradev.almura.feature.guide.network.ServerboundPageOpenRequestPacket;
 import com.almuradev.almura.feature.guide.network.handler.ClientboundGuideOpenResponsePacketHandler;
 import com.almuradev.almura.feature.guide.network.handler.ClientboundPageChangeResponsePacketHandler;
@@ -23,6 +24,7 @@ import com.almuradev.almura.feature.guide.network.handler.ClientboundPageListing
 import com.almuradev.almura.feature.guide.network.handler.ClientboundPageOpenResponsePacketHandler;
 import com.almuradev.almura.feature.guide.network.handler.ServerboundGuideOpenRequestPacketHandler;
 import com.almuradev.almura.feature.guide.network.handler.ServerboundPageChangeRequestPacketHandler;
+import com.almuradev.almura.feature.guide.network.handler.ServerboundPageMoveRequestPacketHandler;
 import com.almuradev.almura.feature.guide.network.handler.ServerboundPageOpenRequestPacketHandler;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
@@ -50,7 +52,9 @@ public final class GuideModule extends AbstractModule implements CommonBinder {
                 .bind(ServerboundPageChangeRequestPacket.class,
                         binder -> binder.handler(ServerboundPageChangeRequestPacketHandler.class, Platform.Type.SERVER))
                 .bind(ClientboundPageChangeResponsePacket.class,
-                        binder -> binder.handler(ClientboundPageChangeResponsePacketHandler.class, Platform.Type.CLIENT));
+                        binder -> binder.handler(ClientboundPageChangeResponsePacketHandler.class, Platform.Type.CLIENT))
+                .bind(ServerboundPageMoveRequestPacket.class,
+                        binder -> binder.handler(ServerboundPageMoveRequestPacketHandler.class, Platform.Type.SERVER));
 
         this.facet().add(ServerPageManager.class);
         this.requestStaticInjection(GuideCommands.class);

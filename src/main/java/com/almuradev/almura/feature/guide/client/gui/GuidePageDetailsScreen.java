@@ -8,10 +8,10 @@
 package com.almuradev.almura.feature.guide.client.gui;
 
 import com.almuradev.almura.feature.guide.ClientPageManager;
+import com.almuradev.almura.shared.client.ui.component.UIFormatPalette;
 import com.google.inject.Inject;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.container.dialog.BasicMessageBox;
 import net.malisis.core.client.gui.component.container.dialog.MessageBoxButtons;
@@ -41,6 +41,9 @@ public class GuidePageDetailsScreen extends BasicScreen {
             .withLocale(Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage().getJavaLocale())
             .withZone(ZoneId.systemDefault());
 
+    // Between the fields and the name's format palette
+    private static final int PALETTE_GAP = 4;
+
     private BasicTextBox tbIndex, tbName;
 
     GuidePageDetailsScreen(GuiScreen parent) {
@@ -56,7 +59,9 @@ public class GuidePageDetailsScreen extends BasicScreen {
 
         assert manager.getPage() != null;
 
-        final BasicForm form = new BasicForm(this, 150, 225, I18n.format("almura.guide.details.form.title"));
+        // The fields keep their width, the name's format palette gets a column to their right
+        final BasicForm form = new BasicForm(this, 150 + UIFormatPalette.SIZE + PALETTE_GAP, 225, I18n.format("almura.guide.details.form.title"));
+        final int fieldWidth = BasicScreen.getPaddedWidth(form) - UIFormatPalette.SIZE - PALETTE_GAP;
         form.setZIndex(10);
         form.setBackgroundAlpha(255);
 
@@ -68,7 +73,7 @@ public class GuidePageDetailsScreen extends BasicScreen {
         final BasicTextBox tbId = new BasicTextBox(this, manager.getPage().getId());
         tbId.setAnchor(Anchor.TOP | Anchor.LEFT);
         tbId.setPosition(0, BasicScreen.getPaddedY(labelId, 1));
-        tbId.setSize(UIComponent.INHERITED, 0);
+        tbId.setSize(fieldWidth, 0);
         tbId.setEditable(false);
 
         // Index
@@ -84,8 +89,10 @@ public class GuidePageDetailsScreen extends BasicScreen {
         this.tbIndex.setOnEnter(tb -> this.save());
         this.tbIndex.setAnchor(Anchor.TOP | Anchor.LEFT);
         this.tbIndex.setPosition(0, BasicScreen.getPaddedY(labelIndex, 1));
-        this.tbIndex.setSize(UIComponent.INHERITED, 0);
+        this.tbIndex.setSize(fieldWidth, 0);
         this.tbIndex.setFilter(s -> s.replaceAll("[^\\d]", ""));
+        // Player guides are listed by name
+        this.tbIndex.setEditable(manager.getPageEntry() == null || !manager.getPageEntry().isPlayerGuide());
 
         // Title
         final UILabel labelName = new UILabel(this, I18n.format("almura.guide.label.name"));
@@ -100,7 +107,7 @@ public class GuidePageDetailsScreen extends BasicScreen {
         this.tbName.setOnEnter(tb -> this.save());
         this.tbName.setAnchor(Anchor.TOP | Anchor.LEFT);
         this.tbName.setPosition(0, BasicScreen.getPaddedY(labelName, 1));
-        this.tbName.setSize(UIComponent.INHERITED, 0);
+        this.tbName.setSize(fieldWidth, 0);
 
         // Creator
         final UILabel labelCreator = new UILabel(this, I18n.format("almura.guide.label.creator"));
@@ -111,7 +118,7 @@ public class GuidePageDetailsScreen extends BasicScreen {
         final BasicTextBox tbCreator = new BasicTextBox(this, manager.getPage().getCreator().toString());
         tbCreator.setAnchor(Anchor.TOP | Anchor.LEFT);
         tbCreator.setPosition(0, BasicScreen.getPaddedY(labelCreator, 1));
-        tbCreator.setSize(UIComponent.INHERITED, 0);
+        tbCreator.setSize(fieldWidth, 0);
         tbCreator.setEditable(false);
 
         // Created
@@ -123,7 +130,7 @@ public class GuidePageDetailsScreen extends BasicScreen {
         final BasicTextBox tbCreated = new BasicTextBox(this, formatter.format(manager.getPage().getCreated()));
         tbCreated.setAnchor(Anchor.TOP | Anchor.LEFT);
         tbCreated.setPosition(0, BasicScreen.getPaddedY(labelCreated, 1));
-        tbCreated.setSize(UIComponent.INHERITED, 0);
+        tbCreated.setSize(fieldWidth, 0);
         tbCreated.setEditable(false);
 
         // Last Modifier
@@ -135,7 +142,7 @@ public class GuidePageDetailsScreen extends BasicScreen {
         final BasicTextBox tbLastModifier = new BasicTextBox(this, manager.getPage().getLastModifier().toString());
         tbLastModifier.setAnchor(Anchor.TOP | Anchor.LEFT);
         tbLastModifier.setPosition(0, BasicScreen.getPaddedY(labelLastModifier, 1));
-        tbLastModifier.setSize(UIComponent.INHERITED, 0);
+        tbLastModifier.setSize(fieldWidth, 0);
         tbLastModifier.setEditable(false);
 
         // Last Modified
@@ -147,7 +154,7 @@ public class GuidePageDetailsScreen extends BasicScreen {
         final BasicTextBox tbLastModified = new BasicTextBox(this, formatter.format(manager.getPage().getLastModified()));
         tbLastModified.setAnchor(Anchor.TOP | Anchor.LEFT);
         tbLastModified.setPosition(0, BasicScreen.getPaddedY(labelLastModified, 1));
-        tbLastModified.setSize(UIComponent.INHERITED, 0);
+        tbLastModified.setSize(fieldWidth, 0);
         tbLastModified.setEditable(false);
 
         // Save/Cancel
@@ -166,9 +173,13 @@ public class GuidePageDetailsScreen extends BasicScreen {
                 .onClick(this::close)
                 .build("button.cancel");
 
+        // Colors and styles for the name, beside it
+        final UIFormatPalette namePalette = new UIFormatPalette(this, this.tbName);
+        namePalette.setPosition(0, labelName.getY(), Anchor.TOP | Anchor.RIGHT);
+
         form.add(labelId, tbId,
                  labelIndex, this.tbIndex,
-                 labelName, this.tbName,
+                 labelName, this.tbName, namePalette,
                  labelCreator, tbCreator,
                  labelCreated, tbCreated,
                  labelLastModifier, tbLastModifier,

@@ -86,6 +86,12 @@ public final class GeneralCategory {
     @Setting(value = "display-guide-on-login", comment = "When enabled the Guide window will open automatically upon server login.")
     public boolean displayGuideOnLogin = true;
 
+    @Setting(value = "guide-hide-formatter-bar", comment = "When enabled the Guide hides the color and font bar while editing.")
+    public boolean guideHideFormatterBar = false;
+
+    @Setting(value = "guide-show-player-guides", comment = "Guide admins: when enabled the Guide lists other players' guides too.")
+    public boolean guideShowPlayerGuides = false;
+
     @Setting(value = "extended-view", comment = "When enabled client will render all chunks in view distance once loaded regardless of server view distance.")
     public boolean extendedView = false;
 }

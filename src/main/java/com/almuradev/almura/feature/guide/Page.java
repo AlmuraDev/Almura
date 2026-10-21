@@ -14,11 +14,15 @@ import org.spongepowered.common.text.serializer.LegacyTexts;
 import java.time.Instant;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 public final class Page {
 
     private final String id;
     private final Instant created;
     private final UUID creator;
+    // The player a player guide belongs to, null for a server guide
+    @Nullable private final UUID owner;
 
     private Instant lastModified;
     private UUID lastModifier;
@@ -30,13 +34,27 @@ public final class Page {
     }
 
     public Page(String id, UUID creator, Instant created) {
+        this(id, creator, created, null);
+    }
+
+    public Page(String id, UUID creator, Instant created, @Nullable UUID owner) {
         this.id = id;
         this.creator = creator;
         this.created = created;
+        this.owner = owner;
     }
 
     public String getId() {
         return this.id;
+    }
+
+    @Nullable
+    public UUID getOwner() {
+        return this.owner;
+    }
+
+    public boolean isPlayerGuide() {
+        return this.owner != null;
     }
 
     public int getIndex() {

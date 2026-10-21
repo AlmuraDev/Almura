@@ -56,10 +56,9 @@ public final class ServerboundPageOpenRequestPacketHandler implements MessageHan
                 final Player player = ((PlayerConnection) connection).getPlayer();
                 final Page page = this.manager.getPage(message.id).orElse(null);
 
-                if (!player.hasPermission("almura.guide.page." + message.id) || page == null) {
+                if (page == null || !this.manager.canView(player, page)) {
                     // We do not have permission for a page or it is null then we have a de-sync. Re-send all page names
-                    this.network.sendTo(player, new ClientboundPageListingsPacket(this.manager.getAvailablePagesFor(player).entrySet().stream().map
-                            (entry -> new PageListEntry(entry.getKey(), entry.getValue().getName())).collect(Collectors.toList()), null));
+                    this.network.sendTo(player, new ClientboundPageListingsPacket(this.manager.getListingsFor(player), null));
                 } else {
                     this.network.sendTo(player, new ClientboundPageOpenResponsePacket(page));
                 }

@@ -37,7 +37,11 @@ public final class ClientboundPageListingsPacketHandler implements MessageHandle
             final Minecraft client = Minecraft.getMinecraft();
 
             if (PacketUtil.checkThreadAndEnqueue(client, message, this, connection, side)) {
-                this.manager.setPageEntries(message.pageEntries, message.switchToPageId);
+                if (message.reorderOnly) {
+                    this.manager.reorderPageEntries(message.pageEntries);
+                } else {
+                    this.manager.setPageEntries(message.pageEntries, message.switchToPageId);
+                }
 
                 GuidePageViewScreen view = null;
 

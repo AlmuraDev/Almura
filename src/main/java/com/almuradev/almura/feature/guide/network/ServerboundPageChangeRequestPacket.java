@@ -13,9 +13,16 @@ import org.spongepowered.api.network.Message;
 
 public final class ServerboundPageChangeRequestPacket implements Message {
 
+    private static final int CONTENT_PIECES = 4;
+    private static final int CONTENT_PIECE_LENGTH = 8191;
+    // The longest content that fits in the pieces
+    public static final int MAX_CONTENT_LENGTH = CONTENT_PIECES * CONTENT_PIECE_LENGTH;
+
     public PageChangeType changeType;
     public String id, name, content;
     public int index;
+    // ADD only: a player guide of the sender (the server picks its id) instead of a server guide
+    public boolean playerGuide;
 
     public ServerboundPageChangeRequestPacket() {
     }
@@ -28,12 +35,13 @@ public final class ServerboundPageChangeRequestPacket implements Message {
         this.content = page.getContent();
     }
 
-    public ServerboundPageChangeRequestPacket(String id, int index, String name) {
+    public ServerboundPageChangeRequestPacket(String id, int index, String name, boolean playerGuide) {
         this.changeType = PageChangeType.ADD;
         this.id = id;
         this.index = index;
         this.name = name;
         this.content = "";
+        this.playerGuide = playerGuide;
     }
 
     public ServerboundPageChangeRequestPacket(String id) {
@@ -54,6 +62,9 @@ public final class ServerboundPageChangeRequestPacket implements Message {
                 String StrPacket3 = buf.readString();
                 String StrPacket4 = buf.readString();
                 this.content = StrPacket1 + StrPacket2 + StrPacket3 + StrPacket4;
+                if (this.changeType == PageChangeType.ADD) {
+                    this.playerGuide = buf.readBoolean();
+                }
             }
         }
     }
@@ -66,32 +77,15 @@ public final class ServerboundPageChangeRequestPacket implements Message {
             buf.writeInteger(this.index);
             buf.writeString(this.name);
 
-            if (this.content.length() <= 8190) {
-                buf.writeString(this.content);
-                buf.writeString("");
-                buf.writeString("");
-                buf.writeString("");
+            // Strings are limited in size, the content goes up in 4 back to back pieces
+            for (int i = 0; i < CONTENT_PIECES; i++) {
+                final int start = Math.min(i * CONTENT_PIECE_LENGTH, this.content.length());
+                final int end = Math.min(start + CONTENT_PIECE_LENGTH, this.content.length());
+                buf.writeString(this.content.substring(start, end));
             }
 
-            if (this.content.length() > 8190 && this.content.length() <= 16382) {
-                buf.writeString(this.content.substring(0, 8190));
-                buf.writeString(this.content.substring(8191, this.content.length()));
-                buf.writeString("");
-                buf.writeString("");
-            }
-
-            if (this.content.length() > 16382 && this.content.length() <= 24572) {
-                buf.writeString(this.content.substring(0, 8190));
-                buf.writeString(this.content.substring(8191, 16382));
-                buf.writeString(this.content.substring(16383, this.content.length()));
-                buf.writeString("");
-            }
-
-            if (this.content.length() > 24572 && this.content.length() <= 32762) {
-                buf.writeString(this.content.substring(0, 8190));
-                buf.writeString(this.content.substring(8191, 16382));
-                buf.writeString(this.content.substring(16383, 24572));
-                buf.writeString(this.content.substring(24573, this.content.length()));
+            if (this.changeType == PageChangeType.ADD) {
+                buf.writeBoolean(this.playerGuide);
             }
         }
     }
