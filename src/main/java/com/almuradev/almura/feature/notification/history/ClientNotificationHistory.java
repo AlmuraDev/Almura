@@ -13,6 +13,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.slf4j.Logger;
@@ -68,7 +69,12 @@ public final class ClientNotificationHistory {
     public void record(final String type, final String title, final String message) {
         this.load();
 
-        final NotificationRecord record = new NotificationRecord(Instant.now(), type, getServerName(), title, message);
+        final String server = getServerName();
+        if (this.isRepeatedWelcome(server, title, message)) {
+            return;
+        }
+
+        final NotificationRecord record = new NotificationRecord(Instant.now(), type, server, title, message);
         this.records.addLast(record);
         while (this.records.size() > MAX_RECORDS) {
             this.records.removeFirst();
@@ -79,6 +85,29 @@ public final class ClientNotificationHistory {
         } else {
             this.append(record);
         }
+    }
+
+    /**
+     * The welcome popup is sent on every join. It is only kept when it differs (title or message) from the last welcome kept for the
+     * server.
+     */
+    private boolean isRepeatedWelcome(final String server, final String title, final String message) {
+        if (!isWelcome(title)) {
+            return false;
+        }
+        final Iterator<NotificationRecord> iterator = this.records.descendingIterator();
+        while (iterator.hasNext()) {
+            final NotificationRecord record = iterator.next();
+            if (record.getServer().equals(server) && isWelcome(record.getTitle())) {
+                return record.getTitle().equals(title) && record.getMessage().equals(message);
+            }
+        }
+        return false;
+    }
+
+    private static boolean isWelcome(final String title) {
+        final String plain = TextFormatting.getTextWithoutFormattingCodes(title);
+        return plain != null && plain.trim().startsWith("Welcome");
     }
 
     /**
