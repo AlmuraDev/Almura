@@ -15,7 +15,9 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.decoration.UILabel;
+import net.malisis.core.client.gui.component.decoration.UISeparator;
 import net.malisis.core.client.gui.component.interaction.UIButton;
+import net.malisis.core.client.gui.component.interaction.UICheckBox;
 import net.malisis.core.client.gui.component.interaction.UISelect;
 import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
 import net.malisis.core.renderer.font.FontOptions;
@@ -27,8 +29,10 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Mouse;
 
 import java.util.List;
 
@@ -42,14 +46,33 @@ public final class AccessoryScreen extends BasicScreen {
 
     private static final int FORM_WIDTH = 320;
     private static final int FORM_HEIGHT = 200;
+    private static final int MAX_PREVIEW_SCALE = 60;
+    // Left edge of the player preview area (the controls are to its left)
+    private static final int PREVIEW_LEFT = 160;
+    // Space the labels take above the head, in blocks: the gap to the head, plus each line of text
+    private static final float LABELS_GAP = 0.5F;
+    private static final float LABEL_LINE_HEIGHT = 0.2F;
 
     private final ClientAccessoryManager manager;
     private final List<AccessoryType> allowed;
     private BasicForm form;
     @Nullable private UISelect<AccessoryType> typeSelect;
     @Nullable private UISelect<String> styleSelect;
+    @Nullable private UIButton previousButton;
+    @Nullable private UIButton nextButton;
     @Nullable private UILabel countLabel;
     @Nullable private UILabel statusLabel;
+    @Nullable private UICheckBox hideNameCheckbox;
+    @Nullable private UICheckBox hideTitleCheckbox;
+    @Nullable private UICheckBox hideHealthCheckbox;
+    // Remembered while the game runs
+    private static boolean hideNameChoice;
+    private static boolean hideTitleChoice;
+    private static boolean hideHealthChoice;
+    // Preview turn in degrees (0 faces the viewer), changed by dragging over the preview
+    private float previewYaw;
+    private boolean dragging;
+    private int lastDragX;
 
     public AccessoryScreen(@Nullable final GuiScreen parent, final ClientAccessoryManager manager, final List<AccessoryType> allowed) {
         super(parent);
@@ -83,45 +106,67 @@ public final class AccessoryScreen extends BasicScreen {
 
         final UILabel typeLabel = new UILabel(this, "Accessory");
         typeLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).build());
-        typeLabel.setPosition(4, 6, Anchor.LEFT | Anchor.TOP);
+        typeLabel.setPosition(4, 4, Anchor.LEFT | Anchor.TOP);
 
         this.typeSelect = new UISelect<>(this, 130, this.allowed);
         this.typeSelect.setLabelFunction(AccessoryType::displayName);
-        this.typeSelect.setPosition(4, 18, Anchor.LEFT | Anchor.TOP);
+        this.typeSelect.setPosition(4, 15, Anchor.LEFT | Anchor.TOP);
         this.typeSelect.register(this);
 
         final UILabel styleLabel = new UILabel(this, "Style");
         styleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).build());
-        styleLabel.setPosition(4, 42, Anchor.LEFT | Anchor.TOP);
+        styleLabel.setPosition(4, 35, Anchor.LEFT | Anchor.TOP);
 
         this.styleSelect = new UISelect<>(this, 130);
-        this.styleSelect.setPosition(4, 54, Anchor.LEFT | Anchor.TOP);
+        this.styleSelect.setPosition(4, 46, Anchor.LEFT | Anchor.TOP);
         this.styleSelect.maxDisplayedOptions(12);
         this.styleSelect.register(this);
 
-        final UIButton previousButton = new UIButtonBuilder(this)
+        this.previousButton = new UIButtonBuilder(this)
                 .text("<")
                 .width(24)
-                .position(4, 76)
+                .position(4, 66)
                 .anchor(Anchor.LEFT | Anchor.TOP)
                 .listener(this)
                 .build("button.previous");
 
-        final UIButton nextButton = new UIButtonBuilder(this)
+        this.nextButton = new UIButtonBuilder(this)
                 .text(">")
                 .width(24)
-                .position(32, 76)
+                .position(32, 66)
                 .anchor(Anchor.LEFT | Anchor.TOP)
                 .listener(this)
                 .build("button.next");
 
         this.countLabel = new UILabel(this, "");
         this.countLabel.setFontOptions(FontOptions.builder().from(FontColors.GRAY_FO).shadow(true).build());
-        this.countLabel.setPosition(62, 80, Anchor.LEFT | Anchor.TOP);
+        this.countLabel.setPosition(62, 70, Anchor.LEFT | Anchor.TOP);
 
         this.statusLabel = new UILabel(this, "");
         this.statusLabel.setFontOptions(FontOptions.builder().from(FontColors.GOLD_FO).shadow(true).build());
-        this.statusLabel.setPosition(4, 104, Anchor.LEFT | Anchor.TOP);
+        this.statusLabel.setPosition(4, 90, Anchor.LEFT | Anchor.TOP);
+
+        this.hideNameCheckbox = new UICheckBox(this, "Hide name");
+        this.hideNameCheckbox.setPosition(4, 108, Anchor.LEFT | Anchor.TOP);
+        this.hideNameCheckbox.setChecked(hideNameChoice);
+
+        this.hideTitleCheckbox = new UICheckBox(this, "Hide title");
+        this.hideTitleCheckbox.setPosition(4, 121, Anchor.LEFT | Anchor.TOP);
+        this.hideTitleCheckbox.setChecked(hideTitleChoice);
+
+        this.hideHealthCheckbox = new UICheckBox(this, "Hide health bar");
+        this.hideHealthCheckbox.setPosition(4, 134, Anchor.LEFT | Anchor.TOP);
+        this.hideHealthCheckbox.setChecked(hideHealthChoice);
+
+        final FontOptions checkboxFont = FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).build();
+        this.hideNameCheckbox.setFontOptions(checkboxFont);
+        this.hideTitleCheckbox.setFontOptions(checkboxFont);
+        this.hideHealthCheckbox.setFontOptions(checkboxFont);
+
+        // Divides the controls from the player preview
+        final UISeparator divider = new UISeparator(this);
+        divider.setSize(1, FORM_HEIGHT - 40);
+        divider.setPosition(PREVIEW_LEFT - 8, 4, Anchor.LEFT | Anchor.TOP);
 
         final UIButton wearButton = new UIButtonBuilder(this)
                 .text("Wear")
@@ -138,8 +183,10 @@ public final class AccessoryScreen extends BasicScreen {
                 .listener(this)
                 .build("button.remove");
 
-        // Style list is added before the type list so the type list's options draw over it when open
-        this.form.add(typeLabel, styleLabel, this.styleSelect, this.typeSelect, previousButton, nextButton, this.countLabel, this.statusLabel,
+        // Added first so the open dropdown lists draw over them; the style list is added before the type list so the type list's options
+        // draw over it when open
+        this.form.add(divider, this.hideNameCheckbox, this.hideTitleCheckbox, this.hideHealthCheckbox);
+        this.form.add(typeLabel, styleLabel, this.styleSelect, this.typeSelect, this.previousButton, this.nextButton, this.countLabel, this.statusLabel,
                 wearButton, removeButton);
         this.addToScreen(this.form);
 
@@ -173,7 +220,12 @@ public final class AccessoryScreen extends BasicScreen {
             return;
         }
         final List<String> styles = AccessoryCatalog.variants(type);
-        this.countLabel.setText(style == null ? "" : (styles.indexOf(style) + 1) + " / " + styles.size());
+        final int index = style == null ? -1 : styles.indexOf(style);
+        this.countLabel.setText(index < 0 ? "" : (index + 1) + " / " + styles.size());
+        if (this.previousButton != null && this.nextButton != null) {
+            this.previousButton.setEnabled(index > 0);
+            this.nextButton.setEnabled(index >= 0 && index < styles.size() - 1);
+        }
 
         final String worn = this.manager.getWornVariant(Minecraft.getMinecraft().player.getUniqueID(), type);
         this.statusLabel.setText(worn == null ? "Not wearing " + type.displayName() : "Wearing: " + AccessoryCatalog.label(type, worn));
@@ -195,14 +247,10 @@ public final class AccessoryScreen extends BasicScreen {
 
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.previous":
-                if (this.styleSelect != null && type != null) {
-                    this.preview(type, this.styleSelect.selectPrevious());
-                }
+                this.step(type, style, -1);
                 break;
             case "button.next":
-                if (this.styleSelect != null && type != null) {
-                    this.preview(type, this.styleSelect.selectNext());
-                }
+                this.step(type, style, 1);
                 break;
             case "button.wear":
                 if (type != null && style != null) {
@@ -221,6 +269,22 @@ public final class AccessoryScreen extends BasicScreen {
         }
     }
 
+    /**
+     * Moves to the previous/next style, staying put at either end of the list.
+     */
+    private void step(@Nullable final AccessoryType type, @Nullable final String style, final int direction) {
+        if (this.styleSelect == null || type == null || style == null) {
+            return;
+        }
+        final List<String> styles = AccessoryCatalog.variants(type);
+        final int index = styles.indexOf(style) + direction;
+        if (index < 0 || index >= styles.size()) {
+            return;
+        }
+        this.styleSelect.setSelectedOption(styles.get(index));
+        this.preview(type, styles.get(index));
+    }
+
     @Override
     public void update(final int mouseX, final int mouseY, final float partialTick) {
         super.update(mouseX, mouseY, partialTick);
@@ -230,9 +294,44 @@ public final class AccessoryScreen extends BasicScreen {
             this.updateLabels(this.typeSelect.getSelectedValue(), this.styleSelect.getSelectedValue());
         }
 
-        final int x = this.form.screenX() + 240;
-        final int y = this.form.screenY() + 165;
-        drawEntityOnScreen(x, y, 60, x - mouseX, y - 100 - mouseY, Minecraft.getMinecraft().player);
+        // Drag with the left mouse button over the preview to turn the player around
+        final int left = this.form.screenX() + PREVIEW_LEFT;
+        final int top = this.form.screenY() + 15;
+        final boolean overPreview = mouseX >= left && mouseX <= this.form.screenX() + FORM_WIDTH && mouseY >= top
+                && mouseY <= this.form.screenY() + FORM_HEIGHT;
+        if (Mouse.isButtonDown(0) && (this.dragging || overPreview)) {
+            if (this.dragging) {
+                this.previewYaw = (this.previewYaw + (mouseX - this.lastDragX) * 1.5F) % 360.0F;
+            }
+            this.dragging = true;
+            this.lastDragX = mouseX;
+        } else {
+            this.dragging = false;
+        }
+
+        final EntityPlayer player = Minecraft.getMinecraft().player;
+        hideNameChoice = this.hideNameCheckbox != null && this.hideNameCheckbox.isChecked();
+        hideTitleChoice = this.hideTitleCheckbox != null && this.hideTitleCheckbox.isChecked();
+        hideHealthChoice = this.hideHealthCheckbox != null && this.hideHealthCheckbox.isChecked();
+
+        // Fit the player, what they wear above their head and (unless hidden) the name, title and health bar between the title bar and
+        // the bottom of the window
+        final int x = this.form.screenX() + (PREVIEW_LEFT + FORM_WIDTH) / 2;
+        final int feet = this.form.screenY() + FORM_HEIGHT - 12;
+        final int available = feet - (this.form.screenY() + 20);
+        // Labels: a 0.5 gap plus a line each for the name and title (the health bar sits below the name)
+        final int lines = (hideNameChoice ? 0 : 1) + (hideTitleChoice ? 0 : 1);
+        final boolean anyLabel = lines > 0 || !hideHealthChoice;
+        final float blocksAboveHead = ClientAccessoryManager.labelLift(player) + (anyLabel ? LABELS_GAP + lines * LABEL_LINE_HEIGHT : 0.05F);
+        final int scale = Math.min(MAX_PREVIEW_SCALE, (int) (available / (player.height + blocksAboveHead)));
+
+        // Up and down the player looks towards the mouse (as the inventory preview does), left and right is turned by dragging
+        ClientAccessoryManager.setPreviewHidden(hideNameChoice, hideTitleChoice, hideHealthChoice);
+        try {
+            drawEntityOnScreen(x, feet, scale, this.previewYaw, feet - player.getEyeHeight() * scale - mouseY, player);
+        } finally {
+            ClientAccessoryManager.setPreviewHidden(false, false, false);
+        }
     }
 
     @Override
@@ -245,7 +344,11 @@ public final class AccessoryScreen extends BasicScreen {
         return false;
     }
 
-    private static void drawEntityOnScreen(final int posX, final int posY, final int scale, final float mouseX, final float mouseY,
+    /**
+     * Draws the entity facing the viewer, turned by {@code yaw} degrees around its vertical axis, tilted and looking up or down towards
+     * the mouse ({@code mouseY}: the mouse's height above the entity's eyes).
+     */
+    private static void drawEntityOnScreen(final int posX, final int posY, final int scale, final float yaw, final float mouseY,
             final EntityLivingBase entity) {
         GlStateManager.enableColorMaterial();
         GlStateManager.pushMatrix();
@@ -253,19 +356,25 @@ public final class AccessoryScreen extends BasicScreen {
         GlStateManager.scale((float) -scale, (float) scale, (float) scale);
         GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
         final float renderYawOffset = entity.renderYawOffset;
+        final float prevRenderYawOffset = entity.prevRenderYawOffset;
         final float rotationYaw = entity.rotationYaw;
         final float rotationPitch = entity.rotationPitch;
+        final float prevRotationPitch = entity.prevRotationPitch;
         final float prevRotationYawHead = entity.prevRotationYawHead;
         final float rotationYawHead = entity.rotationYawHead;
         GlStateManager.rotate(135.0F, 0.0F, 1.0F, 0.0F);
         RenderHelper.enableStandardItemLighting();
         GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(-((float) Math.atan(mouseY / 40.0F)) * 20.0F, 1.0F, 0.0F, 0.0F);
-        entity.renderYawOffset = (float) Math.atan(mouseX / 40.0F) * 20.0F;
-        entity.rotationYaw = (float) Math.atan(mouseX / 40.0F) * 40.0F;
-        entity.rotationPitch = -((float) Math.atan(mouseY / 40.0F)) * 20.0F;
-        entity.rotationYawHead = entity.rotationYaw;
-        entity.prevRotationYawHead = entity.rotationYaw;
+        final float pitch = -((float) Math.atan(mouseY / 40.0F)) * 20.0F;
+        GlStateManager.rotate(pitch, 1.0F, 0.0F, 0.0F);
+        GlStateManager.rotate(yaw, 0.0F, 1.0F, 0.0F);
+        entity.renderYawOffset = 0.0F;
+        entity.prevRenderYawOffset = 0.0F;
+        entity.rotationYaw = 0.0F;
+        entity.rotationPitch = pitch;
+        entity.prevRotationPitch = pitch;
+        entity.rotationYawHead = 0.0F;
+        entity.prevRotationYawHead = 0.0F;
         final RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
         renderManager.setPlayerViewY(180.0F);
         GlStateManager.disableLighting();
@@ -273,8 +382,10 @@ public final class AccessoryScreen extends BasicScreen {
         renderManager.renderEntity(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
         renderManager.setRenderShadow(true);
         entity.renderYawOffset = renderYawOffset;
+        entity.prevRenderYawOffset = prevRenderYawOffset;
         entity.rotationYaw = rotationYaw;
         entity.rotationPitch = rotationPitch;
+        entity.prevRotationPitch = prevRotationPitch;
         entity.prevRotationYawHead = prevRotationYawHead;
         entity.rotationYawHead = rotationYawHead;
         GlStateManager.popMatrix();

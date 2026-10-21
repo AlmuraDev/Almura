@@ -15,6 +15,7 @@ import com.almuradev.core.event.Witness;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.RenderPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -41,6 +42,32 @@ import javax.inject.Singleton;
 @Singleton
 public final class ClientAccessoryManager implements Witness {
 
+    // One model pixel in blocks, players are drawn at 0.9375 scale
+    private static final float PIXEL_TO_BLOCKS = 0.0625F * 0.9375F;
+    @Nullable private static ClientAccessoryManager instance;
+    // Set while the accessory screen draws its player preview, for the labels it hides there
+    private static boolean previewHidesName;
+    private static boolean previewHidesTitle;
+    private static boolean previewHidesHealth;
+
+    public static boolean previewHidesName() {
+        return previewHidesName;
+    }
+
+    public static boolean previewHidesTitle() {
+        return previewHidesTitle;
+    }
+
+    public static boolean previewHidesHealth() {
+        return previewHidesHealth;
+    }
+
+    public static void setPreviewHidden(final boolean name, final boolean title, final boolean health) {
+        previewHidesName = name;
+        previewHidesTitle = title;
+        previewHidesHealth = health;
+    }
+
     private final ChannelBinding.IndexedMessageChannel network;
     private final Map<UUID, Map<AccessoryType, String>> worn = new HashMap<>();
     // The accessory screen's try-on for the local player: a variant, or null to show the type taken off
@@ -51,6 +78,22 @@ public final class ClientAccessoryManager implements Witness {
     @Inject
     private ClientAccessoryManager(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network) {
         this.network = network;
+        instance = this;
+    }
+
+    /**
+     * @return How much higher (in blocks) the name, title and health bar above the entity go, for the tallest head accessory it wears
+     */
+    public static float labelLift(final EntityLivingBase entity) {
+        final ClientAccessoryManager manager = instance;
+        if (manager == null || !(entity instanceof AbstractClientPlayer) || entity.isInvisible()) {
+            return 0.0F;
+        }
+        float pixels = 0.0F;
+        for (final AccessoryType type : manager.getWorn((AbstractClientPlayer) entity).keySet()) {
+            pixels = Math.max(pixels, type.heightAboveHead());
+        }
+        return pixels * PIXEL_TO_BLOCKS;
     }
 
     @Listener

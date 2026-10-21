@@ -9,6 +9,7 @@ package com.almuradev.almura.feature.healthbar.asm.mixin.client.renderer.entity;
 
 import com.almuradev.almura.asm.ClientStaticAccess;
 import com.almuradev.almura.core.client.config.ClientConfiguration;
+import com.almuradev.almura.feature.accessory.client.ClientAccessoryManager;
 import com.almuradev.almura.feature.title.ClientTitleManager;
 import com.almuradev.almura.feature.title.Title;
 import com.google.inject.Inject;
@@ -78,7 +79,8 @@ public abstract class MixinRenderLivingBase extends Render<EntityLivingBase> {
             float viewerYaw = this.renderManager.playerViewY;
             float viewerPitch = this.renderManager.playerViewX;
             boolean isThirdPersonFrontal = this.renderManager.options.thirdPersonView == 2;
-            float sneakAdjustment = entityIn.height + 0.5F - (isSneaking ? 0.25F : 0.0F);
+            // Raised above tall head accessories (hats, ears, halo) so they don't cover the name, title and health bar
+            float sneakAdjustment = entityIn.height + 0.5F - (isSneaking ? 0.25F : 0.0F) + ClientAccessoryManager.labelLift(entityIn);
             int verticalShift = 0;
 
             drawCombo(entityIn, this.getFontRendererFromRenderManager(), name, (float) x, (float) y + sneakAdjustment, (float) z, verticalShift, viewerYaw, viewerPitch, isThirdPersonFrontal, isSneaking, showName, showHealthbar);
@@ -105,6 +107,23 @@ public abstract class MixinRenderLivingBase extends Render<EntityLivingBase> {
 
         if (title == null) {
             title = manager.getSelectedTitleFor(entityIn.getUniqueID());
+        }
+
+        // The accessory screen's player preview can hide each label
+        if (ClientAccessoryManager.previewHidesTitle()) {
+            title = null;
+        }
+        if (ClientAccessoryManager.previewHidesName()) {
+            if (title != null) {
+                // Title alone: shown on a single line where the name would be
+                str = title.getContent();
+                title = null;
+            } else {
+                showName = false;
+            }
+        }
+        if (ClientAccessoryManager.previewHidesHealth()) {
+            showHealthbar = false;
         }
 
         if (!isSneaking) {

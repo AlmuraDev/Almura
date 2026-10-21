@@ -11,11 +11,7 @@ import com.almuradev.almura.feature.accessory.network.ClientboundAccessoryGuiPac
 import com.almuradev.almura.feature.accessory.network.ClientboundPlayerAccessoriesPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import net.kyori.membrane.facet.Activatable;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
@@ -31,19 +27,13 @@ import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
+import javax.inject.Inject;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.inject.Inject;
+import java.util.*;
 
 /**
  * Keeps which accessories each player wears (one variant per type), saved to accessories.json in Almura's config folder, and tells every

@@ -67,8 +67,9 @@ public final class WingsModel extends AccessoryModel {
             final float ageInTicks, final float scale) {
         model.bipedBody.postRender(scale);
 
-        // Positive opens the wings wider (they fan out behind the back around the spine)
-        final float flap = MathHelper.sin(ageInTicks * (0.08F + limbSwingAmount * 0.15F)) * (0.08F + limbSwingAmount * 0.06F);
+        // Positive opens the wings wider (they fan out behind the back around the spine). A steady idle flap plus a beat per step: the
+        // speed must not depend on the walking amount, as ageInTicks is large and any change to its multiplier jumps the phase
+        final float flap = MathHelper.sin(ageInTicks * 0.1F) * 0.08F + MathHelper.sin(limbSwing * 0.6662F) * limbSwingAmount * 0.1F;
         for (int i = 0; i < 9; i++) {
             this.left[i].rotateAngleY = this.leftYaw[i] + flap;
             this.left[i].render(scale);

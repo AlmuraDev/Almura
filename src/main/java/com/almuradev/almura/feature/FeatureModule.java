@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature;
 
 import com.almuradev.almura.asm.mixin.accessors.item.ItemFoodAccessor;
+import com.almuradev.almura.feature.accessory.AccessoryModule;
 import com.almuradev.almura.feature.animal.AnimalModule;
 import com.almuradev.almura.feature.armor.ArmorModule;
 import com.almuradev.almura.feature.biome.BiomeModule;
@@ -82,6 +83,7 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.install(new FlickerLightModule());
         this.install(new WorldLoadModule());
         this.install(new HarvestSackModule());
+        this.install(new AccessoryModule());
 
         if (SpongeImplHooks.isDeobfuscatedEnvironment()) {
             this.loadServerSideModules(); // Force loading this because it will fail the Platform.Type checks below during normal startup.

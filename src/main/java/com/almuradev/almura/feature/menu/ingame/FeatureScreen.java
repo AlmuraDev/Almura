@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.menu.ingame;
 
+import com.almuradev.almura.feature.accessory.client.ClientAccessoryManager;
 import com.almuradev.almura.feature.claim.ClientClaimManager;
 import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.feature.guide.ClientPageManager;
@@ -53,6 +54,7 @@ public final class FeatureScreen extends BasicScreen {
   @Inject private static ClientClaimManager claimManager;
   @Inject private static ClientStoreManager storeManager;
   @Inject private static ClientMembershipManager membershipManager;
+  @Inject private static ClientAccessoryManager accessoryManager;
 
   public FeatureScreen(EntityPlayerSP player, World worldIn, boolean isAdmin) {
     this.player = player;
@@ -114,8 +116,8 @@ public final class FeatureScreen extends BasicScreen {
         .anchor(Anchor.TOP | Anchor.CENTER)
         .position(0, titleButton.getY() + 18)
         .text("Accessories")
-        .enabled(isAdmin)
-        .onClick(() -> {})
+        .enabled(true)
+        .onClick(() -> accessoryManager.requestGui())
         .build("button.accessories");
 
     // Accessories button
