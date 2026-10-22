@@ -59,6 +59,13 @@ public abstract class MixinTileEntityFurnace extends TileEntityLockable implemen
 
             // End Almura
 
+            // Forge's own check, which this overwrite had dropped: the item's getItemBurnTime and FurnaceFuelBurnTimeEvent.
+            // Without it no modded fuel burned (Railcraft's coke and coke block, creosote, other mods' fuels).
+            final int forgeBurnTime = net.minecraftforge.event.ForgeEventFactory.getItemBurnTime(stack);
+            if (forgeBurnTime >= 0) {
+                return forgeBurnTime;
+            }
+
             if (item == Item.getItemFromBlock(Blocks.WOODEN_SLAB)) {
                 return 150;
             } else if (item == Item.getItemFromBlock(Blocks.WOOL)) {
