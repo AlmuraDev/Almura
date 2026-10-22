@@ -8,6 +8,7 @@
 package com.almuradev.almura.asm.mixin.core.client.gui;
 
 import com.almuradev.almura.shared.client.ui.component.UIContextMenu;
+import net.malisis.core.client.gui.component.container.BasicList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -16,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
  * List rows pick their hover colour from the mouse position alone, so they light up under an open {@link UIContextMenu}: move the mouse
  * out of their reach while it is over the menu.
  */
-@Mixin(targets = "net.malisis.core.client.gui.component.container.BasicList$ItemComponent", remap = false)
+@Mixin(value = BasicList.ItemComponent.class, remap = false)
 public abstract class MixinBasicListItemComponent {
 
     @ModifyVariable(method = "drawBackground", at = @At("HEAD"), ordinal = 0, argsOnly = true)
