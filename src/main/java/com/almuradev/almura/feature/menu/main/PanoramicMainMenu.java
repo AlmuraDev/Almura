@@ -13,12 +13,10 @@ import com.almuradev.almura.shared.client.ui.screen.PanoramicScreen;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.UIConstants;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicContainer;
 import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
-import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
@@ -36,13 +34,12 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GLContext;
 import org.spongepowered.api.util.Color;
 
-import java.awt.Desktop;
+import javax.annotation.Nullable;
+import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Locale;
-
-import javax.annotation.Nullable;
 
 @SideOnly(Side.CLIENT)
 public class PanoramicMainMenu extends PanoramicScreen {
@@ -60,12 +57,12 @@ public class PanoramicMainMenu extends PanoramicScreen {
     public void construct() {
         final UIBackgroundContainer contentContainer = new UIBackgroundContainer(this);
         contentContainer.setBackgroundAlpha(0);
+        contentContainer.setClipContent(false); // The logo's figure reaches above it
         contentContainer.setPosition(0, -10, Anchor.MIDDLE | Anchor.CENTER);
-        contentContainer.setSize(UIConstants.Button.WIDTH_LONG, 205);
+        contentContainer.setSize(UIConstants.Button.WIDTH_LONG, 205 + AlmuraLogoHeader.HEIGHT - AlmuraLogoHeader.OLD_HEIGHT);
 
         // Almura header
-        final UIImage almuraHeader = new UIImage(this, new GuiTexture(GuiConfig.Location.ALMURA_LOGO), null);
-        almuraHeader.setSize(60, 99);
+        final BasicContainer<?> almuraHeader = AlmuraLogoHeader.create(this);
         almuraHeader.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
         this.buttonContainer = new UIBackgroundContainer(this, UIConstants.Button.WIDTH_LONG + PADDING, (UIConstants.Button.HEIGHT * 4) +

@@ -8,18 +8,17 @@
 package com.almuradev.almura.feature.menu.multiplayer;
 
 import com.almuradev.almura.feature.menu.main.ConnectingGui;
+import com.almuradev.almura.feature.menu.main.AlmuraLogoHeader;
 import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.shared.client.ui.component.UIExpandingLabel;
 import com.almuradev.almura.shared.client.ui.screen.PanoramicScreen;
 import com.almuradev.almura.shared.util.Query;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.UIConstants;
 import net.malisis.core.client.gui.component.container.BasicContainer;
 import net.malisis.core.client.gui.component.container.BasicList;
-import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.decoration.UITooltip;
 import net.malisis.core.client.gui.component.interaction.UIButton;
@@ -67,18 +66,19 @@ public class MultiplayerScreen extends PanoramicScreen {
     screenContainer.setBackgroundAlpha(0);
 
     // Primary content
-    final BasicContainer<?> contentContainer = new BasicContainer(this, UIConstants.Button.WIDTH_LONG, 206);
+    final BasicContainer<?> contentContainer = new BasicContainer(this, UIConstants.Button.WIDTH_LONG, 206 + AlmuraLogoHeader.HEIGHT - AlmuraLogoHeader.OLD_HEIGHT);
     contentContainer.setPosition(0, -10, Anchor.MIDDLE | Anchor.CENTER);
     contentContainer.setBackgroundAlpha(0);
+    contentContainer.setClipContent(false); // The logo's figure reaches above it
 
     // Create logo
-    final UIImage logoImage = new UIImage(this, new GuiTexture(GuiConfig.Location.ALMURA_LOGO), null);
-    logoImage.setSize(60, 99);
-    logoImage.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
+    final BasicContainer<?> logoImage = AlmuraLogoHeader.create(this);
+    // A pixel lower than its container's top, to line up with the main menu's logo
+    logoImage.setPosition(0, 1, Anchor.TOP | Anchor.CENTER);
 
     // Container for server entries
     this.serverList = new BasicList<>(this, UIConstants.Button.WIDTH_LONG - 2, 26);
-    this.serverList.setPosition(0, BasicScreen.getPaddedY(logoImage, 10), Anchor.TOP | Anchor.CENTER);
+    this.serverList.setPosition(0, BasicScreen.getPaddedY(logoImage, 9), Anchor.TOP | Anchor.CENTER); // Where it was before the logo moved down
     this.serverList.setColor(0x000000);
     this.serverList.setBackgroundAlpha(185);
     this.serverList.setItemComponentSpacing(1);

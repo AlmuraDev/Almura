@@ -10,6 +10,7 @@ package com.almuradev.almura.feature.menu.main;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.shared.client.texture.GuiRemoteTexture;
+import com.almuradev.almura.shared.client.ui.component.UIPlayerFigure;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
@@ -47,8 +48,13 @@ import javax.annotation.Nullable;
 @SideOnly(Side.CLIENT)
 public class SimpleAboutMenu extends BasicContainerScreen {
 
+    // Dockter_Almura in 3D beside the story, as large as the page allows
+    private static final int FIGURE_MAX_HEIGHT = 230, FIGURE_GAP = 8;
+    private static final float FIGURE_WIDTH_RATIO = 0.62F;
+
     private BasicList<AboutItemData> list;
     private UITextField textField;
+    private UIPlayerFigure figure;
 
     public SimpleAboutMenu(@Nullable final BasicScreen parent) {
         super(parent, I18n.format("almura.menu_button.about"));
@@ -102,12 +108,20 @@ public class SimpleAboutMenu extends BasicContainerScreen {
         this.textField.setEditable(false);
         this.textField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
+        // Shown with the story (the first entry)
+        this.figure = new UIPlayerFigure(this, GuiConfig.Location.DOCKTER_ALMURA_SKIN, false);
+        this.figure.setPosition(-4, 0, Anchor.TOP | Anchor.RIGHT);
+
+        final AboutItemData story = elementDataList.get(0);
         this.list.setItemComponentFactory(AboutItemComponent::new);
         this.list.setItems(elementDataList);
-        this.list.setSelectConsumer(i -> this.textField.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(i.getContent())));
-        this.list.setSelectedItem(elementDataList.get(0));
+        this.list.setSelectConsumer(i -> {
+            this.textField.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(i.getContent()));
+            this.figure.setVisible(i == story);
+        });
+        this.list.setSelectedItem(story);
 
-        this.getContainer().add(this.list, this.textField);
+        this.getContainer().add(this.list, this.textField, this.figure);
 
         // SpongeForge
         final UILabel spongeForgeVersionLabel = new UILabel(this, TextFormatting.WHITE + "SpongeForge: " + ((Optional<String>) Sponge.getPlatform()
@@ -134,7 +148,11 @@ public class SimpleAboutMenu extends BasicContainerScreen {
     public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
         this.list.setPosition(4, 0);
         this.list.setSize(125, this.getContainer().getHeight());
-        this.textField.setSize(this.width - this.list.getWidth() - 12, this.getContainer().getHeight());
+        final int figureHeight = Math.min(FIGURE_MAX_HEIGHT, this.getContainer().getHeight() - 4);
+        final int figureWidth = (int) (figureHeight * FIGURE_WIDTH_RATIO);
+        this.figure.setSize(figureWidth, figureHeight);
+        final int textWidth = this.width - this.list.getWidth() - 12 - (this.figure.isVisible() ? figureWidth + FIGURE_GAP : 0);
+        this.textField.setSize(textWidth, this.getContainer().getHeight());
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 

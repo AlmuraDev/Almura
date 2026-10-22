@@ -18,6 +18,7 @@ public final class MainMenuModule extends AbstractModule implements CommonBinder
     @Override
     protected void configure() {
         this.facet().add(MainMenuManager.class);
+        this.facet().add(MenuTransitions.class);
         this.requestStaticInjection(MainMenuManager.class);
     }
 }

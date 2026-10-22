@@ -51,6 +51,10 @@ public interface GuiConfig {
 
         ResourceLocation ALMURA_LOGO = new ResourceLocation(Almura.ID, "textures/gui/almura_logo.png");
         ResourceLocation ALMURA_MAN = new ResourceLocation(Almura.ID, "textures/gui/almura_man.png");
+        // The logo's "Almura / Resurrected" without the man above it (the 3D Dockter_Almura stands there)
+        ResourceLocation ALMURA_LOGO_TEXT = new ResourceLocation(Almura.ID, "textures/gui/almura_logo_text.png");
+        // Dockter_Almura's skin (classic arms), for the 3D figure in the logo and on the About page
+        ResourceLocation DOCKTER_ALMURA_SKIN = new ResourceLocation(Almura.ID, "textures/gui/skins/dockter_almura.png");
         ResourceLocation SPONGEPOWERED_LOGO = new ResourceLocation(Almura.ID, "textures/gui/spongepowered_logo.png");
         ResourceLocation SPONGEPOWERED_SPONGIE = new ResourceLocation(Almura.ID, "textures/gui/spongie.png");
         ResourceLocation GENERIC_AVATAR = new ResourceLocation(Almura.ID, "textures/gui/skins/avatars/generic.png");
