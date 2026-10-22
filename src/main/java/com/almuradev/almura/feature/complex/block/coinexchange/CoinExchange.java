@@ -8,6 +8,8 @@
 package com.almuradev.almura.feature.complex.block.coinexchange;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.feature.bank.BankCoins;
+import com.almuradev.almura.feature.bank.ServerBankManager;
 import com.almuradev.almura.feature.complex.block.ComplexBlock;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
@@ -41,6 +43,7 @@ import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.service.economy.account.Account;
+import org.spongepowered.api.service.economy.transaction.ResultType;
 import org.spongepowered.api.text.Text;
 
 import javax.inject.Inject;
@@ -50,6 +53,8 @@ public final class CoinExchange extends ComplexBlock {
 
     @Inject
     private static ServerNotificationManager serverNotificationManager;
+    @Inject
+    private static ServerBankManager bankManager;
 
     public CoinExchange(ResourceLocation registryName, float hardness, float resistance) {
         super(Material.GROUND);
@@ -114,8 +119,13 @@ public final class CoinExchange extends ComplexBlock {
         }
         final Player player = (Player) mcPlayer;
 
-        if (mcPlayer.getHeldItemMainhand().isEmpty()) {
-            serverNotificationManager.sendPopupNotification(player, Text.of("Coin Exchange"), Text.of("Place coins in hand prior to clicking on Coin Exchange"),5);
+        // Coins in hand are cashed in on the spot; anything else opens the bank
+        final ItemStack held = mcPlayer.getHeldItemMainhand();
+        final long coinValue = held.isEmpty() || held.getItem().getRegistryName() == null
+            ? 0
+            : BankCoins.valueOf(held.getItem().getRegistryName().toString());
+        if (coinValue == 0) {
+            bankManager.openBank(player);
             return true;
         }
 
@@ -127,41 +137,19 @@ public final class CoinExchange extends ComplexBlock {
 
             if (account != null) {
                 final Currency currency = service.getDefaultCurrency();
-                final double coinValue = getCoinValue(player.getItemInHand(HandTypes.MAIN_HAND).get());
+                final BigDecimal depositAmount = BigDecimal.valueOf(coinValue * held.getCount());
 
-                if (coinValue == 0 ) {
-                    serverNotificationManager.sendPopupNotification(player, Text.of("Coin Exchange"), Text.of("This item is not a coin..."),5);
-                    return true;  // Not Coins
+                // The coins are only taken once the money is in
+                if (account.deposit(currency, depositAmount, Sponge.getCauseStackManager().getCurrentCause()).getResult() == ResultType.SUCCESS) {
+                    ((Player) mcPlayer).setItemInHand(HandTypes.MAIN_HAND, null); // Clear ItemStack from Players hand.
+                } else {
+                    serverNotificationManager.sendPopupNotification(player, Text.of("Coin Exchange"),
+                        Text.of("Your coins could not be deposited, you still have them."), 5);
                 }
-
-                final BigDecimal depositAmount = new BigDecimal((coinValue * player.getItemInHand(HandTypes.MAIN_HAND).get().getQuantity()));
-                account.deposit(currency, depositAmount, Sponge.getCauseStackManager().getCurrentCause());
-
-                ((Player) mcPlayer).setItemInHand(HandTypes.MAIN_HAND, null); // Clear ItemStack from Players hand.
             }
         }
 
        return true;
-    }
-
-    private double getCoinValue(org.spongepowered.api.item.inventory.ItemStack item) {
-
-        String name = item.getType().getName();
-        switch (name) {
-            case "almura:normal/currency/coppercoin":
-                return 100;
-
-            case "almura:normal/currency/silvercoin":
-                return 1000;
-
-            case "almura:normal/currency/goldcoin":
-                return 100000;
-
-            case "almura:normal/currency/platinumcoin":
-                return 1000000;
-
-        }
-        return 0;
     }
 
     @Override

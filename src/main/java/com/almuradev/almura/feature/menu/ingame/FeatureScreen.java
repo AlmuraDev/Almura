@@ -8,6 +8,8 @@
 package com.almuradev.almura.feature.menu.ingame;
 
 import com.almuradev.almura.feature.accessory.client.ClientAccessoryManager;
+import com.almuradev.almura.feature.bank.BankAction;
+import com.almuradev.almura.feature.bank.client.ClientBankManager;
 import com.almuradev.almura.feature.claim.ClientClaimManager;
 import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.feature.guide.ClientPageManager;
@@ -42,7 +44,7 @@ public final class FeatureScreen extends BasicScreen {
   private int lastUpdate = 0;
   private boolean unlockMouse = true;
   private boolean isAdmin;
-  private UIButton guideButton, titleButton, nicknameButton, manageExchangeButton, manageStoreButton, accessoriesButton, claimButton, membershipButton, skillsButton, notificationsButton;
+  private UIButton guideButton, titleButton, nicknameButton, manageExchangeButton, manageStoreButton, accessoriesButton, claimButton, membershipButton, bankingButton, skillsButton, notificationsButton;
 
   private World world;
   private EntityPlayerSP player;
@@ -55,6 +57,7 @@ public final class FeatureScreen extends BasicScreen {
   @Inject private static ClientStoreManager storeManager;
   @Inject private static ClientMembershipManager membershipManager;
   @Inject private static ClientAccessoryManager accessoryManager;
+  @Inject private static ClientBankManager bankManager;
 
   public FeatureScreen(EntityPlayerSP player, World worldIn, boolean isAdmin) {
     this.player = player;
@@ -68,10 +71,10 @@ public final class FeatureScreen extends BasicScreen {
     Keyboard.enableRepeatEvents(true);
 
     // Main Panel
-    final BasicForm form = new BasicForm(this, 150, 256, "Almura Features");
+    final BasicForm form = new BasicForm(this, 150, 274, "Almura Features");
 
     if (!isAdmin) {
-      form.setSize(form.getWidth(), 186);
+      form.setSize(form.getWidth(), 204);
     }
 
     // Guide button
@@ -129,11 +132,20 @@ public final class FeatureScreen extends BasicScreen {
         .onClick(() -> membershipManager.requestMembershipGUI())
         .build("button.memberships");
 
+    // Banking button
+    bankingButton = new UIButtonBuilder(this)
+        .width(100)
+        .anchor(Anchor.TOP | Anchor.CENTER)
+        .position(0, membershipButton.getY() + 18)
+        .text("Banking")
+        .onClick(() -> bankManager.request(BankAction.OPEN, -1))
+        .build("button.banking");
+
     // Skills button
     skillsButton = new UIButtonBuilder(this)
         .width(100)
         .anchor(Anchor.TOP | Anchor.CENTER)
-        .position(0, membershipButton.getY() + 18)
+        .position(0, bankingButton.getY() + 18)
         .text("Skills")
         .onClick(() -> new SkillsScreen(this).display())
         .build("button.skills");
@@ -190,7 +202,7 @@ public final class FeatureScreen extends BasicScreen {
         .onClick(this::close)
         .build("button.close");
 
-    form.add(guideButton, manageExchangeButton, titleButton, nicknameButton, functionsSeparator, adminLabel, functionsSeparator2, accessoriesButton, membershipButton, skillsButton, notificationsButton, manageStoreButton, claimButton, buttonClose);
+    form.add(guideButton, manageExchangeButton, titleButton, nicknameButton, functionsSeparator, adminLabel, functionsSeparator2, accessoriesButton, membershipButton, bankingButton, skillsButton, notificationsButton, manageStoreButton, claimButton, buttonClose);
 
     addToScreen(form);
   }

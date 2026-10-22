@@ -11,6 +11,7 @@ import com.almuradev.almura.asm.mixin.accessors.item.ItemFoodAccessor;
 import com.almuradev.almura.feature.accessory.AccessoryModule;
 import com.almuradev.almura.feature.animal.AnimalModule;
 import com.almuradev.almura.feature.armor.ArmorModule;
+import com.almuradev.almura.feature.bank.BankModule;
 import com.almuradev.almura.feature.biome.BiomeModule;
 import com.almuradev.almura.feature.cache.CacheModule;
 import com.almuradev.almura.feature.claim.ClaimModule;
@@ -62,6 +63,7 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.install(new CacheModule());
         this.install(new ExchangeModule());
         this.install(new StoreModule());
+        this.install(new BankModule());
         this.install(new DeathModule());
         this.install(new StorageModule());
         this.install(new BiomeModule());

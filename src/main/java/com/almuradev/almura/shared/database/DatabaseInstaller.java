@@ -46,6 +46,7 @@ public final class DatabaseInstaller implements Witness {
             this.setupTablesForFeature(context, "axs");
             this.setupTablesForFeature(context, "store");
             this.setupTablesForFeature(context, "title");
+            this.setupTablesForFeature(context, "bank");
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
