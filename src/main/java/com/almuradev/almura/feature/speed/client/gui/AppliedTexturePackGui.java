@@ -48,25 +48,13 @@ public class AppliedTexturePackGui extends BasicScreen {
         label0.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.0F).build());
         label0.setPosition(0, 10, Anchor.CENTER | Anchor.TOP);
 
-        final UILabel label1 = new UILabel(this, "Please restart the game to continue.");
-        label1.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.0F).build());
+        final UILabel label1 = new UILabel(this, "Thank you and Welcome to Almura.");
+        label1.setFontOptions(FontOptions.builder().from(FontColors.GREEN_FO).shadow(true).scale(1.0F).build());
         label1.setPosition(0, label0.getY() + 15, Anchor.CENTER | Anchor.TOP);
-
-        final UILabel label2 = new UILabel(this, "Thank you and Welcome to Almura.");
-        label2.setFontOptions(FontOptions.builder().from(FontColors.GREEN_FO).shadow(true).scale(1.0F).build());
-        label2.setPosition(0, label1.getY() + 15, Anchor.CENTER | Anchor.TOP);
 
         final UISeparator belowAmountSeparator = new UISeparator(this);
         belowAmountSeparator.setSize(form.getWidth() -5, 1);
         belowAmountSeparator.setPosition(0, -45, Anchor.BOTTOM | Anchor.CENTER);
-
-        final UIButton buttonRestart = new UIButtonBuilder(this)
-                .text(I18n.format("almura.button.restart"))
-            .anchor(Anchor.BOTTOM | Anchor.CENTER)
-            .position(0, -25)
-            .width(40)
-            .listener(this)
-            .build("button.close");
 
         final UISeparator aboveCloseSeparator = new UISeparator(this);
         aboveCloseSeparator.setSize(form.getWidth() -5, 1);
@@ -80,14 +68,9 @@ public class AppliedTexturePackGui extends BasicScreen {
                 .listener(this)
                 .build("button.close");
 
-        form.add(buttonClose, label0, label1, label2, aboveCloseSeparator, buttonRestart, belowAmountSeparator);
+        form.add(buttonClose, label0, label1, aboveCloseSeparator, belowAmountSeparator);
 
         addToScreen(form);
-    }
-
-    @Override
-    public void onClose() {
-        this.mc.shutdown();
     }
 
     @Subscribe

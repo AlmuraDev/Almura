@@ -88,10 +88,9 @@ public class AlmuraSettings {
 
     public static void applyPreferredTexturePack() {
         applyPack(preferredTexturePack);
-        // Turning these options off because it causes an incomplete texture stitch on first load.
 
-        //FMLClientHandler.instance().scheduleResourcesRefresh(VanillaResourceType.TEXTURES);
-        //FMLClientHandler.instance().scheduleResourcesRefresh(VanillaResourceType.MODELS);
+        FMLClientHandler.instance().scheduleResourcesRefresh(VanillaResourceType.TEXTURES);
+        FMLClientHandler.instance().scheduleResourcesRefresh(VanillaResourceType.MODELS);
 
         System.out.println("[Almura Settings] - Applied preferred texture pack");
     }
