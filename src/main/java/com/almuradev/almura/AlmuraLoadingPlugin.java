@@ -46,7 +46,7 @@ public final class AlmuraLoadingPlugin implements IFMLLoadingPlugin {
 
     @Override
     public String[] getASMTransformerClass() {
-        return new String[0];
+        return new String[] {"com.almuradev.almura.asm.transformer.NeiJeiProxyTransformer"};
     }
 
     @Override
