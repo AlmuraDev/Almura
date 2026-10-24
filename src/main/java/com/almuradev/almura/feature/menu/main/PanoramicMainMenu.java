@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.menu.main;
 
 import com.almuradev.almura.feature.menu.multiplayer.MultiplayerScreen;
+import com.almuradev.almura.feature.menu.singleplayer.SingleplayerScreen;
 import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.shared.client.ui.screen.PanoramicScreen;
 import com.google.common.eventbus.Subscribe;
@@ -23,7 +24,6 @@ import net.malisis.core.client.gui.component.interaction.button.builder.UIButton
 import net.malisis.core.renderer.font.FontOptions;
 import net.malisis.core.util.FontColors;
 import net.minecraft.client.gui.GuiOptions;
-import net.minecraft.client.gui.GuiWorldSelection;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
@@ -202,7 +202,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
     public void onButtonClick(UIButton.ClickEvent event) throws URISyntaxException, IOException {
         switch (event.getComponent().getName().toLowerCase(Locale.ENGLISH)) {
             case "button.singleplayer":
-                this.mc.displayGuiScreen(new GuiWorldSelection(this));
+                new SingleplayerScreen(this).display();
                 break;
             case "button.multiplayer":
                 new MultiplayerScreen(this).display();

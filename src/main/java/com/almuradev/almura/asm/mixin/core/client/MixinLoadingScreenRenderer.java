@@ -8,6 +8,7 @@
 package com.almuradev.almura.asm.mixin.core.client;
 
 import com.almuradev.almura.asm.mixin.accessors.client.MinecraftAccessor;
+import com.almuradev.almura.feature.menu.MenuTransitions;
 import com.almuradev.almura.feature.menu.main.AlmuraLoadingScreen;
 import net.minecraft.client.LoadingScreenRenderer;
 import net.minecraft.client.Minecraft;
@@ -56,6 +57,27 @@ public abstract class MixinLoadingScreenRenderer {
         }
         this.systemTime = now;
 
+        // The first frame after a menu starts the fade from it, played through here at full frame rate: vanilla only calls again every
+        // 200ms or so while it waits, too few frames for a fade
+        boolean fading = MenuTransitions.beginLoadingFrame(this.framebuffer);
+        fading = this.almura$drawFrame(progress) && fading;
+        while (fading && ((MinecraftAccessor) this.mc).accessor$isRunning()) {
+            try {
+                Thread.sleep(8L);
+            } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+            fading = this.almura$drawFrame(progress);
+        }
+    }
+
+    /**
+     * Draws one frame of the loading screen and shows it, with the menu transition under way over it.
+     *
+     * @return Whether the transition is still under way
+     */
+    private boolean almura$drawFrame(final int progress) {
         final ScaledResolution resolution = new ScaledResolution(this.mc);
         final int scale = resolution.getScaleFactor();
         final int width = resolution.getScaledWidth();
@@ -87,6 +109,7 @@ public abstract class MixinLoadingScreenRenderer {
         } catch (final java.io.IOException e) {
             throw new RuntimeException(e);
         }
+        final boolean fading = MenuTransitions.drawLoadingFade(width, height);
 
         this.framebuffer.unbindFramebuffer();
         if (OpenGlHelper.isFramebufferEnabled()) {
@@ -95,5 +118,6 @@ public abstract class MixinLoadingScreenRenderer {
 
         this.mc.updateDisplay();
         Thread.yield();
+        return fading;
     }
 }

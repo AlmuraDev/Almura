@@ -42,6 +42,7 @@ almura.menu.main.opengl.1=Future versions of Minecraft may not be compatible.
 almura.menu.main.trademark=Minecraft is a registered trademark of Mojang AB
 
 almura.menu.server.dev.name=Development
+almura.menu.singleplayer.empty=No worlds yet. Create one to start playing!
 almura.menu.server.live.name=Live
 
 # ----------------------

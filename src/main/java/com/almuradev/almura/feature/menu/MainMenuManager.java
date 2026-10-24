@@ -15,6 +15,7 @@ import com.almuradev.almura.feature.menu.game.SimpleIngameMenu;
 import com.almuradev.almura.feature.menu.main.DisconnectedGui;
 import com.almuradev.almura.feature.menu.main.PanoramicMainMenu;
 import com.almuradev.almura.feature.menu.main.SinglePlayerLoadingGui;
+import com.almuradev.almura.feature.menu.singleplayer.SingleplayerScreen;
 import com.almuradev.core.event.Witness;
 import com.almuradev.toolbox.config.map.MappedConfiguration;
 import com.google.inject.Inject;
@@ -25,6 +26,7 @@ import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiWorldSelection;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -57,6 +59,10 @@ public class MainMenuManager implements Witness {
                 } else {
                     new PanoramicMainMenu(null).display();
                 }
+            } else if (screen.getClass().equals(GuiWorldSelection.class)) {
+                // Vanilla's world list, from wherever it's opened (e.g. Forge's world loader when its missing mods prompt is cancelled)
+                event.setCanceled(true);
+                new SingleplayerScreen(null).display();
             } else if (screen.getClass().equals(GuiIngameMenu.class)) {
                 event.setCanceled(true);
                 new SimpleIngameMenu().display();

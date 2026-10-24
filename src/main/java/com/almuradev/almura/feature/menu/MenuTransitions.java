@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.menu;
 
+import com.almuradev.almura.feature.menu.main.SinglePlayerLoadingGui;
 import com.almuradev.core.event.Witness;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -30,6 +31,8 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 
+import javax.annotation.Nullable;
+
 /**
  * Transitions between the menus outside of a world: the first menu after startup fades in from the startup splash's background, and each menu
  * after that fades in over a picture of the one before it.
@@ -41,6 +44,9 @@ public final class MenuTransitions implements Witness {
     // Forge's splash background when its settings don't say (white)
     private static final int DEFAULT_SPLASH_BACKGROUND = 0xFFFFFF;
 
+    // The one instance (created with the menu module), for the loading screen, which isn't a GUI screen and so gets no events
+    @Nullable private static MenuTransitions instance;
+
     private boolean startedUp;
     // The picture of the menu being left, in a texture the size of the screen
     private int captureTexture = -1, captureWidth, captureHeight;
@@ -48,12 +54,20 @@ public final class MenuTransitions implements Witness {
     private boolean fromCapture;
     private int fromColor;
     private long startMillis, lengthMillis;
+    // Which was drawn last, a menu or the loading screen ("Please wait", "Preparing spawn area"), and the loading screen's own framebuffer
+    private boolean menuDrawnSinceLoading, loadingDrawnSinceMenu;
+    @Nullable private Framebuffer loadingFramebuffer;
+
+    public MenuTransitions() {
+        instance = this;
+    }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onGuiOpen(final GuiOpenEvent event) {
         final Minecraft minecraft = Minecraft.getMinecraft();
         final GuiScreen next = event.getGui();
-        if (next == null || minecraft.world != null) {
+        // Outside of a world only, except the single player loading screen, which opens once the client's world exists
+        if (next == null || minecraft.world != null && !(next instanceof SinglePlayerLoadingGui)) {
             return;
         }
 
@@ -66,8 +80,16 @@ public final class MenuTransitions implements Witness {
             return;
         }
 
+        if (this.loadingDrawnSinceMenu && this.loadingFramebuffer != null) {
+            // From the loading screen, which was drawn into its own framebuffer
+            if (this.capture(this.loadingFramebuffer)) {
+                this.fromCapture = true;
+                this.start(SCREEN_FADE_MILLIS);
+            }
+            return;
+        }
         final GuiScreen current = minecraft.currentScreen;
-        if (current != null && current != next && this.capture(minecraft)) {
+        if (current != null && current != next && this.capture(minecraft.getFramebuffer())) {
             this.fromCapture = true;
             this.start(SCREEN_FADE_MILLIS);
         }
@@ -75,8 +97,54 @@ public final class MenuTransitions implements Witness {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onDrawScreen(final GuiScreenEvent.DrawScreenEvent.Post event) {
+        if (Minecraft.getMinecraft().world == null) {
+            this.menuDrawnSinceLoading = true;
+            this.loadingDrawnSinceMenu = false;
+        }
+        this.drawFade(event.getGui().width, event.getGui().height);
+    }
+
+    /**
+     * Called by the loading screen before each frame it draws. The first frame after a menu starts a fade from that menu, which the loading
+     * screen then plays through on its own frames (vanilla only redraws it every 200ms or so while it waits, too few for a fade).
+     *
+     * @param framebuffer the loading screen's framebuffer
+     * @return Whether a fade is under way
+     */
+    public static boolean beginLoadingFrame(final Framebuffer framebuffer) {
+        final MenuTransitions transitions = instance;
+        if (transitions == null) {
+            return false;
+        }
+        transitions.loadingFramebuffer = framebuffer;
+        if (transitions.menuDrawnSinceLoading) {
+            transitions.menuDrawnSinceLoading = false;
+            if (transitions.capture(Minecraft.getMinecraft().getFramebuffer())) {
+                transitions.fromCapture = true;
+                transitions.start(SCREEN_FADE_MILLIS);
+            }
+        }
+        transitions.loadingDrawnSinceMenu = true;
+        return transitions.lengthMillis > 0;
+    }
+
+    /**
+     * Called by the loading screen after drawing a frame: draws the fade under way over it, if any.
+     *
+     * @return Whether the fade is still under way
+     */
+    public static boolean drawLoadingFade(final int width, final int height) {
+        return instance != null && instance.drawFade(width, height);
+    }
+
+    /**
+     * Draws the fade under way over what was drawn, if any.
+     *
+     * @return Whether it is still under way
+     */
+    private boolean drawFade(final int width, final int height) {
         if (this.lengthMillis <= 0) {
-            return;
+            return false;
         }
         final long now = Minecraft.getSystemTime();
         if (this.startMillis < 0) {
@@ -85,10 +153,11 @@ public final class MenuTransitions implements Witness {
         final float t = (now - this.startMillis) / (float) this.lengthMillis;
         if (t >= 1.0F) {
             this.lengthMillis = 0;
-            return;
+            return false;
         }
         final float alpha = 1.0F - t * t * (3.0F - 2.0F * t);
-        this.drawOverlay(event.getGui().width, event.getGui().height, alpha);
+        this.drawOverlay(width, height, alpha);
+        return true;
     }
 
     private void start(final long lengthMillis) {
@@ -97,10 +166,9 @@ public final class MenuTransitions implements Witness {
     }
 
     /**
-     * Copies what is on screen (the last frame of the menu being left) into the capture texture.
+     * Copies what the framebuffer holds (the last frame of the menu or loading screen being left) into the capture texture.
      */
-    private boolean capture(final Minecraft minecraft) {
-        final Framebuffer framebuffer = minecraft.getFramebuffer();
+    private boolean capture(@Nullable final Framebuffer framebuffer) {
         if (framebuffer == null || !OpenGlHelper.isFramebufferEnabled()) {
             return false;
         }
