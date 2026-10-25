@@ -38,6 +38,8 @@ import javax.annotation.Nullable;
     SaplingBlockImpl.class
 })
 public abstract class MixinStandardContentBlock extends Block implements ContentBlock {
+    private static final int VANILLA_MAX_CROP_AGE = 7;
+
     public MixinStandardContentBlock(final Material material) {
         super(material);
     }
@@ -47,7 +49,17 @@ public abstract class MixinStandardContentBlock extends Block implements Content
     @SuppressWarnings("ConstantConditions")
     public AxisAlignedBB getBoundingBox(final IBlockState state, final IBlockAccess world, final BlockPos pos) {
         final AbstractBlockStateDefinition<?, ?, ?> definition = (AbstractBlockStateDefinition<?, ?, ?>) this.definition(state);
-        return definition.box != null ? definition.box.box() : super.getBoundingBox(state, world, pos);
+        if (definition.box != null) {
+            return definition.box.box();
+        }
+        // Vanilla's crop boxes only cover ages 0-7 (a table of 8): an older crop stage without its own box uses the full grown one
+        if ((Object) this instanceof CropBlockImpl) {
+            final CropBlockImpl crop = (CropBlockImpl) (Object) this;
+            if (state.getValue(crop.getAgeProperty()) > VANILLA_MAX_CROP_AGE) {
+                return super.getBoundingBox(crop.withAge(VANILLA_MAX_CROP_AGE), world, pos);
+            }
+        }
+        return super.getBoundingBox(state, world, pos);
     }
 
     @Deprecated

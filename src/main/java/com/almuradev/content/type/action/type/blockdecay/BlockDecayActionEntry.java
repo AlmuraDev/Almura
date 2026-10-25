@@ -9,6 +9,7 @@ package com.almuradev.content.type.action.type.blockdecay;
 
 import com.almuradev.content.type.action.component.drop.Drop;
 import com.almuradev.content.util.DoubleRangeFunctionPredicatePair;
+import com.almuradev.content.util.DoubleRanges;
 import com.almuradev.toolbox.util.math.DoubleRange;
 import net.minecraft.world.biome.Biome;
 
@@ -37,7 +38,7 @@ public final class BlockDecayActionEntry implements BlockDecayAction.Entry {
     @Override
     public boolean test(Biome biome, Random random) {
         final DoubleRange chance = DoubleRangeFunctionPredicatePair.range(this.chances, biome);
-        return chance != null && !(chance.max() <= 0) && random.nextDouble() <= (chance.random(random) / 100d);
+        return chance != null && !(chance.max() <= 0) && random.nextDouble() <= (DoubleRanges.random(chance, random) / 100d);
     }
 
     public static class Builder implements BlockDecayAction.Entry.Builder {

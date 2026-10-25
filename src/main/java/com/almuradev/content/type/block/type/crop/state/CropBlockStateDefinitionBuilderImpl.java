@@ -54,8 +54,9 @@ public final class CropBlockStateDefinitionBuilderImpl extends AbstractBlockStat
     protected void inherit(final CropBlockStateDefinitionBuilderImpl that) {
         super.inherit(that);
         that.canRollback = this.canRollback;
-        if (this.fertilizer != null) that.fertilizer = this.fertilizer;
-        if (this.growth != null) that.growth = this.growth;
-        if (this.hydration != null) that.hydration = this.hydration;
+        // Only what the child doesn't set itself, so a stage can override its parent (e.g. a slower growth chance)
+        if (that.fertilizer == null && this.fertilizer != null) that.fertilizer = this.fertilizer;
+        if (that.growth == null && this.growth != null) that.growth = this.growth;
+        if (that.hydration == null && this.hydration != null) that.hydration = this.hydration;
     }
 }

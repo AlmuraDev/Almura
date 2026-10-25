@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 public final class CropBlockBuilder extends AbstractParsedBlockBuilder<CropBlock, CropBlockStateDefinition, CropBlockStateDefinitionBuilder> implements CropBlock.Builder {
-    private static final Pattern AGE = Pattern.compile("age=(\\d)");
+    private static final Pattern AGE = Pattern.compile("age=(\\d+)");
     /**
      * The {@link Block} constructor requires that {@link Block#createBlockState()} return a non-{@code null} value for
      * all properties, but this is not possible with {@code CropBlockImpl} as we do would not normally initialise the age
@@ -33,7 +33,8 @@ public final class CropBlockBuilder extends AbstractParsedBlockBuilder<CropBlock
      * is used during initialisation of a {@code CropBlockImpl}.
      */
     @Nullable static PropertyInteger property;
-    private static final int MAXIMUM_AGE = 7;
+    // Ages 0-15: the age is the block's meta (the only property a crop has), which has room for 16
+    private static final int MAXIMUM_AGE = 16;
     int age;
     Delegate<ItemType> seed;
     int sackHarvestResetAge = -1;

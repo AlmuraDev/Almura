@@ -33,6 +33,6 @@ public final class ApplyExhaustion implements Apply<EntityPlayer, ApplyContext> 
 
     @Override
     public void apply0(final EntityPlayer entity, final ApplyContext context) {
-        entity.addExhaustion((float) this.exhaustion.random(context.random()));
+        entity.addExhaustion((float) DoubleRanges.random(this.exhaustion, context.random()));
     }
 }

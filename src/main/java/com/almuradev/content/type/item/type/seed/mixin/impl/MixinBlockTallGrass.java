@@ -9,6 +9,7 @@ package com.almuradev.content.type.item.type.seed.mixin.impl;
 
 import com.almuradev.content.type.block.mixin.impl.MixinBlock;
 import com.almuradev.content.type.item.type.seed.SeedItem;
+import com.almuradev.content.util.DoubleRanges;
 import com.almuradev.toolbox.util.math.DoubleRange;
 import com.almuradev.toolbox.util.math.IntRange;
 import net.minecraft.block.BlockTallGrass;
@@ -91,7 +92,7 @@ public abstract class MixinBlockTallGrass extends MixinBlock {
                             final DoubleRange chanceRange = seed.getGrass().getOrLoadChanceRangeForBiome(biome);
 
                             if (chanceRange != null) {
-                                final double chance = chanceRange.random(random);
+                                final double chance = DoubleRanges.random(chanceRange, random);
 
                                 // Roll 3 is allowing the seed configuration to determine the chance for the drop
                                 if (random.nextDouble() <= (chance / 100)) {

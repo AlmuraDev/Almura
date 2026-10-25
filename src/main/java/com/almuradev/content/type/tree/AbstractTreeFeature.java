@@ -9,6 +9,7 @@ package com.almuradev.content.type.tree;
 
 import com.almuradev.content.type.block.state.LazyBlockState;
 import com.almuradev.content.util.DoubleRangeFunctionPredicatePair;
+import com.almuradev.content.util.DoubleRanges;
 import com.almuradev.content.util.MinimumIntWithVarianceFunctionPredicatePair;
 import net.kyori.lunar.collection.MoreIterables;
 import net.minecraft.block.BlockLeaves;
@@ -50,7 +51,7 @@ public interface AbstractTreeFeature {
     static IBlockState leavesOrFruitBlock(final LazyBlockState leaves, @Nullable final Map.Entry<LazyBlockState, List<DoubleRangeFunctionPredicatePair<Biome>>> fruit, final Biome biome, final Random random) {
         IBlockState state;
 
-        if (fruit != null && !fruit.getValue().isEmpty() && random.nextDouble() <= (pickChance(biome, fruit.getValue()).range().random(random) / 100d)) {
+        if (fruit != null && !fruit.getValue().isEmpty() && random.nextDouble() <= (DoubleRanges.random(pickChance(biome, fruit.getValue()).range(), random) / 100d)) {
             // use fruit leaves block
             state = fruit.getKey().get();
         } else {
@@ -65,7 +66,7 @@ public interface AbstractTreeFeature {
     }
 
     static boolean shouldPlaceHanging(@Nullable final Map.Entry<LazyBlockState, List<DoubleRangeFunctionPredicatePair<Biome>>> hanging, final Biome biome, final Random random) {
-        return hanging != null && !hanging.getValue().isEmpty() && random.nextDouble() <= (pickChance(biome, hanging.getValue()).range().random(random) / 100d);
+        return hanging != null && !hanging.getValue().isEmpty() && random.nextDouble() <= (DoubleRanges.random(pickChance(biome, hanging.getValue()).range(), random) / 100d);
     }
 
     static IBlockState hangingBlock(@Nullable final Map.Entry<LazyBlockState, List<DoubleRangeFunctionPredicatePair<Biome>>> hanging) {

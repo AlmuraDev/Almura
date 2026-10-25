@@ -38,7 +38,7 @@ public final class ReduceDurability implements Apply<EntityPlayer, ItemApplyCont
     public void apply0(final EntityPlayer entity, final ItemApplyContext context) {
         if (entity instanceof EntityPlayerMP) {
             final Random random = context.random();
-            context.item().attemptDamageItem(this.reduction.flooredRandom(random), random, (EntityPlayerMP) entity);
+            context.item().attemptDamageItem(DoubleRanges.flooredRandom(this.reduction, random), random, (EntityPlayerMP) entity);
         }
     }
 }

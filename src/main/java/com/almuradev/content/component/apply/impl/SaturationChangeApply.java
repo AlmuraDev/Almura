@@ -10,6 +10,7 @@ package com.almuradev.content.component.apply.impl;
 import com.almuradev.almura.asm.mixin.accessors.util.FoodStatsAccessor;
 import com.almuradev.content.component.apply.Apply;
 import com.almuradev.content.component.apply.context.ApplyContext;
+import com.almuradev.content.util.DoubleRanges;
 import com.almuradev.toolbox.config.ConfigurationNodeDeserializer;
 import com.almuradev.toolbox.util.math.DoubleRange;
 import net.minecraft.entity.Entity;
@@ -35,7 +36,7 @@ public final class SaturationChangeApply implements Apply<EntityPlayer, ApplyCon
     public void apply0(final EntityPlayer entity, final ApplyContext context) {
 
         final float currentSaturationLevel = ((FoodStatsAccessor)entity.getFoodStats()).accessor$getFoodSaturationLevel();
-        ((FoodStatsAccessor)entity.getFoodStats()).accessor$setFoodSaturationLevel(Math.min(currentSaturationLevel + (float) this.change.random(context.random()), (float) 20));
+        ((FoodStatsAccessor)entity.getFoodStats()).accessor$setFoodSaturationLevel(Math.min(currentSaturationLevel + (float) DoubleRanges.random(this.change, context.random()), (float) 20));
     }
 
     public DoubleRange getChange() {

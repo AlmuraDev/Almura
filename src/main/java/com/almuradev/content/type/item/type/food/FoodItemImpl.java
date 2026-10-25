@@ -16,6 +16,7 @@ import com.almuradev.content.component.apply.impl.SaturationChangeApply;
 import com.almuradev.content.type.item.ItemTooltip;
 import com.almuradev.content.type.item.type.food.processor.foodeffect.FoodEffect;
 import com.almuradev.content.type.item.type.food.processor.foodeffect.potioneffect.PotionEffectTemplate;
+import com.almuradev.content.util.DoubleRanges;
 import com.almuradev.toolbox.util.math.DoubleRange;
 import com.almuradev.toolbox.util.math.IntRange;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -125,7 +126,7 @@ public final class FoodItemImpl extends ItemFood implements FoodItem {
 
         this.foodEffect.getPotionEffects().forEach(((potion, template) -> {
             // Run chance calculations
-            if (random.nextDouble() <= (template.getChanceRange().random(random) / 100)) {
+            if (random.nextDouble() <= (DoubleRanges.random(template.getChanceRange(), random) / 100)) {
                 final PotionEffectTemplate potionEffectTemplate = template.getPotionEffect();
 
                 final PotionEffect potionEffect = new PotionEffect(potion, potionEffectTemplate.getDuration(), potionEffectTemplate.getAmplifier(),
@@ -159,6 +160,6 @@ public final class FoodItemImpl extends ItemFood implements FoodItem {
             return 0;
         }
 
-        return (float) this.saturationChange.random(new Random()); // TODO Cache a random elsewhere lol?
+        return (float) DoubleRanges.random(this.saturationChange, new Random()); // TODO Cache a random elsewhere lol?
     }
 }

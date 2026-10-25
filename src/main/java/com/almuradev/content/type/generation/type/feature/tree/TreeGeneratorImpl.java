@@ -12,6 +12,7 @@ import com.almuradev.content.type.block.state.LazyBlockState;
 import com.almuradev.content.type.tree.AbstractTreeFeature;
 import com.almuradev.content.type.tree.Tree;
 import com.almuradev.content.util.DoubleRangeFunctionPredicatePair;
+import com.almuradev.content.util.DoubleRanges;
 import com.almuradev.core.event.Witness;
 import com.almuradev.toolbox.util.math.DoubleRange;
 import net.minecraft.util.math.BlockPos;
@@ -61,7 +62,7 @@ public class TreeGeneratorImpl implements TreeGenerator, Witness {
         }
 
         final Random random = event.getRand();
-        if (random.nextDouble() <= (chance.random(random) / 100d)) {
+        if (random.nextDouble() <= (DoubleRanges.random(chance, random) / 100d)) {
             final int x = random.nextInt(16) + 8;
             final int z = random.nextInt(16) + 8;
             final BlockPos pos = world.getHeight(event.getPos().add(x, 0, z));
@@ -71,7 +72,7 @@ public class TreeGeneratorImpl implements TreeGenerator, Witness {
     }
 
     private AbstractTreeFeature tree(final Biome biome, final Random random) {
-        if(this.bigTree != null && this.bigTreeChances != null && random.nextDouble() <= (DoubleRangeFunctionPredicatePair.rangeOrRandom(this.bigTreeChances, biome).random(random) / 100d)) {
+        if(this.bigTree != null && this.bigTreeChances != null && random.nextDouble() <= (DoubleRanges.random(DoubleRangeFunctionPredicatePair.rangeOrRandom(this.bigTreeChances, biome), random) / 100d)) {
             return (AbstractTreeFeature) this.bigTree.require();
         }
         return (AbstractTreeFeature) this.tree.require();

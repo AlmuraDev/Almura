@@ -15,6 +15,7 @@ import com.almuradev.content.type.block.BlockUpdateFlag;
 import com.almuradev.content.type.block.type.crop.processor.fertilizer.Fertilizer;
 import com.almuradev.content.type.block.type.crop.processor.growth.Growth;
 import com.almuradev.content.type.block.type.crop.state.CropBlockStateDefinition;
+import com.almuradev.content.util.DoubleRanges;
 import com.almuradev.toolbox.util.math.DoubleRange;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
@@ -243,7 +244,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
                     final DoubleRange chanceRange = fertilizer.getOrLoadChanceRangeForItem(new ItemStack(Items.DYE, 1, 15));
 
                     if (chanceRange != null) {
-                        return RANDOM.nextDouble() <= (chanceRange.random(RANDOM) / 100);
+                        return RANDOM.nextDouble() <= (DoubleRanges.random(chanceRange, RANDOM) / 100);
                     }
                 }
             }
@@ -432,7 +433,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
                 }
 
                 final double randomValue = RANDOM.nextDouble();
-                final double growthChance = (biomeGrowthChance.random(RANDOM)/ 100);
+                final double growthChance = (DoubleRanges.random(biomeGrowthChance, RANDOM)/ 100);
 
                 boolean canGrow = randomValue <= growthChance;
                 // Double the rate of growth if the heat lamp is detected. Only scan for it when the roll falls inside the doubled chance.

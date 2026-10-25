@@ -12,6 +12,7 @@ import com.almuradev.almura.feature.death.network.ClientboundPlayerDiedPacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.UchatUtil;
+import com.almuradev.content.util.DoubleRanges;
 import com.almuradev.core.event.Witness;
 import com.almuradev.toolbox.util.math.DoubleRange;
 import net.minecraft.util.text.TextFormatting;
@@ -74,7 +75,7 @@ public final class DeathHandler implements Witness {
 
         if (service != null) {
             final Server server = Sponge.getServer();
-            final double deathTax = RANGE.random(RANDOM);
+            final double deathTax = DoubleRanges.random(RANGE, RANDOM);
             final Account account = service.getOrCreateAccount(player.getUniqueId()).orElse(null);
             BigDecimal balance;
 

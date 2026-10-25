@@ -12,6 +12,7 @@ import com.almuradev.content.type.block.BlockUpdateFlag;
 import com.almuradev.content.type.block.StateMappedBlock;
 import com.almuradev.content.type.block.type.sapling.state.SaplingBlockStateDefinition;
 import com.almuradev.content.util.DoubleRangeFunctionPredicatePair;
+import com.almuradev.content.util.DoubleRanges;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.statemap.IStateMapper;
 import net.minecraft.client.renderer.block.statemap.StateMap;
@@ -56,7 +57,7 @@ public final class SaplingBlockImpl extends AbstractSaplingBlock implements Sapl
     }
 
     private WorldGenAbstractTree tree(final Biome biome, final Random random) {
-        if(this.definition.bigTree != null && this.definition.bigTreeChances != null && random.nextDouble() <= (DoubleRangeFunctionPredicatePair.rangeOrRandom(this.definition.bigTreeChances, biome).random(random) / 100d)) {
+        if(this.definition.bigTree != null && this.definition.bigTreeChances != null && random.nextDouble() <= (DoubleRanges.random(DoubleRangeFunctionPredicatePair.rangeOrRandom(this.definition.bigTreeChances, biome), random) / 100d)) {
             return (WorldGenAbstractTree) this.definition.bigTree.require();
         }
         return (WorldGenAbstractTree) this.definition.tree.require();

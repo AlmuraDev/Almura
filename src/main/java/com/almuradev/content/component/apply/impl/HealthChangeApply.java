@@ -9,6 +9,7 @@ package com.almuradev.content.component.apply.impl;
 
 import com.almuradev.content.component.apply.Apply;
 import com.almuradev.content.component.apply.context.ApplyContext;
+import com.almuradev.content.util.DoubleRanges;
 import com.almuradev.toolbox.config.ConfigurationNodeDeserializer;
 import com.almuradev.toolbox.util.math.DoubleRange;
 import net.minecraft.entity.Entity;
@@ -32,7 +33,7 @@ public final class HealthChangeApply implements Apply<EntityLivingBase, ApplyCon
 
     @Override
     public void apply0(final EntityLivingBase entity, final ApplyContext context) {
-        final double heal = this.change.random(context.random());
+        final double heal = DoubleRanges.random(this.change, context.random());
         entity.heal((float) heal);
     }
 }

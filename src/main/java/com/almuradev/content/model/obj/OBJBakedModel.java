@@ -31,6 +31,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import javax.vecmath.Matrix4f;
+import javax.vecmath.Vector3f;
 import javax.vecmath.Vector4f;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -110,10 +111,10 @@ public class OBJBakedModel implements IBakedModel {
             final TextureAtlasSprite diffuseSprite = this.resolveDiffuseSprite(group.getMaterialDefinition().orElse(null));
 
             for (final Face face : group.getFaces()) {
-                final BakedQuad quad = baker.bake(face, diffuseSprite);
-                all.add(quad);
+                final List<BakedQuad> quads = baker.bake(face, diffuseSprite);
+                all.addAll(quads);
                 if (g == 0 && !this.isComplex) {
-                    perFace.add(Collections.singletonList(quad));
+                    perFace.add(Collections.unmodifiableList(quads));
                 }
             }
         }
@@ -206,17 +207,38 @@ public class OBJBakedModel implements IBakedModel {
             this.transform = transformation == null ? null : transformation.getMatrix();
         }
 
-        BakedQuad bake(final Face face, final TextureAtlasSprite diffuseSprite) {
+        /**
+         * Bakes a face into quads: a quad as is, a triangle as a quad with its last vertex repeated, and a larger polygon as a fan of quads
+         * (a quad holds exactly four vertices, so anything else would leave unset vertices stretching to the origin).
+         */
+        List<BakedQuad> bake(final Face face, final TextureAtlasSprite diffuseSprite) {
+            final List<VertexDefinition> vertices = face.getVertices();
+            this.lastFace = face;
+            this.lastSprite = diffuseSprite;
+
+            if (vertices.size() < 3) {
+                return Collections.emptyList();
+            }
+            if (vertices.size() <= 4) {
+                return Collections.singletonList(this.bakeQuad(vertices.size() == 4 ? vertices
+                        : Arrays.asList(vertices.get(0), vertices.get(1), vertices.get(2), vertices.get(2)), diffuseSprite));
+            }
+
+            final List<BakedQuad> quads = new ArrayList<>();
+            for (int i = 1; i + 1 < vertices.size(); i += 2) {
+                final VertexDefinition last = vertices.get(Math.min(i + 2, vertices.size() - 1));
+                quads.add(this.bakeQuad(Arrays.asList(vertices.get(0), vertices.get(i), vertices.get(i + 1), last), diffuseSprite));
+            }
+            return quads;
+        }
+
+        private BakedQuad bakeQuad(final List<VertexDefinition> vertices, final TextureAtlasSprite diffuseSprite) {
             final UnpackedBakedQuad.Builder quadBuilder = new UnpackedBakedQuad.Builder(OBJBakedModel.this.format);
             quadBuilder.setContractUVs(true);
             quadBuilder.setTexture(diffuseSprite);
-            VertexNormal normal = null;
+            final Vector3f normal = this.faceNormal(vertices);
 
-            for (final VertexDefinition vertexDef : face.getVertices()) {
-                if (normal == null) {
-                    normal = vertexDef.getNormal().orElse(null);
-                }
-
+            for (final VertexDefinition vertexDef : vertices) {
                 for (int e = 0; e < this.usages.length; e++) {
                     switch (this.usages[e]) {
                         case POSITION:
@@ -280,9 +302,7 @@ public class OBJBakedModel implements IBakedModel {
                             quadBuilder.put(e, diffuseSprite.getInterpolatedU(u * 16f), diffuseSprite.getInterpolatedV(v * 16f));
                             break;
                         case NORMAL:
-                            if (normal != null) {
-                                quadBuilder.put(e, normal.getX(), normal.getY(), normal.getZ());
-                            }
+                            quadBuilder.put(e, normal.x, normal.y, normal.z);
                             break;
                         case COLOR:
                             quadBuilder.put(e, 1f, 1f, 1f, 1f);
@@ -293,13 +313,35 @@ public class OBJBakedModel implements IBakedModel {
                 }
             }
 
-            if (normal != null) {
-                quadBuilder.setQuadOrientation(EnumFacing.getFacingFromVector(normal.getX(), normal.getY(), normal.getZ()));
+            quadBuilder.setQuadOrientation(EnumFacing.getFacingFromVector(normal.x, normal.y, normal.z));
+            return quadBuilder.build();
+        }
+
+        /**
+         * The face's normal: the first vertex normal the file gives, else worked out from the winding of the vertices, turned by the model
+         * state's transform like the positions are (so a rotated model is lit for the way it faces).
+         */
+        private Vector3f faceNormal(final List<VertexDefinition> vertices) {
+            final Vector3f normal = new Vector3f();
+            final VertexNormal given = vertices.get(0).getNormal().orElse(null);
+            if (given != null) {
+                normal.set(given.getX(), given.getY(), given.getZ());
+            } else {
+                final Vertex a = vertices.get(0).getVertex(), b = vertices.get(1).getVertex(), c = vertices.get(2).getVertex();
+                final Vector3f ab = new Vector3f(b.getX() - a.getX(), b.getY() - a.getY(), b.getZ() - a.getZ());
+                final Vector3f ac = new Vector3f(c.getX() - a.getX(), c.getY() - a.getY(), c.getZ() - a.getZ());
+                normal.cross(ab, ac);
             }
 
-            this.lastFace = face;
-            this.lastSprite = diffuseSprite;
-            return quadBuilder.build();
+            if (this.transform != null) {
+                this.transform.transform(normal);
+            }
+            if (normal.lengthSquared() < 1.0E-12F) {
+                normal.set(0F, 1F, 0F);
+            } else {
+                normal.normalize();
+            }
+            return normal;
         }
     }
 

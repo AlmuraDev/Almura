@@ -12,6 +12,7 @@ import com.almuradev.content.type.block.state.LazyBlockState;
 import com.almuradev.content.type.grass.Grass;
 import com.almuradev.content.type.grass.GrassFeature;
 import com.almuradev.content.util.DoubleRangeFunctionPredicatePair;
+import com.almuradev.content.util.DoubleRanges;
 import com.almuradev.core.event.Witness;
 import com.almuradev.toolbox.util.math.DoubleRange;
 import net.minecraft.util.math.BlockPos;
@@ -55,7 +56,7 @@ public final class GrassGeneratorImpl implements GrassGenerator, Witness {
             }
 
             final Random random = event.getRand();
-            if (random.nextDouble() <= (chance.random(random) / 100d)) {
+            if (random.nextDouble() <= (DoubleRanges.random(chance, random) / 100d)) {
                 final int x = random.nextInt(16) + 8;
                 final int z = random.nextInt(16) + 8;
                 final BlockPos pos = world.getHeight(event.getPos().add(x, 0, z));

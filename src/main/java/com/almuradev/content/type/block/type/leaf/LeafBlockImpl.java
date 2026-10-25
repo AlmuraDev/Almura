@@ -14,6 +14,7 @@ import com.almuradev.content.type.block.state.LazyBlockState;
 import com.almuradev.content.type.block.type.leaf.processor.preventdecay.PreventDecay;
 import com.almuradev.content.type.block.type.leaf.processor.spread.Spread;
 import com.almuradev.content.type.block.type.leaf.state.LeafBlockStateDefinition;
+import com.almuradev.content.util.DoubleRanges;
 import com.almuradev.toolbox.util.math.DoubleRange;
 import net.kyori.violet.Lazy;
 import net.minecraft.block.Block;
@@ -163,7 +164,7 @@ public final class LeafBlockImpl extends BlockLeaves implements LeafBlock, State
                     final PreventDecay preventDecayConfig = this.definition.preventDecay;
                     if (preventDecayConfig != null) {
                         final DoubleRange chanceRoll = preventDecayConfig.getOrLoadChanceRangeForBiome(worldIn.getBiome(pos));
-                        if (chanceRoll != null && rand.nextDouble() <= (chanceRoll.random(rand) / 100)) {
+                        if (chanceRoll != null && rand.nextDouble() <= (DoubleRanges.random(chanceRoll, rand) / 100)) {
                             preventDecayState = preventDecayConfig.getBlock();
                             preventDecayBlock = preventDecayState.block();
                         }
@@ -290,7 +291,7 @@ public final class LeafBlockImpl extends BlockLeaves implements LeafBlock, State
         if (chanceRoll == null) {
             return;
         }
-        if (!(rand.nextDouble() <= (chanceRoll.random(rand) / 100))) {
+        if (!(rand.nextDouble() <= (DoubleRanges.random(chanceRoll, rand) / 100))) {
             return;
         }
 
