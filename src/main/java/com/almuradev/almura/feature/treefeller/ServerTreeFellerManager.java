@@ -16,19 +16,14 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.block.BlockSnapshot;
-import org.spongepowered.api.data.Transaction;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.block.ChangeBlockEvent;
-import org.spongepowered.api.event.cause.EventContextKeys;
-import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
-import org.spongepowered.api.world.Location;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -77,38 +72,27 @@ public final class ServerTreeFellerManager extends Witness.Impl {
         this.claims = Sponge.getPluginManager().isLoaded("griefdefender") ? new GriefDefenderClaimGuard() : ClaimGuard.NONE;
     }
 
-    @Listener(order = Order.POST)
-    public void onBlockBreak(final ChangeBlockEvent.Break event, @Root final Player player) {
-        // Only a player actually breaking the block counts, not other player caused changes (commands like /fill or /setblock)
-        if (!event.getContext().containsKey(EventContextKeys.PLAYER_BREAK)) {
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onBlockBreak(final BlockEvent.BreakEvent event) {
+        // Forge only fires this for a player actually breaking a block (survival or creative), never for commands like /fill or
+        // /setblock. Sponge's PLAYER_BREAK context can't be used: SpongeForge only adds it to ChangeBlockEvent.Pre, not to Break.
+        final World world = event.getWorld();
+        if (world.isRemote || event.getPlayer() instanceof FakePlayer) {
             return;
         }
 
-        for (final Transaction<BlockSnapshot> transaction : event.getTransactions()) {
-            if (!transaction.isValid()) {
-                continue;
-            }
-
-            final Block block = ((IBlockState) transaction.getOriginal().getState()).getBlock();
-            final Set<Block> leafBlocks = this.fruitLeavesByLog().get(block);
-            if (leafBlocks == null) {
-                continue;
-            }
-
-            final Location<org.spongepowered.api.world.World> location = transaction.getOriginal().getLocation().orElse(null);
-            if (location == null) {
-                continue;
-            }
-
-            final World world = (World) location.getExtent();
-            final BlockPos origin = new BlockPos(location.getBlockX(), location.getBlockY(), location.getBlockZ());
-
-            // Run next tick, once the player's break has been applied to the world
-            Task.builder()
-                    .delayTicks(1)
-                    .execute(() -> this.fell(world, origin, block, leafBlocks))
-                    .submit(this.container);
+        final Block block = event.getState().getBlock();
+        final Set<Block> leafBlocks = this.fruitLeavesByLog().get(block);
+        if (leafBlocks == null) {
+            return;
         }
+
+        final BlockPos origin = event.getPos();
+        // Run next tick, once the player's break has been applied to the world (fell skips it if a protection plugin stopped the break)
+        Task.builder()
+                .delayTicks(1)
+                .execute(() -> this.fell(world, origin, block, leafBlocks))
+                .submit(this.container);
     }
 
     private Map<Block, Set<Block>> fruitLeavesByLog() {
@@ -134,7 +118,8 @@ public final class ServerTreeFellerManager extends Witness.Impl {
     }
 
     private void fell(final World world, final BlockPos origin, final Block log, final Set<Block> leafBlocks) {
-        if (!world.isBlockLoaded(origin)) {
+        // Still there: the break was cancelled after Forge's event (e.g. by a claim)
+        if (!world.isBlockLoaded(origin) || world.getBlockState(origin).getBlock() == log) {
             return;
         }
 

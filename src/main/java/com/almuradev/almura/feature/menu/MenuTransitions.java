@@ -10,7 +10,9 @@ package com.almuradev.almura.feature.menu;
 import com.almuradev.almura.feature.menu.main.SinglePlayerLoadingGui;
 import com.almuradev.core.event.Witness;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiDownloadTerrain;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -22,6 +24,7 @@ import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -35,7 +38,8 @@ import javax.annotation.Nullable;
 
 /**
  * Transitions between the menus outside of a world: the first menu after startup fades in from the startup splash's background, and each menu
- * after that fades in over a picture of the one before it.
+ * after that fades in over a picture of the one before it. Joining a world or changing dimension fades the same way through the loading screen
+ * ("Please wait") and the terrain screen, and from the terrain screen into the world.
  */
 @SideOnly(Side.CLIENT)
 public final class MenuTransitions implements Witness {
@@ -54,7 +58,8 @@ public final class MenuTransitions implements Witness {
     private boolean fromCapture;
     private int fromColor;
     private long startMillis, lengthMillis;
-    // Which was drawn last, a menu or the loading screen ("Please wait", "Preparing spawn area"), and the loading screen's own framebuffer
+    // Which was drawn last, a game loop frame (a menu or the world) or the loading screen ("Please wait", "Preparing spawn area"), and the
+    // loading screen's own framebuffer
     private boolean menuDrawnSinceLoading, loadingDrawnSinceMenu;
     @Nullable private Framebuffer loadingFramebuffer;
 
@@ -66,8 +71,17 @@ public final class MenuTransitions implements Witness {
     public void onGuiOpen(final GuiOpenEvent event) {
         final Minecraft minecraft = Minecraft.getMinecraft();
         final GuiScreen next = event.getGui();
-        // Outside of a world only, except the single player loading screen, which opens once the client's world exists
-        if (next == null || minecraft.world != null && !(next instanceof SinglePlayerLoadingGui)) {
+        final GuiScreen current = minecraft.currentScreen;
+        if (next == null) {
+            // Into the world, once the terrain screen closes
+            if (isTerrainScreen(current) && this.capture(minecraft.getFramebuffer())) {
+                this.fromCapture = true;
+                this.start(SCREEN_FADE_MILLIS);
+            }
+            return;
+        }
+        // Outside of a world only, except the terrain screens, which open once the client's world exists (joining or changing dimension)
+        if (minecraft.world != null && !isTerrainScreen(next)) {
             return;
         }
 
@@ -88,7 +102,6 @@ public final class MenuTransitions implements Witness {
             }
             return;
         }
-        final GuiScreen current = minecraft.currentScreen;
         if (current != null && current != next && this.capture(minecraft.getFramebuffer())) {
             this.fromCapture = true;
             this.start(SCREEN_FADE_MILLIS);
@@ -97,11 +110,32 @@ public final class MenuTransitions implements Witness {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onDrawScreen(final GuiScreenEvent.DrawScreenEvent.Post event) {
-        if (Minecraft.getMinecraft().world == null) {
-            this.menuDrawnSinceLoading = true;
-            this.loadingDrawnSinceMenu = false;
-        }
         this.drawFade(event.getGui().width, event.getGui().height);
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onRenderTick(final TickEvent.RenderTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) {
+            return;
+        }
+        // A frame of a menu or of the game (the loading screen draws outside of the game loop): the next loading screen fades from it
+        this.menuDrawnSinceLoading = true;
+        this.loadingDrawnSinceMenu = false;
+
+        // Screens draw the fade themselves; with none open, over the world and its HUD
+        final Minecraft minecraft = Minecraft.getMinecraft();
+        if (minecraft.currentScreen == null && this.lengthMillis > 0) {
+            minecraft.entityRenderer.setupOverlayRendering();
+            final ScaledResolution resolution = new ScaledResolution(minecraft);
+            this.drawFade(resolution.getScaledWidth(), resolution.getScaledHeight());
+        }
+    }
+
+    /**
+     * @return Whether the screen is shown while a world's terrain loads: vanilla's, or the one Almura shows in its place in single player
+     */
+    private static boolean isTerrainScreen(@Nullable final GuiScreen screen) {
+        return screen instanceof GuiDownloadTerrain || screen instanceof SinglePlayerLoadingGui;
     }
 
     /**
