@@ -47,7 +47,7 @@ import java.util.Random;
 public final class DeathHandler implements Witness {
 
     private static final Random RANDOM = new Random();
-    private static final DoubleRange RANGE = DoubleRange.range(25, 75);
+    private static final DoubleRange RANGE = DoubleRange.range(50, 75);
 
     private boolean checkedItemsLoaded = false;
     private ItemType platinumCoin, goldCoin, silverCoin, copperCoin;
