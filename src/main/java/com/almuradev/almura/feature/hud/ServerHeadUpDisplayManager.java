@@ -12,6 +12,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerCountPacket;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerCurrencyPacket;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerWorldsPacket;
+import com.almuradev.almura.feature.hud.network.ClientboundServerTpsPacket;
 import com.almuradev.almura.feature.hud.network.ClientboundWorldNamePacket;
 import com.almuradev.almura.feature.nick.ServerNickManager;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
@@ -33,6 +34,7 @@ import org.spongepowered.api.event.economy.EconomyTransactionEvent;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.filter.Getter;
+import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
@@ -53,6 +55,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public final class ServerHeadUpDisplayManager extends Witness.Impl implements Activatable, Witness.Lifecycle {
 
@@ -62,6 +65,7 @@ public final class ServerHeadUpDisplayManager extends Witness.Impl implements Ac
     private final ServerNotificationManager serverNotificationManager;
     private final ServerTitleManager serverTitleManager;
     private final ServerNickManager serverNickManager;
+    @Nullable private Task tpsTask;
 
     @Inject
     private ServerHeadUpDisplayManager(final Game game, final PluginContainer container, @ChannelId(NetworkConfig.CHANNEL) final ChannelBinding
@@ -110,6 +114,43 @@ public final class ServerHeadUpDisplayManager extends Witness.Impl implements Ac
         final ClientboundPlayerCurrencyPacket currPacket = this.createPlayerCurrencyPacket(player);
         if (currPacket != null) {
             this.network.sendTo(player, currPacket);
+        }
+
+        this.network.sendTo(player, new ClientboundServerTpsPacket(this.game.getServer().getTicksPerSecond()));
+        this.startTpsUpdates();
+    }
+
+    /**
+     * Sends every player the server's TPS once a second (real time, so a lagging server still reports on time), for the Origin HUD.
+     */
+    private void startTpsUpdates() {
+        if (this.tpsTask != null) {
+            return;
+        }
+        this.tpsTask = Task.builder()
+                .name("Almura HUD TPS")
+                .interval(1, TimeUnit.SECONDS)
+                .execute(task -> {
+                    if (!this.game.isServerAvailable()) {
+                        task.cancel();
+                        this.tpsTask = null;
+                        return;
+                    }
+                    final Server server = this.game.getServer();
+                    final ClientboundServerTpsPacket packet = new ClientboundServerTpsPacket(server.getTicksPerSecond());
+                    for (final Player player : server.getOnlinePlayers()) {
+                        this.network.sendTo(player, packet);
+                    }
+                })
+                .submit(this.container);
+    }
+
+    @Listener
+    public void onServerStopping(final GameStoppingServerEvent event) {
+        // The scheduler outlives a single player world's server
+        if (this.tpsTask != null) {
+            this.tpsTask.cancel();
+            this.tpsTask = null;
         }
     }
 

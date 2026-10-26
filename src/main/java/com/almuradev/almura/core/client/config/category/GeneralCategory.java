@@ -59,6 +59,9 @@ public final class GeneralCategory {
     @Setting(value = "display-location-widget", comment = "Toggles the right-side location widget of the Origin HUD")
     public boolean displayLocationWidget = true;
 
+    @Setting(value = "display-performance-stats", comment = "Toggles the FPS and server TPS shown under the coordinates in the Origin HUD's location widget")
+    public boolean displayPerformanceStats = true;
+
     @Setting(value = "flickering-lights", comment = "Toggles the flicker of flickering lights. When off they shine steadily")
     public boolean flickeringLights = true;
 

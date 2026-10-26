@@ -84,7 +84,7 @@ public class OriginHUD extends AbstractHUD {
         this.worldPanel.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
         // Details panel
-        this.detailsPanel = new UIDetailsPanel(this, 124, 37);
+        this.detailsPanel = new UIDetailsPanel(this, UIDetailsPanel.WIDTH, UIDetailsPanel.HEIGHT);
         this.detailsPanel.setPosition(0, 0, Anchor.TOP | Anchor.RIGHT);
 
         // Debug details panel

@@ -29,6 +29,8 @@ public class HeadUpDisplay {
     public final Map<UUID, String> playerWorlds = new HashMap<>();
     public int onlinePlayerCount = 0;
     public int maxPlayerCount = 0;
+    // The server's ticks per second, sent every second; negative until the first arrives
+    public double serverTps = -1;
 
     public boolean isEconomyPresent = false;
     public String economyAmount = "";

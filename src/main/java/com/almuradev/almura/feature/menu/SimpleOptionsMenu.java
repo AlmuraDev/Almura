@@ -68,7 +68,7 @@ public final class SimpleOptionsMenu extends BasicScreen {
 
         this.addToScreen(titleLabel);
 
-        final UIBackgroundContainer optionsContainer = new UIBackgroundContainer(this, 335, 200);
+        final UIBackgroundContainer optionsContainer = new UIBackgroundContainer(this, 335, 220);
         optionsContainer.setBackgroundAlpha(0);
         optionsContainer.setPosition(0, getPaddedY(titleLabel, CONTROL_PADDING), Anchor.TOP | Anchor.CENTER);
 
@@ -105,6 +105,14 @@ public final class SimpleOptionsMenu extends BasicScreen {
         checkboxLocationWidget.setName("checkbox.location_widget");
         checkboxLocationWidget.register(this);
         this.updatePosition(checkboxLocationWidget, Anchor.LEFT);
+
+        final UICheckBox checkboxPerformanceStats = new UICheckBox(this);
+        checkboxPerformanceStats.setText(TextFormatting.WHITE + "Display FPS / TPS");
+        checkboxPerformanceStats.setChecked(general.displayPerformanceStats);
+        checkboxPerformanceStats.setTooltip("Shown under the coordinates of the location widget");
+        checkboxPerformanceStats.setName("checkbox.performance_stats");
+        checkboxPerformanceStats.register(this);
+        this.updatePosition(checkboxPerformanceStats, Anchor.LEFT);
 
         final boolean displayNumericHUDValues = general.displayNumericHUDValues;
         final UICheckBox checkboxNumericHUDValues = new UICheckBox(this);
@@ -154,7 +162,8 @@ public final class SimpleOptionsMenu extends BasicScreen {
         checkboxExtendedView.register(this);
         this.updatePosition(checkboxExtendedView, Anchor.LEFT);
 
-        // Reset for new column
+        // Reset for new column (remembering where the left one ends, for the done button)
+        final UIComponent leftColumnEnd = this.lastComponent;
         this.lastComponent = null;
 
         /*
@@ -241,13 +250,15 @@ public final class SimpleOptionsMenu extends BasicScreen {
         final UIButton buttonDone = new UIButtonBuilder(this)
                 .text(I18n.format("gui.done"))
                 .size(200, CONTROL_HEIGHT)
-                .position(0, this.lastComponent == null ? 10 : getPaddedY(this.lastComponent, 10))
+                // Under whichever column is longer
+                .position(0, Math.max(leftColumnEnd == null ? 10 : getPaddedY(leftColumnEnd, 10),
+                        this.lastComponent == null ? 10 : getPaddedY(this.lastComponent, 10)))
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
                 .build("button.done");
 
         optionsContainer.add(this.buttonOptimized, this.buttonHudType, this.sliderOriginHudOpacity, checkboxWorldCompassWidget, checkboxLocationWidget,
-                checkboxNumericHUDValues, checkboxDisplayNames, checkboxDisplayHealthbars, checkboxDisableOffhandTorchPlacement, checkboxDisplayGuideOnLogin,
+                checkboxPerformanceStats, checkboxNumericHUDValues, checkboxDisplayNames, checkboxDisplayHealthbars, checkboxDisableOffhandTorchPlacement, checkboxDisplayGuideOnLogin,
                 checkboxExtendedView, sliderChestDistance, sliderSignTextDistance, sliderItemFrameDistance, sliderPlayerNameRenderDistance,
                 sliderEnemyNameRenderDistance, sliderAnimalNameRenderDistance, buttonDone);
         addToScreen(optionsContainer);
@@ -335,6 +346,9 @@ public final class SimpleOptionsMenu extends BasicScreen {
                 break;
             case "checkbox.location_widget" :
                 configuration.general.displayLocationWidget = (boolean) event.getNewValue();
+                break;
+            case "checkbox.performance_stats" :
+                configuration.general.displayPerformanceStats = (boolean) event.getNewValue();
                 break;
             case "checkbox.numeric_hud_values" :
                 configuration.general.displayNumericHUDValues = (boolean) event.getNewValue();
