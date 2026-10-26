@@ -12,8 +12,11 @@ import com.almuradev.core.event.Witness;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoublePlant;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.loot.LootEntry;
+import net.minecraft.world.storage.loot.LootEntryEmpty;
 import net.minecraft.world.storage.loot.LootEntryItem;
 import net.minecraft.world.storage.loot.LootPool;
 import net.minecraft.world.storage.loot.RandomValueRange;
@@ -22,7 +25,10 @@ import net.minecraft.world.storage.loot.functions.LootFunction;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+
+import javax.annotation.Nullable;
 
 /**
  * Extra animal loot and harvest tweaks. Items handed back after crafting or eating (bottles, bowls, cruets, damaged knives, ...) are
@@ -66,6 +72,38 @@ public class ItemReturnHelper implements Witness {
                 lootTableEvent.getTable().addPool(sheep_pool);
             }
         }
+        // Wolves: raw wolf meat, 1-2 (adults only: children never drop loot)
+        if (lootTableEvent.getName().toString().equals("minecraft:entities/wolf")) {
+            final Item wolfMeat = almuraItem("normal/ingredient/wolfmeat_raw");
+            if (wolfMeat != null) {
+                final LootEntry entry = new LootEntryItem(wolfMeat, 100, 1, new LootFunction[0], new LootCondition[0], "wolfmeat_raw");
+                lootTableEvent.getTable().addPool(new LootPool(new LootEntry[]{entry}, new LootCondition[0], new RandomValueRange(1, 2),
+                        new RandomValueRange(0, 1), "wolf_table"));
+            }
+        }
+        // Creepers: now and then (one in four) a Creeper Steak, the joke food that hurts whoever eats it
+        if (lootTableEvent.getName().toString().equals("minecraft:entities/creeper")) {
+            final Item creeperSteak = almuraItem("food/food/creepersteak");
+            if (creeperSteak != null) {
+                final LootEntry steak = new LootEntryItem(creeperSteak, 1, 0, new LootFunction[0], new LootCondition[0], "creepersteak");
+                final LootEntry nothing = new LootEntryEmpty(3, 0, new LootCondition[0], "creepersteak_none");
+                lootTableEvent.getTable().addPool(new LootPool(new LootEntry[]{steak, nothing}, new LootCondition[0], new RandomValueRange(1),
+                        new RandomValueRange(0), "creeper_table"));
+            }
+        }
+        // Fishing: clams join the catch (about one in eight fish), for clam chowder and pescatore pasta
+        if (lootTableEvent.getName().toString().equals("minecraft:gameplay/fishing/fish")) {
+            final Item clam = almuraItem("normal/ingredient/clam");
+            final LootPool main = lootTableEvent.getTable().getPool("main");
+            if (clam != null && main != null) {
+                main.addEntry(new LootEntryItem(clam, 15, 0, new LootFunction[0], new LootCondition[0], "clam"));
+            }
+        }
+    }
+
+    @Nullable
+    private static Item almuraItem(final String path) {
+        return ForgeRegistries.ITEMS.getValue(new ResourceLocation("almura", path));
     }
 
     // Sunflower Destroy Action Modifier & charging the player food/drink for harvesting custom crops.

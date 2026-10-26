@@ -14,6 +14,7 @@ import com.almuradev.content.type.flower.FlowerFeature;
 import com.almuradev.content.type.generation.type.underground.ore.UndergroundOreGeneratorImpl;
 import com.almuradev.content.type.grass.GrassFeature;
 import com.almuradev.content.type.tree.BigTreeFeature;
+import com.almuradev.content.type.tree.PalmTreeFeature;
 import com.almuradev.content.type.tree.TreeFeature;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.MapColor;
@@ -32,6 +33,7 @@ import org.spongepowered.asm.mixin.Mixin;
     Item.ToolMaterial.class,
     MapColor.class,
     Material.class,
+    PalmTreeFeature.class,
     SoundType.class,
     TreeFeature.class,
     UndergroundOreGeneratorImpl.class

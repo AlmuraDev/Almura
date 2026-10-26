@@ -20,6 +20,7 @@ import java.util.Map;
 
 public final class TreeBuilder extends ContentBuilder.Impl<Tree> implements Tree.Builder {
     private boolean big;
+    private boolean palm;
     private Map.Entry<LazyBlockState, List<DoubleRangeFunctionPredicatePair<Biome>>> fruit;
     private Map.Entry<LazyBlockState, List<DoubleRangeFunctionPredicatePair<Biome>>> hanging;
     private List<MinimumIntWithVarianceFunctionPredicatePair<Biome>> height;
@@ -29,6 +30,11 @@ public final class TreeBuilder extends ContentBuilder.Impl<Tree> implements Tree
     @Override
     public void big(final boolean big) {
         this.big = big;
+    }
+
+    @Override
+    public void palm(final boolean palm) {
+        this.palm = palm;
     }
 
     @Override
@@ -59,7 +65,9 @@ public final class TreeBuilder extends ContentBuilder.Impl<Tree> implements Tree
     @Override
     public Tree build() {
         final Tree tree;
-        if(this.big) {
+        if (this.palm) {
+            tree = new PalmTreeFeature(true, this.height, this.log, this.leaves, this.fruit);
+        } else if(this.big) {
             tree = new BigTreeFeature(true, this.height, this.log, this.leaves, this.fruit, this.hanging);
         } else {
             tree = new TreeFeature(true, this.height, this.log, this.leaves, this.fruit, this.hanging);

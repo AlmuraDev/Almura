@@ -15,6 +15,7 @@ import com.almuradev.content.type.tree.processor.HangingProcessor;
 import com.almuradev.content.type.tree.processor.HeightProcessor;
 import com.almuradev.content.type.tree.processor.LeavesProcessor;
 import com.almuradev.content.type.tree.processor.LogProcessor;
+import com.almuradev.content.type.tree.processor.PalmProcessor;
 import com.almuradev.core.CoreBinder;
 import com.almuradev.toolbox.config.processor.ConfigProcessor;
 import com.google.inject.TypeLiteral;
@@ -33,7 +34,8 @@ public final class TreeModule extends AbstractModule implements CoreBinder {
                 .add(HangingProcessor.class)
                 .add(HeightProcessor.class)
                 .add(LeavesProcessor.class)
-                .add(LogProcessor.class);
+                .add(LogProcessor.class)
+                .add(PalmProcessor.class);
     }
 
     private SingleTypeProcessorBinder<Tree, Tree.Builder, ConfigProcessor<? extends Tree.Builder>> processors() {

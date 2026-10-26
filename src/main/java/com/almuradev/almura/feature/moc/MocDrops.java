@@ -118,6 +118,18 @@ public class MocDrops implements Witness {
             event.getDrops().clear();
         }
 
+        // Bee: the only source of honeycomb (for honey pots, mead and honey nut bread)
+        if (entityName.equalsIgnoreCase("bee")) {
+            minimum = 1;
+            dropStack = GameRegistry.makeItemStack("almura:food/food/honeycomb", 0, minimum - quantityFound, null);
+        }
+
+        // Komodo dragon: lizard meat (for lizard kebabs)
+        if (entityName.equalsIgnoreCase("komododragon")) {
+            minimum = 2;
+            dropStack = GameRegistry.makeItemStack("almura:normal/ingredient/lizard", 0, minimum - quantityFound, null);
+        }
+
         // Finish up and create additional drops
         if (dropStack != null && ((minimum - quantityFound) > 0)) {
             EntityItem entityItem = new EntityItem(entity.world, entity.posX, entity.posY + (double) 0.0F, entity.posZ, dropStack);

@@ -14,6 +14,7 @@ public interface TreeConfig {
     String HEIGHT = "height";
     String LEAVES = "leaves";
     String LOG = "log";
+    String PALM = "palm";
 
     interface Block {
         String BLOCK = "block";
