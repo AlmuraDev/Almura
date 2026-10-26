@@ -22,5 +22,7 @@ public interface CropBlock extends ContentBlock {
         void seed(final Delegate<ItemType> seed);
 
         void sackHarvestResetAge(final int resetAge);
+
+        void aquatic(final boolean aquatic);
     }
 }

@@ -9,6 +9,7 @@ package com.almuradev.content.type.block.type.crop;
 
 import com.almuradev.content.type.block.BlockGenre;
 import com.almuradev.content.type.block.BlockModule;
+import com.almuradev.content.type.block.type.crop.processor.AquaticProcessor;
 import com.almuradev.content.type.block.type.crop.processor.CanRollbackProcessor;
 import com.almuradev.content.type.block.type.crop.processor.SackHarvestProcessor;
 import com.almuradev.content.type.block.type.crop.processor.SeedProcessor;
@@ -21,6 +22,7 @@ public final class CropBlockModule extends BlockModule.Module {
     protected void configure() {
         this.bind(CropBlock.Builder.class).to(CropBlockBuilder.class);
         this.processors()
+                .only(AquaticProcessor.class, BlockGenre.CROP)
                 .only(CanRollbackProcessor.class, BlockGenre.CROP)
                 .only(FertilizerProcessor.class, BlockGenre.CROP)
                 .only(GrowthProcessor.class, BlockGenre.CROP)

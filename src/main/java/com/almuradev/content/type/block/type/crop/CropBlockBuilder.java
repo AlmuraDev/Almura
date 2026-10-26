@@ -33,11 +33,14 @@ public final class CropBlockBuilder extends AbstractParsedBlockBuilder<CropBlock
      * is used during initialisation of a {@code CropBlockImpl}.
      */
     @Nullable static PropertyInteger property;
+    // The same hack for whether the crop being built is aquatic: its states need the water level property too
+    static boolean buildingAquatic;
     // Ages 0-15: the age is the block's meta (the only property a crop has), which has room for 16
     private static final int MAXIMUM_AGE = 16;
     int age;
     Delegate<ItemType> seed;
     int sackHarvestResetAge = -1;
+    boolean aquatic;
 
     public CropBlockBuilder() {
         super(BlockGenre.CROP);
@@ -64,6 +67,11 @@ public final class CropBlockBuilder extends AbstractParsedBlockBuilder<CropBlock
     }
 
     @Override
+    public void aquatic(final boolean aquatic) {
+        this.aquatic = aquatic;
+    }
+
+    @Override
     protected CropBlockStateDefinitionBuilder createDefinitionBuilder(final String id, final Matcher matcher) {
         final int age = Integer.parseInt(matcher.group(1));
         this.age = Math.max(this.age, age);
@@ -80,9 +88,11 @@ public final class CropBlockBuilder extends AbstractParsedBlockBuilder<CropBlock
                 .collect(Collectors.toList());
         try {
             property =  PropertyInteger.create("age", 0, this.age);
+            buildingAquatic = this.aquatic;
             return new CropBlockImpl(this, states);
         } finally {
             property = null;
+            buildingAquatic = false;
         }
     }
 }

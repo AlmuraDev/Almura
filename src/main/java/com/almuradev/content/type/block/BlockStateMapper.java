@@ -7,11 +7,15 @@
  */
 package com.almuradev.content.type.block;
 
+import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.inject.Singleton;
 
@@ -22,9 +26,15 @@ public final class BlockStateMapper extends StateMapperBase {
 
     @Override
     protected ModelResourceLocation getModelResourceLocation(final IBlockState state) {
+        Map<IProperty<?>, Comparable<?>> properties = state.getProperties();
+        if (state.getBlock() instanceof ModelHiddenPropertiesBlock) {
+            // Properties that never change the block's look stay out of its variant names
+            properties = new LinkedHashMap<>(properties);
+            properties.keySet().removeAll(((ModelHiddenPropertiesBlock) state.getBlock()).modelHiddenProperties());
+        }
         return new ModelResourceLocation(
                 ((SpecialBlockStateBlock) state.getBlock()).blockStateDefinitionLocation(),
-                this.getPropertyString(state.getProperties())
+                this.getPropertyString(properties)
         );
     }
 }

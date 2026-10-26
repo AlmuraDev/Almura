@@ -13,6 +13,7 @@ import com.almuradev.content.type.block.BlockConfig;
  * @see BlockConfig
  */
 public interface CropBlockConfig {
+    String AQUATIC = "aquatic";
     String SACK_HARVEST = "sack_harvest";
     String SEED = "seed";
 

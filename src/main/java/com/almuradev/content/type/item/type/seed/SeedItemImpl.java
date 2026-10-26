@@ -10,13 +10,16 @@ package com.almuradev.content.type.item.type.seed;
 import com.almuradev.almura.asm.mixin.accessors.item.ItemAccessor;
 import com.almuradev.almura.asm.mixin.accessors.item.ItemSeedsAccessor;
 import com.almuradev.content.component.delegate.Delegate;
+import com.almuradev.content.type.block.type.crop.CropBlockImpl;
 import com.almuradev.content.type.item.ItemTooltip;
 import com.almuradev.content.type.item.type.seed.processor.grass.Grass;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemSeeds;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
@@ -66,6 +69,22 @@ public final class SeedItemImpl extends ItemSeeds implements SeedItem {
         player.addExhaustion(0.01F);
         SoundType soundtype = SoundType.PLANT;
         world.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
+
+        // Aquatic crops plant on the seabed into the water above it (vanilla's seeds need farmland with air above)
+        final Block crop = (Block) this.cropDelegate.get();
+        if (crop instanceof CropBlockImpl && ((CropBlockImpl) crop).isAquatic()) {
+            final ItemStack stack = player.getHeldItem(hand);
+            final BlockPos plantAt = pos.up();
+            if (facing == EnumFacing.UP && player.canPlayerEdit(plantAt, facing, stack) && ((CropBlockImpl) crop).canPlantAquaticAt(world, plantAt)) {
+                world.setBlockState(plantAt, crop.getDefaultState());
+                if (player instanceof EntityPlayerMP) {
+                    CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP) player, plantAt, stack);
+                }
+                stack.shrink(1);
+                return EnumActionResult.SUCCESS;
+            }
+            return EnumActionResult.FAIL;
+        }
 
         return super.onItemUse(player, world, pos, hand, facing, hitX, hitY, hitZ);
     }

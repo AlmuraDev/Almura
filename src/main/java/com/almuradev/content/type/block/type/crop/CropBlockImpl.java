@@ -12,6 +12,7 @@ import com.almuradev.content.type.action.component.drop.Drop;
 import com.almuradev.content.type.action.component.drop.ItemDrop;
 import com.almuradev.content.type.action.type.blockdestroy.BlockDestroyAction;
 import com.almuradev.content.type.block.BlockUpdateFlag;
+import com.almuradev.content.type.block.ModelHiddenPropertiesBlock;
 import com.almuradev.content.type.block.type.crop.processor.fertilizer.Fertilizer;
 import com.almuradev.content.type.block.type.crop.processor.growth.Growth;
 import com.almuradev.content.type.block.type.crop.state.CropBlockStateDefinition;
@@ -20,7 +21,10 @@ import com.almuradev.toolbox.util.math.DoubleRange;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
 import net.minecraft.block.BlockFarmland;
+import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -44,12 +48,20 @@ import org.spongepowered.api.item.ItemType;
 import org.spongepowered.common.SpongeImplHooks;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 @SuppressWarnings("deprecation")
-public final class CropBlockImpl extends BlockCrops implements CropBlock {
+public final class CropBlockImpl extends BlockCrops implements CropBlock, ModelHiddenPropertiesBlock {
     private static final int GROWTH_CHECK_RADIUS = 4;
+    /*
+     * Aquatic crops are water material blocks (so water treats them as water: it doesn't flow into them, doesn't draw faces against them, and
+     * entities in them swim), and vanilla reads BlockLiquid.LEVEL from any water material block (flow, buckets, boats...), so they carry that
+     * property too, fixed at 1: a level a bucket won't pick up (it only takes level 0 sources).
+     */
+    private static final int AQUATIC_LEVEL = 1;
     private static final Random RANDOM = new Random();
     private static final String HEAT_LAMP_ID = "almura:horizontal/lighting/plant_light";
     @Nullable private static Block heatLamp;
@@ -59,11 +71,16 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
     private final Delegate<ItemType> seed;
     // Age a ripe crop is set back to when picked with a harvesting sack, -1 when it can't be
     private final int sackHarvestResetAge;
+    private final boolean aquatic;
     @SuppressWarnings("NullableProblems")
     private PropertyInteger age;
 
     CropBlockImpl(final CropBlockBuilder builder, final List<CropBlockStateDefinition> states) {
         builder.fill(this);
+        this.aquatic = builder.aquatic;
+        if (this.aquatic) {
+            this.setDefaultState(this.getDefaultState().withProperty(BlockLiquid.LEVEL, AQUATIC_LEVEL));
+        }
         this.maxAge = builder.age;
         this.seed = builder.seed;
         this.sackHarvestResetAge = builder.sackHarvestResetAge < 0 ? -1 : Math.min(builder.sackHarvestResetAge, Math.max(0, this.maxAge - 1));
@@ -108,7 +125,88 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
         if (this.age == null) {
             this.age = CropBlockBuilder.property;
         }
-        return new BlockStateContainer(this, this.age);
+        // Called from the super constructor, before this crop's fields are set: the builder says whether it's aquatic
+        return CropBlockBuilder.buildingAquatic ? new BlockStateContainer(this, this.age, BlockLiquid.LEVEL) : new BlockStateContainer(this, this.age);
+    }
+
+    @Override
+    public Collection<IProperty<?>> modelHiddenProperties() {
+        // The water level of an aquatic crop never changes its look, so its blockstate file only lists ages
+        return this.aquatic ? Collections.singletonList(BlockLiquid.LEVEL) : Collections.emptyList();
+    }
+
+    /**
+     * @return True if this crop grows underwater ({@code aquatic})
+     */
+    public boolean isAquatic() {
+        return this.aquatic;
+    }
+
+    /**
+     * @return True if an aquatic crop can be planted at the position: still water (a source) on the seabed, with water above it too (so the
+     *     plant is always submerged; a water material block at the surface would leave a gap in the water's top face)
+     */
+    public boolean canPlantAquaticAt(final World world, final BlockPos pos) {
+        final IBlockState at = world.getBlockState(pos);
+        return at.getBlock() instanceof BlockLiquid && at.getMaterial() == Material.WATER && at.getValue(BlockLiquid.LEVEL) == 0
+                && isSeabed(world.getBlockState(pos.down())) && world.getBlockState(pos.up()).getMaterial() == Material.WATER;
+    }
+
+    private static boolean isSeabed(final IBlockState state) {
+        final Material material = state.getMaterial();
+        // Sand and gravel (sand), dirt (ground), clay
+        return material == Material.SAND || material == Material.GROUND || material == Material.CLAY;
+    }
+
+    @Deprecated
+    @Override
+    public Material getMaterial(final IBlockState state) {
+        return this.aquatic ? Material.WATER : super.getMaterial(state);
+    }
+
+    @Override
+    public boolean isReplaceable(final IBlockAccess world, final BlockPos pos) {
+        // Water material is replaceable, which would let any block be placed straight over an aquatic crop
+        return !this.aquatic && super.isReplaceable(world, pos);
+    }
+
+    @Override
+    protected boolean canSustainBush(final IBlockState state) {
+        return this.aquatic ? isSeabed(state) : super.canSustainBush(state);
+    }
+
+    @Override
+    public boolean canBlockStay(final World world, final BlockPos pos, final IBlockState state) {
+        if (this.aquatic) {
+            return isSeabed(world.getBlockState(pos.down())) && world.getBlockState(pos.up()).getMaterial() == Material.WATER;
+        }
+        return super.canBlockStay(world, pos, state);
+    }
+
+    @Override
+    protected void checkAndDropBlock(final World world, final BlockPos pos, final IBlockState state) {
+        if (this.aquatic && !this.canBlockStay(world, pos, state)) {
+            this.dropBlockAsItem(world, pos, state, 0);
+            world.setBlockState(pos, Blocks.WATER.getDefaultState(), BlockUpdateFlag.UPDATE_NEIGHBORS | BlockUpdateFlag.UPDATE_CLIENTS);
+            return;
+        }
+        super.checkAndDropBlock(world, pos, state);
+    }
+
+    @Override
+    public boolean removedByPlayer(final IBlockState state, final World world, final BlockPos pos, final EntityPlayer player, final boolean willHarvest) {
+        if (this.aquatic) {
+            // Back to the water it grew in, not an air pocket
+            return world.setBlockState(pos, Blocks.WATER.getDefaultState(), world.isRemote ? 11 : 3);
+        }
+        return super.removedByPlayer(state, world, pos, player, willHarvest);
+    }
+
+    /**
+     * @return What's left when this crop is gone: water for an aquatic crop, air otherwise
+     */
+    private IBlockState emptyState() {
+        return this.aquatic ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState();
     }
 
     @Override
@@ -473,7 +571,7 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock {
             } else {
                 // They let the crop continue to roll back? Tough, they just lost it
                 // TODO Dockter, do you want to show a generic "dead crop block"
-                world.setBlockState(pos, Blocks.AIR.getDefaultState(), BlockUpdateFlag.UPDATE_CLIENTS);
+                world.setBlockState(pos, this.emptyState(), BlockUpdateFlag.UPDATE_CLIENTS);
             }
         }
     }
