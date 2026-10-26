@@ -70,13 +70,14 @@ public final class SeedItemImpl extends ItemSeeds implements SeedItem {
         SoundType soundtype = SoundType.PLANT;
         world.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
 
-        // Aquatic crops plant on the seabed into the water above it (vanilla's seeds need farmland with air above)
+        // Aquatic crops plant on the bed into the water above it (vanilla's seeds need farmland with air above), and only there
         final Block crop = (Block) this.cropDelegate.get();
         if (crop instanceof CropBlockImpl && ((CropBlockImpl) crop).isAquatic()) {
             final ItemStack stack = player.getHeldItem(hand);
             final BlockPos plantAt = pos.up();
-            if (facing == EnumFacing.UP && player.canPlayerEdit(plantAt, facing, stack) && ((CropBlockImpl) crop).canPlantAquaticAt(world, plantAt)) {
-                world.setBlockState(plantAt, crop.getDefaultState());
+            @Nullable final IBlockState planted = facing == EnumFacing.UP ? ((CropBlockImpl) crop).aquaticPlantingState(world, plantAt) : null;
+            if (planted != null && player.canPlayerEdit(plantAt, facing, stack)) {
+                world.setBlockState(plantAt, planted);
                 if (player instanceof EntityPlayerMP) {
                     CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP) player, plantAt, stack);
                 }

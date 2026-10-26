@@ -23,6 +23,6 @@ public interface CropBlock extends ContentBlock {
 
         void sackHarvestResetAge(final int resetAge);
 
-        void aquatic(final boolean aquatic);
+        void aquatic(final AquaticMode aquatic);
     }
 }

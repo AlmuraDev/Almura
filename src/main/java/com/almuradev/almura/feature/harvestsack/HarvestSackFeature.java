@@ -157,8 +157,10 @@ public final class HarvestSackFeature extends Witness.Impl implements Witness.Li
             return; // The break was undone (denied by a plugin): nothing dropped
         }
 
-        if (now.getBlock().isAir(now, world, pending.pos)) {
-            world.setBlockState(pending.pos, pending.crop.sackHarvestedState(), 3);
+        // A crop in water leaves water when it's broken, not air: put it back over that too
+        if (now.getBlock().isAir(now, world, pending.pos)
+                || (pending.crop.isWaterState(pending.ripe) && now.getMaterial() == net.minecraft.block.material.Material.WATER)) {
+            world.setBlockState(pending.pos, pending.crop.sackHarvestedState(pending.ripe), 3);
         }
 
         final EntityPlayer player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(pending.player);

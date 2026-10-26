@@ -21,6 +21,7 @@ public final class CropBlockModule extends BlockModule.Module {
     @Override
     protected void configure() {
         this.bind(CropBlock.Builder.class).to(CropBlockBuilder.class);
+        this.facet().add(AquaticCropBuckets.class);
         this.processors()
                 .only(AquaticProcessor.class, BlockGenre.CROP)
                 .only(CanRollbackProcessor.class, BlockGenre.CROP)

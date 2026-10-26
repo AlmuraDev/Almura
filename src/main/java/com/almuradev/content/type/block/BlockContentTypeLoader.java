@@ -9,11 +9,19 @@ package com.almuradev.content.type.block;
 
 import com.almuradev.content.loader.MultiTypeContentLoader;
 import com.almuradev.content.registry.ContentBuilder;
+import com.almuradev.content.type.block.type.crop.AquaticMode;
+import com.almuradev.content.type.block.type.crop.CropBlockImpl;
 import com.almuradev.core.event.Witness;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.biome.BiomeColorHelper;
+import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
@@ -30,6 +38,8 @@ import javax.inject.Singleton;
 
 @Singleton
 public final class BlockContentTypeLoader extends MultiTypeContentLoader<BlockGenre, ContentBlock, ContentBlock.Builder<ContentBlock, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>, BlockContentProcessor<ContentBlock, ContentBlock.Builder<ContentBlock, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>, BlockStateDefinition, BlockStateDefinition.Builder<BlockStateDefinition>>> implements Witness, MultiTypeContentLoader.Translated<BlockGenre> {
+    // Vanilla's water colour where there's no world to ask (an item in the inventory)
+    private static final int DEFAULT_WATER_COLOR = 0x3F76E4;
     private final GameRegistry gr;
 
     @Inject
@@ -85,6 +95,27 @@ public final class BlockContentTypeLoader extends MultiTypeContentLoader<BlockGe
                 ModelLoader.setCustomModelResourceLocation((Item) item, 0, new ModelResourceLocation(path, "inventory"));
             }
         });
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public void colors(final ColorHandlerEvent.Block event) {
+        // Surface aquatic crops draw their own water surface (tint index 0), in the grey water texture vanilla tints by biome: tint it the same
+        // (A plain loop: a lambda here would leave a method naming these client only types in the class the server loads too)
+        final IBlockColor water = BlockContentTypeLoader::waterColor;
+        for (final Entry<BlockGenre, ContentBlock, ?> entry : this.entries.values()) {
+            if (entry.value instanceof CropBlockImpl && ((CropBlockImpl) entry.value).aquaticMode() == AquaticMode.SURFACE) {
+                event.getBlockColors().registerBlockColorHandler(water, (Block) entry.value);
+            }
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    private static int waterColor(final IBlockState state, @Nullable final IBlockAccess world, @Nullable final BlockPos pos, final int tintIndex) {
+        if (tintIndex != 0) {
+            return -1;
+        }
+        return world != null && pos != null ? BiomeColorHelper.getWaterColorAtPos(world, pos) : DEFAULT_WATER_COLOR;
     }
 
     @Override
