@@ -9,6 +9,7 @@ package com.almuradev.almura.feature.complex;
 
 import static java.util.Objects.requireNonNull;
 
+import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.complex.block.ComplexBlock;
 import com.almuradev.almura.feature.complex.block.ComplexBlocks;
 import com.almuradev.almura.feature.complex.item.almanac.item.FarmersAlmanacItem;
@@ -21,10 +22,12 @@ import com.almuradev.core.event.Witness;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
@@ -35,7 +38,10 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistryModifiable;
+
+import javax.annotation.Nullable;
 
 public final class ComplexContentFeature implements Witness {
 
@@ -75,6 +81,34 @@ public final class ComplexContentFeature implements Witness {
     public void registerRecipes(RegistryEvent.Register<IRecipe> event) {
         // Register Complex Block & Item Recipes Here
        this.fixStoneBrickMadness(event);
+       this.replaceVanillaPumpkinPie(event);
+    }
+
+    /**
+     * Almura's pumpkin pie replaces vanilla's: vanilla's recipe is swapped for Almura's, under vanilla's name. (Re-registered rather than
+     * just removed: vanilla's recipe advancement unlocks it by that name, and unlocking a missing recipe crashes.) Left alone if any of
+     * Almura's items is missing, so vanilla's pie stays craftable rather than nothing.
+     */
+    private void replaceVanillaPumpkinPie(final RegistryEvent.Register<IRecipe> event) {
+        final Item pie = almuraItem("food/food/pie_pumpkin");
+        final Item dough = almuraItem("normal/ingredient/dough");
+        final Item milk = almuraItem("normal/ingredient/glass_milk_cruet");
+        final Item cinnamon = almuraItem("normal/ingredient/cinnamon");
+        final Item nutmeg = almuraItem("normal/ingredient/nutmeg");
+        if (pie == null || dough == null || milk == null || cinnamon == null || nutmeg == null) {
+            return;
+        }
+
+        final ResourceLocation vanilla = new ResourceLocation("minecraft:pumpkin_pie");
+        ((IForgeRegistryModifiable<IRecipe>) event.getRegistry()).remove(vanilla);
+        GameRegistry.addShapelessRecipe(vanilla, null, new ItemStack(pie),
+                Ingredient.fromItems(dough), Ingredient.fromItems(Item.getItemFromBlock(Blocks.PUMPKIN)), Ingredient.fromItems(Items.SUGAR),
+                Ingredient.fromItems(Items.EGG), Ingredient.fromItems(milk), Ingredient.fromItems(cinnamon), Ingredient.fromItems(nutmeg));
+    }
+
+    @Nullable
+    private static Item almuraItem(final String path) {
+        return ForgeRegistries.ITEMS.getValue(new ResourceLocation(Almura.ID, path));
     }
 
     // Supporting Methods Below
