@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.menu;
 
-import com.almuradev.almura.feature.menu.main.SinglePlayerLoadingGui;
+import com.almuradev.almura.feature.menu.main.WorldLoadingGui;
 import com.almuradev.core.event.Witness;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiDownloadTerrain;
@@ -132,10 +132,10 @@ public final class MenuTransitions implements Witness {
     }
 
     /**
-     * @return Whether the screen is shown while a world's terrain loads: vanilla's, or the one Almura shows in its place in single player
+     * @return Whether the screen is shown while a world's terrain loads: vanilla's, or the one Almura shows in its place
      */
     private static boolean isTerrainScreen(@Nullable final GuiScreen screen) {
-        return screen instanceof GuiDownloadTerrain || screen instanceof SinglePlayerLoadingGui;
+        return screen instanceof GuiDownloadTerrain || screen instanceof WorldLoadingGui;
     }
 
     /**

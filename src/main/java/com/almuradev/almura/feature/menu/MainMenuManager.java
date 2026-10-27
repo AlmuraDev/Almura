@@ -14,7 +14,7 @@ import com.almuradev.almura.core.client.config.category.GeneralCategory;
 import com.almuradev.almura.feature.menu.game.SimpleIngameMenu;
 import com.almuradev.almura.feature.menu.main.DisconnectedGui;
 import com.almuradev.almura.feature.menu.main.PanoramicMainMenu;
-import com.almuradev.almura.feature.menu.main.SinglePlayerLoadingGui;
+import com.almuradev.almura.feature.menu.main.WorldLoadingGui;
 import com.almuradev.almura.feature.menu.singleplayer.SingleplayerScreen;
 import com.almuradev.core.event.Witness;
 import com.almuradev.toolbox.config.map.MappedConfiguration;
@@ -26,6 +26,7 @@ import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiScreenWorking;
 import net.minecraft.client.gui.GuiWorldSelection;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraftforge.client.event.GuiOpenEvent;
@@ -66,10 +67,14 @@ public class MainMenuManager implements Witness {
             } else if (screen.getClass().equals(GuiIngameMenu.class)) {
                 event.setCanceled(true);
                 new SimpleIngameMenu().display();
-            } else if (screen.getClass().equals(GuiDownloadTerrain.class) && Minecraft.getMinecraft().isIntegratedServerRunning()) {
-                // Joining a single player world
+            } else if (screen.getClass().equals(GuiDownloadTerrain.class)
+                    || screen.getClass().equals(GuiScreenWorking.class) && Minecraft.getMinecraft().isIntegratedServerRunning()) {
+                // Joining a world or changing dimension (single player or a server), and before that in single player, logging in to its own
+                // server (vanilla's bare " 0%" screen). Keep the loading screen already showing rather than opening the same one again.
                 event.setCanceled(true);
-                new SinglePlayerLoadingGui().display();
+                if (!(currentScreen instanceof WorldLoadingGui)) {
+                    new WorldLoadingGui().display();
+                }
             } else if (screen.getClass().equals(GuiGameOver.class)) {
                 event.setCanceled(true);
                // Cancel this, packet sent to client opens the DeathGUI

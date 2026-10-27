@@ -22,11 +22,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 
 /**
- * Replaces vanilla's "Downloading terrain" screen while joining a single player world, styled like {@link ConnectingGui}. Vanilla closes it
- * (by opening no screen) once the player's position arrives, so it needs no logic of its own; it just can't be escaped, like vanilla's.
+ * Replaces vanilla's "Downloading terrain" screen while joining a world or changing dimension (single player or a server), and the bare
+ * progress screen single player shows while logging in to its own server; styled like {@link ConnectingGui}. Vanilla closes it (by opening no
+ * screen) once the player's position arrives, so it needs no logic of its own; it just can't be escaped, like vanilla's.
  */
 @SideOnly(Side.CLIENT)
-public final class SinglePlayerLoadingGui extends BasicScreen {
+public final class WorldLoadingGui extends BasicScreen {
 
     @Override
     public void construct() {
@@ -51,7 +52,7 @@ public final class SinglePlayerLoadingGui extends BasicScreen {
         aboveLogoSeparator.setSize(form.getWidth() - 5, 1);
         aboveLogoSeparator.setPosition(0, 107, Anchor.TOP | Anchor.CENTER);
 
-        final UILabel messageLabel = new UILabel(this, "Downloading terrain...");
+        final UILabel messageLabel = new UILabel(this, "Loading world...");
         messageLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         // Vertically centred between the separator (y 107-108) and the bottom of the form (inner height 135 - 3 - 3 = 129): text ~10 tall
         messageLabel.setPosition(0, 113, Anchor.CENTER | Anchor.TOP);
