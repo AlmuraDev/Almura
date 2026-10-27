@@ -11,6 +11,7 @@ import com.almuradev.content.loader.MultiTypeContentLoader;
 import com.almuradev.content.registry.ContentBuilder;
 import com.almuradev.content.type.block.type.crop.AquaticMode;
 import com.almuradev.content.type.block.type.crop.CropBlockImpl;
+import com.almuradev.content.type.block.type.stair.StairBlockImpl;
 import com.almuradev.core.event.Witness;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -60,6 +61,17 @@ public final class BlockContentTypeLoader extends MultiTypeContentLoader<BlockGe
         if (this.build()) {
             this.logger.warn("Content blocks were not registered before content items");
         }
+
+        // Stairs made from other content blocks can only find them once every block is registered (items register after blocks)
+        this.entries.values().forEach(entry -> {
+            if (entry.value instanceof StairBlockImpl) {
+                try {
+                    ((StairBlockImpl) entry.value).resolveBase();
+                } catch (final RuntimeException e) {
+                    this.logger.warn("Stair '{}' couldn't find the block it's made from; it acts like oak planks", entry.value.getId(), e);
+                }
+            }
+        });
 
         final IForgeRegistry<Item> registry = event.getRegistry();
         this.entries.values().forEach(entry -> {

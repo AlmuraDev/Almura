@@ -10,6 +10,7 @@
         "block.BlockAccessor",
         "block.BlockCropAccessor",
         "block.BlockLeavesAccessor",
+        "block.BlockStairsAccessor",
         "item.ItemAccessor",
         "item.ItemBlockAccessor",
         "item.ItemFoodAccessor",
