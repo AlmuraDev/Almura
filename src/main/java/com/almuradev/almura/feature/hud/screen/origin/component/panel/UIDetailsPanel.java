@@ -68,7 +68,7 @@ public class UIDetailsPanel extends AbstractPanel {
         this.playerCountImage.setPosition(BasicScreen.getPaddedX(this.clockImage, 4, Anchor.RIGHT), ICON_Y, Anchor.TOP | Anchor.RIGHT);
 
         // Coordinates
-        this.coordsLabel = new UIExpandingLabel(gui, "");
+        this.coordsLabel = new UIExpandingLabel("");
         this.coordsLabel.setPosition(TEXT_X, TEXT_Y);
         this.coordsLabel.setFontOptions(FontColors.WHITE_FO);
 

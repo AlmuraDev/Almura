@@ -268,7 +268,7 @@ public class MultiplayerScreen extends PanoramicScreen {
       this.statusIndicatorContainer.setPosition(2, -2, Anchor.TOP | Anchor.RIGHT);
 
       // Add components
-      this.itemLabel = new UIExpandingLabel(gui, TextFormatting.WHITE + this.item.name);
+      this.itemLabel = new UIExpandingLabel(TextFormatting.WHITE + this.item.name);
       this.itemLabel.setPosition(4, 0, Anchor.LEFT | Anchor.MIDDLE);
 
       this.serverStatusLabel = new UILabel(TextFormatting.WHITE + "??/??");

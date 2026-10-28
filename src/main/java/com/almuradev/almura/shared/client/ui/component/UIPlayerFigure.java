@@ -82,17 +82,17 @@ public final class UIPlayerFigure extends BasicContainer<UIPlayerFigure> {
      * @param slim Whether the skin has slim arms
      */
     public UIPlayerFigure(final MalisisGui gui, final ResourceLocation skin, final boolean slim) {
-        super(gui);
+        super();
         this.skin = skin;
         this.model = new ModelPlayer(0.0F, slim);
         this.setBackgroundAlpha(0);
         this.setPadding(0, 0);
         // The raised sword and its burst may reach past the figure's area
         this.setClipContent(false);
+        this.setForeground(this::drawFigure);
     }
 
-    @Override
-    public void drawForeground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
+    private void drawFigure(final GuiRenderer renderer) {
         final ResourceLocation texture = loadSkin(this.skin).orElse(null);
         if (texture == null) {
             return;
@@ -397,7 +397,7 @@ public final class UIPlayerFigure extends BasicContainer<UIPlayerFigure> {
      */
     @Nullable
     @Override
-    public UIComponent<?> getComponentAt(final int x, final int y) {
+    public UIComponent getComponentAt(final int x, final int y) {
         return null;
     }
 

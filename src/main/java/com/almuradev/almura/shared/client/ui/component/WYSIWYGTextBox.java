@@ -8,16 +8,15 @@
 package com.almuradev.almura.shared.client.ui.component;
 
 import com.almuradev.almura.shared.util.TextUtil;
-import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.render.GuiRenderer;
+import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.UIConstants;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicContainer;
 import net.malisis.core.client.gui.component.decoration.UILabel;
-import net.malisis.core.client.gui.component.interaction.BasicTextBox;
-import net.malisis.core.client.gui.event.component.SpaceChangeEvent;
+import net.malisis.core.client.gui.component.interaction.BasicTextArea;
+import net.malisis.core.client.gui.render.GuiRenderer;
 import net.malisis.core.util.FontColors;
 import net.minecraft.util.text.TextFormatting;
 import org.spongepowered.api.text.Text;
@@ -51,14 +50,14 @@ public class WYSIWYGTextBox extends BasicContainer {
     private static final int colorContainerPadding = 1;
     private final BasicContainer<?> colorStyleContainer, rawFormatContainer;
     private final UILabel collapsedLabel;
-    private final BasicTextBox tbContent;
+    private final BasicTextArea tbContent;
+    /** The width is set by the toolbar. */
+    private final int fixedWidth;
     private ToolbarState state = ToolbarState.EXPANDED;
     private boolean showRaw = false;
 
     @SuppressWarnings("unchecked")
     public WYSIWYGTextBox(final BasicScreen screen, final int height, final String text) {
-        super(screen);
-
         this.collapsedLabel = new UILabel("...");
         this.collapsedLabel.setPosition(0, 1, Anchor.BOTTOM | Anchor.CENTER);
         this.collapsedLabel.setFontOptions(FontColors.GRAY_FO);
@@ -92,53 +91,35 @@ public class WYSIWYGTextBox extends BasicContainer {
         this.colorStyleContainer.setWidth(this.colorStyleContainer.getWidth() + this.rawFormatContainer.getWidth());
 
         // Content textbox
-        this.tbContent = new BasicTextBox(text, true);
+        this.tbContent = new BasicTextArea(text);
         this.tbContent.setFontOptions(UIConstants.DEFAULT_TEXTBOX_FO);
-        this.tbContent.getScrollbar().setAutoHide(true);
+        this.tbContent.getScrollbar().autoHide = true;
 
-        this.width = this.colorStyleContainer.getWidth() + this.getLeftPadding() + this.getRightPadding();
-        this.setHeight(height);
+        this.fixedWidth = this.colorStyleContainer.getWidth() + this.getLeftPadding() + this.getRightPadding();
 
         this.add(this.colorStyleContainer, this.tbContent);
 
-        this.updateControls();
-    }
-
-    @Override
-    @Deprecated
-    public UIComponent setSize(final int width, final int height) {
-        throw new UnsupportedOperationException("This component does not support setting the 'width' property!");
-    }
-
-    @Override
-    @Deprecated
-    public BasicContainer setWidth(final int width) {
-        throw new UnsupportedOperationException("This component does not support setting this property!");
+        this.setHeight(height);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public WYSIWYGTextBox setHeight(final int height) {
-        this.height = height;
-        fireEvent(new SpaceChangeEvent.SizeChangeEvent<>(this, this.width, this.height));
+        super.setSize(this.fixedWidth, height);
+        this.updateControls();
         return this;
     }
 
-    @Subscribe
-    public void onResize(final SpaceChangeEvent.SizeChangeEvent event) {
-        if (this.equals(event.getComponent())) {
-            this.updateControls();
-        }
-    }
-
     @Override
-    public boolean onClick(final int x, final int y) {
+    public boolean onClick() {
+        final int x = MalisisGui.MOUSE_POSITION.x();
+        final int y = MalisisGui.MOUSE_POSITION.y();
 
-        final UIComponent<?> componentAt = this.getComponentAt(x, y);
-        if (componentAt.getData() instanceof TextColor) {
+        final UIComponent componentAt = this.getComponentAt(x, y);
+        if (componentAt != null && componentAt.getData() instanceof TextColor) {
             this.color((TextColor) componentAt.getData());
             return true;
-        } else if (componentAt.getData() instanceof TextFormatting) {
+        } else if (componentAt != null && componentAt.getData() instanceof TextFormatting) {
             this.color((TextFormatting) componentAt.getData());
             return true;
         }
@@ -163,12 +144,12 @@ public class WYSIWYGTextBox extends BasicContainer {
             return true;
         }
 
-        return super.onClick(x, y);
+        return super.onClick();
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void draw(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
+    public void render(final GuiRenderer renderer) {
         // Reset alpha values
         this.colorStyleContainer.getComponents()
                 .stream()
@@ -181,7 +162,7 @@ public class WYSIWYGTextBox extends BasicContainer {
                         || (c.getName() != null && c.getName().startsWith("container.label")))
                 .forEach(c -> ((BasicContainer) c).setColor(0));
 
-        final UIComponent<?> componentAt = this.getComponentAt(mouseX, mouseY);
+        final UIComponent componentAt = this.getComponentAt(MalisisGui.MOUSE_POSITION.x(), MalisisGui.MOUSE_POSITION.y());
         if (componentAt != null) {
             if (componentAt.getData() instanceof TextColor) {
                 ((BasicContainer) componentAt).setBackgroundAlpha(200);
@@ -191,10 +172,10 @@ public class WYSIWYGTextBox extends BasicContainer {
                 ((BasicContainer) componentAt).setBackgroundAlpha(200);
             }
         }
-        super.draw(renderer, mouseX, mouseY, partialTick);
+        super.render(renderer);
     }
 
-    public BasicTextBox getTextBox() {
+    public BasicTextArea getTextBox() {
         return this.tbContent;
     }
 
@@ -249,8 +230,9 @@ public class WYSIWYGTextBox extends BasicContainer {
     }
 
     private void format() {
-        final float scrollPos = this.getTextBox().getScrollbar().getOffset();
-        final BasicTextBox.CursorPosition cursorPos = this.getTextBox().getCursorPosition();
+        final float scrollPos = this.getTextBox().getScrollbar().offset();
+        // Raw and friendly text swap '&' and the section sign one for one: the cursor index stays valid
+        final int cursorIndex = this.getTextBox().getCursorPosition().index();
 
         final String currentContent = this.getTextBox().getText();
         if (this.showRaw) {
@@ -261,7 +243,7 @@ public class WYSIWYGTextBox extends BasicContainer {
             this.getTextBox().setText(TextUtil.asFriendlyText(currentContent));
         }
         this.getTextBox().getScrollbar().scrollTo(scrollPos);
-        this.getTextBox().setCursorPosition(cursorPos.getXOffset(), cursorPos.getYOffset());
+        this.getTextBox().getCursorPosition().jumpTo(cursorIndex);
         this.getTextBox().focus();
     }
 
@@ -275,8 +257,8 @@ public class WYSIWYGTextBox extends BasicContainer {
     }
 
     private void color(final String value) {
-        final float scrollPosition = this.tbContent.getScrollbar().getOffset();
-        final BasicTextBox.CursorPosition cursorPosition = this.tbContent.getCursorPosition();
+        final float scrollPosition = this.tbContent.getScrollbar().offset();
+        final int cursorIndex = this.tbContent.getCursorPosition().index();
 
         if (this.tbContent.getSelectedText().isEmpty()) {
             // Add the value to the text
@@ -290,7 +272,7 @@ public class WYSIWYGTextBox extends BasicContainer {
 
         // Go back to the original position
         this.tbContent.getScrollbar().scrollTo(scrollPosition);
-        this.tbContent.setCursorPosition(cursorPosition.getXOffset(), cursorPosition.getYOffset());
+        this.tbContent.getCursorPosition().jumpTo(cursorIndex);
 
         // Focus the textbox
         this.tbContent.focus();

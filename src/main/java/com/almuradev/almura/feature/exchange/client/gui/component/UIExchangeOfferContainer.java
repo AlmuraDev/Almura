@@ -403,7 +403,7 @@ public class UIExchangeOfferContainer extends BasicDualListContainer<VanillaStac
 
             this.image = new UIImage(fakeStack);
             this.image.setPosition(0, 0, Anchor.LEFT | Anchor.MIDDLE);
-            this.image.setTooltip(new UISaneTooltip(gui, String.join("\n", fakeStack.getTooltip(player, useAdvancedTooltips
+            this.image.setTooltip(new UISaneTooltip(String.join("\n", fakeStack.getTooltip(player, useAdvancedTooltips
                     ? ITooltipFlag.TooltipFlags.ADVANCED
                     : ITooltipFlag.TooltipFlags.NORMAL))));
 
@@ -428,11 +428,11 @@ public class UIExchangeOfferContainer extends BasicDualListContainer<VanillaStac
             this.itemLabelText = TextFormatting.WHITE + displayName;
             this.itemQuantityText = TextFormatting.GRAY + " x " + FeatureConstants.withSuffix(this.item.getQuantity());
 
-            this.itemLabel = new UIExpandingLabel(gui, this.itemLabelText + this.itemQuantityText);
+            this.itemLabel = new UIExpandingLabel(this.itemLabelText + this.itemQuantityText);
             this.itemLabel.setPosition(BasicScreen.getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
 
             if (this.item.getQuantity() >= (int) FeatureConstants.ONE_MILLION) {
-                this.itemLabel.setTooltip(new UISaneTooltip(gui, FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(item.getQuantity())));
+                this.itemLabel.setTooltip(new UISaneTooltip(FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(item.getQuantity())));
             }
 
             this.lastKnownQuantity = this.item.getQuantity();

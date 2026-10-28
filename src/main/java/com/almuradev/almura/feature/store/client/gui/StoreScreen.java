@@ -671,8 +671,8 @@ public class StoreScreen extends BasicScreen {
      * @return The tab container for that location if present, empty otherwise
      */
     private Optional<BasicContainer> getTabContainer(final int x, final int y) {
-        final UIComponent<?> componentAt = this.getComponentAt(x, y);
-        final UIComponent<?> componentAtParent = componentAt != null ? componentAt.getParent() : null;
+        final UIComponent componentAt = this.getComponentAt(x, y);
+        final UIComponent componentAtParent = componentAt != null ? componentAt.getParent() : null;
         if (this.buyTabContainer.equals(componentAt) || this.sellTabContainer.equals(componentAt)) {
             return Optional.of((BasicContainer) componentAt);
         } else if (this.buyTabContainer.equals(componentAtParent) || this.sellTabContainer.equals(componentAtParent)) {
@@ -862,23 +862,23 @@ public class StoreScreen extends BasicScreen {
 
             this.image = new UIImage(fakeStack);
             this.image.setPosition(0, 0, Anchor.LEFT | Anchor.MIDDLE);
-            this.image.setTooltip(new UISaneTooltip(gui, String.join("\n", fakeStack.getTooltip(player, useAdvancedTooltips
+            this.image.setTooltip(new UISaneTooltip(String.join("\n", fakeStack.getTooltip(player, useAdvancedTooltips
                     ? ITooltipFlag.TooltipFlags.ADVANCED
                     : ITooltipFlag.TooltipFlags.NORMAL))));
 
-            this.itemLabel = new UIExpandingLabel(gui, "");
+            this.itemLabel = new UIExpandingLabel("");
             this.itemLabel.setPosition(getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
 
             // Exact value
             if (this.item.getQuantity() >= (int) FeatureConstants.ONE_MILLION) {
-                this.itemLabel.setTooltip(new UISaneTooltip(gui, FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getQuantity())));
+                this.itemLabel.setTooltip(new UISaneTooltip(FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getQuantity())));
             }
 
             // Store admins in edit mode get move arrows right of the price
             final StoreScreen screen = (StoreScreen) gui;
             this.hasMoveArrows = screen.isAdmin && screen.editMode;
 
-            this.priceLabel = new UIExpandingLabel(gui, "");
+            this.priceLabel = new UIExpandingLabel("");
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-(this.hasMoveArrows ? ARROW_BUTTON_WIDTH + ARROW_GAP : 6), 0, Anchor.RIGHT | Anchor.MIDDLE);
 
@@ -1005,25 +1005,25 @@ public class StoreScreen extends BasicScreen {
 
             this.image = new UIImage(fakeStack);
             this.image.setPosition(0, 0, Anchor.LEFT | Anchor.MIDDLE);
-            this.image.setTooltip(new UISaneTooltip(gui, String.join("\n", fakeStack.getTooltip(player, useAdvancedTooltips
+            this.image.setTooltip(new UISaneTooltip(String.join("\n", fakeStack.getTooltip(player, useAdvancedTooltips
                     ? ITooltipFlag.TooltipFlags.ADVANCED
                     : ITooltipFlag.TooltipFlags.NORMAL))));
 
-            this.itemLabel = new UIExpandingLabel(gui, "");
+            this.itemLabel = new UIExpandingLabel("");
             this.itemLabel.setPosition(getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
 
             // Prices
-            this.buyPriceLabel = new UIExpandingLabel(gui, "");
+            this.buyPriceLabel = new UIExpandingLabel("");
             this.buyPriceLabel.setFontOptions(this.buyPriceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.buyPriceLabel.setPosition(-(this.listedIndicatorContainer.getWidth() + 6), 2, Anchor.TOP | Anchor.RIGHT);
 
-            this.sellPriceLabel = new UIExpandingLabel(gui, "");
+            this.sellPriceLabel = new UIExpandingLabel("");
             this.sellPriceLabel.setFontOptions(this.sellPriceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.sellPriceLabel.setPosition(-(this.listedIndicatorContainer.getWidth() + 6), 0, Anchor.BOTTOM | Anchor.RIGHT);
 
             // Exact value
             if (this.item.getCount() >= (int) FeatureConstants.ONE_MILLION) {
-                this.itemLabel.setTooltip(new UISaneTooltip(gui, FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getCount())));
+                this.itemLabel.setTooltip(new UISaneTooltip(FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getCount())));
             }
 
             this.add(this.image, this.itemLabel, this.buyPriceLabel, this.sellPriceLabel, this.listedIndicatorContainer);

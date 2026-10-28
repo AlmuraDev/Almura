@@ -7,47 +7,49 @@
  */
 package com.almuradev.almura.shared.client.ui.component;
 
-import net.malisis.core.client.gui.render.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.decoration.UITooltip;
+import net.malisis.core.client.gui.element.position.Position;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+/**
+ * A tooltip kept inside the screen.
+ */
 public class UISaneTooltip extends UITooltip {
 
-    public UISaneTooltip(MalisisGui gui) {
-        super(gui);
+    public UISaneTooltip() {
+        super();
+        this.setPosition(Position.of(this::screenClampedX, this::screenClampedY));
     }
 
-    public UISaneTooltip(MalisisGui gui, String text) {
-        super(gui, text);
+    public UISaneTooltip(String text) {
+        this();
+        this.setText(text);
     }
 
     @SuppressWarnings("deprecation")
-    public UISaneTooltip(MalisisGui gui, Text text) {
-        this(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(text));
+    public UISaneTooltip(Text text) {
+        this(TextSerializers.LEGACY_FORMATTING_CODE.serialize(text));
     }
 
-    @Override
-    public void draw(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-
-        final int realX = mouseX + this.getOffsetX();
-        final int realY = mouseY + this.getOffsetY();
-
-        // Handle drawing off the right targetSide of the screen
-        if (realX + this.getWidth() > getGui().width) {
-            mouseX = getGui().width - this.getWidth();
-        } else if (realX < 0) { // Handle drawing off the left targetSide of the screen
-            mouseX = 0;
+    private int screenClampedX() {
+        final int x = MalisisGui.MOUSE_POSITION.x() + this.getOffsetX();
+        final MalisisGui gui = MalisisGui.current();
+        if (gui != null && x + this.getWidth() > gui.width) {
+            // Off the right side of the screen
+            return gui.width - this.getWidth();
         }
+        return Math.max(x, 0);
+    }
 
-        // Handle drawing off the top of the screen
-        if (realY + this.getHeight() > getGui().height) {
-            mouseY = getGui().width - this.getHeight();
-        } else if (realY < 0) { // Handle drawing off the bottom of the screen
-            mouseY = 0;
+    private int screenClampedY() {
+        final int y = MalisisGui.MOUSE_POSITION.y() + this.getOffsetY();
+        final MalisisGui gui = MalisisGui.current();
+        if (gui != null && y + this.getHeight() > gui.height) {
+            // Off the bottom of the screen
+            return gui.height - this.getHeight();
         }
-
-        super.draw(renderer, mouseX, mouseY, partialTick);
+        return Math.max(y, 0);
     }
 }

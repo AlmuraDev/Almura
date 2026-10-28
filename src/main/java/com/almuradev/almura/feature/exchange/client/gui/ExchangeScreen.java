@@ -803,16 +803,16 @@ public final class ExchangeScreen extends BasicScreen {
 
             this.image = new UIImage(fakeStack);
             this.image.setPosition(0, 0, Anchor.LEFT | Anchor.MIDDLE);
-            this.image.setTooltip(new UISaneTooltip(gui, String.join("\n", fakeStack.getTooltip(player, useAdvancedTooltips
+            this.image.setTooltip(new UISaneTooltip(String.join("\n", fakeStack.getTooltip(player, useAdvancedTooltips
                 ? ITooltipFlag.TooltipFlags.ADVANCED
                 : ITooltipFlag.TooltipFlags.NORMAL))));
 
-            this.itemLabel = new UIExpandingLabel(gui, "");
+            this.itemLabel = new UIExpandingLabel("");
             this.itemLabel.setPosition(getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
 
             // Exact value
             if (this.item.getQuantity() >= (int) FeatureConstants.ONE_MILLION) {
-                this.itemLabel.setTooltip(new UISaneTooltip(gui, FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getQuantity())));
+                this.itemLabel.setTooltip(new UISaneTooltip(FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getQuantity())));
             }
 
             this.add(this.image, this.itemLabel);
@@ -857,7 +857,7 @@ public final class ExchangeScreen extends BasicScreen {
             this.listedIndicatorContainer.setPosition(2, -2, Anchor.TOP | Anchor.RIGHT);
             this.listedIndicatorContainer.setColor(FontColors.DARK_GREEN);
 
-            this.priceLabel = new UIExpandingLabel(gui, "");
+            this.priceLabel = new UIExpandingLabel("");
             this.priceLabel.setVisible(false);
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-(this.listedIndicatorContainer.getWidth() + 6), 0, Anchor.RIGHT | Anchor.MIDDLE);
@@ -923,7 +923,7 @@ public final class ExchangeScreen extends BasicScreen {
 
             // Prices end just left of the widest seller name on the page (lined up, leaving the item name the rest of the row)
             final int maxPlayerTextWidth = pageSellerWidth > 0 ? pageSellerWidth + 8 : 0;
-            this.priceLabel = new UIExpandingLabel(gui, TextFormatting.GOLD + FeatureConstants.withSuffix(price) + TextFormatting.GRAY + "/ea");
+            this.priceLabel = new UIExpandingLabel(TextFormatting.GOLD + FeatureConstants.withSuffix(price) + TextFormatting.GRAY + "/ea");
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-(innerPadding + maxPlayerTextWidth), 0, Anchor.RIGHT | Anchor.MIDDLE);
 

@@ -9,7 +9,7 @@ package com.almuradev.almura.shared.client;
 
 import com.almuradev.almura.Almura;
 import net.malisis.core.client.gui.render.GuiTexture;
-import net.malisis.core.client.gui.MalisisGui;
+import net.minecraft.client.gui.Gui;
 import net.malisis.core.client.gui.render.GuiIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
@@ -21,25 +21,25 @@ public interface GuiConfig {
     @SideOnly(Side.CLIENT)
     interface Icon {
 
-        GuiIcon VANILLA_CONTAINER_INVENTORY_ADVANCEMENT = SpriteSheet.VANILLA_CONTAINER_INVENTORY.getXYResizableIcon(141, 166, 24, 24, 5);
-        GuiIcon EMPTY = SpriteSheet.ALMURA.getIcon(299, 141, 1, 1);
-        GuiIcon VANILLA_HEART_BACKGROUND = SpriteSheet.VANILLA_ICON.getIcon(16, 0, 9, 9);
-        GuiIcon VANILLA_HEART_FOREGROUND = SpriteSheet.VANILLA_ICON.getIcon(52, 0, 9, 9);
-        GuiIcon VANILLA_HUNGER_BACKGROUND = SpriteSheet.VANILLA_ICON.getIcon(16, 27, 9, 9);
-        GuiIcon VANILLA_HUNGER_FOREGROUND = SpriteSheet.VANILLA_ICON.getIcon(52, 27, 9, 9);
-        GuiIcon VANILLA_ARMOR = SpriteSheet.VANILLA_ICON.getIcon(34, 9, 9, 9);
-        GuiIcon VANILLA_AIR = SpriteSheet.VANILLA_ICON.getIcon(16, 18, 9, 9);
-        GuiIcon VANILLA_MOUNT = SpriteSheet.VANILLA_ICON.getIcon(88, 9, 9, 9);
-        GuiIcon ENJIN = SpriteSheet.ALMURA.getIcon(0, 90, 16, 16);
-        GuiIcon FA_GITHUB = SpriteSheet.ALMURA.getIcon(16, 90, 14, 14);
-        GuiIcon FA_COG = SpriteSheet.ALMURA.getIcon(32, 90, 15, 15);
-        GuiIcon FA_SITEMAP = SpriteSheet.ALMURA.getIcon(48, 90, 16, 14);
-        GuiIcon FA_MAP = SpriteSheet.ALMURA.getIcon(64, 90, 16, 15);
-        GuiIcon FA_PIE_CHART = SpriteSheet.ALMURA.getIcon(80, 90, 15, 15);
-        GuiIcon FA_TROPHY = SpriteSheet.ALMURA.getIcon(96, 90, 16, 14);
-        GuiIcon FA_BOOK = SpriteSheet.ALMURA.getIcon(112, 90, 16, 14);
-        GuiIcon FA_SHOPPING_BAG = SpriteSheet.ALMURA.getIcon(128, 90, 14, 14);
-        GuiIcon STAMINA = SpriteSheet.ALMURA.getIcon(132, 65, 9, 9);
+        GuiIcon VANILLA_CONTAINER_INVENTORY_ADVANCEMENT = new GuiIcon(SpriteSheet.VANILLA_CONTAINER_INVENTORY, 141, 166, 24, 24); // 9-slice: draw with a GuiShape border of 5
+        GuiIcon EMPTY = new GuiIcon(SpriteSheet.ALMURA, 299, 141, 1, 1);
+        GuiIcon VANILLA_HEART_BACKGROUND = new GuiIcon(SpriteSheet.VANILLA_ICON, 16, 0, 9, 9);
+        GuiIcon VANILLA_HEART_FOREGROUND = new GuiIcon(SpriteSheet.VANILLA_ICON, 52, 0, 9, 9);
+        GuiIcon VANILLA_HUNGER_BACKGROUND = new GuiIcon(SpriteSheet.VANILLA_ICON, 16, 27, 9, 9);
+        GuiIcon VANILLA_HUNGER_FOREGROUND = new GuiIcon(SpriteSheet.VANILLA_ICON, 52, 27, 9, 9);
+        GuiIcon VANILLA_ARMOR = new GuiIcon(SpriteSheet.VANILLA_ICON, 34, 9, 9, 9);
+        GuiIcon VANILLA_AIR = new GuiIcon(SpriteSheet.VANILLA_ICON, 16, 18, 9, 9);
+        GuiIcon VANILLA_MOUNT = new GuiIcon(SpriteSheet.VANILLA_ICON, 88, 9, 9, 9);
+        GuiIcon ENJIN = new GuiIcon(SpriteSheet.ALMURA, 0, 90, 16, 16);
+        GuiIcon FA_GITHUB = new GuiIcon(SpriteSheet.ALMURA, 16, 90, 14, 14);
+        GuiIcon FA_COG = new GuiIcon(SpriteSheet.ALMURA, 32, 90, 15, 15);
+        GuiIcon FA_SITEMAP = new GuiIcon(SpriteSheet.ALMURA, 48, 90, 16, 14);
+        GuiIcon FA_MAP = new GuiIcon(SpriteSheet.ALMURA, 64, 90, 16, 15);
+        GuiIcon FA_PIE_CHART = new GuiIcon(SpriteSheet.ALMURA, 80, 90, 15, 15);
+        GuiIcon FA_TROPHY = new GuiIcon(SpriteSheet.ALMURA, 96, 90, 16, 14);
+        GuiIcon FA_BOOK = new GuiIcon(SpriteSheet.ALMURA, 112, 90, 16, 14);
+        GuiIcon FA_SHOPPING_BAG = new GuiIcon(SpriteSheet.ALMURA, 128, 90, 14, 14);
+        GuiIcon STAMINA = new GuiIcon(SpriteSheet.ALMURA, 132, 65, 9, 9);
 
         /*
          * Note: you must call .setSpritesheet(GuiConfig.SpriteSheet."SPRITENAME" if you are using custom icon's in-game.
@@ -69,7 +69,7 @@ public interface GuiConfig {
 
         ResourceLocation ALMURA_LOCATION = new ResourceLocation(Almura.ID, "textures/gui/gui.png");
         GuiTexture ALMURA = new GuiTexture(ALMURA_LOCATION, 284, 106);
-        GuiTexture VANILLA_ICON = new GuiTexture(MalisisGui.ICONS, 256, 256);
+        GuiTexture VANILLA_ICON = new GuiTexture(Gui.ICONS, 256, 256);
         ResourceLocation VANILLA_CONTAINER_INVENTORY_LOCATION = new ResourceLocation("textures/gui/container/inventory.png");
         GuiTexture VANILLA_CONTAINER_INVENTORY = new GuiTexture(VANILLA_CONTAINER_INVENTORY_LOCATION, 256, 256);
     }

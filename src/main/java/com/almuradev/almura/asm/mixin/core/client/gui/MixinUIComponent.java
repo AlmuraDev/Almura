@@ -8,6 +8,7 @@
 package com.almuradev.almura.asm.mixin.core.client.gui;
 
 import com.almuradev.almura.shared.client.ui.component.UIContextMenu;
+import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -37,9 +38,9 @@ public abstract class MixinUIComponent implements UIContextMenu.Holder {
     }
 
     @Inject(method = "onRightClick", at = @At("HEAD"), cancellable = true)
-    private void almura$openContextMenu(final int x, final int y, final CallbackInfoReturnable<Boolean> cir) {
-        final UIComponent<?> component = (UIComponent<?>) (Object) this;
-        if (component.isEnabled() && UIContextMenu.openFor(component, x, y)) {
+    private void almura$openContextMenu(final CallbackInfoReturnable<Boolean> cir) {
+        final UIComponent component = (UIComponent) (Object) this;
+        if (component.isEnabled() && UIContextMenu.openFor(component, MalisisGui.MOUSE_POSITION.x(), MalisisGui.MOUSE_POSITION.y())) {
             cir.setReturnValue(true);
         }
     }

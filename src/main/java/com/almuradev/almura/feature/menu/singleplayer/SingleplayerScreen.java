@@ -100,7 +100,7 @@ public final class SingleplayerScreen extends PanoramicScreen {
         contentContainer.setBackgroundAlpha(0);
         contentContainer.setClipContent(false); // The logo's figure reaches above it
 
-        final UIComponent<?> header;
+        final UIComponent header;
         if (logo) {
             header = AlmuraLogoHeader.create(this);
             // A pixel lower than its container's top, to line up with the main menu's logo

@@ -672,7 +672,7 @@ public final class ManageTitlesGUI extends BasicScreen {
         protected void construct(final MalisisGui gui) {
             this.setSize(UIComponent.INHERITED, 20);
 
-            this.titleLabel = new UIExpandingLabel(gui, Text.of(TextColors.WHITE, item.getContent()));
+            this.titleLabel = new UIExpandingLabel(Text.of(TextColors.WHITE, item.getContent()));
             if (item.isHidden()) {
                 this.titleLabel.setText(this.titleLabel.getText() + TextFormatting.WHITE + " [HIDDEN]");
             }

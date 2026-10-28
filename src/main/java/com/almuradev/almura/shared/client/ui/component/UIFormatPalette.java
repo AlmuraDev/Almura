@@ -9,6 +9,7 @@ package com.almuradev.almura.shared.client.ui.component;
 
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
+import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.render.GuiRenderer;
 import net.malisis.core.client.gui.UIConstants;
 import net.malisis.core.client.gui.component.UIComponent;
@@ -55,7 +56,7 @@ public class UIFormatPalette extends BasicContainer<UIFormatPalette> {
     private final BasicTextBox target;
 
     public UIFormatPalette(final BasicScreen screen, final BasicTextBox target) {
-        super(screen, SIZE, SIZE);
+        super(SIZE, SIZE);
         this.target = target;
         this.setPadding(0, 0);
         this.setBackgroundAlpha(0);
@@ -103,8 +104,8 @@ public class UIFormatPalette extends BasicContainer<UIFormatPalette> {
     }
 
     @Override
-    public boolean onClick(final int x, final int y) {
-        final UIComponent<?> componentAt = this.getComponentAt(x, y);
+    public boolean onClick() {
+        final UIComponent componentAt = this.getComponentAt(MalisisGui.MOUSE_POSITION.x(), MalisisGui.MOUSE_POSITION.y());
         final Object data = componentAt == null ? null : componentAt.getData() != null ? componentAt.getData()
                 : componentAt.getParent() == null ? null : componentAt.getParent().getData();
         if (data instanceof TextColor) {
@@ -114,7 +115,7 @@ public class UIFormatPalette extends BasicContainer<UIFormatPalette> {
             this.apply(data.toString());
             return true;
         }
-        return super.onClick(x, y);
+        return super.onClick();
     }
 
     private void apply(final String code) {
@@ -130,10 +131,10 @@ public class UIFormatPalette extends BasicContainer<UIFormatPalette> {
     }
 
     @Override
-    public void draw(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
+    public void render(final GuiRenderer renderer) {
         // Highlight the cell under the mouse, like the formatter bar
-        final UIComponent<?> hovered = this.getComponentAt(mouseX, mouseY);
-        for (final UIComponent<?> component : this.getComponents()) {
+        final UIComponent hovered = this.getComponentAt(MalisisGui.MOUSE_POSITION.x(), MalisisGui.MOUSE_POSITION.y());
+        for (final UIComponent component : this.getComponents()) {
             if (!(component instanceof BasicContainer)) {
                 continue;
             }
@@ -146,6 +147,6 @@ public class UIFormatPalette extends BasicContainer<UIFormatPalette> {
                 cell.setBackgroundAlpha(isHovered ? 200 : 255);
             }
         }
-        super.draw(renderer, mouseX, mouseY, partialTick);
+        super.render(renderer);
     }
 }
