@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.feature.menu.singleplayer;
 
-import net.malisis.core.client.gui.GuiRenderer;
+import net.malisis.core.client.gui.render.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.container.BasicContainer;
 import net.minecraft.client.Minecraft;

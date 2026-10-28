@@ -16,7 +16,7 @@ import com.almuradev.almura.shared.client.ui.Fonts;
 import com.almuradev.almura.shared.util.MathUtil;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.GuiRenderer;
+import net.malisis.core.client.gui.render.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.decoration.UIImage;
@@ -67,18 +67,18 @@ public class UIUserPanel extends AbstractPanel {
         this.userAvatarImage.setSize(16, 16);
 
         // Username
-        this.usernameLabel = new UILabel(gui, TextFormatting.WHITE + this.client.player.getDisplayName().getFormattedText());
+        this.usernameLabel = new UILabel(TextFormatting.WHITE + this.client.player.getDisplayName().getFormattedText());
         this.usernameLabel.setPosition(BasicScreen.getPaddedX(this.userAvatarImage, 3), 2);
 
         // Level
-        this.levelLabel = new UILabel(gui, "");
+        this.levelLabel = new UILabel("");
         this.levelLabel.setPosition(BasicScreen.getPaddedX(this.userAvatarImage, 3), BasicScreen.getPaddedY(this.usernameLabel, 0));
         this.levelLabel.setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.7F));
 
         // Currency
-        this.currencyImage = new UIImage(gui, MalisisGui.BLOCK_TEXTURE, Icon.from(Items.EMERALD));
+        this.currencyImage = new UIImage(MalisisGui.BLOCK_TEXTURE, Icon.from(Items.EMERALD));
         this.currencyImage.setSize(8, 8);
-        this.currencyLabel = new UILabel(gui, "");
+        this.currencyLabel = new UILabel("");
         this.currencyLabel.setVisible(false);
         this.currencyImage.setVisible(false);
 

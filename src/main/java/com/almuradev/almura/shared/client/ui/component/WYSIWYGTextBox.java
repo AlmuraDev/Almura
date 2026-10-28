@@ -11,7 +11,7 @@ import com.almuradev.almura.shared.util.TextUtil;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.GuiRenderer;
+import net.malisis.core.client.gui.render.GuiRenderer;
 import net.malisis.core.client.gui.UIConstants;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicContainer;
@@ -59,13 +59,13 @@ public class WYSIWYGTextBox extends BasicContainer {
     public WYSIWYGTextBox(final BasicScreen screen, final int height, final String text) {
         super(screen);
 
-        this.collapsedLabel = new UILabel(screen, "...");
+        this.collapsedLabel = new UILabel("...");
         this.collapsedLabel.setPosition(0, 1, Anchor.BOTTOM | Anchor.CENTER);
         this.collapsedLabel.setFontOptions(FontColors.GRAY_FO);
 
         this.setBackgroundAlpha(0);
 
-        this.colorStyleContainer = new BasicContainer<>(screen, 0, colorContainerSize);
+        this.colorStyleContainer = new BasicContainer<>(0, colorContainerSize);
         this.colorStyleContainer.setColor(FontColors.GRAY);
         this.colorStyleContainer.add(this.collapsedLabel);
 
@@ -92,7 +92,7 @@ public class WYSIWYGTextBox extends BasicContainer {
         this.colorStyleContainer.setWidth(this.colorStyleContainer.getWidth() + this.rawFormatContainer.getWidth());
 
         // Content textbox
-        this.tbContent = new BasicTextBox(screen, text, true);
+        this.tbContent = new BasicTextBox(text, true);
         this.tbContent.setFontOptions(UIConstants.DEFAULT_TEXTBOX_FO);
         this.tbContent.getScrollbar().setAutoHide(true);
 
@@ -297,7 +297,7 @@ public class WYSIWYGTextBox extends BasicContainer {
     }
 
     private BasicContainer<?> generateBaseContainer(final BasicScreen screen, final String name, final int x) {
-        final BasicContainer<?> baseContainer = new BasicContainer<>(screen, colorContainerSize, colorContainerSize);
+        final BasicContainer<?> baseContainer = new BasicContainer<>(colorContainerSize, colorContainerSize);
         baseContainer.setPosition(x, 0);
         baseContainer.setBorder(FontColors.WHITE, 1, 185);
         baseContainer.setName("container." + name);
@@ -319,7 +319,7 @@ public class WYSIWYGTextBox extends BasicContainer {
         baseContainer.setTooltip(style.getFriendlyName());
         baseContainer.setColor(0);
 
-        final UILabel formatLabel = new UILabel(screen, style + style.getFriendlyName().substring(0, 1));
+        final UILabel formatLabel = new UILabel(style + style.getFriendlyName().substring(0, 1));
         final int y = style == TextFormatting.BOLD || style == TextFormatting.ITALIC ? 1 : 0;
         formatLabel.setFontOptions(UIConstants.DEFAULT_TEXTBOX_FO);
         formatLabel.setPosition(0, y, Anchor.MIDDLE | Anchor.CENTER);
@@ -333,7 +333,7 @@ public class WYSIWYGTextBox extends BasicContainer {
         baseContainer.setTooltip(tooltip);
         baseContainer.setColor(0);
 
-        final UILabel formatLabel = new UILabel(screen, value);
+        final UILabel formatLabel = new UILabel(value);
         formatLabel.setFontOptions(UIConstants.DEFAULT_TEXTBOX_FO);
         formatLabel.setPosition(0, 1, Anchor.MIDDLE | Anchor.CENTER);
         baseContainer.add(formatLabel);

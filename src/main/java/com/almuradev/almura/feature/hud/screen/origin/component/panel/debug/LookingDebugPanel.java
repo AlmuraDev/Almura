@@ -8,7 +8,7 @@
 package com.almuradev.almura.feature.hud.screen.origin.component.panel.debug;
 
 import com.almuradev.almura.asm.mixin.accessors.entity.EntityListAccessor;
-import net.malisis.core.client.gui.GuiRenderer;
+import net.malisis.core.client.gui.render.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;

@@ -45,65 +45,65 @@ public class MembershipDetailsGui extends BasicScreen {
         this.guiscreenBackground = true;
         Keyboard.enableRepeatEvents(true);
 
-        final BasicForm form = new BasicForm(this, 250, 200, membership);
+        final BasicForm form = new BasicForm(250, 200, membership);
         form.setZIndex(10);
         form.setBackgroundAlpha(255);
 
-        final UILabel unlocksWorldsLabel = new UILabel(this, "Unlocks Worlds:");
+        final UILabel unlocksWorldsLabel = new UILabel("Unlocks Worlds:");
         unlocksWorldsLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.0F).build());
         unlocksWorldsLabel.setPosition(25, 10, Anchor.LEFT | Anchor.TOP);
         form.add(unlocksWorldsLabel);
 
-        final UILabel cemariaWorldLabel = new UILabel(this, "Cemaria");
+        final UILabel cemariaWorldLabel = new UILabel("Cemaria");
         cemariaWorldLabel.setFontOptions(FontOptions.builder().from(FontColors.GREEN_FO).shadow(true).scale(1.0F).build());
         cemariaWorldLabel.setPosition(unlocksWorldsLabel.getX() + unlocksWorldsLabel.getWidth() + 5, unlocksWorldsLabel.getY(), Anchor.LEFT | Anchor.TOP);
         form.add(cemariaWorldLabel);
 
-        final UILabel highgardenWorldLabel = new UILabel(this, "Highgarden");
+        final UILabel highgardenWorldLabel = new UILabel("Highgarden");
         highgardenWorldLabel.setFontOptions(FontOptions.builder().from(FontColors.GREEN_FO).shadow(true).scale(1.0F).build());
         highgardenWorldLabel.setPosition(unlocksWorldsLabel.getX() + unlocksWorldsLabel.getWidth() + 5, cemariaWorldLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
         form.add(highgardenWorldLabel);
 
-        final UILabel forestRiverWorldLabel = new UILabel(this, "ForestRiver");
+        final UILabel forestRiverWorldLabel = new UILabel("ForestRiver");
         forestRiverWorldLabel.setFontOptions(FontOptions.builder().from(FontColors.GREEN_FO).shadow(true).scale(1.0F).build());
         forestRiverWorldLabel.setPosition(unlocksWorldsLabel.getX() + unlocksWorldsLabel.getWidth() + 5, highgardenWorldLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
         form.add(forestRiverWorldLabel);
 
         if (membershipLevel >= 2) {
-            final UILabel atlantisWorldLabel = new UILabel(this, "Atlantis");
+            final UILabel atlantisWorldLabel = new UILabel("Atlantis");
             atlantisWorldLabel.setFontOptions(FontOptions.builder().from(FontColors.GREEN_FO).shadow(true).scale(1.0F).build());
             atlantisWorldLabel.setPosition(unlocksWorldsLabel.getX() + unlocksWorldsLabel.getWidth() + 5, forestRiverWorldLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
             form.add(atlantisWorldLabel);
 
-            final UILabel keystoneWorldLabel = new UILabel(this, "Keystone");
+            final UILabel keystoneWorldLabel = new UILabel("Keystone");
             keystoneWorldLabel.setFontOptions(FontOptions.builder().from(FontColors.GREEN_FO).shadow(true).scale(1.0F).build());
             keystoneWorldLabel.setPosition(unlocksWorldsLabel.getX() + unlocksWorldsLabel.getWidth() + 5, atlantisWorldLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
             form.add(keystoneWorldLabel);
 
-            final UILabel marionWorldLabel = new UILabel(this, "Marion");
+            final UILabel marionWorldLabel = new UILabel("Marion");
             marionWorldLabel.setFontOptions(FontOptions.builder().from(FontColors.GREEN_FO).shadow(true).scale(1.0F).build());
             marionWorldLabel.setPosition(unlocksWorldsLabel.getX() + unlocksWorldsLabel.getWidth() + 5, keystoneWorldLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
             form.add(marionWorldLabel);
 
             if (membershipLevel == 3) {
-                final UILabel zealWorldLabel = new UILabel(this, "Zeal");
+                final UILabel zealWorldLabel = new UILabel("Zeal");
                 zealWorldLabel.setFontOptions(FontOptions.builder().from(FontColors.GREEN_FO).shadow(true).scale(1.0F).build());
                 zealWorldLabel.setPosition(unlocksWorldsLabel.getX() + unlocksWorldsLabel.getWidth() + 5, marionWorldLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
                 form.add(zealWorldLabel);
 
-                final UILabel tollanaWorldLabel = new UILabel(this, "Tollana");
+                final UILabel tollanaWorldLabel = new UILabel("Tollana");
                 tollanaWorldLabel.setFontOptions(FontOptions.builder().from(FontColors.GREEN_FO).shadow(true).scale(1.0F).build());
                 tollanaWorldLabel.setPosition(unlocksWorldsLabel.getX() + unlocksWorldsLabel.getWidth() + 5, zealWorldLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
                 form.add(tollanaWorldLabel);
 
-                final UILabel othalaWorldLabel = new UILabel(this, "Othala");
+                final UILabel othalaWorldLabel = new UILabel("Othala");
                 othalaWorldLabel.setFontOptions(FontOptions.builder().from(FontColors.GREEN_FO).shadow(true).scale(1.0F).build());
                 othalaWorldLabel.setPosition(unlocksWorldsLabel.getX() + unlocksWorldsLabel.getWidth() + 5, tollanaWorldLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
                 form.add(othalaWorldLabel);
             }
         }
 
-        final UILabel featuresLabel = new UILabel(this, "Features: ");
+        final UILabel featuresLabel = new UILabel("Features: ");
         featuresLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.0F).build());
         if (membershipLevel == 1) {
             featuresLabel.setPosition(25, 45, Anchor.LEFT | Anchor.TOP);
@@ -120,83 +120,83 @@ public class MembershipDetailsGui extends BasicScreen {
 
         form.add(featuresLabel);
 
-        final UILabel keepInventoryOnDeathLabel = new UILabel(this, "- Keep Inventory on Death");
+        final UILabel keepInventoryOnDeathLabel = new UILabel("- Keep Inventory on Death");
         keepInventoryOnDeathLabel.setFontOptions(FontOptions.builder().from(FontColors.GRAY_FO).shadow(true).scale(1.0F).build());
         keepInventoryOnDeathLabel.setPosition(35, featuresLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
         form.add(keepInventoryOnDeathLabel);
 
-        final UILabel keepExperienceOnDeathLabel = new UILabel(this, "- Keep Experience on Death");
+        final UILabel keepExperienceOnDeathLabel = new UILabel("- Keep Experience on Death");
         keepExperienceOnDeathLabel.setFontOptions(FontOptions.builder().from(FontColors.GRAY_FO).shadow(true).scale(1.0F).build());
         keepExperienceOnDeathLabel.setPosition(keepInventoryOnDeathLabel.getX(), keepInventoryOnDeathLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
         form.add(keepExperienceOnDeathLabel);
 
-        final UILabel abilityToReviveLabel = new UILabel(this, "- Ability to Revive");
+        final UILabel abilityToReviveLabel = new UILabel("- Ability to Revive");
         abilityToReviveLabel.setFontOptions(FontOptions.builder().from(FontColors.GRAY_FO).shadow(true).scale(1.0F).build());
         abilityToReviveLabel.setPosition(keepInventoryOnDeathLabel.getX(), keepExperienceOnDeathLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
         form.add(abilityToReviveLabel);
 
-        final UILabel griefPreventionLeaseLabel = new UILabel(this, "- 90 day Grief Prevention Leases");
+        final UILabel griefPreventionLeaseLabel = new UILabel("- 90 day Grief Prevention Leases");
         griefPreventionLeaseLabel.setFontOptions(FontOptions.builder().from(FontColors.GRAY_FO).shadow(true).scale(1.0F).build());
         griefPreventionLeaseLabel.setPosition(keepInventoryOnDeathLabel.getX(), abilityToReviveLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
         form.add(griefPreventionLeaseLabel);
 
-        final UILabel priorityPlayerTechnicalSupportLabel = new UILabel(this, "- Priority Player Technical Support");
+        final UILabel priorityPlayerTechnicalSupportLabel = new UILabel("- Priority Player Technical Support");
         priorityPlayerTechnicalSupportLabel.setFontOptions(FontOptions.builder().from(FontColors.GRAY_FO).shadow(true).scale(1.0F).build());
         priorityPlayerTechnicalSupportLabel.setPosition(keepInventoryOnDeathLabel.getX(), griefPreventionLeaseLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
         form.add(priorityPlayerTechnicalSupportLabel);
 
-        final UILabel earlyAccessToNewContentLabel = new UILabel(this, "- Early access to new content");
+        final UILabel earlyAccessToNewContentLabel = new UILabel("- Early access to new content");
         earlyAccessToNewContentLabel.setFontOptions(FontOptions.builder().from(FontColors.GRAY_FO).shadow(true).scale(1.0F).build());
         earlyAccessToNewContentLabel.setPosition(keepInventoryOnDeathLabel.getX(), priorityPlayerTechnicalSupportLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
         form.add(earlyAccessToNewContentLabel);
 
         if (membershipLevel == 1) {
-            final UILabel citizenItemSlotsLabel = new UILabel(this, "- 100 item slots on Exchange");
+            final UILabel citizenItemSlotsLabel = new UILabel("- 100 item slots on Exchange");
             citizenItemSlotsLabel.setFontOptions(FontOptions.builder().from(FontColors.GRAY_FO).shadow(true).scale(1.0F).build());
             citizenItemSlotsLabel.setPosition(keepInventoryOnDeathLabel.getX(), earlyAccessToNewContentLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
             form.add(citizenItemSlotsLabel);
         }
 
         if (membershipLevel >= 2) {
-            final UILabel abilityToFlyLabel = new UILabel(this, "- Ability to Fly!");
+            final UILabel abilityToFlyLabel = new UILabel("- Ability to Fly!");
             abilityToFlyLabel.setFontOptions(FontOptions.builder().from(FontColors.GRAY_FO).shadow(true).scale(1.0F).build());
             abilityToFlyLabel.setPosition(keepInventoryOnDeathLabel.getX(), earlyAccessToNewContentLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
             form.add(abilityToFlyLabel);
 
             if (membershipLevel == 2) {
-                final UILabel explorerItemSlotsLabel = new UILabel(this, "- 500 item slots on Exchange");
+                final UILabel explorerItemSlotsLabel = new UILabel("- 500 item slots on Exchange");
                 explorerItemSlotsLabel.setFontOptions(FontOptions.builder().from(FontColors.GRAY_FO).shadow(true).scale(1.0F).build());
                 explorerItemSlotsLabel.setPosition(keepInventoryOnDeathLabel.getX(), abilityToFlyLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
                 form.add(explorerItemSlotsLabel);
             }
 
             if (membershipLevel == 3) {
-                final UILabel pioneerItemSlotLabel = new UILabel(this, "- 5,000 item slots on Exchange");
+                final UILabel pioneerItemSlotLabel = new UILabel("- 5,000 item slots on Exchange");
                 pioneerItemSlotLabel.setFontOptions(FontOptions.builder().from(FontColors.GRAY_FO).shadow(true).scale(1.0F).build());
                 pioneerItemSlotLabel.setPosition(keepInventoryOnDeathLabel.getX(), abilityToFlyLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
                 form.add(pioneerItemSlotLabel);
 
-                final UILabel commandsLabel = new UILabel(this, "Additional Commands: ");
+                final UILabel commandsLabel = new UILabel("Additional Commands: ");
                 commandsLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.0F).build());
                 commandsLabel.setPosition(25, pioneerItemSlotLabel.getY() + 15, Anchor.LEFT | Anchor.TOP);
                 form.add(commandsLabel);
 
-                final UILabel backCommandLabel = new UILabel(this, "- /back");
+                final UILabel backCommandLabel = new UILabel("- /back");
                 backCommandLabel.setFontOptions(FontOptions.builder().from(FontColors.GRAY_FO).shadow(true).scale(1.0F).build());
                 backCommandLabel.setPosition(keepInventoryOnDeathLabel.getX(), commandsLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
                 form.add(backCommandLabel);
 
-                final UILabel nicknameCommandLabel = new UILabel(this, "- /nickname");
+                final UILabel nicknameCommandLabel = new UILabel("- /nickname");
                 nicknameCommandLabel.setFontOptions(FontOptions.builder().from(FontColors.GRAY_FO).shadow(true).scale(1.0F).build());
                 nicknameCommandLabel.setPosition(keepInventoryOnDeathLabel.getX(), backCommandLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
                 form.add(nicknameCommandLabel);
 
-                final UILabel anvilCommandLabel = new UILabel(this, "- /anvil");
+                final UILabel anvilCommandLabel = new UILabel("- /anvil");
                 anvilCommandLabel.setFontOptions(FontOptions.builder().from(FontColors.GRAY_FO).shadow(true).scale(1.0F).build());
                 anvilCommandLabel.setPosition(keepInventoryOnDeathLabel.getX(), nicknameCommandLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
                 form.add(anvilCommandLabel);
 
-                final UILabel enchantingTableCommandLabel = new UILabel(this, "- /enchantingtable");
+                final UILabel enchantingTableCommandLabel = new UILabel("- /enchantingtable");
                 enchantingTableCommandLabel.setFontOptions(FontOptions.builder().from(FontColors.GRAY_FO).shadow(true).scale(1.0F).build());
                 enchantingTableCommandLabel.setPosition(keepInventoryOnDeathLabel.getX(), anvilCommandLabel.getY() + 10, Anchor.LEFT | Anchor.TOP);
                 form.add(enchantingTableCommandLabel);
@@ -207,7 +207,7 @@ public class MembershipDetailsGui extends BasicScreen {
         aboveCloseSeparator.setSize(form.getWidth() -5, 1);
         aboveCloseSeparator.setPosition(0, -18, Anchor.BOTTOM | Anchor.CENTER);
 
-        final UIButton buttonClose = new UIButtonBuilder(this)
+        final UIButton buttonClose = new UIButtonBuilder()
                 .text(I18n.format("almura.button.close"))
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .position(0, 0)

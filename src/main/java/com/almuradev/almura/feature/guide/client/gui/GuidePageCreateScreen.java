@@ -60,7 +60,7 @@ public class GuidePageCreateScreen extends BasicScreen {
 
         final boolean chooseType = this.canAdd && this.canAddPlayer;
         final int height = !this.canAdd ? 65 : chooseType ? 141 : 125;
-        final BasicForm form = new BasicForm(this, 150, height, I18n.format(this.playerGuide
+        final BasicForm form = new BasicForm(150, height, I18n.format(this.playerGuide
                 ? "almura.guide.create.form.title.player"
                 : "almura.guide.create.form.title"));
         form.setZIndex(10);
@@ -69,7 +69,7 @@ public class GuidePageCreateScreen extends BasicScreen {
         // Server guide or player guide
         UICheckBox checkboxPlayerGuide = null;
         if (chooseType) {
-            checkboxPlayerGuide = new UICheckBox(this, I18n.format("almura.guide.create.checkbox.player_guide"));
+            checkboxPlayerGuide = new UICheckBox(I18n.format("almura.guide.create.checkbox.player_guide"));
             checkboxPlayerGuide.setName("checkbox.player_guide");
             checkboxPlayerGuide.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).build());
             checkboxPlayerGuide.setTooltip(I18n.format("almura.guide.create.checkbox.player_guide.tooltip"));
@@ -78,13 +78,13 @@ public class GuidePageCreateScreen extends BasicScreen {
         }
 
         // File name
-        final UILabel labelId = new UILabel(this, I18n.format("almura.guide.label.id"));
+        final UILabel labelId = new UILabel(I18n.format("almura.guide.label.id"));
         labelId.setAnchor(Anchor.TOP | Anchor.LEFT);
         labelId.setPosition(0, checkboxPlayerGuide == null ? 0 : BasicScreen.getPaddedY(checkboxPlayerGuide, padding));
         labelId.setFontOptions(FontColors.WHITE_FO);
         labelId.setVisible(this.canAdd);
 
-        this.tbId = new BasicTextBox(this, "");
+        this.tbId = new BasicTextBox("");
         this.tbId.setAcceptsReturn(false);
         this.tbId.setAcceptsTab(false);
         this.tbId.setTabIndex(0);
@@ -98,13 +98,13 @@ public class GuidePageCreateScreen extends BasicScreen {
         this.tbId.setVisible(this.canAdd);
 
         // Index
-        final UILabel labelIndex = new UILabel(this, I18n.format("almura.guide.label.index"));
+        final UILabel labelIndex = new UILabel(I18n.format("almura.guide.label.index"));
         labelIndex.setAnchor(Anchor.TOP | Anchor.LEFT);
         labelIndex.setPosition(0, this.tbId.isVisible() ? BasicScreen.getPaddedY(this.tbId, padding) : padding);
         labelIndex.setFontOptions(FontColors.WHITE_FO);
         labelIndex.setVisible(this.canAdd);
 
-        this.tbIndex = new BasicTextBox(this, Integer.toString(0));
+        this.tbIndex = new BasicTextBox(Integer.toString(0));
         this.tbIndex.setAcceptsReturn(false);
         this.tbIndex.setAcceptsTab(false);
         this.tbIndex.setTabIndex(1);
@@ -116,12 +116,12 @@ public class GuidePageCreateScreen extends BasicScreen {
         this.tbIndex.setVisible(this.canAdd);
 
         // Title
-        final UILabel labelName = new UILabel(this, I18n.format("almura.guide.label.name"));
+        final UILabel labelName = new UILabel(I18n.format("almura.guide.label.name"));
         labelName.setAnchor(Anchor.TOP | Anchor.LEFT);
         labelName.setPosition(0, this.tbIndex.isVisible() ? BasicScreen.getPaddedY(this.tbIndex, padding) : 0);
         labelName.setFontOptions(FontColors.WHITE_FO);
 
-        this.tbName = new BasicTextBox(this, "");
+        this.tbName = new BasicTextBox("");
         this.tbName.setAcceptsReturn(false);
         this.tbName.setAcceptsTab(false);
         this.tbName.setTabIndex(2);
@@ -132,14 +132,14 @@ public class GuidePageCreateScreen extends BasicScreen {
         this.tbName.setFilter(s -> s.substring(0, Math.min(s.length(), 50)));
 
         // Save/Cancel
-        final UIButton buttonSave = new UIButtonBuilder(this)
+        final UIButton buttonSave = new UIButtonBuilder()
                 .text(I18n.format("almura.button.save"))
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .width(40)
                 .onClick(this::save)
                 .build("button.save");
 
-        final UIButton buttonCancel = new UIButtonBuilder(this)
+        final UIButton buttonCancel = new UIButtonBuilder()
                 .text(I18n.format("almura.button.cancel"))
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .position(BasicScreen.getPaddedX(buttonSave, 2, Anchor.RIGHT), 0)

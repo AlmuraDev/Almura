@@ -8,7 +8,7 @@
 package com.almuradev.almura.shared.client.ui.component;
 
 import com.almuradev.almura.shared.client.ui.Fonts;
-import net.malisis.core.client.gui.GuiRenderer;
+import net.malisis.core.client.gui.render.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.renderer.font.FontOptions;

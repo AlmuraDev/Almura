@@ -41,20 +41,20 @@ public class ApplyTexturePackConfirmGui extends BasicScreen {
         this.guiscreenBackground = true;
         Keyboard.enableRepeatEvents(true);
 
-        final BasicForm form = new BasicForm(this, 350, 125, "Almura Resource Loader");
+        final BasicForm form = new BasicForm(350, 125, "Almura Resource Loader");
         form.setZIndex(10);
         form.setClosable(false);
         form.setBackgroundAlpha(255);
 
-        final UILabel label0 = new UILabel(this, "We noticed you're not using the preferred texture pack.");
+        final UILabel label0 = new UILabel("We noticed you're not using the preferred texture pack.");
         label0.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.0F).build());
         label0.setPosition(0, 10, Anchor.CENTER | Anchor.TOP);
 
-        final UILabel label1 = new UILabel(this, "Do you want to apply the following texture pack?");
+        final UILabel label1 = new UILabel("Do you want to apply the following texture pack?");
         label1.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.0F).build());
         label1.setPosition(0, label0.getY() + 15, Anchor.CENTER | Anchor.TOP);
 
-        final UILabel label2 = new UILabel(this, AlmuraSettings.getPreferredTexturePack());
+        final UILabel label2 = new UILabel(AlmuraSettings.getPreferredTexturePack());
         label2.setFontOptions(FontOptions.builder().from(FontColors.GREEN_FO).shadow(true).scale(1.0F).build());
         label2.setPosition(0, label1.getY() + 15, Anchor.CENTER | Anchor.TOP);
 
@@ -62,7 +62,7 @@ public class ApplyTexturePackConfirmGui extends BasicScreen {
         belowAmountSeparator.setSize(form.getWidth() -5, 1);
         belowAmountSeparator.setPosition(0, -45, Anchor.BOTTOM | Anchor.CENTER);
 
-        final UIButton buttonYes = new UIButtonBuilder(this)
+        final UIButton buttonYes = new UIButtonBuilder()
                 .text("Yes")
                 .anchor(Anchor.BOTTOM | Anchor.CENTER)
                 .position(-20, -25)
@@ -70,7 +70,7 @@ public class ApplyTexturePackConfirmGui extends BasicScreen {
                 .listener(this)
                 .build("button.yes");
 
-        final UIButton buttonNo = new UIButtonBuilder(this)
+        final UIButton buttonNo = new UIButtonBuilder()
             .text("No")
             .anchor(Anchor.BOTTOM | Anchor.CENTER)
             .position(20, -25)
@@ -82,7 +82,7 @@ public class ApplyTexturePackConfirmGui extends BasicScreen {
         aboveCloseSeparator.setSize(form.getWidth() -5, 1);
         aboveCloseSeparator.setPosition(0, -20, Anchor.BOTTOM | Anchor.CENTER);
 
-        final UIButton buttonClose = new UIButtonBuilder(this)
+        final UIButton buttonClose = new UIButtonBuilder()
                 .text(I18n.format("almura.button.close"))
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .position(0, 0)

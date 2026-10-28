@@ -23,7 +23,7 @@ import com.almuradev.almura.shared.network.NetworkConfig;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.GuiTexture;
+import net.malisis.core.client.gui.render.GuiTexture;
 import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
@@ -91,7 +91,7 @@ public final class ConnectingGui extends BasicScreen {
         this.guiscreenBackground = true;
         Keyboard.enableRepeatEvents(true);
 
-        this.form = new BasicForm(this, 200, 200, "Server Status");
+        this.form = new BasicForm(200, 200, "Server Status");
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(false);
         this.form.setClosable(false);
@@ -103,7 +103,7 @@ public final class ConnectingGui extends BasicScreen {
         this.form.setLeftPadding(3);
 
         // Almura header
-        final UIImage almuraHeader = new UIImage(this, new GuiTexture(GuiConfig.Location.ALMURA_LOGO), null);
+        final UIImage almuraHeader = new UIImage(new GuiTexture(GuiConfig.Location.ALMURA_LOGO), null);
         almuraHeader.setSize(60, 99);
         almuraHeader.setPosition(0, 5, Anchor.TOP | Anchor.CENTER);
 
@@ -112,17 +112,17 @@ public final class ConnectingGui extends BasicScreen {
         aboveLogoSeparator.setPosition(0, 107, Anchor.TOP | Anchor.CENTER);
         this.form.add(aboveLogoSeparator);
 
-        this.messageLabel = new UILabel(this, "Connecting from Server...");
+        this.messageLabel = new UILabel("Connecting from Server...");
         this.messageLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         this.messageLabel.setPosition(0, 115, Anchor.CENTER | Anchor.TOP);
         this.form.add(this.messageLabel);
 
-        this.messageLabel2 = new UILabel(this, "Synchronizing data...");
+        this.messageLabel2 = new UILabel("Synchronizing data...");
         this.messageLabel2.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         this.messageLabel2.setPosition(0, 128, Anchor.CENTER | Anchor.TOP);
         this.form.add(this.messageLabel2);
 
-        this.magic = new UILabel(this, "valuesvalues");
+        this.magic = new UILabel("valuesvalues");
         magic.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).obfuscated(true).scale(1.0F).build());
         magic.setPosition(0, -25, Anchor.CENTER | Anchor.BOTTOM);
         this.form.add(magic);
@@ -133,7 +133,7 @@ public final class ConnectingGui extends BasicScreen {
         this.form.add(aboveButtonsSeparator);
 
         // Close button
-        this.buttonClose = new UIButtonBuilder(this)
+        this.buttonClose = new UIButtonBuilder()
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.CENTER)
                 //.text(I18n.format("almura.menu_button.quit"))

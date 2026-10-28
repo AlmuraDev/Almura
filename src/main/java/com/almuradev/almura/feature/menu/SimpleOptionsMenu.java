@@ -62,7 +62,7 @@ public final class SimpleOptionsMenu extends BasicScreen {
         this.saveAndLoad();
 
         final GeneralCategory general = configAdapter.get().general;
-        final UILabel titleLabel = new UILabel(this, I18n.format("almura.menu_button.options"));
+        final UILabel titleLabel = new UILabel(I18n.format("almura.menu_button.options"));
         titleLabel.setFontOptions(FontColors.WHITE_FO);
         titleLabel.setPosition(0, 20, Anchor.TOP | Anchor.CENTER);
 
@@ -75,14 +75,14 @@ public final class SimpleOptionsMenu extends BasicScreen {
         /*
          * LEFT COLUMN
          */
-        this.buttonOptimized = new UIButtonBuilder(this)
+        this.buttonOptimized = new UIButtonBuilder()
                 .text("Load Optimized Defaults")
                 .size(CONTROL_WIDTH, CONTROL_HEIGHT)
                 .listener(this)
                 .build("button.optimized");
         this.updatePosition(this.buttonOptimized, Anchor.LEFT);
 
-        this.buttonHudType = new UIButtonBuilder(this)
+        this.buttonHudType = new UIButtonBuilder()
                 .text("HUD: " + general.hud.substring(0, 1).toUpperCase() + general.hud.substring(1))
                 .size(CONTROL_WIDTH, CONTROL_HEIGHT)
                 .listener(this)
@@ -91,7 +91,7 @@ public final class SimpleOptionsMenu extends BasicScreen {
 
         // TODO: Add builder for checkbox component
         final boolean displayWorldCompassWidget = general.displayWorldCompassWidget;
-        final UICheckBox checkboxWorldCompassWidget = new UICheckBox(this);
+        final UICheckBox checkboxWorldCompassWidget = new UICheckBox();
         checkboxWorldCompassWidget.setText(TextFormatting.WHITE + "Display World Compass Widget");
         checkboxWorldCompassWidget.setChecked(displayWorldCompassWidget);
         checkboxWorldCompassWidget.setName("checkbox.world_compass_widget");
@@ -99,14 +99,14 @@ public final class SimpleOptionsMenu extends BasicScreen {
         this.updatePosition(checkboxWorldCompassWidget, Anchor.LEFT);
 
         final boolean displayLocationWidget = general.displayLocationWidget;
-        final UICheckBox checkboxLocationWidget = new UICheckBox(this);
+        final UICheckBox checkboxLocationWidget = new UICheckBox();
         checkboxLocationWidget.setText(TextFormatting.WHITE + "Display Location Widget");
         checkboxLocationWidget.setChecked(displayLocationWidget);
         checkboxLocationWidget.setName("checkbox.location_widget");
         checkboxLocationWidget.register(this);
         this.updatePosition(checkboxLocationWidget, Anchor.LEFT);
 
-        final UICheckBox checkboxPerformanceStats = new UICheckBox(this);
+        final UICheckBox checkboxPerformanceStats = new UICheckBox();
         checkboxPerformanceStats.setText(TextFormatting.WHITE + "Display FPS / TPS");
         checkboxPerformanceStats.setChecked(general.displayPerformanceStats);
         checkboxPerformanceStats.setTooltip("Shown under the coordinates of the location widget");
@@ -115,7 +115,7 @@ public final class SimpleOptionsMenu extends BasicScreen {
         this.updatePosition(checkboxPerformanceStats, Anchor.LEFT);
 
         final boolean displayNumericHUDValues = general.displayNumericHUDValues;
-        final UICheckBox checkboxNumericHUDValues = new UICheckBox(this);
+        final UICheckBox checkboxNumericHUDValues = new UICheckBox();
         checkboxNumericHUDValues.setText(TextFormatting.WHITE + "Display Numeric HUD Values");
         checkboxNumericHUDValues.setChecked(displayNumericHUDValues);
         checkboxNumericHUDValues.setName("checkbox.numeric_hud_values");
@@ -123,7 +123,7 @@ public final class SimpleOptionsMenu extends BasicScreen {
         this.updatePosition(checkboxNumericHUDValues, Anchor.LEFT);
 
         final boolean displayNames = general.displayNames;
-        final UICheckBox checkboxDisplayNames = new UICheckBox(this);
+        final UICheckBox checkboxDisplayNames = new UICheckBox();
         checkboxDisplayNames.setText(TextFormatting.WHITE + "Display Entity Names");
         checkboxDisplayNames.setChecked(displayNames);
         checkboxDisplayNames.setName("checkbox.display_names");
@@ -131,7 +131,7 @@ public final class SimpleOptionsMenu extends BasicScreen {
         this.updatePosition(checkboxDisplayNames, Anchor.LEFT);
 
         final boolean displayHealthbars = general.displayHealthbars;
-        final UICheckBox checkboxDisplayHealthbars = new UICheckBox(this);
+        final UICheckBox checkboxDisplayHealthbars = new UICheckBox();
         checkboxDisplayHealthbars.setText(TextFormatting.WHITE + "Display Entity Healthbars");
         checkboxDisplayHealthbars.setChecked(displayHealthbars);
         checkboxDisplayHealthbars.setName("checkbox.display_healthbars");
@@ -139,7 +139,7 @@ public final class SimpleOptionsMenu extends BasicScreen {
         this.updatePosition(checkboxDisplayHealthbars, Anchor.LEFT);
 
         final boolean disableOffhandTorchPlacement = general.disableOffhandTorchPlacement;
-        final UICheckBox checkboxDisableOffhandTorchPlacement = new UICheckBox(this);
+        final UICheckBox checkboxDisableOffhandTorchPlacement = new UICheckBox();
         checkboxDisableOffhandTorchPlacement.setText(TextFormatting.WHITE + "Disable Offhand Torch Placement");
         checkboxDisableOffhandTorchPlacement.setChecked(disableOffhandTorchPlacement);
         checkboxDisableOffhandTorchPlacement.setName("checkbox.disable_offhand_torch_placement");
@@ -147,7 +147,7 @@ public final class SimpleOptionsMenu extends BasicScreen {
         this.updatePosition(checkboxDisableOffhandTorchPlacement, Anchor.LEFT);
 
         final boolean displayGuideOnLogin = general.displayGuideOnLogin;
-        final UICheckBox checkboxDisplayGuideOnLogin = new UICheckBox(this);
+        final UICheckBox checkboxDisplayGuideOnLogin = new UICheckBox();
         checkboxDisplayGuideOnLogin.setText(TextFormatting.WHITE + "Display Guide upon Login");
         checkboxDisplayGuideOnLogin.setChecked(displayGuideOnLogin);
         checkboxDisplayGuideOnLogin.setName("checkbox.display_guide_on_login");
@@ -155,7 +155,7 @@ public final class SimpleOptionsMenu extends BasicScreen {
         this.updatePosition(checkboxDisplayGuideOnLogin, Anchor.LEFT);
 
         final boolean extendedView = general.extendedView;
-        final UICheckBox checkboxExtendedView = new UICheckBox(this);
+        final UICheckBox checkboxExtendedView = new UICheckBox();
         checkboxExtendedView.setText(TextFormatting.WHITE + "Enable/Disable Extended View");
         checkboxExtendedView.setChecked(extendedView);
         checkboxExtendedView.setName("checkbox.extended-view");
@@ -170,7 +170,7 @@ public final class SimpleOptionsMenu extends BasicScreen {
          * RIGHT COLUMN
          */
         final boolean isOrigin = general.hud.equalsIgnoreCase(HUDType.ORIGIN);
-        this.sliderOriginHudOpacity = new UISliderBuilder(this, Converter.<Float, Integer>from(f -> (int) (f * 255), i -> (float) i / 255))
+        this.sliderOriginHudOpacity = new UISliderBuilder(Converter.<Float, Integer>from(f -> (int) (f * 255), i -> (float) i / 255))
                 .text("HUD Opacity: %d")
                 .value(general.originHudOpacity)
                 .size(CONTROL_WIDTH, CONTROL_HEIGHT)
@@ -180,7 +180,7 @@ public final class SimpleOptionsMenu extends BasicScreen {
         this.sliderOriginHudOpacity.setAlpha(isOrigin ? 255 : 128);
         this.updatePosition(this.sliderOriginHudOpacity, Anchor.RIGHT);
 
-        final UISlider<OptionsConverter.Options> sliderChestDistance = new UISliderBuilder(this, OPTIONS_CONVERTER)
+        final UISlider<OptionsConverter.Options> sliderChestDistance = new UISliderBuilder(OPTIONS_CONVERTER)
                 .text("Chest Distance: %s")
                 .value(Arrays.stream(OptionsConverter.Options.values())
                         .filter(o -> o.value == general.chestRenderDistance)
@@ -191,7 +191,7 @@ public final class SimpleOptionsMenu extends BasicScreen {
                 .build("slider.chestRenderDistance");
         this.updatePosition(sliderChestDistance, Anchor.RIGHT);
 
-        final UISlider<OptionsConverter.Options> sliderSignTextDistance = new UISliderBuilder(this, OPTIONS_CONVERTER)
+        final UISlider<OptionsConverter.Options> sliderSignTextDistance = new UISliderBuilder(OPTIONS_CONVERTER)
                 .text("Sign Text Distance: %s")
                 .value(Arrays.stream(OptionsConverter.Options.values())
                         .filter(o -> o.value == general.signTextRenderDistance)
@@ -202,7 +202,7 @@ public final class SimpleOptionsMenu extends BasicScreen {
                 .build("slider.signTextRenderDistance");
         this.updatePosition(sliderSignTextDistance, Anchor.RIGHT);
 
-        final UISlider<OptionsConverter.Options> sliderItemFrameDistance = new UISliderBuilder(this, OPTIONS_CONVERTER)
+        final UISlider<OptionsConverter.Options> sliderItemFrameDistance = new UISliderBuilder(OPTIONS_CONVERTER)
                 .text("Item Frame Distance: %s")
                 .value(Arrays.stream(OptionsConverter.Options.values())
                         .filter(o -> o.value == general.itemFrameRenderDistance)
@@ -213,7 +213,7 @@ public final class SimpleOptionsMenu extends BasicScreen {
                 .build("slider.itemFrameRenderDistance");
         this.updatePosition(sliderItemFrameDistance, Anchor.RIGHT);
 
-        final UISlider<OptionsConverter.Options> sliderPlayerNameRenderDistance = new UISliderBuilder(this, OPTIONS_CONVERTER)
+        final UISlider<OptionsConverter.Options> sliderPlayerNameRenderDistance = new UISliderBuilder(OPTIONS_CONVERTER)
                 .text("Player Name Distance: %s")
                 .value(Arrays.stream(OptionsConverter.Options.values())
                         .filter(o -> o.value == general.playerNameRenderDistance)
@@ -224,7 +224,7 @@ public final class SimpleOptionsMenu extends BasicScreen {
                 .build("slider.playerNameRenderDistance");
         this.updatePosition(sliderPlayerNameRenderDistance, Anchor.RIGHT);
 
-        final UISlider<OptionsConverter.Options> sliderEnemyNameRenderDistance = new UISliderBuilder(this, OPTIONS_CONVERTER)
+        final UISlider<OptionsConverter.Options> sliderEnemyNameRenderDistance = new UISliderBuilder(OPTIONS_CONVERTER)
                 .text("Enemy Name Distance: %s")
                 .value(Arrays.stream(OptionsConverter.Options.values())
                         .filter(o -> o.value == general.enemyNameRenderDistance)
@@ -235,7 +235,7 @@ public final class SimpleOptionsMenu extends BasicScreen {
                 .build("slider.enemyNameRenderDistance");
         this.updatePosition(sliderEnemyNameRenderDistance, Anchor.RIGHT);
 
-        final UISlider<OptionsConverter.Options> sliderAnimalNameRenderDistance = new UISliderBuilder(this, OPTIONS_CONVERTER)
+        final UISlider<OptionsConverter.Options> sliderAnimalNameRenderDistance = new UISliderBuilder(OPTIONS_CONVERTER)
                 .text("Animal Name Distance: %s")
                 .value(Arrays.stream(OptionsConverter.Options.values())
                         .filter(o -> o.value == general.animalNameRenderDistance)
@@ -247,7 +247,7 @@ public final class SimpleOptionsMenu extends BasicScreen {
         this.updatePosition(sliderAnimalNameRenderDistance, Anchor.RIGHT);
 
 
-        final UIButton buttonDone = new UIButtonBuilder(this)
+        final UIButton buttonDone = new UIButtonBuilder()
                 .text(I18n.format("gui.done"))
                 .size(200, CONTROL_HEIGHT)
                 // Under whichever column is longer

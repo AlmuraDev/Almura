@@ -61,33 +61,33 @@ public final class NotificationHistoryScreen extends BasicScreen {
     public void construct() {
         this.guiscreenBackground = false;
 
-        final BasicForm form = new BasicForm(this, FORM_WIDTH, FORM_HEIGHT, "Notifications");
+        final BasicForm form = new BasicForm(FORM_WIDTH, FORM_HEIGHT, "Notifications");
 
         // Received notifications, newest first
-        this.recordList = new BasicList<>(this, LIST_WIDTH, BasicScreen.getPaddedHeight(form) - 22);
+        this.recordList = new BasicList<>(LIST_WIDTH, BasicScreen.getPaddedHeight(form) - 22);
         this.recordList.setPosition(0, 0);
         this.recordList.setItemComponentSpacing(1);
         this.recordList.setItemComponentFactory(RecordItemComponent::new);
         this.recordList.setSelectConsumer(this::showRecord);
 
-        this.emptyLabel = new UILabel(this, TextFormatting.GRAY + "No notifications received yet.");
+        this.emptyLabel = new UILabel(TextFormatting.GRAY + "No notifications received yet.");
         this.emptyLabel.setFontOptions(FontColors.WHITE_FO);
         this.emptyLabel.setPosition((LIST_WIDTH - this.emptyLabel.getWidth()) / 2, 20);
 
         // Selected notification
         final int detailX = LIST_WIDTH + 6;
         final int detailWidth = BasicScreen.getPaddedWidth(form) - detailX;
-        final BasicContainer<?> detail = new BasicContainer<>(this, detailWidth, BasicScreen.getPaddedHeight(form) - 22);
+        final BasicContainer<?> detail = new BasicContainer<>(detailWidth, BasicScreen.getPaddedHeight(form) - 22);
         detail.setPosition(detailX, 0);
         detail.setColor(0x000000);
         detail.setBorder(0x808080, 1, 255);
         detail.setPadding(4, 4);
 
-        this.titleLabel = new UILabel(this, "");
+        this.titleLabel = new UILabel("");
         this.titleLabel.setFontOptions(FontColors.WHITE_FO);
         this.titleLabel.setPosition(0, 0);
 
-        this.receivedLabel = new UILabel(this, "");
+        this.receivedLabel = new UILabel("");
         this.receivedLabel.setFontOptions(FontColors.WHITE_FO);
         this.receivedLabel.setPosition(0, 11);
 
@@ -95,21 +95,21 @@ public final class NotificationHistoryScreen extends BasicScreen {
         this.detailSeparator.setSize(BasicScreen.getPaddedWidth(detail), 1);
         this.detailSeparator.setPosition(0, 23);
 
-        this.messageLabel = new UILabel(this, true);
+        this.messageLabel = new UILabel(true);
         this.messageLabel.setFontOptions(FontColors.WHITE_FO);
         this.messageLabel.setPosition(0, 28);
         this.messageLabel.setSize(BasicScreen.getPaddedWidth(detail), BasicScreen.getPaddedHeight(detail) - 28);
 
         detail.add(this.titleLabel, this.receivedLabel, this.detailSeparator, this.messageLabel);
 
-        this.clearButton = new UIButtonBuilder(this)
+        this.clearButton = new UIButtonBuilder()
                 .width(80)
                 .anchor(Anchor.BOTTOM | Anchor.LEFT)
                 .text("Clear History")
                 .onClick(this::confirmClear)
                 .build("button.clear");
 
-        final UIButton closeButton = new UIButtonBuilder(this)
+        final UIButton closeButton = new UIButtonBuilder()
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .text(I18n.format("almura.button.close"))
@@ -178,13 +178,13 @@ public final class NotificationHistoryScreen extends BasicScreen {
         protected void construct(final MalisisGui gui) {
             super.construct(gui);
 
-            final UILabel timeLabel = new UILabel(gui, TextFormatting.GRAY + LIST_TIME.format(this.item.getReceived()));
+            final UILabel timeLabel = new UILabel(TextFormatting.GRAY + LIST_TIME.format(this.item.getReceived()));
             timeLabel.setFontOptions(FontColors.WHITE_FO);
             timeLabel.setPosition(2, 0);
 
             // First line of the title (or message when there's no title), cut to fit the row
             final String text = this.item.getTitle().isEmpty() ? this.item.getMessage() : this.item.getTitle();
-            final UILabel titleLabel = new UILabel(gui, TextFormatting.WHITE + firstLine(text));
+            final UILabel titleLabel = new UILabel(TextFormatting.WHITE + firstLine(text));
             titleLabel.setFontOptions(FontColors.WHITE_FO);
             titleLabel.setPosition(2, 10);
 

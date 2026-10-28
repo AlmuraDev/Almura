@@ -92,7 +92,7 @@ public final class BankScreen extends BasicScreen {
         this.guiscreenBackground = false;
         Keyboard.enableRepeatEvents(true);
 
-        final BasicForm form = new BasicForm(this, FORM_WIDTH, FORM_HEIGHT, I18n.format("almura.feature.bank.title"));
+        final BasicForm form = new BasicForm(FORM_WIDTH, FORM_HEIGHT, I18n.format("almura.feature.bank.title"));
         form.setBackgroundAlpha(255);
         final int paddedWidth = BasicScreen.getPaddedWidth(form);
         final int paddedHeight = BasicScreen.getPaddedHeight(form);
@@ -100,14 +100,14 @@ public final class BankScreen extends BasicScreen {
         final int rightWidth = paddedWidth - x;
 
         // Accounts
-        this.accountList = new BasicList<>(this, LIST_WIDTH, paddedHeight - 17);
+        this.accountList = new BasicList<>(LIST_WIDTH, paddedHeight - 17);
         this.accountList.setBorder(FontColors.WHITE, 1, 185);
         this.accountList.setPadding(2, 2);
         this.accountList.setItemComponentSpacing(1);
         this.accountList.setItemComponentFactory(AccountComponent::new);
         this.accountList.setSelectConsumer(account -> this.onAccountSelected());
 
-        this.buttonNew = new UIButtonBuilder(this)
+        this.buttonNew = new UIButtonBuilder()
             .text(TextFormatting.GREEN + "+")
             .anchor(Anchor.BOTTOM | Anchor.LEFT)
             .position(0, 0)
@@ -116,7 +116,7 @@ public final class BankScreen extends BasicScreen {
             .build("button.new");
 
         // + - ? like the Guide: open, delete, rename
-        this.buttonDelete = new UIButtonBuilder(this)
+        this.buttonDelete = new UIButtonBuilder()
             .text(TextFormatting.RED + "-")
             .tooltip(I18n.format("almura.feature.bank.button.delete"))
             .anchor(Anchor.BOTTOM | Anchor.LEFT)
@@ -124,7 +124,7 @@ public final class BankScreen extends BasicScreen {
             .onClick(this::delete)
             .build("button.delete");
 
-        this.buttonRename = new UIButtonBuilder(this)
+        this.buttonRename = new UIButtonBuilder()
             .text(TextFormatting.YELLOW + "?")
             .tooltip(I18n.format("almura.feature.bank.button.rename"))
             .anchor(Anchor.BOTTOM | Anchor.LEFT)
@@ -134,7 +134,7 @@ public final class BankScreen extends BasicScreen {
 
         // Wallet
         this.walletLabel = this.label("", x, 4);
-        final UIButton buttonWalletCoins = new UIButtonBuilder(this)
+        final UIButton buttonWalletCoins = new UIButtonBuilder()
             .text(I18n.format("almura.feature.bank.button.deposit_coins"))
             .tooltip(I18n.format("almura.feature.bank.tooltip.coins_to_wallet"))
             .width(80)
@@ -151,7 +151,7 @@ public final class BankScreen extends BasicScreen {
         this.balanceLabel = this.label("", x, 47);
 
         final UILabel amountLabel = this.label(I18n.format("almura.feature.bank.label.amount"), x, 65);
-        this.amountTextBox = new BasicTextBox(this, "");
+        this.amountTextBox = new BasicTextBox("");
         this.amountTextBox.setSize(80, 0);
         this.amountTextBox.setPosition(BasicScreen.getPaddedX(amountLabel, 4), 63);
         this.amountTextBox.setAcceptsReturn(false);
@@ -159,7 +159,7 @@ public final class BankScreen extends BasicScreen {
         this.amountTextBox.setFilter(BankScreen::filterAmount);
         this.amountTextBox.setOnEnter(tb -> this.transfer(BankAction.DEPOSIT));
 
-        this.buttonWithdraw = new UIButtonBuilder(this)
+        this.buttonWithdraw = new UIButtonBuilder()
             .text(I18n.format("almura.feature.bank.button.withdraw"))
             .width(58)
             .anchor(Anchor.TOP | Anchor.RIGHT)
@@ -167,7 +167,7 @@ public final class BankScreen extends BasicScreen {
             .onClick(() -> this.transfer(BankAction.WITHDRAW))
             .build("button.withdraw");
 
-        this.buttonDeposit = new UIButtonBuilder(this)
+        this.buttonDeposit = new UIButtonBuilder()
             .text(I18n.format("almura.feature.bank.button.deposit"))
             .width(58)
             .anchor(Anchor.TOP | Anchor.RIGHT)
@@ -175,7 +175,7 @@ public final class BankScreen extends BasicScreen {
             .onClick(() -> this.transfer(BankAction.DEPOSIT))
             .build("button.deposit");
 
-        this.buttonAccountCoins = new UIButtonBuilder(this)
+        this.buttonAccountCoins = new UIButtonBuilder()
             .text(I18n.format("almura.feature.bank.button.deposit_coins"))
             .tooltip(I18n.format("almura.feature.bank.tooltip.coins_to_account"))
             .width(80)
@@ -183,7 +183,7 @@ public final class BankScreen extends BasicScreen {
             .onClick(this::depositCoins)
             .build("button.account_coins");
 
-        this.buttonMembers = new UIButtonBuilder(this)
+        this.buttonMembers = new UIButtonBuilder()
             .text(I18n.format("almura.feature.bank.button.members"))
             .width(80)
             .anchor(Anchor.TOP | Anchor.RIGHT)
@@ -202,14 +202,14 @@ public final class BankScreen extends BasicScreen {
         int historyTop = 119;
         if (manager.isAdmin()) {
             // Admins: any player's history by name
-            final UIButton buttonSearch = new UIButtonBuilder(this)
+            final UIButton buttonSearch = new UIButtonBuilder()
                 .text(I18n.format("almura.feature.bank.button.search"))
                 .width(40)
                 .anchor(Anchor.TOP | Anchor.RIGHT)
                 .position(0, 103)
                 .onClick(this::searchPlayer)
                 .build("button.search");
-            this.playerSearchTextBox = new BasicTextBox(this, "");
+            this.playerSearchTextBox = new BasicTextBox("");
             this.playerSearchTextBox.setSize(90, 0);
             this.playerSearchTextBox.setPosition(-44, 104, Anchor.TOP | Anchor.RIGHT);
             this.playerSearchTextBox.setAcceptsReturn(false);
@@ -220,7 +220,7 @@ public final class BankScreen extends BasicScreen {
             historyTop = 121;
         }
 
-        this.historyList = new BasicList<>(this, rightWidth, paddedHeight - historyTop);
+        this.historyList = new BasicList<>(rightWidth, paddedHeight - historyTop);
         this.historyList.setBorder(FontColors.WHITE, 1, 185);
         this.historyList.setPadding(2, 2);
         this.historyList.setItemComponentSpacing(1);
@@ -229,7 +229,7 @@ public final class BankScreen extends BasicScreen {
         this.historyList.setPosition(x, historyTop);
 
         // Over the empty account list (the list replaces its own contents when it refreshes)
-        this.emptyLabel = new UILabel(this, I18n.format("almura.feature.bank.text.no_accounts"), true);
+        this.emptyLabel = new UILabel(I18n.format("almura.feature.bank.text.no_accounts"), true);
         this.emptyLabel.setFontOptions(SMALL_GRAY);
         // Wrapped to the list's width
         this.emptyLabel.setSize(LIST_WIDTH - 10, 24);
@@ -441,14 +441,14 @@ public final class BankScreen extends BasicScreen {
     }
 
     private UILabel label(final String text, final int x, final int y) {
-        final UILabel label = new UILabel(this, text);
+        final UILabel label = new UILabel(text);
         label.setFontOptions(FontColors.WHITE_FO);
         label.setPosition(x, y);
         return label;
     }
 
     private BasicContainer<?> line(final int x, final int y, final int width) {
-        final BasicContainer<?> line = new BasicContainer<>(this, width, 1);
+        final BasicContainer<?> line = new BasicContainer<>(width, 1);
         line.setColor(FontColors.WHITE);
         line.setBackgroundAlpha(185);
         line.setPosition(x, y);
@@ -491,14 +491,14 @@ public final class BankScreen extends BasicScreen {
             super.construct(gui);
             this.setSize(0, 24);
 
-            final UILabel nameLabel = new UILabel(gui, this.item.getName());
+            final UILabel nameLabel = new UILabel(this.item.getName());
             nameLabel.setFontOptions(FontColors.WHITE_FO);
             nameLabel.setPosition(2, 0, Anchor.TOP | Anchor.LEFT);
 
             final String shared = this.item.isMine()
                 ? this.item.isShared() ? " " + TextFormatting.GRAY + I18n.format("almura.feature.bank.text.shared") : ""
                 : " " + TextFormatting.GRAY + I18n.format("almura.feature.bank.text.by", this.item.getOwnerName());
-            final UILabel balanceLabel = new UILabel(gui, TextFormatting.GOLD + format(this.item.getBalance()) + shared);
+            final UILabel balanceLabel = new UILabel(TextFormatting.GOLD + format(this.item.getBalance()) + shared);
             balanceLabel.setFontOptions(FontColors.WHITE_FO.toBuilder().scale(0.8f).build());
             balanceLabel.setPosition(2, 0, Anchor.BOTTOM | Anchor.LEFT);
 
@@ -518,7 +518,7 @@ public final class BankScreen extends BasicScreen {
             this.setSize(0, 21);
 
             final BankTransactionType type = this.item.getType();
-            final UILabel typeLabel = new UILabel(gui, typeColor(type) + I18n.format("almura.feature.bank.type."
+            final UILabel typeLabel = new UILabel(typeColor(type) + I18n.format("almura.feature.bank.type."
                 + type.name().toLowerCase(Locale.ENGLISH)));
             typeLabel.setFontOptions(FontColors.WHITE_FO.toBuilder().scale(0.9f).build());
             typeLabel.setPosition(2, 0, Anchor.TOP | Anchor.LEFT);
@@ -526,13 +526,13 @@ public final class BankScreen extends BasicScreen {
 
             final String sign = sign(type);
             if (sign != null) {
-                final UILabel amountLabel = new UILabel(gui, typeColor(type) + sign + format(this.item.getAmount()));
+                final UILabel amountLabel = new UILabel(typeColor(type) + sign + format(this.item.getAmount()));
                 amountLabel.setFontOptions(FontColors.WHITE_FO.toBuilder().scale(0.9f).build());
                 amountLabel.setPosition(-2, 0, Anchor.TOP | Anchor.RIGHT);
                 this.add(amountLabel);
             }
 
-            final UILabel detailLabel = new UILabel(gui, DATE_FORMAT.format(this.item.getCreated()) + "  " + this.item.getActorName() + "  "
+            final UILabel detailLabel = new UILabel(DATE_FORMAT.format(this.item.getCreated()) + "  " + this.item.getActorName() + "  "
                 + this.item.getAccountName());
             detailLabel.setFontOptions(SMALL_GRAY);
             detailLabel.setPosition(2, 0, Anchor.BOTTOM | Anchor.LEFT);

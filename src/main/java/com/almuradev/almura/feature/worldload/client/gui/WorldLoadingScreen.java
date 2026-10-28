@@ -51,19 +51,19 @@ public final class WorldLoadingScreen extends BasicScreen {
     public void construct() {
         this.guiscreenBackground = false;
 
-        final BasicForm form = new BasicForm(this, FORM_WIDTH, FORM_HEIGHT, "Loading World");
+        final BasicForm form = new BasicForm(FORM_WIDTH, FORM_HEIGHT, "Loading World");
         form.setZIndex(10);
         form.setBackgroundAlpha(255);
 
-        this.worldLabel = new UILabel(this, "");
+        this.worldLabel = new UILabel("");
         this.worldLabel.setFontOptions(FontOptions.builder().from(FontColors.GOLD_FO).shadow(true).build());
         this.worldLabel.setPosition(0, 6, Anchor.CENTER | Anchor.TOP);
 
-        final UILabel infoLabel = new UILabel(this, "The server may pause until it's ready.");
+        final UILabel infoLabel = new UILabel("The server may pause until it's ready.");
         infoLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).build());
         infoLabel.setPosition(0, 20, Anchor.CENTER | Anchor.TOP);
 
-        this.elapsedLabel = new UILabel(this, "");
+        this.elapsedLabel = new UILabel("");
         this.elapsedLabel.setFontOptions(FontOptions.builder().from(FontColors.GRAY_FO).shadow(true).build());
         this.elapsedLabel.setPosition(0, 34, Anchor.CENTER | Anchor.TOP);
 
@@ -71,7 +71,7 @@ public final class WorldLoadingScreen extends BasicScreen {
         separator.setSize(form.getWidth() - 5, 1);
         separator.setPosition(0, -20, Anchor.BOTTOM | Anchor.CENTER);
 
-        final UIButton buttonClose = new UIButtonBuilder(this)
+        final UIButton buttonClose = new UIButtonBuilder()
                 .text(I18n.format("almura.button.close"))
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .position(0, 0)

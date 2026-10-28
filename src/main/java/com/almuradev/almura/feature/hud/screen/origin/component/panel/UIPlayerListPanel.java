@@ -13,7 +13,7 @@ import com.almuradev.almura.feature.nick.ClientNickManager;
 import com.google.common.base.Strings;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
-import net.malisis.core.client.gui.GuiRenderer;
+import net.malisis.core.client.gui.render.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.container.BasicList;
 import net.minecraft.client.Minecraft;
@@ -71,7 +71,7 @@ public class UIPlayerListPanel extends AbstractPanel {
     public UIPlayerListPanel(MalisisGui gui, int width, int height) {
         super(gui, width, height);
 
-        this.playerList = new BasicList<>(gui, 0, 0);
+        this.playerList = new BasicList<>(0, 0);
         this.playerList.setItemComponentFactory(PlayerListElement::new);
         this.playerList.getScrollBar().setAutoHide(false);
         this.playerList.setItemComponentSpacing(2);

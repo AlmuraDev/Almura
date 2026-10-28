@@ -84,10 +84,10 @@ public final class AccessoryScreen extends BasicScreen {
     public void construct() {
         this.guiscreenBackground = false;
 
-        this.form = new BasicForm(this, FORM_WIDTH, FORM_HEIGHT, "Accessories");
+        this.form = new BasicForm(FORM_WIDTH, FORM_HEIGHT, "Accessories");
         this.form.setBackgroundAlpha(215);
 
-        final UIButton closeButton = new UIButtonBuilder(this)
+        final UIButton closeButton = new UIButtonBuilder()
                 .text("Close")
                 .width(50)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
@@ -96,7 +96,7 @@ public final class AccessoryScreen extends BasicScreen {
         this.form.add(closeButton);
 
         if (this.allowed.isEmpty()) {
-            final UILabel none = new UILabel(this, "You don't have any accessories you can wear.");
+            final UILabel none = new UILabel("You don't have any accessories you can wear.");
             none.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).build());
             none.setPosition(0, 0, Anchor.CENTER | Anchor.MIDDLE);
             this.form.add(none);
@@ -104,25 +104,25 @@ public final class AccessoryScreen extends BasicScreen {
             return;
         }
 
-        final UILabel typeLabel = new UILabel(this, "Accessory");
+        final UILabel typeLabel = new UILabel("Accessory");
         typeLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).build());
         typeLabel.setPosition(4, 4, Anchor.LEFT | Anchor.TOP);
 
-        this.typeSelect = new UISelect<>(this, 130, this.allowed);
+        this.typeSelect = new UISelect<>(130, this.allowed);
         this.typeSelect.setLabelFunction(AccessoryType::displayName);
         this.typeSelect.setPosition(4, 15, Anchor.LEFT | Anchor.TOP);
         this.typeSelect.register(this);
 
-        final UILabel styleLabel = new UILabel(this, "Style");
+        final UILabel styleLabel = new UILabel("Style");
         styleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).build());
         styleLabel.setPosition(4, 35, Anchor.LEFT | Anchor.TOP);
 
-        this.styleSelect = new UISelect<>(this, 130);
+        this.styleSelect = new UISelect<>(130);
         this.styleSelect.setPosition(4, 46, Anchor.LEFT | Anchor.TOP);
         this.styleSelect.maxDisplayedOptions(12);
         this.styleSelect.register(this);
 
-        this.previousButton = new UIButtonBuilder(this)
+        this.previousButton = new UIButtonBuilder()
                 .text("<")
                 .width(24)
                 .position(4, 66)
@@ -130,7 +130,7 @@ public final class AccessoryScreen extends BasicScreen {
                 .listener(this)
                 .build("button.previous");
 
-        this.nextButton = new UIButtonBuilder(this)
+        this.nextButton = new UIButtonBuilder()
                 .text(">")
                 .width(24)
                 .position(32, 66)
@@ -138,23 +138,23 @@ public final class AccessoryScreen extends BasicScreen {
                 .listener(this)
                 .build("button.next");
 
-        this.countLabel = new UILabel(this, "");
+        this.countLabel = new UILabel("");
         this.countLabel.setFontOptions(FontOptions.builder().from(FontColors.GRAY_FO).shadow(true).build());
         this.countLabel.setPosition(62, 70, Anchor.LEFT | Anchor.TOP);
 
-        this.statusLabel = new UILabel(this, "");
+        this.statusLabel = new UILabel("");
         this.statusLabel.setFontOptions(FontOptions.builder().from(FontColors.GOLD_FO).shadow(true).build());
         this.statusLabel.setPosition(4, 90, Anchor.LEFT | Anchor.TOP);
 
-        this.hideNameCheckbox = new UICheckBox(this, "Hide name");
+        this.hideNameCheckbox = new UICheckBox("Hide name");
         this.hideNameCheckbox.setPosition(4, 108, Anchor.LEFT | Anchor.TOP);
         this.hideNameCheckbox.setChecked(hideNameChoice);
 
-        this.hideTitleCheckbox = new UICheckBox(this, "Hide title");
+        this.hideTitleCheckbox = new UICheckBox("Hide title");
         this.hideTitleCheckbox.setPosition(4, 121, Anchor.LEFT | Anchor.TOP);
         this.hideTitleCheckbox.setChecked(hideTitleChoice);
 
-        this.hideHealthCheckbox = new UICheckBox(this, "Hide health bar");
+        this.hideHealthCheckbox = new UICheckBox("Hide health bar");
         this.hideHealthCheckbox.setPosition(4, 134, Anchor.LEFT | Anchor.TOP);
         this.hideHealthCheckbox.setChecked(hideHealthChoice);
 
@@ -168,14 +168,14 @@ public final class AccessoryScreen extends BasicScreen {
         divider.setSize(1, FORM_HEIGHT - 40);
         divider.setPosition(PREVIEW_LEFT - 8, 4, Anchor.LEFT | Anchor.TOP);
 
-        final UIButton wearButton = new UIButtonBuilder(this)
+        final UIButton wearButton = new UIButtonBuilder()
                 .text("Wear")
                 .width(50)
                 .anchor(Anchor.BOTTOM | Anchor.LEFT)
                 .listener(this)
                 .build("button.wear");
 
-        final UIButton removeButton = new UIButtonBuilder(this)
+        final UIButton removeButton = new UIButtonBuilder()
                 .text("Take Off")
                 .width(60)
                 .position(54, 0)

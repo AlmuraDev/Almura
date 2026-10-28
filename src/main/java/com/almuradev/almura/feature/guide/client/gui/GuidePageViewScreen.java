@@ -16,7 +16,7 @@ import com.almuradev.almura.shared.client.ui.component.WYSIWYGTextBox;
 import com.almuradev.almura.shared.util.TextUtil;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.GuiTexture;
+import net.malisis.core.client.gui.render.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.container.BasicList;
@@ -118,11 +118,11 @@ public class GuidePageViewScreen extends BasicScreen {
         guiscreenBackground = false;
         Keyboard.enableRepeatEvents(true);
 
-        final BasicForm form = new BasicForm(this, BASE_FORM_WIDTH, 315, TextFormatting.WHITE + I18n.format("almura.guide.view.form.title"));
+        final BasicForm form = new BasicForm(BASE_FORM_WIDTH, 315, TextFormatting.WHITE + I18n.format("almura.guide.view.form.title"));
         this.form = form;
 
         // Page list (widened to fit its entries by fitToPages)
-        this.pagesList = new BasicList<>(this, BASE_LIST_WIDTH, BasicScreen.getPaddedHeight(form));
+        this.pagesList = new BasicList<>(BASE_LIST_WIDTH, BasicScreen.getPaddedHeight(form));
         this.pagesList.setBorder(0xFFFFFF, 1, 215);
         this.pagesList.setPadding(2, 2);
         this.pagesList.setPosition(1, 0);
@@ -144,7 +144,7 @@ public class GuidePageViewScreen extends BasicScreen {
         if (this.hasEditControls()) {
             this.pagesList.setHeight(this.pagesList.getHeight() - 17);
 
-            this.buttonAdd = new UIButtonBuilder(this)
+            this.buttonAdd = new UIButtonBuilder()
                     .text(TextFormatting.GREEN + "+")
                     .onClick(() -> this.runScheduledTask("add"))
                     .anchor(Anchor.BOTTOM | Anchor.LEFT)
@@ -153,7 +153,7 @@ public class GuidePageViewScreen extends BasicScreen {
                     .tooltip(I18n.format("almura.guide.view.button.add.tooltip"))
                     .build("button.add");
 
-            this.buttonRemove = new UIButtonBuilder(this)
+            this.buttonRemove = new UIButtonBuilder()
                     .text(TextFormatting.RED + "-")
                     .onClick(() -> this.runScheduledTask("remove"))
                     .anchor(Anchor.BOTTOM | Anchor.LEFT)
@@ -162,7 +162,7 @@ public class GuidePageViewScreen extends BasicScreen {
                     .tooltip(I18n.format("almura.guide.view.button.remove.tooltip"))
                     .build("button.remove");
 
-            this.buttonDetails = new UIButtonBuilder(this)
+            this.buttonDetails = new UIButtonBuilder()
                     .text(TextFormatting.YELLOW + "?")
                     .onClick(() -> this.runScheduledTask("details"))
                     .anchor(Anchor.BOTTOM | Anchor.LEFT)
@@ -180,7 +180,7 @@ public class GuidePageViewScreen extends BasicScreen {
         // Save is only clickable once the text differs from the page as loaded
         this.tbContent.getTextBox().register(this);
 
-        final UIButton buttonClose = new UIButtonBuilder(this)
+        final UIButton buttonClose = new UIButtonBuilder()
             .width(50)
             .anchor(Anchor.BOTTOM | Anchor.RIGHT)
 
@@ -192,7 +192,7 @@ public class GuidePageViewScreen extends BasicScreen {
 
         this.tbContent.setHeight(BasicScreen.getPaddedHeight(form) - 17);
         if (this.hasEditControls()) {
-            this.buttonSave = new UIButtonBuilder(this)
+            this.buttonSave = new UIButtonBuilder()
                 .width(50)
                 .anchor(Anchor.RIGHT | Anchor.BOTTOM)
                 .position(BasicScreen.getPaddedX(buttonClose, 2, Anchor.RIGHT), 0)
@@ -292,7 +292,7 @@ public class GuidePageViewScreen extends BasicScreen {
     }
 
     private UICheckBox createCheckBox(final String name, final String text, final boolean checked) {
-        final UICheckBox checkBox = new UICheckBox(this, text);
+        final UICheckBox checkBox = new UICheckBox(text);
         checkBox.setName(name);
         checkBox.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).build());
         checkBox.setChecked(checked);
@@ -521,7 +521,7 @@ public class GuidePageViewScreen extends BasicScreen {
         protected void construct(final MalisisGui gui) {
             super.construct(gui);
 
-            final UIImage icon = null;//this.item.getIcon() == null ? null : new UIImage(gui, this.item.getIcon());
+            final UIImage icon = null;//this.item.getIcon() == null ? null : new UIImage(this.item.getIcon());
             if (icon != null) {
                 icon.setPosition(2, 0, Anchor.MIDDLE | Anchor.LEFT);
                 this.add(icon);
@@ -534,11 +534,11 @@ public class GuidePageViewScreen extends BasicScreen {
 
             // Player guides: the name, then whose it is (they aren't "Category - Name" like server guides)
             if (this.item.isPlayerGuide()) {
-                final UILabel nameLabel = new UILabel(gui, this.item.getName());
+                final UILabel nameLabel = new UILabel(this.item.getName());
                 nameLabel.setPosition(xPos, 0, Anchor.TOP | Anchor.LEFT);
                 nameLabel.setFontOptions(FontColors.WHITE_FO);
 
-                final UILabel ownerLabel = new UILabel(gui, TextFormatting.ITALIC + (this.item.isMine()
+                final UILabel ownerLabel = new UILabel(TextFormatting.ITALIC + (this.item.isMine()
                         ? I18n.format("almura.guide.view.label.my_guide")
                         : I18n.format("almura.guide.view.label.player_guide", this.item.getOwnerName())));
                 ownerLabel.setPosition(xPos, BasicScreen.getPaddedY(nameLabel, 2));
@@ -548,7 +548,7 @@ public class GuidePageViewScreen extends BasicScreen {
             }
 
             final String[] splitName = this.item.getName().split(" - ");
-            final UILabel categoryLabel = new UILabel(gui, splitName[0]);
+            final UILabel categoryLabel = new UILabel(splitName[0]);
             categoryLabel.setPosition(xPos, 0, Anchor.MIDDLE | Anchor.LEFT);
             categoryLabel.setFontOptions(FontColors.WHITE_FO);
             this.add(categoryLabel);
@@ -556,7 +556,7 @@ public class GuidePageViewScreen extends BasicScreen {
             if (splitName.length > 1) {
                 categoryLabel.setAnchor(Anchor.TOP | Anchor.LEFT);
 
-                final UILabel nameLabel = new UILabel(gui, splitName[1]);
+                final UILabel nameLabel = new UILabel(splitName[1]);
                 nameLabel.setPosition(xPos, BasicScreen.getPaddedY(categoryLabel, 2));
                 nameLabel.setFontOptions(FontColors.GRAY_FO);
                 this.add(nameLabel);
@@ -588,9 +588,9 @@ public class GuidePageViewScreen extends BasicScreen {
 
         private UIButton arrowButton(final MalisisGui gui, final ResourceLocation texture, final int direction, final int y,
                 final boolean enabled) {
-            final UIImage arrow = new UIImage(gui, new GuiTexture(texture), null);
+            final UIImage arrow = new UIImage(new GuiTexture(texture), null);
             arrow.setSize(9, 5);
-            final UIButton button = new UIButtonBuilder(gui)
+            final UIButton button = new UIButtonBuilder()
                     .image(arrow)
                     .anchor(Anchor.MIDDLE | Anchor.RIGHT)
                     .position(0, y)

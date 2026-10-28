@@ -11,7 +11,7 @@ import com.almuradev.almura.feature.claim.ClientClaimManager;
 import com.almuradev.almura.feature.hud.HeadUpDisplay;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.GuiRenderer;
+import net.malisis.core.client.gui.render.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.decoration.UILabel;
@@ -39,15 +39,15 @@ public class UIWorldPanel extends AbstractPanel {
   public UIWorldPanel(final MalisisGui gui) {
     super(gui, minWidth, 35);
 
-    this.worldLabel = new UILabel(gui, "");
+    this.worldLabel = new UILabel("");
     this.worldLabel.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
     this.worldLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
-    this.claimLabel = new UILabel(gui, "");
+    this.claimLabel = new UILabel("");
     this.claimLabel.setPosition(0, 0, Anchor.MIDDLE | Anchor.CENTER);
     this.claimLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
-    this.compassLabel = new UILabel(gui, "");
+    this.compassLabel = new UILabel("");
     this.compassLabel.setPosition(0, 1, Anchor.BOTTOM | Anchor.CENTER);
     this.compassLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 

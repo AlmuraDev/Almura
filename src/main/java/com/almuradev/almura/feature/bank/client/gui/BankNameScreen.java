@@ -52,25 +52,25 @@ public final class BankNameScreen extends BasicScreen implements BankScreen.Chil
         this.guiscreenBackground = false;
         Keyboard.enableRepeatEvents(true);
 
-        final BasicForm form = new BasicForm(this, 160, 62, this.title);
+        final BasicForm form = new BasicForm(160, 62, this.title);
         form.setZIndex(10);
         form.setBackgroundAlpha(255);
 
-        this.nameTextBox = new BasicTextBox(this, this.initialName);
+        this.nameTextBox = new BasicTextBox(this.initialName);
         this.nameTextBox.setSize(UIComponent.INHERITED, 0);
         this.nameTextBox.setAcceptsReturn(false);
         this.nameTextBox.setAcceptsTab(false);
         this.nameTextBox.setFilter(s -> s.substring(0, Math.min(s.length(), MAX_NAME_LENGTH)));
         this.nameTextBox.setOnEnter(tb -> this.save());
 
-        final UIButton buttonSave = new UIButtonBuilder(this)
+        final UIButton buttonSave = new UIButtonBuilder()
             .text(I18n.format("almura.button.save"))
             .width(40)
             .anchor(Anchor.BOTTOM | Anchor.RIGHT)
             .onClick(this::save)
             .build("button.save");
 
-        final UIButton buttonCancel = new UIButtonBuilder(this)
+        final UIButton buttonCancel = new UIButtonBuilder()
             .text(I18n.format("almura.button.cancel"))
             .width(40)
             .anchor(Anchor.BOTTOM | Anchor.RIGHT)

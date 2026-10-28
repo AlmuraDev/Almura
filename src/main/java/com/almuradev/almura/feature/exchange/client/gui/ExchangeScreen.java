@@ -117,21 +117,21 @@ public final class ExchangeScreen extends BasicScreen {
         }
 
         // Main Panel
-        final BasicForm form = new BasicForm(this, minScreenWidth, minScreenHeight, this.getExchange().getName());
+        final BasicForm form = new BasicForm(minScreenWidth, minScreenHeight, this.getExchange().getName());
 
         // Search section
-        final BasicContainer<?> searchContainer = new BasicContainer<>(this, 295, 322);
+        final BasicContainer<?> searchContainer = new BasicContainer<>(295, 322);
         searchContainer.setPosition(0, 0, Anchor.LEFT | Anchor.TOP);
         searchContainer.setColor(0);
         searchContainer.setBorder(FontColors.WHITE, 1, 185);
         searchContainer.setBackgroundAlpha(215);
         searchContainer.setPadding(3, 3);
 
-        final UILabel itemSearchLabel = new UILabel(this, I18n.format("almura.feature.exchange.text.item_name") + ":");
+        final UILabel itemSearchLabel = new UILabel(I18n.format("almura.feature.exchange.text.item_name") + ":");
         itemSearchLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).scale(1.1F).build());
         itemSearchLabel.setPosition(0, 4, Anchor.LEFT | Anchor.TOP);
 
-        this.itemDisplayNameSearchBox = new BasicTextBox(this, "");
+        this.itemDisplayNameSearchBox = new BasicTextBox("");
         this.itemDisplayNameSearchBox.setAcceptsReturn(false);
         this.itemDisplayNameSearchBox.setAcceptsTab(false);
         this.itemDisplayNameSearchBox.setTabIndex(0);
@@ -140,12 +140,12 @@ public final class ExchangeScreen extends BasicScreen {
         this.itemDisplayNameSearchBox.setPosition(itemSearchLabel.getWidth() + innerPadding, 2, Anchor.LEFT | Anchor.TOP);
         this.itemDisplayNameSearchBox.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
-        final UILabel sellerSearchLabel = new UILabel(this, I18n.format("almura.feature.exchange.text.seller") + ":");
+        final UILabel sellerSearchLabel = new UILabel(I18n.format("almura.feature.exchange.text.seller") + ":");
         sellerSearchLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).scale(1.1F).build());
         sellerSearchLabel.setPosition(itemDisplayNameSearchBox.getX() - sellerSearchLabel.getWidth() - 1,
             getPaddedY(itemSearchLabel, 7), Anchor.LEFT | Anchor.TOP);
 
-        this.sellerSearchTextBox = new BasicTextBox(this, "");
+        this.sellerSearchTextBox = new BasicTextBox("");
         this.sellerSearchTextBox.setAcceptsReturn(false);
         this.sellerSearchTextBox.setAcceptsTab(false);
         this.sellerSearchTextBox.setTabIndex(1);
@@ -156,7 +156,7 @@ public final class ExchangeScreen extends BasicScreen {
 
         // Sort combobox
         // Sort combobox
-        this.comboBoxSortType = new UISelect<>(this, 78);
+        this.comboBoxSortType = new UISelect<>(78);
         this.comboBoxSortType.setOptions(Arrays.asList(
           FeatureSortTypes.CREATED_ASC,
           FeatureSortTypes.CREATED_DESC,
@@ -173,7 +173,7 @@ public final class ExchangeScreen extends BasicScreen {
         this.comboBoxSortType.register(this);
 
         // Search button
-        final UIButton buttonSearch = new UIButtonBuilder(this)
+        final UIButton buttonSearch = new UIButtonBuilder()
                 .width(60)
                 .anchor(Anchor.RIGHT | Anchor.TOP)
                 .position(-innerPadding, this.sellerSearchTextBox.getY() - 1)
@@ -182,7 +182,7 @@ public final class ExchangeScreen extends BasicScreen {
                 .build("button.search");
 
         // Options button
-        final UIButton buttonOptions = new UIButtonBuilder(this)
+        final UIButton buttonOptions = new UIButtonBuilder()
                 .width(46)
                 .anchor(Anchor.RIGHT | Anchor.TOP)
                 .position(-(innerPadding + 62), this.sellerSearchTextBox.getY() - 1)
@@ -191,7 +191,7 @@ public final class ExchangeScreen extends BasicScreen {
                 .build("button.options");
 
         // Clear button: empties the item name and seller filters and searches again
-        final UIButton buttonClearFilters = new UIButtonBuilder(this)
+        final UIButton buttonClearFilters = new UIButtonBuilder()
                 .anchor(Anchor.LEFT | Anchor.TOP)
                 // Text boxes draw their border a pixel above their position: line up with it
                 .position(BasicScreen.getPaddedX(this.itemDisplayNameSearchBox, 3), this.itemDisplayNameSearchBox.getY() - 1)
@@ -204,7 +204,7 @@ public final class ExchangeScreen extends BasicScreen {
         buttonClearFilters.setSize(14, 14);
 
         // Separator
-        final BasicContainer<?> forSaleTopLine = new BasicContainer<>(this, searchContainer.getRawWidth() - 2, 1);
+        final BasicContainer<?> forSaleTopLine = new BasicContainer<>(searchContainer.getRawWidth() - 2, 1);
         forSaleTopLine.setColor(FontColors.WHITE);
         forSaleTopLine.setBackgroundAlpha(185);
         forSaleTopLine.setPosition(0, BasicScreen.getPaddedY(this.sellerSearchTextBox, 4), Anchor.CENTER | Anchor.TOP);
@@ -220,20 +220,20 @@ public final class ExchangeScreen extends BasicScreen {
         this.headerPrice.setPosition(-(priceColumnInset() + EXPANDING_LABEL_PADDING), headerY, Anchor.RIGHT | Anchor.TOP);
         this.updateHeaders();
 
-        this.forSaleList = new BasicList<>(this, UIComponent.INHERITED, 242);
+        this.forSaleList = new BasicList<>(UIComponent.INHERITED, 242);
         this.forSaleList.setPosition(0, headerTop + HEADER_HEIGHT);
         this.forSaleList.setItemComponentFactory(ForSaleItemComponent::new);
         this.forSaleList.setItemComponentSpacing(1);
         this.forSaleList.setSelectConsumer((i) -> this.updateControls());
 
         // No results label
-        this.noResultsLabel = new UILabel(this, "No results found.");
+        this.noResultsLabel = new UILabel("No results found.");
         this.noResultsLabel.setPosition(0, this.forSaleList.getY() + 8, Anchor.TOP | Anchor.CENTER);
         this.noResultsLabel.setFontOptions(FontColors.GRAY_FO);
         this.noResultsLabel.setVisible(false);
 
         // Bottom Page Control - first button
-        this.buttonFirstPage = new UIButtonBuilder(this)
+        this.buttonFirstPage = new UIButtonBuilder()
             .size(20)
             .anchor(Anchor.LEFT | Anchor.BOTTOM)
             .position(0, 0)
@@ -243,7 +243,7 @@ public final class ExchangeScreen extends BasicScreen {
             .build("button.first");
 
         // Bottom Page Control - previous button
-        this.buttonPreviousPage = new UIButtonBuilder(this)
+        this.buttonPreviousPage = new UIButtonBuilder()
             .size(20)
             .anchor(Anchor.LEFT | Anchor.BOTTOM)
             .position(getPaddedX(this.buttonFirstPage, innerPadding), 0)
@@ -253,11 +253,11 @@ public final class ExchangeScreen extends BasicScreen {
             .build("button.previous");
 
         // Search pages label
-        this.labelSearchPage = new UILabel(this, "");
+        this.labelSearchPage = new UILabel("");
         this.labelSearchPage.setPosition(0, -4, Anchor.CENTER | Anchor.BOTTOM);
 
         // Bottom Page Control - last button
-        this.buttonLastPage = new UIButtonBuilder(this)
+        this.buttonLastPage = new UIButtonBuilder()
             .size(20)
             .anchor(Anchor.RIGHT | Anchor.BOTTOM)
             .position(0,0)
@@ -267,7 +267,7 @@ public final class ExchangeScreen extends BasicScreen {
             .build("button.last");
 
         // Bottom Page Control - next button
-        this.buttonNextPage = new UIButtonBuilder(this)
+        this.buttonNextPage = new UIButtonBuilder()
             .size(20)
             .anchor(Anchor.RIGHT | Anchor.BOTTOM)
             .position(getPaddedX(this.buttonLastPage, innerPadding, Anchor.RIGHT),0)
@@ -277,7 +277,7 @@ public final class ExchangeScreen extends BasicScreen {
             .build("button.next");
 
         // Separator
-        final BasicLine forSaleBottomLine = new BasicLine(this, searchContainer.getRawWidth() - 2);
+        final BasicLine forSaleBottomLine = new BasicLine(searchContainer.getRawWidth() - 2);
         forSaleBottomLine.setPosition(0, BasicScreen.getPaddedY(this.buttonFirstPage, 2, Anchor.BOTTOM), Anchor.CENTER | Anchor.BOTTOM);
 
         // Add Elements of Search Area
@@ -286,14 +286,14 @@ public final class ExchangeScreen extends BasicScreen {
                 this.noResultsLabel, this.labelSearchPage, forSaleTopLine, forSaleBottomLine);
 
         // Buy container
-        final BasicContainer<?> buyContainer = new BasicContainer(this, 295, 21);
+        final BasicContainer<?> buyContainer = new BasicContainer(295, 21);
         buyContainer.setPosition(0, getPaddedY(searchContainer, innerPadding), Anchor.LEFT | Anchor.TOP);
         buyContainer.setColor(0);
         buyContainer.setBorder(FontColors.WHITE, 1, 185);
         buyContainer.setBackgroundAlpha(215);
         buyContainer.setPadding(3, 0);
 
-        this.buttonBuyOne = new UIButtonBuilder(this)
+        this.buttonBuyOne = new UIButtonBuilder()
                 .width(60)
                 .anchor(Anchor.LEFT | Anchor.MIDDLE)
                 .position(0, 0)
@@ -302,7 +302,7 @@ public final class ExchangeScreen extends BasicScreen {
                 .onClick(() -> this.buy(1))
                 .build("button.buy.single");
 
-        this.buttonBuyStack = new UIButtonBuilder(this)
+        this.buttonBuyStack = new UIButtonBuilder()
                 .width(60)
                 .anchor(Anchor.LEFT | Anchor.MIDDLE)
                 .position(BasicScreen.getPaddedX(this.buttonBuyOne, 10), 0)
@@ -316,7 +316,7 @@ public final class ExchangeScreen extends BasicScreen {
                 })
                 .build("button.buy.stack");
 
-        this.buttonBuyAll = new UIButtonBuilder(this)
+        this.buttonBuyAll = new UIButtonBuilder()
                 .width(50)
                 .anchor(Anchor.RIGHT | Anchor.MIDDLE)
                 .position(0, 0)
@@ -330,7 +330,7 @@ public final class ExchangeScreen extends BasicScreen {
                 })
                 .build("button.buy.all");
 
-        this.buttonBuyQuantity = new UIButtonBuilder(this)
+        this.buttonBuyQuantity = new UIButtonBuilder()
                 .width(60)
                 .anchor(Anchor.RIGHT | Anchor.MIDDLE)
                 .position(BasicScreen.getPaddedX(this.buttonBuyAll, 10, Anchor.RIGHT), 0)
@@ -347,27 +347,27 @@ public final class ExchangeScreen extends BasicScreen {
         buyContainer.add(this.buttonBuyOne, this.buttonBuyStack, this.buttonBuyQuantity, this.buttonBuyAll);
 
         // Listable Items section
-        final BasicContainer<?> listableItemsContainer = new BasicContainer(this, 295, 345);
+        final BasicContainer<?> listableItemsContainer = new BasicContainer(295, 345);
         listableItemsContainer.setPosition(0, 0, Anchor.RIGHT | Anchor.TOP);
         listableItemsContainer.setBorder(FontColors.WHITE, 1, 185);
         listableItemsContainer.setColor(0);
         listableItemsContainer.setBackgroundAlpha(215);
         listableItemsContainer.setPadding(3, 3);
 
-        final UILabel listableItemsLabel = new UILabel(this, I18n.format("almura.feature.exchange.title.listable_items"));
+        final UILabel listableItemsLabel = new UILabel(I18n.format("almura.feature.exchange.title.listable_items"));
         listableItemsLabel.setPosition(0, 2, Anchor.CENTER | Anchor.TOP);
         listableItemsLabel.setFontOptions(FontColors.WHITE_FO);
 
-        final BasicLine listTopLine = new BasicLine(this, listableItemsContainer.getRawWidth() - 2);
+        final BasicLine listTopLine = new BasicLine(listableItemsContainer.getRawWidth() - 2);
         listTopLine.setPosition(0, BasicScreen.getPaddedY(listableItemsLabel, 3), Anchor.TOP | Anchor.CENTER);
 
-        this.listItemList = new BasicList<>(this, UIComponent.INHERITED, 302);
+        this.listItemList = new BasicList<>(UIComponent.INHERITED, 302);
         this.listItemList.setPosition(0, BasicScreen.getPaddedY(listTopLine, 2));
         this.listItemList.setItemComponentFactory(ListItemComponent::new);
         this.listItemList.setItemComponentSpacing(1);
         this.listItemList.setSelectConsumer((i) -> this.updateControls());
 
-        this.buttonList = new UIButtonBuilder(this)
+        this.buttonList = new UIButtonBuilder()
             .width(40)
             .anchor(Anchor.LEFT | Anchor.BOTTOM)
             .position(0, 0)
@@ -376,10 +376,10 @@ public final class ExchangeScreen extends BasicScreen {
             .onClick(this::list)
             .build("button.list");
 
-        this.labelLimit = new UILabel(this, "");
+        this.labelLimit = new UILabel("");
         this.labelLimit.setPosition(0, -2, Anchor.CENTER | Anchor.BOTTOM);
 
-        final UIButton buttonOffer = new UIButtonBuilder(this)
+        final UIButton buttonOffer = new UIButtonBuilder()
             .width(30)
             .anchor(Anchor.RIGHT | Anchor.BOTTOM)
             .position(0, 0)
@@ -389,7 +389,7 @@ public final class ExchangeScreen extends BasicScreen {
             .build("button.offer");
 
         // Separator
-        final BasicLine listBottomLine = new BasicLine(this, searchContainer.getRawWidth() - 2);
+        final BasicLine listBottomLine = new BasicLine(searchContainer.getRawWidth() - 2);
         listBottomLine.setPosition(0, BasicScreen.getPaddedY(this.buttonList, 2, Anchor.BOTTOM), Anchor.CENTER | Anchor.BOTTOM);
 
         listableItemsContainer.add(listableItemsLabel, listTopLine, this.listItemList, this.buttonList, this.labelLimit, buttonOffer, listBottomLine);
@@ -444,7 +444,7 @@ public final class ExchangeScreen extends BasicScreen {
     }
 
     private UILabel createHeader(final String text) {
-        final UILabel header = new UILabel(this, text);
+        final UILabel header = new UILabel(text);
         header.setFontOptions(FontOptions.builder().from(FontColors.GRAY_FO).shadow(true).scale(0.9F).build());
         return header;
     }
@@ -801,7 +801,7 @@ public final class ExchangeScreen extends BasicScreen {
             final EntityPlayer player = Minecraft.getMinecraft().player;
             final boolean useAdvancedTooltips = Minecraft.getMinecraft().gameSettings.advancedItemTooltips;
 
-            this.image = new UIImage(gui, fakeStack);
+            this.image = new UIImage(fakeStack);
             this.image.setPosition(0, 0, Anchor.LEFT | Anchor.MIDDLE);
             this.image.setTooltip(new UISaneTooltip(gui, String.join("\n", fakeStack.getTooltip(player, useAdvancedTooltips
                 ? ITooltipFlag.TooltipFlags.ADVANCED
@@ -852,7 +852,7 @@ public final class ExchangeScreen extends BasicScreen {
         protected void construct(final MalisisGui gui) {
             super.construct(gui);
 
-            this.listedIndicatorContainer = new BasicContainer<>(gui, 5, this.height - (this.getLeftBorderSize() + this.getRightBorderSize()));
+            this.listedIndicatorContainer = new BasicContainer<>(5, this.height - (this.getLeftBorderSize() + this.getRightBorderSize()));
             this.listedIndicatorContainer.setVisible(false);
             this.listedIndicatorContainer.setPosition(2, -2, Anchor.TOP | Anchor.RIGHT);
             this.listedIndicatorContainer.setColor(FontColors.DARK_GREEN);
@@ -915,7 +915,7 @@ public final class ExchangeScreen extends BasicScreen {
 
             final boolean isSeller = Minecraft.getMinecraft().player.getUniqueID().equals(item.getListItem().getSeller());
 
-            this.sellerLabel = new UILabel(gui, TextFormatting.GRAY + "" + TextFormatting.ITALIC
+            this.sellerLabel = new UILabel(TextFormatting.GRAY + "" + TextFormatting.ITALIC
               + this.item.getListItem().getSellerName().orElse(I18n.format("almura.feature.common.text.unknown")));
             this.sellerLabel.setPosition(-innerPadding, 0, Anchor.RIGHT | Anchor.MIDDLE);
 

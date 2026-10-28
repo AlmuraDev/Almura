@@ -10,7 +10,7 @@ package com.almuradev.almura.feature.menu.main;
 import com.almuradev.almura.shared.client.GuiConfig;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.GuiTexture;
+import net.malisis.core.client.gui.render.GuiTexture;
 import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
@@ -33,7 +33,7 @@ public final class WorldLoadingGui extends BasicScreen {
     public void construct() {
         this.guiscreenBackground = true;
 
-        final BasicForm form = new BasicForm(this, 200, 135, "");
+        final BasicForm form = new BasicForm(200, 135, "");
         form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         form.setMovable(false);
         form.setClosable(false);
@@ -44,7 +44,7 @@ public final class WorldLoadingGui extends BasicScreen {
         form.setTopPadding(3);
         form.setLeftPadding(3);
 
-        final UIImage almuraHeader = new UIImage(this, new GuiTexture(GuiConfig.Location.ALMURA_LOGO), null);
+        final UIImage almuraHeader = new UIImage(new GuiTexture(GuiConfig.Location.ALMURA_LOGO), null);
         almuraHeader.setSize(60, 99);
         almuraHeader.setPosition(0, 5, Anchor.TOP | Anchor.CENTER);
 
@@ -52,7 +52,7 @@ public final class WorldLoadingGui extends BasicScreen {
         aboveLogoSeparator.setSize(form.getWidth() - 5, 1);
         aboveLogoSeparator.setPosition(0, 107, Anchor.TOP | Anchor.CENTER);
 
-        final UILabel messageLabel = new UILabel(this, "Loading world...");
+        final UILabel messageLabel = new UILabel("Loading world...");
         messageLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         // Vertically centred between the separator (y 107-108) and the bottom of the form (inner height 135 - 3 - 3 = 129): text ~10 tall
         messageLabel.setPosition(0, 113, Anchor.CENTER | Anchor.TOP);

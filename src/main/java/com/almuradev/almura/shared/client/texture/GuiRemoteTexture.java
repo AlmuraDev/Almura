@@ -8,7 +8,7 @@
 package com.almuradev.almura.shared.client.texture;
 
 import com.almuradev.almura.asm.ClientStaticAccess;
-import net.malisis.core.client.gui.GuiTexture;
+import net.malisis.core.client.gui.render.GuiTexture;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.texture.TextureUtil;

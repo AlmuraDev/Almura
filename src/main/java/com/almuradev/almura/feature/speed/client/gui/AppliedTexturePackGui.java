@@ -39,16 +39,16 @@ public class AppliedTexturePackGui extends BasicScreen {
         this.guiscreenBackground = true;
         Keyboard.enableRepeatEvents(true);
 
-        final BasicForm form = new BasicForm(this, 350, 125, "Almura Resource Loader");
+        final BasicForm form = new BasicForm(350, 125, "Almura Resource Loader");
         form.setZIndex(10);
         form.setClosable(false);
         form.setBackgroundAlpha(255);
 
-        final UILabel label0 = new UILabel(this, "We've applied the Almura texture pack.");
+        final UILabel label0 = new UILabel("We've applied the Almura texture pack.");
         label0.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.0F).build());
         label0.setPosition(0, 10, Anchor.CENTER | Anchor.TOP);
 
-        final UILabel label1 = new UILabel(this, "Thank you and Welcome to Almura.");
+        final UILabel label1 = new UILabel("Thank you and Welcome to Almura.");
         label1.setFontOptions(FontOptions.builder().from(FontColors.GREEN_FO).shadow(true).scale(1.0F).build());
         label1.setPosition(0, label0.getY() + 15, Anchor.CENTER | Anchor.TOP);
 
@@ -60,7 +60,7 @@ public class AppliedTexturePackGui extends BasicScreen {
         aboveCloseSeparator.setSize(form.getWidth() -5, 1);
         aboveCloseSeparator.setPosition(0, -20, Anchor.BOTTOM | Anchor.CENTER);
 
-        final UIButton buttonClose = new UIButtonBuilder(this)
+        final UIButton buttonClose = new UIButtonBuilder()
                 .text(I18n.format("almura.button.close"))
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .position(0, 0)

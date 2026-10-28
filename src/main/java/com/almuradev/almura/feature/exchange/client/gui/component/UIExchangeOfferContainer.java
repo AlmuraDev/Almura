@@ -17,7 +17,7 @@ import com.almuradev.almura.shared.util.MathUtil;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.GuiRenderer;
+import net.malisis.core.client.gui.render.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicContainer;
@@ -117,12 +117,12 @@ public class UIExchangeOfferContainer extends BasicDualListContainer<VanillaStac
             this.targetSide = SideType.RIGHT;
         }
 
-        final BasicContainer<?> middleContainer = new BasicContainer<>(gui, 38, 111);
+        final BasicContainer<?> middleContainer = new BasicContainer<>(38, 111);
         middleContainer.setPosition(0, 0, Anchor.MIDDLE | Anchor.CENTER);
         middleContainer.setBorder(FontColors.WHITE, 1, 185);
         middleContainer.setBackgroundAlpha(0);
 
-        this.buttonSingle = new UIButtonBuilder(gui)
+        this.buttonSingle = new UIButtonBuilder()
                 .size(20)
                 .position(0, 3)
                 .anchor(Anchor.TOP | Anchor.CENTER)
@@ -132,7 +132,7 @@ public class UIExchangeOfferContainer extends BasicDualListContainer<VanillaStac
                 .enabled(false)
                 .build("button.one");
 
-        this.buttonStack = new UIButtonBuilder(gui)
+        this.buttonStack = new UIButtonBuilder()
                 .size(20)
                 .position(0, BasicScreen.getPaddedY(this.buttonSingle, 2))
                 .anchor(Anchor.TOP | Anchor.CENTER)
@@ -142,11 +142,11 @@ public class UIExchangeOfferContainer extends BasicDualListContainer<VanillaStac
                 .enabled(false)
                 .build("button.stack");
 
-        this.labelDirection = new UILabel(gui, "->");
+        this.labelDirection = new UILabel("->");
         this.labelDirection.setFontOptions(FontColors.WHITE_FO);
         this.labelDirection.setPosition(0, BasicScreen.getPaddedY(this.buttonStack, 6), Anchor.TOP | Anchor.CENTER);
 
-        this.buttonType = new UIButtonBuilder(gui)
+        this.buttonType = new UIButtonBuilder()
                 .size(20)
                 .position(0, BasicScreen.getPaddedY(this.labelDirection, 6))
                 .anchor(Anchor.TOP | Anchor.CENTER)
@@ -156,7 +156,7 @@ public class UIExchangeOfferContainer extends BasicDualListContainer<VanillaStac
                 .enabled(false)
                 .build("button.type");
 
-        this.buttonAll = new UIButtonBuilder(gui)
+        this.buttonAll = new UIButtonBuilder()
                 .size(20)
                 .position(0, BasicScreen.getPaddedY(this.buttonType, 2))
                 .anchor(Anchor.TOP | Anchor.CENTER)
@@ -401,7 +401,7 @@ public class UIExchangeOfferContainer extends BasicDualListContainer<VanillaStac
             final EntityPlayer player = Minecraft.getMinecraft().player;
             final boolean useAdvancedTooltips = Minecraft.getMinecraft().gameSettings.advancedItemTooltips;
 
-            this.image = new UIImage(gui, fakeStack);
+            this.image = new UIImage(fakeStack);
             this.image.setPosition(0, 0, Anchor.LEFT | Anchor.MIDDLE);
             this.image.setTooltip(new UISaneTooltip(gui, String.join("\n", fakeStack.getTooltip(player, useAdvancedTooltips
                     ? ITooltipFlag.TooltipFlags.ADVANCED

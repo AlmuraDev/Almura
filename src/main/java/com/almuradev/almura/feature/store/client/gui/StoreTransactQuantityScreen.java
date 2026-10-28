@@ -72,15 +72,15 @@ public class StoreTransactQuantityScreen extends BasicScreen {
   public void construct() {
     this.guiscreenBackground = false;
 
-    this.form = new BasicForm(this, 130, 90, I18n.format("almura.feature.exchange.title.enter_a_quantity"));
+    this.form = new BasicForm(130, 90, I18n.format("almura.feature.exchange.title.enter_a_quantity"));
     this.form.setZIndex(10); // Fixes issue overlapping draws from parent
     this.form.setBackgroundAlpha(255);
 
-    this.quantityLabel = new UILabel(this, I18n.format("almura.feature.common.text.quantity") + ":");
+    this.quantityLabel = new UILabel(I18n.format("almura.feature.common.text.quantity") + ":");
     this.quantityLabel.setFontOptions(FontColors.WHITE_FO);
     this.quantityLabel.setPosition(0, 2);
 
-    this.quantityTextBox = new BasicTextBox(this, "1");
+    this.quantityTextBox = new BasicTextBox("1");
     this.quantityTextBox.setAcceptsReturn(false);
     this.quantityTextBox.setOnEnter(tb -> this.transact());
     this.quantityTextBox.setSize(45, 0);
@@ -89,23 +89,23 @@ public class StoreTransactQuantityScreen extends BasicScreen {
     this.quantityTextBox.setPosition(0, 0);
     this.quantityTextBox.register(this);
 
-    this.perItemLabel = new UILabel(this, "Per:");
+    this.perItemLabel = new UILabel("Per:");
     this.perItemLabel.setPosition(0, BasicScreen.getPaddedY(this.quantityTextBox, 8));
     this.perItemLabel.setFontOptions(FontColors.WHITE_FO);
 
-    this.perItemValueLabel = new UILabel(this, "");
+    this.perItemValueLabel = new UILabel("");
     this.perItemValueLabel.setPosition(0, this.perItemLabel.getY(), Anchor.TOP | Anchor.RIGHT);
     this.perItemValueLabel.setFontOptions(FontColors.WHITE_FO);
 
-    this.totalLabel = new UILabel(this, I18n.format("almura.feature.common.text.total") + ":");
+    this.totalLabel = new UILabel(I18n.format("almura.feature.common.text.total") + ":");
     this.totalLabel.setPosition(0, BasicScreen.getPaddedY(this.perItemLabel, 4));
     this.totalLabel.setFontOptions(FontColors.WHITE_FO);
 
-    this.totalValueLabel = new UILabel(this, "");
+    this.totalValueLabel = new UILabel("");
     this.totalValueLabel.setPosition(0, this.totalLabel.getY(), Anchor.TOP | Anchor.RIGHT);
     this.totalValueLabel.setFontOptions(FontColors.WHITE_FO);
 
-    this.buttonTransact = new UIButtonBuilder(this)
+    this.buttonTransact = new UIButtonBuilder()
       .text(I18n.format("almura.feature.common.button." + sideType.name().toLowerCase()))
       .width(40)
       .position(-2, -2)
@@ -113,7 +113,7 @@ public class StoreTransactQuantityScreen extends BasicScreen {
       .onClick(this::transact)
       .build("button.transact");
 
-    this.buttonCancel = new UIButtonBuilder(this)
+    this.buttonCancel = new UIButtonBuilder()
       .text(I18n.format("almura.button.cancel"))
       .width(40)
       .position(BasicScreen.getPaddedX(this.buttonTransact, 2, Anchor.RIGHT), -2)

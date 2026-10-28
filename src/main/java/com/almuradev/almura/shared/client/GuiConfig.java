@@ -8,9 +8,9 @@
 package com.almuradev.almura.shared.client;
 
 import com.almuradev.almura.Almura;
-import net.malisis.core.client.gui.GuiTexture;
+import net.malisis.core.client.gui.render.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
-import net.malisis.core.renderer.icon.GuiIcon;
+import net.malisis.core.client.gui.render.GuiIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;

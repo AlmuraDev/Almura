@@ -14,8 +14,8 @@ import com.almuradev.almura.shared.client.ui.component.UIExpandingLabel;
 import com.google.common.base.MoreObjects;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.GuiRenderer;
-import net.malisis.core.client.gui.GuiTexture;
+import net.malisis.core.client.gui.render.GuiRenderer;
+import net.malisis.core.client.gui.render.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
@@ -56,14 +56,14 @@ public class UIDetailsPanel extends AbstractPanel {
         super(gui, width, height);
 
         // Clock
-        this.clockImage = new UIImage(gui, new ItemStack(Items.CLOCK));
+        this.clockImage = new UIImage(new ItemStack(Items.CLOCK));
         // In the top right corner, so only the first lines need room beside it and the ones below (Z, FPS / TPS) can run underneath
         this.clockImage.setPosition(-2, ICON_Y, Anchor.TOP | Anchor.RIGHT);
 
         // Player Count
-        this.playerCountLabel = new UILabel(gui, "");
+        this.playerCountLabel = new UILabel("");
         this.playerCountLabel.setFontOptions(FontColors.WHITE_FO);
-        this.playerCountImage = new UIImage(gui, new GuiTexture(GuiConfig.Location.GENERIC_AVATAR), null);
+        this.playerCountImage = new UIImage(new GuiTexture(GuiConfig.Location.GENERIC_AVATAR), null);
         this.playerCountImage.setSize(ICON_SIZE, ICON_SIZE);
         this.playerCountImage.setPosition(BasicScreen.getPaddedX(this.clockImage, 4, Anchor.RIGHT), ICON_Y, Anchor.TOP | Anchor.RIGHT);
 

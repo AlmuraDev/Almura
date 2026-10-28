@@ -61,37 +61,37 @@ public final class SkillsScreen extends BasicScreen {
         final List<SkillEntry> skills = skillsManager.getSkills();
         final String playerName = Minecraft.getMinecraft().player == null ? "" : Minecraft.getMinecraft().player.getName();
         final int contentHeight = skills.isEmpty() ? 30 : skills.size() * SKILL_HEIGHT + 40;
-        final BasicForm form = new BasicForm(this, FORM_WIDTH, contentHeight + 30, "My Skills (" + playerName + ")");
+        final BasicForm form = new BasicForm(FORM_WIDTH, contentHeight + 30, "My Skills (" + playerName + ")");
 
         int y = 4;
 
         if (skills.isEmpty()) {
-            final UILabel waitingLabel = new UILabel(this, TextFormatting.GRAY + "Your skills haven't arrived from the server yet.");
+            final UILabel waitingLabel = new UILabel(TextFormatting.GRAY + "Your skills haven't arrived from the server yet.");
             waitingLabel.setFontOptions(FontColors.WHITE_FO);
             waitingLabel.setPosition(0, y, Anchor.TOP | Anchor.CENTER);
             form.add(waitingLabel);
         }
 
         for (final SkillEntry skill : skills) {
-            final UILabel levelLabel = new UILabel(this, skill.name + TextFormatting.GRAY + " :: " + TextFormatting.WHITE + "Lv. " + skill.level
+            final UILabel levelLabel = new UILabel(skill.name + TextFormatting.GRAY + " :: " + TextFormatting.WHITE + "Lv. " + skill.level
                     + " / " + skill.maxLevel);
             levelLabel.setFontOptions(FontColors.WHITE_FO);
             levelLabel.setPosition(4, y);
 
-            final UICheckBox hudCheckBox = new UICheckBox(this, TextFormatting.WHITE + "HUD");
+            final UICheckBox hudCheckBox = new UICheckBox(TextFormatting.WHITE + "HUD");
             hudCheckBox.setChecked(skillsManager.isShownOnHud(skill.id));
             hudCheckBox.setName(CHECKBOX_PREFIX + skill.id);
             hudCheckBox.setTooltip("Show " + TextFormatting.getTextWithoutFormattingCodes(skill.name) + " in the bottom-right corner of your HUD");
             hudCheckBox.setPosition(-4, y - 1, Anchor.TOP | Anchor.RIGHT);
             hudCheckBox.register(this);
 
-            final UILabel experienceLabel = new UILabel(this, TextFormatting.WHITE + "Current XP: " + TextFormatting.GRAY
+            final UILabel experienceLabel = new UILabel(TextFormatting.WHITE + "Current XP: " + TextFormatting.GRAY
                     + this.xpFormat.format(skill.experience) + " / " + this.xpFormat.format(skill.maxExperience));
             experienceLabel.setFontOptions(FontColors.WHITE_FO);
             experienceLabel.setPosition(10, y + LINE_HEIGHT);
 
             final String nextLevel = skill.isMaxLevel() ? "Max level" : this.xpFormat.format(skill.getExperienceToNextLevel());
-            final UILabel nextLevelLabel = new UILabel(this, TextFormatting.WHITE + "Next Level: " + TextFormatting.GRAY + nextLevel);
+            final UILabel nextLevelLabel = new UILabel(TextFormatting.WHITE + "Next Level: " + TextFormatting.GRAY + nextLevel);
             nextLevelLabel.setFontOptions(FontColors.WHITE_FO);
             nextLevelLabel.setPosition(10, y + LINE_HEIGHT * 2);
 
@@ -109,19 +109,19 @@ public final class SkillsScreen extends BasicScreen {
             separator.setSize(form.getWidth() - 10, 1);
             separator.setPosition(0, y, Anchor.TOP | Anchor.CENTER);
 
-            final UILabel totalLabel = new UILabel(this, TextFormatting.YELLOW + "Total Level: " + TextFormatting.WHITE + skillsManager.getTotalLevel()
+            final UILabel totalLabel = new UILabel(TextFormatting.YELLOW + "Total Level: " + TextFormatting.WHITE + skillsManager.getTotalLevel()
                     + " / " + skillsManager.getTotalMaxLevel());
             totalLabel.setFontOptions(FontColors.WHITE_FO);
             totalLabel.setPosition(4, y + 5);
 
-            final UILabel hintLabel = new UILabel(this, TextFormatting.GRAY + "Checked skills appear on your HUD.");
+            final UILabel hintLabel = new UILabel(TextFormatting.GRAY + "Checked skills appear on your HUD.");
             hintLabel.setFontOptions(FontColors.WHITE_FO);
             hintLabel.setPosition(4, y + 5 + LINE_HEIGHT + 2);
 
             form.add(separator, totalLabel, hintLabel);
         }
 
-        final UIButton closeButton = new UIButtonBuilder(this)
+        final UIButton closeButton = new UIButtonBuilder()
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .text(I18n.format("almura.button.close"))

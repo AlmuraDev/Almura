@@ -7,7 +7,7 @@
  */
 package com.almuradev.almura.shared.client.ui.component;
 
-import net.malisis.core.client.gui.GuiRenderer;
+import net.malisis.core.client.gui.render.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.decoration.UITooltip;
 import org.spongepowered.api.text.Text;

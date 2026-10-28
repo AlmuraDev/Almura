@@ -71,14 +71,14 @@ public final class FeatureScreen extends BasicScreen {
     Keyboard.enableRepeatEvents(true);
 
     // Main Panel
-    final BasicForm form = new BasicForm(this, 150, 274, "Almura Features");
+    final BasicForm form = new BasicForm(150, 274, "Almura Features");
 
     if (!isAdmin) {
       form.setSize(form.getWidth(), 204);
     }
 
     // Guide button
-    guideButton = new UIButtonBuilder(this)
+    guideButton = new UIButtonBuilder()
         .width(100)
         .anchor(Anchor.TOP | Anchor.CENTER)
         .text("Guide")
@@ -87,7 +87,7 @@ public final class FeatureScreen extends BasicScreen {
         .build("button.guide");
 
     // Claims button
-    claimButton = new UIButtonBuilder(this)
+    claimButton = new UIButtonBuilder()
         .width(100)
         .anchor(Anchor.TOP | Anchor.CENTER)
         .position(0, guideButton.getY() + 18)
@@ -96,7 +96,7 @@ public final class FeatureScreen extends BasicScreen {
         .build("button.claim");
 
     // Nickname button
-    nicknameButton = new UIButtonBuilder(this)
+    nicknameButton = new UIButtonBuilder()
         .width(100)
         .anchor(Anchor.TOP | Anchor.CENTER)
         .text("Nicknames")
@@ -105,7 +105,7 @@ public final class FeatureScreen extends BasicScreen {
         .build("button.nickname");
 
     // Manage Titles button
-    titleButton = new UIButtonBuilder(this)
+    titleButton = new UIButtonBuilder()
         .width(100)
         .anchor(Anchor.TOP | Anchor.CENTER)
         .text("Titles")
@@ -114,7 +114,7 @@ public final class FeatureScreen extends BasicScreen {
         .build("button.title.manage");
 
     // Accessories button
-    accessoriesButton = new UIButtonBuilder(this)
+    accessoriesButton = new UIButtonBuilder()
         .width(100)
         .anchor(Anchor.TOP | Anchor.CENTER)
         .position(0, titleButton.getY() + 18)
@@ -124,7 +124,7 @@ public final class FeatureScreen extends BasicScreen {
         .build("button.accessories");
 
     // Accessories button
-    membershipButton = new UIButtonBuilder(this)
+    membershipButton = new UIButtonBuilder()
         .width(100)
         .anchor(Anchor.TOP | Anchor.CENTER)
         .position(0, accessoriesButton.getY() + 18)
@@ -133,7 +133,7 @@ public final class FeatureScreen extends BasicScreen {
         .build("button.memberships");
 
     // Banking button
-    bankingButton = new UIButtonBuilder(this)
+    bankingButton = new UIButtonBuilder()
         .width(100)
         .anchor(Anchor.TOP | Anchor.CENTER)
         .position(0, membershipButton.getY() + 18)
@@ -142,7 +142,7 @@ public final class FeatureScreen extends BasicScreen {
         .build("button.banking");
 
     // Skills button
-    skillsButton = new UIButtonBuilder(this)
+    skillsButton = new UIButtonBuilder()
         .width(100)
         .anchor(Anchor.TOP | Anchor.CENTER)
         .position(0, bankingButton.getY() + 18)
@@ -151,7 +151,7 @@ public final class FeatureScreen extends BasicScreen {
         .build("button.skills");
 
     // Notifications button
-    notificationsButton = new UIButtonBuilder(this)
+    notificationsButton = new UIButtonBuilder()
         .width(100)
         .anchor(Anchor.TOP | Anchor.CENTER)
         .position(0, skillsButton.getY() + 18)
@@ -164,7 +164,7 @@ public final class FeatureScreen extends BasicScreen {
     functionsSeparator.setPosition(0, notificationsButton.getY() + 22, Anchor.TOP | Anchor.CENTER);
     functionsSeparator.setVisible(isAdmin);
 
-    final UILabel adminLabel = new UILabel(this, "Administrator");
+    final UILabel adminLabel = new UILabel("Administrator");
     adminLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
     adminLabel.setPosition(0, functionsSeparator.getY() + 4, Anchor.TOP | Anchor.CENTER);
     adminLabel.setVisible(isAdmin);
@@ -175,7 +175,7 @@ public final class FeatureScreen extends BasicScreen {
     functionsSeparator2.setVisible(isAdmin);
 
     // Manage Exchange button
-    manageExchangeButton = new UIButtonBuilder(this)
+    manageExchangeButton = new UIButtonBuilder()
         .width(125)
         .anchor(Anchor.TOP | Anchor.CENTER)
         .position(0, functionsSeparator2.getY() + 10)
@@ -185,7 +185,7 @@ public final class FeatureScreen extends BasicScreen {
         .build("button.exchange.manage");
 
     // Server Shop Configuration GUI button
-    manageStoreButton = new UIButtonBuilder(this)
+    manageStoreButton = new UIButtonBuilder()
         .width(125)
         .anchor(Anchor.TOP | Anchor.CENTER)
         .position(0, manageExchangeButton.getY() + 18)
@@ -195,7 +195,7 @@ public final class FeatureScreen extends BasicScreen {
         .build("button.stores.manage");
 
     // Close button
-    final UIButton buttonClose = new UIButtonBuilder(this)
+    final UIButton buttonClose = new UIButtonBuilder()
         .width(40)
         .anchor(Anchor.BOTTOM | Anchor.RIGHT)
         .text(I18n.format("almura.button.close"))

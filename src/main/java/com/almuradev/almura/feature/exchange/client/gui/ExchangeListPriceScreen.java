@@ -68,12 +68,12 @@ public class ExchangeListPriceScreen extends BasicScreen {
     public void construct() {
         this.guiscreenBackground = false;
 
-        this.form = new BasicForm(this, 120, 65, I18n.format("almura.feature.exchange.title.enter_a_price"));
+        this.form = new BasicForm(120, 65, I18n.format("almura.feature.exchange.title.enter_a_price"));
         this.form.setZIndex(10); // Fixes issue overlapping draws from parent
         this.form.setBackgroundAlpha(255);
 
         final BigDecimal startPrice = this.currentPrice != null ? this.currentPrice : this.toList.getLastKnownPrice().orElse(null);
-        this.pricePerTextBox = new BasicTextBox(this, startPrice == null ? BigDecimal.ZERO.toString() : startPrice.toString());
+        this.pricePerTextBox = new BasicTextBox(startPrice == null ? BigDecimal.ZERO.toString() : startPrice.toString());
         this.pricePerTextBox.setSize(65, 0);
         this.pricePerTextBox.setFilter(s -> {
             // TODO: Maybe make a fancy regex for some of this
@@ -110,11 +110,11 @@ public class ExchangeListPriceScreen extends BasicScreen {
         this.pricePerTextBox.setOnEnter(tb -> this.list());
         this.pricePerTextBox.register(this);
 
-        this.eaLabel = new UILabel(this, "/ea");
+        this.eaLabel = new UILabel("/ea");
         this.eaLabel.setFontOptions(FontColors.WHITE_FO);
         this.eaLabel.setPosition(BasicScreen.getPaddedX(this.pricePerTextBox, 2), 1, Anchor.MIDDLE | Anchor.LEFT);
 
-        this.buttonList = new UIButtonBuilder(this)
+        this.buttonList = new UIButtonBuilder()
                 .text(I18n.format("almura.feature.common.button." + (this.type == ListStatusType.LIST ? "list" : "modify")))
                 .width(40)
                 .position(-2, -2)
@@ -123,7 +123,7 @@ public class ExchangeListPriceScreen extends BasicScreen {
                 .onClick(this::list)
                 .build("button.list");
 
-        this.buttonCancel = new UIButtonBuilder(this)
+        this.buttonCancel = new UIButtonBuilder()
                 .text(I18n.format("almura.button.cancel"))
                 .width(40)
                 .position(BasicScreen.getPaddedX(this.buttonList, 2, Anchor.RIGHT), -2)

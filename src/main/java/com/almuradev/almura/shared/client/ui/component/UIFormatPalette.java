@@ -9,7 +9,7 @@ package com.almuradev.almura.shared.client.ui.component;
 
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.GuiRenderer;
+import net.malisis.core.client.gui.render.GuiRenderer;
 import net.malisis.core.client.gui.UIConstants;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicContainer;
@@ -85,7 +85,7 @@ public class UIFormatPalette extends BasicContainer<UIFormatPalette> {
 
     private BasicContainer<?> cell(final BasicScreen screen, final String name, final int column, final int row, final int width,
             final String tooltip) {
-        final BasicContainer<?> cell = new BasicContainer<>(screen, width, cellSize);
+        final BasicContainer<?> cell = new BasicContainer<>(width, cellSize);
         cell.setPosition(column * (cellSize + cellPadding), row * (cellSize + cellPadding));
         cell.setPadding(0, 0);
         cell.setBorder(FontColors.WHITE, 1, 185);
@@ -96,7 +96,7 @@ public class UIFormatPalette extends BasicContainer<UIFormatPalette> {
     }
 
     private UILabel label(final BasicScreen screen, final String text) {
-        final UILabel label = new UILabel(screen, text);
+        final UILabel label = new UILabel(text);
         label.setFontOptions(UIConstants.DEFAULT_TEXTBOX_FO.toBuilder().scale(0.8f).build());
         label.setPosition(0, 1, Anchor.MIDDLE | Anchor.CENTER);
         return label;

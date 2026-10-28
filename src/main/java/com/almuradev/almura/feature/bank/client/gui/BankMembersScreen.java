@@ -65,12 +65,12 @@ public final class BankMembersScreen extends BasicScreen implements BankScreen.C
         Keyboard.enableRepeatEvents(true);
 
         final String accountName = manager.getAccount(this.account).map(BankAccountView::getName).orElse("");
-        final BasicForm form = new BasicForm(this, 250, 210, I18n.format("almura.feature.bank.title.members", accountName));
+        final BasicForm form = new BasicForm(250, 210, I18n.format("almura.feature.bank.title.members", accountName));
         form.setZIndex(10);
         form.setBackgroundAlpha(255);
 
         // Add a member
-        this.nameTextBox = new BasicTextBox(this, "");
+        this.nameTextBox = new BasicTextBox("");
         this.nameTextBox.setSize(100, 0);
         this.nameTextBox.setPosition(0, 1);
         this.nameTextBox.setAcceptsReturn(false);
@@ -78,11 +78,11 @@ public final class BankMembersScreen extends BasicScreen implements BankScreen.C
         this.nameTextBox.setTooltip(I18n.format("almura.feature.bank.tooltip.member_name"));
         this.nameTextBox.setOnEnter(tb -> this.add());
 
-        this.canWithdrawCheckBox = new UICheckBox(this, I18n.format("almura.feature.bank.checkbox.can_withdraw"));
+        this.canWithdrawCheckBox = new UICheckBox(I18n.format("almura.feature.bank.checkbox.can_withdraw"));
         this.canWithdrawCheckBox.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).build());
         this.canWithdrawCheckBox.setPosition(BasicScreen.getPaddedX(this.nameTextBox, 4), 3);
 
-        final UIButton buttonAdd = new UIButtonBuilder(this)
+        final UIButton buttonAdd = new UIButtonBuilder()
             .text(I18n.format("almura.feature.bank.button.add"))
             .width(36)
             .anchor(Anchor.TOP | Anchor.RIGHT)
@@ -91,7 +91,7 @@ public final class BankMembersScreen extends BasicScreen implements BankScreen.C
             .build("button.add");
 
         // Members
-        this.memberList = new BasicList<>(this, BasicScreen.getPaddedWidth(form), BasicScreen.getPaddedHeight(form) - 38);
+        this.memberList = new BasicList<>(BasicScreen.getPaddedWidth(form), BasicScreen.getPaddedHeight(form) - 38);
         this.memberList.setBorder(FontColors.WHITE, 1, 185);
         this.memberList.setPadding(2, 2);
         this.memberList.setItemComponentSpacing(1);
@@ -99,20 +99,20 @@ public final class BankMembersScreen extends BasicScreen implements BankScreen.C
         this.memberList.setPosition(0, 17);
         this.memberList.setSelectConsumer(member -> this.updateButtons());
 
-        this.buttonToggle = new UIButtonBuilder(this)
+        this.buttonToggle = new UIButtonBuilder()
             .text(I18n.format("almura.feature.bank.button.toggle_withdraw"))
             .anchor(Anchor.BOTTOM | Anchor.LEFT)
             .onClick(this::toggleWithdraw)
             .build("button.toggle");
 
-        this.buttonRemove = new UIButtonBuilder(this)
+        this.buttonRemove = new UIButtonBuilder()
             .text(TextFormatting.RED + I18n.format("almura.feature.bank.button.remove"))
             .anchor(Anchor.BOTTOM | Anchor.LEFT)
             .position(BasicScreen.getPaddedX(this.buttonToggle, 2), 0)
             .onClick(this::remove)
             .build("button.remove");
 
-        final UIButton buttonClose = new UIButtonBuilder(this)
+        final UIButton buttonClose = new UIButtonBuilder()
             .text(I18n.format("almura.button.close"))
             .width(50)
             .anchor(Anchor.BOTTOM | Anchor.RIGHT)
@@ -189,11 +189,11 @@ public final class BankMembersScreen extends BasicScreen implements BankScreen.C
             super.construct(gui);
             this.setSize(0, 16);
 
-            final UILabel nameLabel = new UILabel(gui, this.item.getName());
+            final UILabel nameLabel = new UILabel(this.item.getName());
             nameLabel.setFontOptions(FontColors.WHITE_FO);
             nameLabel.setPosition(2, 0, Anchor.MIDDLE | Anchor.LEFT);
 
-            final UILabel accessLabel = new UILabel(gui, this.item.canWithdraw()
+            final UILabel accessLabel = new UILabel(this.item.canWithdraw()
                 ? TextFormatting.GREEN + I18n.format("almura.feature.bank.text.can_withdraw")
                 : TextFormatting.GRAY + I18n.format("almura.feature.bank.text.member_deposit_only"));
             accessLabel.setFontOptions(FontColors.WHITE_FO.toBuilder().scale(0.8f).build());

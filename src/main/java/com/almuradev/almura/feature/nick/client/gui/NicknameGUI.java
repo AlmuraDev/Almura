@@ -96,7 +96,7 @@ public final class NicknameGUI extends BasicScreen {
         Keyboard.enableRepeatEvents(true);
 
         // Master Panel
-        this.form = new BasicForm(this, 400, 225, "");
+        this.form = new BasicForm(400, 225, "");
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(true);
         this.form.setClosable(true);
@@ -107,12 +107,12 @@ public final class NicknameGUI extends BasicScreen {
         this.form.setTopPadding(20);
         this.form.setLeftPadding(3);
 
-        final UILabel titleLabel = new UILabel(this, "Nicknames");
+        final UILabel titleLabel = new UILabel("Nicknames");
         titleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         titleLabel.setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
 
         // Player Render Area
-        final BasicForm playerArea = new BasicForm(this, 175, 185, "");
+        final BasicForm playerArea = new BasicForm(175, 185, "");
         playerArea.setPosition(0, 0, Anchor.RIGHT | Anchor.MIDDLE);
         playerArea.setMovable(false);
         playerArea.setClosable(false);
@@ -124,7 +124,7 @@ public final class NicknameGUI extends BasicScreen {
         playerArea.setLeftPadding(3);
 
         // Nickname List Area
-        final BasicForm listArea = new BasicForm(this, 217, 85, "");
+        final BasicForm listArea = new BasicForm(217, 85, "");
         listArea.setPosition(0, 0, Anchor.LEFT | Anchor.TOP);
         listArea.setMovable(false);
         listArea.setClosable(false);
@@ -135,24 +135,24 @@ public final class NicknameGUI extends BasicScreen {
         listArea.setTopPadding(3);
         listArea.setLeftPadding(3);
 
-        final UILabel nicknameLabel = new UILabel(this, "Enter desired nickname:");
+        final UILabel nicknameLabel = new UILabel("Enter desired nickname:");
         nicknameLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         nicknameLabel.setPosition(7, 10, Anchor.LEFT | Anchor.TOP);
 
         // Nickname Entry Textbox
-        this.nicknameTextbox = new UITextField(this, "", false);
+        this.nicknameTextbox = new UITextField("");
         this.nicknameTextbox.setSize(150, 0);
         this.nicknameTextbox.setText(this.originalNickname);
         this.nicknameTextbox.setPosition(7, 23, Anchor.LEFT | Anchor.TOP);
         this.nicknameTextbox.setEditable(true);
         this.nicknameTextbox.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
-        final UILabel colorLabel = new UILabel(this, "Add colors:");
+        final UILabel colorLabel = new UILabel("Add colors:");
         colorLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         colorLabel.setPosition(7, 40, Anchor.LEFT | Anchor.TOP);
 
         // Color Selection dropdown
-        this.colorSelector = new UISelect<>(this,
+        this.colorSelector = new UISelect<>(
                 100,
                 Arrays.asList(
                         "§1Dark Blue",
@@ -181,7 +181,7 @@ public final class NicknameGUI extends BasicScreen {
         this.colorSelector.select("§1Dark Blue");
 
         // Add Color character button
-        final UIButton buttonColor = new UIButtonBuilder(this)
+        final UIButton buttonColor = new UIButtonBuilder()
                 .width(40)
                 .position(110, 49, Anchor.LEFT | Anchor.TOP)
                 .text(I18n.format("almura.button.add"))
@@ -189,7 +189,7 @@ public final class NicknameGUI extends BasicScreen {
                 .build("button.color");
 
         // Reset button
-        final UIButton buttonReset = new UIButtonBuilder(this)
+        final UIButton buttonReset = new UIButtonBuilder()
                 .width(40)
                 .position(150, 49, Anchor.LEFT | Anchor.TOP)
                 .text(I18n.format("almura.button.reset"))
@@ -197,7 +197,7 @@ public final class NicknameGUI extends BasicScreen {
                 .build("button.reset");
 
         // Remove Nickname button
-        final UIButton buttonRemove = new UIButtonBuilder(this)
+        final UIButton buttonRemove = new UIButtonBuilder()
                 .width(70)
                 .position(105, 65, Anchor.LEFT | Anchor.TOP)
                 .text(I18n.format("almura.button.nick.remove"))
@@ -205,12 +205,12 @@ public final class NicknameGUI extends BasicScreen {
                 .listener(this)
                 .build("button.remove");
 
-        final UILabel nicknameRulesLabel = new UILabel(this, "Please follow nickname rules.");
+        final UILabel nicknameRulesLabel = new UILabel("Please follow nickname rules.");
         nicknameRulesLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         nicknameRulesLabel.setPosition(3, -2, Anchor.LEFT | Anchor.BOTTOM);
 
         // Close button
-        final UIButton buttonClose = new UIButtonBuilder(this)
+        final UIButton buttonClose = new UIButtonBuilder()
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .text("almura.button.close")
@@ -218,7 +218,7 @@ public final class NicknameGUI extends BasicScreen {
                 .build("button.close");
 
         // Apply button
-        final UIButton buttonApply = new UIButtonBuilder(this)
+        final UIButton buttonApply = new UIButtonBuilder()
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .position(-40, 0)

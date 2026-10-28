@@ -92,10 +92,10 @@ public final class SingleplayerScreen extends PanoramicScreen {
             (ROW_HEIGHT + ROW_SPACING)));
 
         // Container to cover the screen (fixes issues with stuck button highlighting)
-        final BasicContainer<?> screenContainer = new BasicContainer<>(this, UIComponent.INHERITED, UIComponent.INHERITED);
+        final BasicContainer<?> screenContainer = new BasicContainer<>(UIComponent.INHERITED, UIComponent.INHERITED);
         screenContainer.setBackgroundAlpha(0);
 
-        final BasicContainer<?> contentContainer = new BasicContainer<>(this, CONTENT_WIDTH, headerHeight + below + listHeight(rows));
+        final BasicContainer<?> contentContainer = new BasicContainer<>(CONTENT_WIDTH, headerHeight + below + listHeight(rows));
         contentContainer.setPosition(0, logo ? -10 : 0, Anchor.MIDDLE | Anchor.CENTER);
         contentContainer.setBackgroundAlpha(0);
         contentContainer.setClipContent(false); // The logo's figure reaches above it
@@ -106,11 +106,11 @@ public final class SingleplayerScreen extends PanoramicScreen {
             // A pixel lower than its container's top, to line up with the main menu's logo
             header.setPosition(0, 1, Anchor.TOP | Anchor.CENTER);
         } else {
-            header = new UILabel(this, TextFormatting.WHITE + I18n.format("selectWorld.title"));
+            header = new UILabel(TextFormatting.WHITE + I18n.format("selectWorld.title"));
             header.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
         }
 
-        this.worldList = new BasicList<>(this, CONTENT_WIDTH, listHeight(rows));
+        this.worldList = new BasicList<>(CONTENT_WIDTH, listHeight(rows));
         this.worldList.setPosition(0, BasicScreen.getPaddedY(header, 9), Anchor.TOP | Anchor.CENTER);
         this.worldList.setColor(0x000000);
         this.worldList.setBackgroundAlpha(185);
@@ -120,12 +120,12 @@ public final class SingleplayerScreen extends PanoramicScreen {
         this.worldList.setItemComponentFactory(WorldItemComponent::new);
         this.worldList.setSelectConsumer(world -> this.updateButtons());
 
-        this.emptyLabel = new UILabel(this, TextFormatting.GRAY + I18n.format("almura.menu.singleplayer.empty"));
+        this.emptyLabel = new UILabel(TextFormatting.GRAY + I18n.format("almura.menu.singleplayer.empty"));
         this.emptyLabel.setPosition(0, this.worldList.getY() + listHeight(rows) / 2 - 4, Anchor.TOP | Anchor.CENTER);
 
         // Play, create
         final int halfWidth = (CONTENT_WIDTH - GAP) / 2;
-        this.playButton = new UIButtonBuilder(this)
+        this.playButton = new UIButtonBuilder()
             .text(I18n.format("selectWorld.select"))
             .width(halfWidth)
             .height(UIConstants.Button.HEIGHT)
@@ -134,7 +134,7 @@ public final class SingleplayerScreen extends PanoramicScreen {
             .onClick(this::play)
             .build("button.play");
 
-        final UIButton createButton = new UIButtonBuilder(this)
+        final UIButton createButton = new UIButtonBuilder()
             .text(I18n.format("selectWorld.create"))
             .width(halfWidth)
             .height(UIConstants.Button.HEIGHT)
@@ -146,7 +146,7 @@ public final class SingleplayerScreen extends PanoramicScreen {
         // Edit, delete, re-create, back
         final int quarterWidth = (CONTENT_WIDTH - GAP * 3) / 4;
         final int secondRow = BasicScreen.getPaddedY(this.playButton, 2);
-        this.editButton = new UIButtonBuilder(this)
+        this.editButton = new UIButtonBuilder()
             .text(I18n.format("selectWorld.edit"))
             .width(quarterWidth)
             .height(UIConstants.Button.HEIGHT)
@@ -155,7 +155,7 @@ public final class SingleplayerScreen extends PanoramicScreen {
             .onClick(this::edit)
             .build("button.edit");
 
-        this.deleteButton = new UIButtonBuilder(this)
+        this.deleteButton = new UIButtonBuilder()
             .text(I18n.format("selectWorld.delete"))
             .fontOptions(FontOptions.builder().from(FontColors.RED_FO).shadow(true).build())
             .hoverFontOptions(FontOptions.builder().color(Color.ofRgb(255, 89, 89).getRgb()).shadow(true).build())
@@ -166,7 +166,7 @@ public final class SingleplayerScreen extends PanoramicScreen {
             .onClick(this::delete)
             .build("button.delete");
 
-        this.recreateButton = new UIButtonBuilder(this)
+        this.recreateButton = new UIButtonBuilder()
             .text(I18n.format("selectWorld.recreate"))
             .width(quarterWidth)
             .height(UIConstants.Button.HEIGHT)
@@ -175,7 +175,7 @@ public final class SingleplayerScreen extends PanoramicScreen {
             .onClick(this::recreate)
             .build("button.recreate");
 
-        final UIButton backButton = new UIButtonBuilder(this)
+        final UIButton backButton = new UIButtonBuilder()
             .text(I18n.format("gui.back"))
             .width(quarterWidth)
             .height(UIConstants.Button.HEIGHT)
@@ -360,14 +360,14 @@ public final class SingleplayerScreen extends PanoramicScreen {
             icon.setPosition(1, 0, Anchor.LEFT | Anchor.MIDDLE);
 
             final int textX = ICON_SIZE + 5;
-            final UILabel nameLabel = new UILabel(gui, TextFormatting.WHITE + displayName(this.item));
+            final UILabel nameLabel = new UILabel(TextFormatting.WHITE + displayName(this.item));
             nameLabel.setPosition(textX, 1);
 
-            final UILabel fileLabel = new UILabel(gui, TextFormatting.GRAY + this.item.getFileName() + " (" +
+            final UILabel fileLabel = new UILabel(TextFormatting.GRAY + this.item.getFileName() + " (" +
                 DATE_FORMAT.format(new Date(this.item.getLastTimePlayed())) + ")");
             fileLabel.setPosition(textX, 12);
 
-            final UILabel infoLabel = new UILabel(gui, TextFormatting.GRAY + info(this.item));
+            final UILabel infoLabel = new UILabel(TextFormatting.GRAY + info(this.item));
             infoLabel.setPosition(textX, 23);
 
             this.add(icon, nameLabel, fileLabel, infoLabel);
