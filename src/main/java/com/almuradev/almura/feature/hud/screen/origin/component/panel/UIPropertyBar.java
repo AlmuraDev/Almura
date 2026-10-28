@@ -10,27 +10,31 @@ package com.almuradev.almura.feature.hud.screen.origin.component.panel;
 import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.shared.client.ui.Fonts;
 import com.almuradev.almura.shared.util.MathUtil;
-import net.malisis.core.client.gui.render.GuiRenderer;
-import net.malisis.core.client.gui.render.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
-import net.malisis.core.client.gui.element.GuiShape;
-import net.malisis.core.client.gui.element.SimpleGuiShape;
-import net.malisis.core.renderer.font.FontOptions;
+import net.malisis.core.client.gui.element.size.Size;
 import net.malisis.core.client.gui.render.GuiIcon;
+import net.malisis.core.client.gui.render.GuiRenderer;
+import net.malisis.core.client.gui.render.GuiTexture;
+import net.malisis.core.client.gui.render.shape.GuiShape;
+import net.malisis.core.renderer.font.FontOptions;
 import net.malisis.core.util.FontColors;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 
+/**
+ * A bar filled to an amount, with optional icons (background and foreground, drawn over each other) on its left and a centered text.
+ */
 @SideOnly(Side.CLIENT)
 public class UIPropertyBar extends UIComponent {
 
     private static final int ICON_SIZE = 9;
 
-    private final GuiShape iconShape;
-    private int color;
+    private final int barWidth, barHeight;
+    private final GuiShape backgroundIconShape, foregroundIconShape;
+    private int barColor;
     private float amount = 1.0f;
     private String text = "";
     private FontOptions fontOptions = FontColors.WHITE_FO;
@@ -39,47 +43,47 @@ public class UIPropertyBar extends UIComponent {
     @Nullable private GuiIcon backgroundIcon, foregroundIcon;
 
     public UIPropertyBar(final MalisisGui gui, final int width, final int height) {
-        super(gui);
-        this.width = width;
-        this.height = height;
-        this.iconShape = new SimpleGuiShape();
+        this.barWidth = width;
+        this.barHeight = height;
+        // Icons are a square as high as the bar
+        this.setSize(Size.of(width, () -> this.hasIcons() ? ICON_SIZE : this.barHeight));
+
+        this.backgroundIconShape = GuiShape.builder(this).size(s -> Size.of(ICON_SIZE, ICON_SIZE)).icon(() -> this.backgroundIcon).build();
+        this.foregroundIconShape = GuiShape.builder(this).size(s -> Size.of(ICON_SIZE, ICON_SIZE)).icon(() -> this.foregroundIcon).build();
+
+        this.setBackground(this::drawBar);
+        this.setForeground(this::drawText);
     }
 
-    @Override
-    public void drawBackground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
-        int barWidth = this.width;
-        int barHeight = this.height;
+    private boolean hasIcons() {
+        return this.backgroundIcon != null || this.foregroundIcon != null;
+    }
+
+    private void drawBar(final GuiRenderer renderer) {
+        int barWidth = this.barWidth;
+        int barHeight = this.barHeight;
         int barX = 0;
 
-        if (this.backgroundIcon != null || this.foregroundIcon != null) {
-            renderer.bindTexture(this.spritesheet);
-        }
-
+        // The icons carry their own texture
         if (this.backgroundIcon != null) {
-            this.iconShape.resetState();
-            this.iconShape.setSize(ICON_SIZE, ICON_SIZE);
-            this.rp.icon.set(this.backgroundIcon);
-            renderer.drawShape(this.iconShape, this.rp);
+            this.backgroundIconShape.render(renderer);
         }
 
         if (this.foregroundIcon != null) {
-            this.iconShape.resetState();
-            this.iconShape.setSize(ICON_SIZE, ICON_SIZE);
-            this.rp.icon.set(this.foregroundIcon);
-            renderer.drawShape(this.iconShape, this.rp);
+            this.foregroundIconShape.render(renderer);
         }
 
-        if (this.backgroundIcon != null || this.foregroundIcon != null) {
+        if (this.hasIcons()) {
             renderer.next();
 
-            barWidth = this.width - ICON_SIZE - 2;
+            barWidth = this.barWidth - ICON_SIZE - 2;
             barHeight = ICON_SIZE - 2;
             barX = ICON_SIZE + 2;
         }
 
         final int alpha = MathUtil.squashi(this.getAlpha() - 75, 0, 255);
-        renderer.drawRectangle(barX, 1, getZIndex(), barWidth, barHeight, 0, alpha);
-        renderer.drawRectangle(barX + 1, 2, getZIndex(), this.getConvertedFill(), barHeight - 2, this.color, this.getAlpha());
+        renderer.drawRectangle(barX, 1, 0, barWidth, barHeight, 0, alpha);
+        renderer.drawRectangle(barX + 1, 2, 0, this.getConvertedFill(), barHeight - 2, this.barColor, this.getAlpha());
     }
 
     public String getText() {
@@ -91,15 +95,14 @@ public class UIPropertyBar extends UIComponent {
     }
 
     @SuppressWarnings("deprecation")
-    @Override
-    public void drawForeground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
+    private void drawText(final GuiRenderer renderer) {
         if (!this.text.isEmpty()) {
             final int textWidth = (int) Fonts.MINECRAFT.getStringWidth(this.text, this.fontOptions);
             final int textHeight = (int) Fonts.MINECRAFT.getStringHeight(this.fontOptions);
 
-            int x = (((this.backgroundIcon != null || this.foregroundIcon != null) ? ICON_SIZE + 4 + this.width : this.width) - textWidth) / 2;
+            int x = ((this.hasIcons() ? ICON_SIZE + 4 + this.barWidth : this.barWidth) - textWidth) / 2;
 
-            int y = (this.height - textHeight) / 2;
+            int y = (this.barHeight - textHeight) / 2;
 
             if (x == 0) {
                 x = 1;
@@ -107,16 +110,22 @@ public class UIPropertyBar extends UIComponent {
             if (y == 0) {
                 y = 1;
             }
-            renderer.drawText(Fonts.MINECRAFT, this.text, x, y, getZIndex(), this.fontOptions);
+            renderer.drawText(Fonts.MINECRAFT, this.text, x, y, 0, this.fontOptions);
         }
     }
 
-    public int getColor() {
-        return this.color;
+    public int getBarColor() {
+        return this.barColor;
     }
 
-    public UIPropertyBar setColor(final int color) {
-        this.color = color;
+    /**
+     * Sets the color of the filled part of the bar.
+     *
+     * @param color the color
+     * @return this bar
+     */
+    public UIPropertyBar setBarColor(final int color) {
+        this.barColor = color;
         return this;
     }
 
@@ -127,7 +136,6 @@ public class UIPropertyBar extends UIComponent {
 
     public UIPropertyBar setBackgroundIcon(final GuiIcon backgroundIcon) {
         this.backgroundIcon = backgroundIcon;
-        this.backgroundIcon.setSize(ICON_SIZE, ICON_SIZE);
         return this;
     }
 
@@ -138,7 +146,6 @@ public class UIPropertyBar extends UIComponent {
 
     public UIPropertyBar setForegroundIcon(final GuiIcon foregroundIcon) {
         this.foregroundIcon = foregroundIcon;
-        this.foregroundIcon.setSize(ICON_SIZE, ICON_SIZE);
         return this;
     }
 
@@ -161,28 +168,26 @@ public class UIPropertyBar extends UIComponent {
         return this.spritesheet;
     }
 
+    /**
+     * Kept for callers: icons carry their own texture now.
+     */
     public UIPropertyBar setSpritesheet(final GuiTexture spritesheet) {
         this.spritesheet = spritesheet;
         return this;
     }
 
     @Override
-    public int getHeight() {
-        return ((this.backgroundIcon != null || this.foregroundIcon != null) ? ICON_SIZE : this.height);
-    }
-
-    @Override
     public UIPropertyBar setPosition(final int x, final int y) {
-        return (UIPropertyBar) super.setPosition(x, y);
+        return super.setPosition(x, y);
     }
 
     @Override
     public UIPropertyBar setPosition(final int x, final int y, final int anchor) {
-        return (UIPropertyBar) super.setPosition(x, y, anchor);
+        return super.setPosition(x, y, anchor);
     }
 
     private int getConvertedFill() {
-        final int shapeWidth = ((this.backgroundIcon == null && this.foregroundIcon == null) ? this.width : this.width - 2 - ICON_SIZE) - 2;
+        final int shapeWidth = (this.hasIcons() ? this.barWidth - 2 - ICON_SIZE : this.barWidth) - 2;
         return (int) ((this.amount) * shapeWidth / 1.0f);
     }
 

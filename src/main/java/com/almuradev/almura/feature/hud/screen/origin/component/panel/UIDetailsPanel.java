@@ -15,6 +15,7 @@ import com.google.common.base.MoreObjects;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.render.GuiRenderer;
+import net.malisis.core.client.gui.render.GuiIcon;
 import net.malisis.core.client.gui.render.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.decoration.UIImage;
@@ -63,7 +64,7 @@ public class UIDetailsPanel extends AbstractPanel {
         // Player Count
         this.playerCountLabel = new UILabel("");
         this.playerCountLabel.setFontOptions(FontColors.WHITE_FO);
-        this.playerCountImage = new UIImage(new GuiTexture(GuiConfig.Location.GENERIC_AVATAR), null);
+        this.playerCountImage = new UIImage(new GuiIcon(new GuiTexture(GuiConfig.Location.GENERIC_AVATAR, 16, 16), 0F, 0F, 1F, 1F));
         this.playerCountImage.setSize(ICON_SIZE, ICON_SIZE);
         this.playerCountImage.setPosition(BasicScreen.getPaddedX(this.clockImage, 4, Anchor.RIGHT), ICON_Y, Anchor.TOP | Anchor.RIGHT);
 

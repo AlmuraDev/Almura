@@ -109,7 +109,7 @@ public class OriginHUD extends AbstractHUD {
 
     public boolean handleScroll() {
         if (this.playerListPanel != null && this.playerListPanel.isVisible()) {
-            this.playerListPanel.onScrollWheel(Mouse.getEventX(), Mouse.getEventY(), MathUtil.squashi(Mouse.getEventDWheel(), -1, 1));
+            this.playerListPanel.onScrollWheel(MathUtil.squashi(Mouse.getEventDWheel(), -1, 1));
             return true;
         }
         return false;

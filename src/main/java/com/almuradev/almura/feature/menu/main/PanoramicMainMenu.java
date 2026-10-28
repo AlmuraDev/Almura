@@ -17,7 +17,6 @@ import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.UIConstants;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicContainer;
-import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
@@ -45,7 +44,7 @@ import java.util.Locale;
 public class PanoramicMainMenu extends PanoramicScreen {
 
     private static final int PADDING = 4;
-    private UIBackgroundContainer buttonContainer;
+    private BasicContainer<?> buttonContainer;
 
     public PanoramicMainMenu(@Nullable BasicScreen parent) {
         super(parent);
@@ -55,7 +54,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
     @SuppressWarnings("deprecation")
     @Override
     public void construct() {
-        final UIBackgroundContainer contentContainer = new UIBackgroundContainer(this);
+        final BasicContainer<?> contentContainer = new BasicContainer<>();
         contentContainer.setBackgroundAlpha(0);
         contentContainer.setClipContent(false); // The logo's figure reaches above it
         contentContainer.setPosition(0, -10, Anchor.MIDDLE | Anchor.CENTER);
@@ -65,7 +64,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
         final BasicContainer<?> almuraHeader = AlmuraLogoHeader.create(this);
         almuraHeader.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
-        this.buttonContainer = new UIBackgroundContainer(this, UIConstants.Button.WIDTH_LONG + PADDING, (UIConstants.Button.HEIGHT * 4) +
+        this.buttonContainer = new BasicContainer<>(UIConstants.Button.WIDTH_LONG + PADDING, (UIConstants.Button.HEIGHT * 4) +
                 (PADDING * 3));
         this.buttonContainer.setPosition(0, BasicScreen.getPaddedY(almuraHeader, 10), Anchor.TOP | Anchor.CENTER);
         this.buttonContainer.setBackgroundAlpha(0);

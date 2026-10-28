@@ -19,7 +19,7 @@ import com.google.inject.Inject;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.component.UIComponent;
-import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
+import net.malisis.core.client.gui.component.container.BasicContainer;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.decoration.UITooltip;
 import net.malisis.core.client.gui.component.interaction.UIButton;
@@ -68,7 +68,7 @@ public final class SimpleOptionsMenu extends BasicScreen {
 
         this.addToScreen(titleLabel);
 
-        final UIBackgroundContainer optionsContainer = new UIBackgroundContainer(this, 335, 220);
+        final BasicContainer<?> optionsContainer = new BasicContainer<>(335, 220);
         optionsContainer.setBackgroundAlpha(0);
         optionsContainer.setPosition(0, getPaddedY(titleLabel, CONTROL_PADDING), Anchor.TOP | Anchor.CENTER);
 

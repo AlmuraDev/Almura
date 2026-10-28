@@ -75,7 +75,7 @@ public class UIWorldPanel extends AbstractPanel {
     if (hudData.worldName.isEmpty()) {
       this.remove(this.worldLabel);
     } else {
-      if (!this.components.contains(this.worldLabel)) {
+      if (!this.getComponents().contains(this.worldLabel)) {
         this.add(this.worldLabel);
       }
       this.worldLabel.setText(hudData.worldName);
@@ -84,7 +84,7 @@ public class UIWorldPanel extends AbstractPanel {
   }
 
   private void updateClaim() {
-    if (!this.components.contains(this.claimLabel)) {
+    if (!this.getComponents().contains(this.claimLabel)) {
       this.add(this.claimLabel);
     }
     if (!clientClaimManager.isClaim || clientClaimManager.isWilderness) {
@@ -112,7 +112,7 @@ public class UIWorldPanel extends AbstractPanel {
       }
     }
 
-    final int y = this.components.contains(this.worldLabel) ? BasicScreen.getPaddedY(this.worldLabel, 2) : 2;
+    final int y = this.getComponents().contains(this.worldLabel) ? BasicScreen.getPaddedY(this.worldLabel, 2) : 2;
     this.claimLabel.setPosition(1, y, Anchor.TOP | Anchor.CENTER);
   }
 
@@ -120,7 +120,7 @@ public class UIWorldPanel extends AbstractPanel {
   private void updateCompass() {
     this.compassLabel.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(hudData.getCompass()));
 
-    final UIComponent lowestComponent = this.components
+    final UIComponent lowestComponent = this.getComponents()
       .stream()
       .filter(c -> this.compassLabel != c)
       .max(Comparator.comparingInt(UIComponent::getY)).orElse(null);

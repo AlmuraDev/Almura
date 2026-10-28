@@ -87,12 +87,12 @@ public class UIExchangeOfferContainer extends BasicDualListContainer<VanillaStac
 
         // Add property bars
         this.leftPropertyBar = new UIPropertyBar(gui, BasicScreen.getPaddedWidth(this.leftContainer), 14);
-        this.leftPropertyBar.setColor(0x008200);
+        this.leftPropertyBar.setBarColor(0x008200);
         this.leftPropertyBar.setPosition(-1, 0, Anchor.BOTTOM | Anchor.LEFT);
         this.leftPropertyBar.setText("0/" + this.leftLimit);
 
         this.rightPropertyBar = new UIPropertyBar(gui, BasicScreen.getPaddedWidth(this.rightContainer), 14);
-        this.rightPropertyBar.setColor(0x008200);
+        this.rightPropertyBar.setBarColor(0x008200);
         this.rightPropertyBar.setPosition(-1, 0, Anchor.BOTTOM | Anchor.LEFT);
         this.rightPropertyBar.setText("0/" + this.rightLimit);
 
