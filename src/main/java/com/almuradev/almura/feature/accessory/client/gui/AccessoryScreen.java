@@ -379,10 +379,14 @@ public final class AccessoryScreen extends BasicScreen {
         entity.prevRotationYawHead = 0.0F;
         final RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
         renderManager.setPlayerViewY(180.0F);
+        // The nameplate faces the camera's pitch; level it, or looking up or down flattens the name and title into each other
+        final float playerViewX = renderManager.playerViewX;
+        renderManager.playerViewX = 0.0F;
         GlStateManager.disableLighting();
         renderManager.setRenderShadow(false);
         renderManager.renderEntity(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
         renderManager.setRenderShadow(true);
+        renderManager.playerViewX = playerViewX;
         entity.renderYawOffset = renderYawOffset;
         entity.prevRenderYawOffset = prevRenderYawOffset;
         entity.rotationYaw = rotationYaw;

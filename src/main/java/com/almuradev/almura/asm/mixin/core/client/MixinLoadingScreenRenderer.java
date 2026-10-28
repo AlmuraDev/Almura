@@ -84,6 +84,10 @@ public abstract class MixinLoadingScreenRenderer {
         final int height = resolution.getScaledHeight();
 
         if (OpenGlHelper.isFramebufferEnabled()) {
+            // Vanilla sizes this framebuffer once, to the window at startup; after a resize the menu transition's capture of it is stretched
+            if (this.framebuffer.framebufferWidth != this.mc.displayWidth || this.framebuffer.framebufferHeight != this.mc.displayHeight) {
+                this.framebuffer.createBindFramebuffer(this.mc.displayWidth, this.mc.displayHeight);
+            }
             this.framebuffer.framebufferClear();
         } else {
             GlStateManager.clear(256);

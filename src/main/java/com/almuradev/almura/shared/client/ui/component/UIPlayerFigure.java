@@ -8,7 +8,6 @@
 package com.almuradev.almura.shared.client.ui.component;
 
 import net.malisis.core.client.gui.render.GuiRenderer;
-import net.malisis.core.client.gui.render.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicContainer;
@@ -106,7 +105,7 @@ public final class UIPlayerFigure extends BasicContainer<UIPlayerFigure> {
         final float seconds = (now - this.startMillis) / 1000.0F;
 
         // Drawn outside of the renderer's batch, leaving every setting it touches as it found it (the panorama draws with what is left)
-        Tessellator.getInstance().draw();
+        renderer.draw();
         final boolean[] enabled = new boolean[CAPABILITIES.length];
         for (int i = 0; i < CAPABILITIES.length; i++) {
             enabled[i] = GL11.glIsEnabled(CAPABILITIES[i]);
@@ -114,7 +113,8 @@ public final class UIPlayerFigure extends BasicContainer<UIPlayerFigure> {
         final boolean depthMask = GL11.glGetBoolean(GL11.GL_DEPTH_WRITEMASK);
         final int shadeModel = GL11.glGetInteger(GL11.GL_SHADE_MODEL);
 
-        renderer.bindTexture(new GuiTexture(texture, 64, 64));
+        // Bound directly: the renderer restarts its batch, on the buffer the model draws with, when binding through it
+        Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
         final float[] tip = this.drawModel(this.model, seconds);
         if (tip != null) {
             this.drawBurst(tip[0], tip[1], burstAmount(seconds), seconds);
@@ -131,7 +131,8 @@ public final class UIPlayerFigure extends BasicContainer<UIPlayerFigure> {
             GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
-        renderer.bindDefaultTexture();
+        // Back to what the renderer had bound (bindDefaultTexture skips binding when it thinks that texture is current)
+        renderer.forceRebind();
         renderer.startDrawing();
     }
 

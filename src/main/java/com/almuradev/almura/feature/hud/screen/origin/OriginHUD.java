@@ -124,7 +124,7 @@ public class OriginHUD extends AbstractHUD {
         this.detailsPanel.setVisible(general.displayLocationWidget);
         this.detailsPanel.setAlpha(general.originHudOpacity);
 
-        this.worldPanel.setVisible(general.displayWorldCompassWidget);
+        this.worldPanel.setVisible(general.displayWorldCompassWidget && this.worldPanel.refresh());
 
         this.skillsPanel.refresh();
         this.skillsPanel.setAlpha(general.originHudOpacity);

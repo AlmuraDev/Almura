@@ -15,6 +15,7 @@ import net.malisis.core.client.gui.render.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.decoration.UILabel;
+import net.malisis.core.client.gui.element.Padding;
 import net.malisis.core.renderer.font.FontOptions;
 import net.malisis.core.util.FontColors;
 import net.minecraft.util.text.TextFormatting;
@@ -60,14 +61,31 @@ public class UIWorldPanel extends AbstractPanel {
       return;
     }
     super.drawForeground(renderer, mouseX, mouseY, partialTick);
+  }
+
+  /**
+   * Fills in the labels and resizes to fit. Call once per frame before drawing, so the first frame isn't an empty panel.
+   *
+   * @return Whether there is anything to show (no player while joining a world)
+   */
+  public boolean refresh() {
+    if (this.client.player == null || this.client.player.world == null) {
+      return false;
+    }
     this.updateWorld();
     this.updateClaim();
     this.updateCompass();
     this.updateSize();
+    return true;
   }
 
   private void updateSize() {
-    this.width = Math.max(minWidth, this.getContentWidth());
+    // The labels are centred, so size from their own widths rather than where they currently sit
+    final int widest = this.getComponents().stream()
+      .filter(UIComponent::isVisible)
+      .mapToInt(c -> c instanceof UILabel ? ((UILabel) c).getContentWidth() : c.getWidth())
+      .max().orElse(0);
+    this.width = Math.max(minWidth, widest + Padding.of(this).left() + Padding.of(this).right() + 2);
     this.height = this.getContentHeight();
   }
 

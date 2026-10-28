@@ -362,11 +362,15 @@ public final class NicknameGUI extends BasicScreen {
         GlStateManager.translate(0.0F, 0.0F, 0.0F);
         RenderManager rendermanager = Minecraft.getMinecraft().getRenderManager();
         rendermanager.setPlayerViewY(180.0F);
+        // The nameplate faces the camera's pitch; level it, or looking up or down flattens the name and title into each other
+        final float playerViewX = rendermanager.playerViewX;
+        rendermanager.playerViewX = 0.0F;
         // Fix player model being dependent on environmental lighting.
         GlStateManager.disableLighting();
         rendermanager.setRenderShadow(false);
         rendermanager.renderEntity(ent, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
         rendermanager.setRenderShadow(true);
+        rendermanager.playerViewX = playerViewX;
         ent.renderYawOffset = f;
         ent.rotationYaw = f1;
         ent.rotationPitch = f2;

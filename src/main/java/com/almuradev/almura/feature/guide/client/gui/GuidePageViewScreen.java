@@ -73,6 +73,8 @@ public class GuidePageViewScreen extends BasicScreen {
     private boolean canAdd, canRemove, canModify, canAddPlayer;
     private float snapshotScrollOffset;
     private int snapshotCursorPositionX, snapshotCursorPositionY;
+    // Only a text box that had focus gets it back, so a page just opened shows no cursor
+    private boolean snapshotFocused;
     private BasicForm form;
     private List<UICheckBox> checkBoxes = new ArrayList<>();
     private BasicList<PageListEntry> pagesList;
@@ -135,6 +137,7 @@ public class GuidePageViewScreen extends BasicScreen {
                 this.tbContent.getTextBox().setText("");
             } else {
                 if (manager.getPage() != null && !manager.getPage().getId().equalsIgnoreCase(i.getId())) {
+                    this.tbContent.getTextBox().setFocused(false);
                     this.clearCursorSnapshot();
                     this.restoreCursorSnapshot();
                 }
@@ -239,9 +242,13 @@ public class GuidePageViewScreen extends BasicScreen {
         for (final UICheckBox checkBox : this.checkBoxes) {
             checkBoxesWidth += checkBox.getWidth();
         }
-        int checkBoxX = (BasicScreen.getPaddedWidth(this.form) - checkBoxesWidth) / 2;
+        // Centred in the space between the edit buttons on the left and Save/Close on the right
+        final int left = this.buttonDetails != null && this.buttonDetails.isVisible() ? BasicScreen.getPaddedX(this.buttonDetails, CHECKBOX_SPACING) : 0;
+        final int right = BasicScreen.getPaddedWidth(this.form) - 50 - (this.buttonSave != null ? 52 : 0) - CHECKBOX_SPACING;
+        int checkBoxX = left + (right - left - checkBoxesWidth) / 2;
         for (final UICheckBox checkBox : this.checkBoxes) {
-            checkBox.setPosition(checkBoxX, -3, Anchor.BOTTOM | Anchor.LEFT);
+            // Level with the middle of the 15 high buttons
+            checkBox.setPosition(checkBoxX, -(15 - checkBox.getHeight()) / 2, Anchor.BOTTOM | Anchor.LEFT);
             checkBoxX += checkBox.getWidth() + CHECKBOX_SPACING;
         }
     }
@@ -439,10 +446,13 @@ public class GuidePageViewScreen extends BasicScreen {
         this.snapshotScrollOffset = this.tbContent.getTextBox().getScrollbar().offset();
         this.snapshotCursorPositionX = this.tbContent.getTextBox().getCursorPosition().index(); // the text index
         this.snapshotCursorPositionY = 0;
+        this.snapshotFocused = this.tbContent.getTextBox().isFocused();
     }
 
     private void restoreCursorSnapshot() {
-        this.tbContent.getTextBox().focus();
+        if (this.snapshotFocused) {
+            this.tbContent.getTextBox().focus();
+        }
         this.tbContent.getTextBox().getScrollbar().scrollTo(this.snapshotScrollOffset);
         this.tbContent.getTextBox().getCursorPosition().jumpTo(this.snapshotCursorPositionX);
     }
@@ -451,6 +461,7 @@ public class GuidePageViewScreen extends BasicScreen {
         this.snapshotScrollOffset = 0;
         this.snapshotCursorPositionX = 0;
         this.snapshotCursorPositionY = 0;
+        this.snapshotFocused = false;
     }
 
     private void updateButtons() {

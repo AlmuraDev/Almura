@@ -515,7 +515,7 @@ public final class BankScreen extends BasicScreen {
         @Override
         protected void construct(final MalisisGui gui) {
             super.construct(gui);
-            this.setSize(0, 21);
+            this.setSize(0, 24);
 
             final BankTransactionType type = this.item.getType();
             final UILabel typeLabel = new UILabel(typeColor(type) + I18n.format("almura.feature.bank.type."
