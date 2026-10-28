@@ -264,7 +264,7 @@ public class MultiplayerScreen extends PanoramicScreen {
     protected void construct(final MalisisGui gui) {
       this.setHeight(24);
 
-      this.statusIndicatorContainer = new BasicContainer<>(5, this.height - (this.getLeftBorderSize() + this.getRightBorderSize()));
+      this.statusIndicatorContainer = new BasicContainer<>(5, this.getHeight() - (this.getLeftBorderSize() + this.getRightBorderSize()));
       this.statusIndicatorContainer.setPosition(2, -2, Anchor.TOP | Anchor.RIGHT);
 
       // Add components

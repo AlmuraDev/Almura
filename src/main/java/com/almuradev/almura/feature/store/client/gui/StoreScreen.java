@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.store.client.gui;
 
 import com.almuradev.almura.asm.ClientStaticAccess;
+import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.FeatureSortTypes;
 import com.almuradev.almura.feature.FeatureSortType;
@@ -463,7 +464,9 @@ public class StoreScreen extends BasicScreen {
     }
 
     @Override
-    protected void mouseClicked(final int x, final int y, final int button) {
+    protected void mousePressed(final UIComponent component, final int button) {
+        final int x = MalisisGui.MOUSE_POSITION.x();
+        final int y = MalisisGui.MOUSE_POSITION.y();
         this.getTabContainer(x, y).ifPresent(tab -> {
             final SideType targetSide = (SideType) tab.getData();;
 
@@ -478,7 +481,7 @@ public class StoreScreen extends BasicScreen {
             this.currentSide = targetSide;
             this.refresh(false);
         });
-        super.mouseClicked(x, y, button);
+        super.mousePressed(component, button);
     }
 
     @Override
@@ -909,7 +912,7 @@ public class StoreScreen extends BasicScreen {
 
         private UIButton arrowButton(final MalisisGui gui, final StoreScreen screen, final ResourceLocation texture, final int direction,
             final int y, final boolean enabled, @Nullable final String disabledTooltip) {
-            final UIImage arrow = new UIImage(new GuiTexture(texture), null);
+            final UIImage arrow = new UIImage(GuiConfig.wholeTexture(texture));
             arrow.setSize(9, 5);
             final UIButton button = new UIButtonBuilder()
                 .image(arrow)
@@ -921,7 +924,6 @@ public class StoreScreen extends BasicScreen {
                 .onClick(() -> screen.moveItem(this.item, direction))
                 .build("button.move." + (direction < 0 ? "up" : "down"));
             // The button graphic has a 1 pixel black outline: at 15 x 11 the 9 x 5 arrow sits in the middle of the grey inside it
-            button.setAutoSize(false);
             button.setSize(ARROW_BUTTON_WIDTH, ARROW_BUTTON_HEIGHT);
             return button;
         }
@@ -993,7 +995,7 @@ public class StoreScreen extends BasicScreen {
             // Default available space
             this.itemNameSpaceAvailable = this.getWidth();
 
-            this.listedIndicatorContainer = new BasicContainer<>(5, this.height - (this.getLeftBorderSize() + this.getRightBorderSize()));
+            this.listedIndicatorContainer = new BasicContainer<>(5, this.getHeight() - (this.getLeftBorderSize() + this.getRightBorderSize()));
             this.listedIndicatorContainer.setVisible(false);
             this.listedIndicatorContainer.setPosition(2, -2, Anchor.TOP | Anchor.RIGHT);
 

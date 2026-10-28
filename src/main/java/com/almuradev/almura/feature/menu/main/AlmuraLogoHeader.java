@@ -46,7 +46,7 @@ public final class AlmuraLogoHeader {
         figure.setSize(FIGURE_WIDTH, FIGURE_HEIGHT);
         figure.setPosition(0, -FIGURE_LIFT, Anchor.TOP | Anchor.CENTER);
 
-        final UIImage text = new UIImage(new GuiTexture(GuiConfig.Location.ALMURA_LOGO_TEXT), null);
+        final UIImage text = new UIImage(GuiConfig.wholeTexture(GuiConfig.Location.ALMURA_LOGO_TEXT));
         text.setSize(TEXT_WIDTH, TEXT_HEIGHT);
         text.setPosition(0, 0, Anchor.BOTTOM | Anchor.CENTER);
 

@@ -96,7 +96,7 @@ public final class SkillsScreen extends BasicScreen {
             nextLevelLabel.setPosition(10, y + LINE_HEIGHT * 2);
 
             final UIPropertyBar progressBar = new UIPropertyBar(this, FORM_WIDTH - 20, 5)
-                    .setColor(skill.color)
+                    .setBarColor(skill.color)
                     .setAmount(skill.getLevelProgress())
                     .setPosition(10, y + LINE_HEIGHT * 3);
 
@@ -133,8 +133,8 @@ public final class SkillsScreen extends BasicScreen {
     }
 
     @Override
-    public void update(final int mouseX, final int mouseY, final float partialTick) {
-        super.update(mouseX, mouseY, partialTick);
+    public void update() {
+        super.update();
 
         // Rebuild when new skill data arrives while the screen is open
         if (skillsManager.getRevision() != this.builtRevision) {

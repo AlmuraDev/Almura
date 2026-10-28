@@ -28,13 +28,13 @@ final class UIWorldIcon extends BasicContainer<UIWorldIcon> {
     private final ResourceLocation texture;
 
     UIWorldIcon(final MalisisGui gui, final ResourceLocation texture, final int size) {
-        super(gui, size, size);
+        super(size, size);
         this.texture = texture;
         this.setBackgroundAlpha(0);
+        this.setForeground(this::drawIcon);
     }
 
-    @Override
-    public void drawForeground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
+    private void drawIcon(final GuiRenderer renderer) {
         // Drawn outside of the renderer's batch, leaving blending as it found it
         Tessellator.getInstance().draw();
         final boolean blend = GL11.glIsEnabled(GL11.GL_BLEND);

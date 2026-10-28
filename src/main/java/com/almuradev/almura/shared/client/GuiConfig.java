@@ -18,6 +18,14 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public interface GuiConfig {
 
+    /**
+     * An icon showing the whole of a texture, for a UIImage.
+     */
+    static GuiIcon wholeTexture(final ResourceLocation location) {
+        // The texture size only converts pixels to UVs, unused for 0 to 1
+        return new GuiIcon(new GuiTexture(location, 1, 1), 0F, 0F, 1F, 1F);
+    }
+
     @SideOnly(Side.CLIENT)
     interface Icon {
 

@@ -44,7 +44,7 @@ public final class WorldLoadingGui extends BasicScreen {
         form.setTopPadding(3);
         form.setLeftPadding(3);
 
-        final UIImage almuraHeader = new UIImage(new GuiTexture(GuiConfig.Location.ALMURA_LOGO), null);
+        final UIImage almuraHeader = new UIImage(GuiConfig.wholeTexture(GuiConfig.Location.ALMURA_LOGO));
         almuraHeader.setSize(60, 99);
         almuraHeader.setPosition(0, 5, Anchor.TOP | Anchor.CENTER);
 

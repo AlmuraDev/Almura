@@ -17,6 +17,7 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicContainerScreen;
 import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.render.GuiRenderer;
+import net.malisis.core.client.gui.render.GuiIcon;
 import net.malisis.core.client.gui.render.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
@@ -75,7 +76,7 @@ public class SimpleAboutMenu extends BasicContainerScreen {
 
         // Static entry
         elementDataList.add(new AboutItemData(this.list,
-                new UIImage(new GuiTexture(GuiConfig.Location.ALMURA_MAN), null), 5, 0, 23, 32, 8, AboutConfig.TITLE, AboutConfig.STORY));
+                new UIImage(GuiConfig.wholeTexture(GuiConfig.Location.ALMURA_MAN)), 5, 0, 23, 32, 8, AboutConfig.TITLE, AboutConfig.STORY));
 
         // Dynamic entry
         AboutConfig.ENTRIES.forEach(entry -> {
@@ -84,12 +85,12 @@ public class SimpleAboutMenu extends BasicContainerScreen {
                 titles = titles.toBuilder().append(Text.of("  • ", I18n.format(title)), Text.NEW_LINE).build();
             }
             elementDataList.add(new AboutItemData(this.list,
-                    new UIImage(new GuiRemoteTexture(
+                    new UIImage(new GuiIcon(new GuiRemoteTexture(
                             GuiConfig.Location.GENERIC_AVATAR,
                             new ResourceLocation(Almura.ID, "textures/gui/skins/avatars/" + entry.uniqueId + ".png"),
                             String.format(GuiConfig.Url.SKINS, entry.uniqueId, 32),
                             32,
-                            32), null), 2, 0, 32, 32, 4,
+                            32), 0F, 0F, 1F, 1F)), 2, 0, 32, 32, 4,
                     Text.of(entry.color, I18n.format(entry.name)),
                     Text.of(TextColors.WHITE, I18n.format(entry.description), Text.NEW_LINE, Text.NEW_LINE, TextStyles.BOLD,
                             I18n.format("almura.menu.about.titles"), TextStyles.RESET, TextColors.RESET, Text.NEW_LINE, titles))
@@ -201,8 +202,8 @@ public class SimpleAboutMenu extends BasicContainerScreen {
 
         @SuppressWarnings("unchecked")
         @Override
-        public boolean onClick(final int x, final int y) {
-            final UIComponent component = getComponentAt(x, y);
+        public boolean onClick() {
+            final UIComponent component = getComponentAt(MalisisGui.MOUSE_POSITION.x(), MalisisGui.MOUSE_POSITION.y());
             if (this.label.equals(component) || this.item.getImage().equals(component) || this.equals(component)) {
                 ((BasicList<AboutItemData>) this.parent).setSelectedItem(this.item);
             }
@@ -210,18 +211,12 @@ public class SimpleAboutMenu extends BasicContainerScreen {
         }
 
         @Override
-        public void drawBackground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
-            if (this.parent instanceof BasicList) {
-                final BasicList parent = (BasicList) this.parent;
-
-                final int width = parent.getContentWidth() - (parent.getScrollBar().isEnabled() ? parent.getScrollBar().getRawWidth() + 1 : 0);
-
-                setSize(width, getHeight());
-
-                if (this.item == parent.getSelectedItem()) {
-                    super.drawBackground(renderer, mouseX, mouseY, partialTick);
-                }
-            }
+        public void render(final GuiRenderer renderer) {
+            // Only the selected entry shows its background and border (the width follows the list, see ItemComponent)
+            final boolean selected = this.parent instanceof BasicList && this.item == ((BasicList<?>) this.parent).getSelectedItem();
+            this.setBackgroundAlpha(selected ? 255 : 0);
+            this.setBorder(BORDER_COLOR, 1, selected ? 255 : 0);
+            super.render(renderer);
         }
     }
 

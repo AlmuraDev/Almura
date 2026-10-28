@@ -245,7 +245,7 @@ public final class BankScreen extends BasicScreen {
     public void drawScreen(int mouseX, int mouseY, final float partialTicks) {
         // Drawn behind its dialogs: no hover or tooltip of its own (the tooltip of the button that opened them would stay under the mouse)
         if (Minecraft.getMinecraft().currentScreen != this) {
-            this.tooltipComponent = null;
+            this.tooltip = null;
             mouseX = -1;
             mouseY = -1;
         }

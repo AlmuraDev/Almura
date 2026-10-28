@@ -200,7 +200,6 @@ public final class ExchangeScreen extends BasicScreen {
                 .onClick(() -> this.searchFor("", ""))
                 .build("button.clear_filters");
         // Buttons draw 2 smaller than their size (right and bottom): 14 shows as the text box's 12, with the X centred in it
-        buttonClearFilters.setAutoSize(false);
         buttonClearFilters.setSize(14, 14);
 
         // Separator
@@ -485,7 +484,9 @@ public final class ExchangeScreen extends BasicScreen {
     }
 
     @Override
-    protected void mouseClicked(final int x, final int y, final int button) {
+    protected void mousePressed(final UIComponent component, final int button) {
+        final int x = MalisisGui.MOUSE_POSITION.x();
+        final int y = MalisisGui.MOUSE_POSITION.y();
         if (button == 0 && this.headerItemName != null) {
             if (this.headerItemName.isInsideBounds(x, y)) {
                 this.sortBy(FeatureSortTypes.ITEM_DISPLAY_NAME_ASC, FeatureSortTypes.ITEM_DISPLAY_NAME_DESC);
@@ -500,7 +501,7 @@ public final class ExchangeScreen extends BasicScreen {
                 return;
             }
         }
-        super.mouseClicked(x, y, button);
+        super.mousePressed(component, button);
     }
 
     @Subscribe
@@ -852,7 +853,7 @@ public final class ExchangeScreen extends BasicScreen {
         protected void construct(final MalisisGui gui) {
             super.construct(gui);
 
-            this.listedIndicatorContainer = new BasicContainer<>(5, this.height - (this.getLeftBorderSize() + this.getRightBorderSize()));
+            this.listedIndicatorContainer = new BasicContainer<>(5, this.getHeight() - (this.getLeftBorderSize() + this.getRightBorderSize()));
             this.listedIndicatorContainer.setVisible(false);
             this.listedIndicatorContainer.setPosition(2, -2, Anchor.TOP | Anchor.RIGHT);
             this.listedIndicatorContainer.setColor(FontColors.DARK_GREEN);

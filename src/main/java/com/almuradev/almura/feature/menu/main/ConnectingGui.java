@@ -24,6 +24,7 @@ import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.render.GuiTexture;
+import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
@@ -103,7 +104,7 @@ public final class ConnectingGui extends BasicScreen {
         this.form.setLeftPadding(3);
 
         // Almura header
-        final UIImage almuraHeader = new UIImage(new GuiTexture(GuiConfig.Location.ALMURA_LOGO), null);
+        final UIImage almuraHeader = new UIImage(GuiConfig.wholeTexture(GuiConfig.Location.ALMURA_LOGO));
         almuraHeader.setSize(60, 99);
         almuraHeader.setPosition(0, 5, Anchor.TOP | Anchor.CENTER);
 
@@ -178,8 +179,8 @@ public final class ConnectingGui extends BasicScreen {
     }
 
     @Override
-    public void update(int mouseX, int mouseY, float partialTick) {
-        super.update(mouseX, mouseY, partialTick);
+    public void update() {
+        super.update();
         if (Almura.networkManager != null) {
             if (Almura.networkManager.isChannelOpen()) {
                 Almura.networkManager.processReceivedPackets();
@@ -198,8 +199,8 @@ public final class ConnectingGui extends BasicScreen {
     }
 
     @Override
-    protected void mouseClicked(int x, int y, int button) {
-        super.mouseClicked(x, y, button);
+    protected void mousePressed(final UIComponent component, final int button) {
+        super.mousePressed(component, button);
     }
 
     @Override

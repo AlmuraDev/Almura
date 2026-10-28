@@ -14,6 +14,7 @@ import com.almuradev.almura.shared.network.NetworkConfig;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
+import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.container.dialog.BasicMessageBox;
 import net.malisis.core.client.gui.component.container.dialog.MessageBoxButtons;
@@ -442,8 +443,8 @@ public final class ClaimManageScreen extends BasicScreen {
     }
 
     @Override
-    public void update(int mouseX, int mouseY, float partialTick) {
-        super.update(mouseX, mouseY, partialTick);
+    public void update() {
+        super.update();
 
         if (this.unlockMouse && this.lastUpdate == 25) {
             Mouse.setGrabbed(false); // Force the mouse to be visible even though Mouse.isGrabbed() is false.  //#BugsUnited.
@@ -526,14 +527,14 @@ public final class ClaimManageScreen extends BasicScreen {
             if (this.claimNameField.isFocused()) {
                 this.claimNameField.setFocused(false);
                 this.claimGreetingField.setFocused(true);
-                this.claimGreetingField.setCursorPosition(this.claimGreetingField.getContentWidth() + 1, 0);
+                this.claimGreetingField.getCursorPosition().jumpToEnd();
                 return;
             }
 
             if (this.claimGreetingField.isFocused()) {
                 this.claimGreetingField.setFocused(false);
                 this.claimFarewellField.setFocused(true);
-                this.claimFarewellField.setCursorPosition(this.claimFarewellField.getContentWidth() + 1, 0);
+                this.claimFarewellField.getCursorPosition().jumpToEnd();
                 return;
             }
         }
@@ -542,8 +543,8 @@ public final class ClaimManageScreen extends BasicScreen {
     }
 
     @Override
-    protected void mouseClicked(int x, int y, int button) {
-        super.mouseClicked(x, y, button);
+    protected void mousePressed(final UIComponent component, final int button) {
+        super.mousePressed(component, button);
         this.lastUpdate = 0; // Reset the timer when mouse is pressed.
     }
 

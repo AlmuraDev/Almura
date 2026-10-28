@@ -21,6 +21,7 @@ import com.almuradev.almura.feature.store.client.ClientStoreManager;
 import com.almuradev.almura.feature.title.ClientTitleManager;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
+import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.decoration.UISeparator;
@@ -208,8 +209,8 @@ public final class FeatureScreen extends BasicScreen {
   }
 
   @Override
-  public void update(int mouseX, int mouseY, float partialTick) {
-    super.update(mouseX, mouseY, partialTick);
+  public void update() {
+    super.update();
     if (unlockMouse && this.lastUpdate == 25) {
       Mouse.setGrabbed(false); // Force the mouse to be visible even though Mouse.isGrabbed() is false.  //#BugsUnited.
       unlockMouse = false; // Only unlock once per session.
@@ -225,8 +226,8 @@ public final class FeatureScreen extends BasicScreen {
   }
 
   @Override
-  protected void mouseClicked(int x, int y, int button) {
-    super.mouseClicked(x, y, button);
+  protected void mousePressed(final UIComponent component, final int button) {
+    super.mousePressed(component, button);
     this.lastUpdate = 0; // Reset the timer when mouse is pressed.
   }
 

@@ -13,6 +13,7 @@ import com.almuradev.almura.feature.accessory.client.ClientAccessoryManager;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
+import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.decoration.UISeparator;
@@ -34,9 +35,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Mouse;
 
-import java.util.List;
-
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * Pick the accessories to wear: a type, then one of its styles, tried on the player preview before wearing it.
@@ -286,8 +286,10 @@ public final class AccessoryScreen extends BasicScreen {
     }
 
     @Override
-    public void update(final int mouseX, final int mouseY, final float partialTick) {
-        super.update(mouseX, mouseY, partialTick);
+    public void update() {
+        super.update();
+        final int mouseX = MalisisGui.MOUSE_POSITION.x();
+        final int mouseY = MalisisGui.MOUSE_POSITION.y();
 
         // Wearing/taking off is confirmed by the server, keep the status current
         if (this.typeSelect != null && this.styleSelect != null) {

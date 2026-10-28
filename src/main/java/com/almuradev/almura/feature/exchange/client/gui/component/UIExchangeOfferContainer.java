@@ -18,6 +18,7 @@ import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.render.GuiRenderer;
+import net.malisis.core.client.gui.render.IGuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicContainer;
@@ -100,15 +101,17 @@ public class UIExchangeOfferContainer extends BasicDualListContainer<VanillaStac
         this.rightContainer.add(this.rightPropertyBar);
 
         this.updateControls(null, SideType.RIGHT);
-    }
 
-    @Override
-    public void drawBackground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
-        super.drawBackground(renderer, mouseX, mouseY, partialTick);
-
-        // Draw: bottom-left -> bottom-right (title line)
-        renderer.drawRectangle(this.getLeftBorderSize(), this.leftContainer.getHeight() - this.leftPropertyBar.getHeight() - 6, 1,
-                this.getRawWidth() - (this.getLeftBorderSize() + this.getRightBorderSize()), 1, FontColors.WHITE, 185);
+        // The container background, then a line above the property bars
+        final IGuiRenderer background = this.backgroundRenderer.get();
+        this.setBackground(renderer -> {
+            if (background != null) {
+                background.render(renderer);
+            }
+            // Draw: bottom-left -> bottom-right (title line)
+            renderer.drawRectangle(this.getLeftBorderSize(), this.leftContainer.getHeight() - this.leftPropertyBar.getHeight() - 6, 1,
+                    this.getRawWidth() - (this.getLeftBorderSize() + this.getRightBorderSize()), 1, FontColors.WHITE, 185);
+        });
     }
 
     @Override
@@ -441,14 +444,14 @@ public class UIExchangeOfferContainer extends BasicDualListContainer<VanillaStac
         }
 
         @Override
-        public void drawForeground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
+        public void render(final GuiRenderer renderer) {
             // Update the item label if the quantity has changed to reflect the new quantity
             if (this.lastKnownQuantity != this.item.getQuantity()) {
                 this.itemQuantityText = TextFormatting.GRAY + " x " + FeatureConstants.withSuffix(this.item.getQuantity());
                 this.itemLabel.setText(this.itemLabelText + this.itemQuantityText);
                 this.lastKnownQuantity = this.item.getQuantity();
             }
-            super.drawForeground(renderer, mouseX, mouseY, partialTick);
+            super.render(renderer);
         }
     }
 }

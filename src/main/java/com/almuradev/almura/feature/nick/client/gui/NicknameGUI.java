@@ -23,7 +23,9 @@ import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.BasicScreen;
+import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
@@ -236,7 +238,7 @@ public final class NicknameGUI extends BasicScreen {
     public void onUIButtonClickEvent(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.color":
-                final String colorCode = this.colorSelector.getSelectedOption().getLabel().substring(0,2);
+                final String colorCode = this.colorSelector.getSelectedLabel().substring(0,2);
                 this.nicknameTextbox.addText(colorCode);
                 break;
 
@@ -292,8 +294,10 @@ public final class NicknameGUI extends BasicScreen {
     }
 
     @Override
-    public void update(int mouseX, int mouseY, float partialTick) {
-        super.update(mouseX, mouseY, partialTick);
+    public void update() {
+        super.update();
+        final int mouseX = MalisisGui.MOUSE_POSITION.x();
+        final int mouseY = MalisisGui.MOUSE_POSITION.y();
 
         if (this.update) {
             this.setRendererName(this.entityPlayer, this.nicknameTextbox.getText());
@@ -325,8 +329,8 @@ public final class NicknameGUI extends BasicScreen {
     }
 
     @Override
-    protected void mouseClicked(int x, int y, int button) {
-        super.mouseClicked(x, y, button);
+    protected void mousePressed(final UIComponent component, final int button) {
+        super.mousePressed(component, button);
         this.lastUpdate = 0; // Reset the timer when mouse is pressed.
     }
 

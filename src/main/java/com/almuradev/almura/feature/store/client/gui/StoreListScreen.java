@@ -118,11 +118,11 @@ public class StoreListScreen extends BasicScreen {
 
         this.buyInfiniteCheckBox = new UICheckBox(TextFormatting.WHITE + I18n.format("almura.feature.common.text.infinite"));
         this.buyInfiniteCheckBox.setPosition(
-          this.buyContainer.componentX(this.buyQtyTextBox) - this.buyContainer.getRightPadding() - this.buyContainer.getRightBorderSize(),
+          this.buyQtyTextBox.position().x() - this.buyContainer.getRightPadding() - this.buyContainer.getRightBorderSize(),
           getPaddedY(this.buyQtyTextBox, 2));
         this.buyInfiniteCheckBox.register(this);
 
-        final int column2X = this.buyContainer.componentX(this.buyQtyTextBox)
+        final int column2X = this.buyQtyTextBox.position().x()
           - this.buyContainer.getRightPadding()
           - this.buyContainer.getRightBorderSize();
 

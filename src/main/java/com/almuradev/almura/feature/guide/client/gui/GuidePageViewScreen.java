@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.guide.client.gui;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.asm.ClientStaticAccess;
 import com.almuradev.almura.core.client.config.category.GeneralCategory;
 import com.almuradev.almura.feature.guide.ClientPageManager;
@@ -174,7 +175,7 @@ public class GuidePageViewScreen extends BasicScreen {
 
         this.tbContent = new WYSIWYGTextBox(this, BasicScreen.getPaddedHeight(form), "");
         this.tbContent.setPosition(BasicScreen.getPaddedX(this.pagesList, 2), 0);
-        this.tbContent.getTextBox().setOptions(0x555555, 0xc8c8c8, 0x00000);
+        this.tbContent.getTextBox().setColors(0x555555, 0xc8c8c8, 0x00000);
         // Editing and the formatter bar follow the open page (updateEditing)
         this.tbContent.getTextBox().setEditable(false);
         // Save is only clickable once the text differs from the page as loaded
@@ -344,7 +345,7 @@ public class GuidePageViewScreen extends BasicScreen {
 
     private void runScheduledTask(final String details) {
         // Null this so we don't see it drawing on any screens we open
-        this.tooltipComponent = null;
+        this.tooltip = null;
 
         Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(task -> {
             switch (details.toUpperCase()) {
@@ -426,7 +427,7 @@ public class GuidePageViewScreen extends BasicScreen {
         Keyboard.enableRepeatEvents(true);
         this.snapshotCursor();
         this.tbContent.getTextBox().setText(TextUtil.asFriendlyText(manager.getPage() == null ? "" : manager.getPage().getContent()));
-        this.tbContent.getTextBox().getCursorPosition().jumpToBeginning();
+        this.tbContent.getTextBox().getCursorPosition().jumpToStart();
         manager.preSnapshot = this.tbContent.getTextBox().getText();
 
         this.updateButtons();
@@ -435,15 +436,15 @@ public class GuidePageViewScreen extends BasicScreen {
     }
 
     private void snapshotCursor() {
-        this.snapshotScrollOffset = this.tbContent.getTextBox().getScrollbar().getOffset();
-        this.snapshotCursorPositionX = this.tbContent.getTextBox().getCursorPosition().getXOffset();
-        this.snapshotCursorPositionY = this.tbContent.getTextBox().getCursorPosition().getYOffset();
+        this.snapshotScrollOffset = this.tbContent.getTextBox().getScrollbar().offset();
+        this.snapshotCursorPositionX = this.tbContent.getTextBox().getCursorPosition().index(); // the text index
+        this.snapshotCursorPositionY = 0;
     }
 
     private void restoreCursorSnapshot() {
         this.tbContent.getTextBox().focus();
         this.tbContent.getTextBox().getScrollbar().scrollTo(this.snapshotScrollOffset);
-        this.tbContent.getTextBox().getCursorPosition().setPosition(this.snapshotCursorPositionX, this.snapshotCursorPositionY);
+        this.tbContent.getTextBox().getCursorPosition().jumpTo(this.snapshotCursorPositionX);
     }
 
     private void clearCursorSnapshot() {
@@ -492,7 +493,7 @@ public class GuidePageViewScreen extends BasicScreen {
         // Drawn behind the create/details screens and dialogs: no hover or tooltip of its own (the tooltip of the button that opened them
         // would otherwise stay under the mouse, on top of theirs)
         if (Minecraft.getMinecraft().currentScreen != this) {
-            this.tooltipComponent = null;
+            this.tooltip = null;
             mouseX = -1;
             mouseY = -1;
         }
@@ -588,7 +589,7 @@ public class GuidePageViewScreen extends BasicScreen {
 
         private UIButton arrowButton(final MalisisGui gui, final ResourceLocation texture, final int direction, final int y,
                 final boolean enabled) {
-            final UIImage arrow = new UIImage(new GuiTexture(texture), null);
+            final UIImage arrow = new UIImage(GuiConfig.wholeTexture(texture));
             arrow.setSize(9, 5);
             final UIButton button = new UIButtonBuilder()
                     .image(arrow)
@@ -599,7 +600,6 @@ public class GuidePageViewScreen extends BasicScreen {
                     .onClick(() -> manager.movePage(this.item.getId(), direction))
                     .build("button.move." + (direction < 0 ? "up" : "down"));
             // The button graphic has a 1 pixel black outline: at 15 x 11 the 9 x 5 arrow sits in the middle of the grey inside it
-            button.setAutoSize(false);
             button.setSize(15, ARROW_BUTTON_HEIGHT);
             return button;
         }

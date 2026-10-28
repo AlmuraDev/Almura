@@ -421,11 +421,8 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Basi
         @Override
         public void construct(final MalisisGui gui) {
             this.setSize(UIComponent.INHERITED, 20);
-        }
-
-        @Override
-        public void drawForeground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
-            renderer.drawText(TextFormatting.WHITE + item.getName(), 4, (this.height - Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT) / 2f, 0);
+            this.setForeground(renderer -> renderer.drawText(TextFormatting.WHITE + this.item.getName(), 4,
+                (this.getHeight() - Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT) / 2, 0));
         }
     }
 }
