@@ -7,13 +7,12 @@
  */
 package com.almuradev.almura.feature.menu.singleplayer;
 
-import net.malisis.core.client.gui.GuiRenderer;
+import net.malisis.core.client.gui.render.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.container.BasicContainer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -28,15 +27,15 @@ final class UIWorldIcon extends BasicContainer<UIWorldIcon> {
     private final ResourceLocation texture;
 
     UIWorldIcon(final MalisisGui gui, final ResourceLocation texture, final int size) {
-        super(gui, size, size);
+        super(size, size);
         this.texture = texture;
         this.setBackgroundAlpha(0);
+        this.setForeground(this::drawIcon);
     }
 
-    @Override
-    public void drawForeground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
+    private void drawIcon(final GuiRenderer renderer) {
         // Drawn outside of the renderer's batch, leaving blending as it found it
-        Tessellator.getInstance().draw();
+        renderer.draw();
         final boolean blend = GL11.glIsEnabled(GL11.GL_BLEND);
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(this.texture);
@@ -48,7 +47,8 @@ final class UIWorldIcon extends BasicContainer<UIWorldIcon> {
             GlStateManager.disableBlend();
         }
 
-        renderer.bindDefaultTexture();
+        // Back to what the renderer had bound (bindDefaultTexture skips binding when it thinks that texture is current)
+        renderer.forceRebind();
         renderer.startDrawing();
     }
 }

@@ -8,7 +8,7 @@
 package com.almuradev.almura.feature.hud.screen.origin.component.panel.debug;
 
 import com.almuradev.almura.asm.mixin.accessors.entity.EntityListAccessor;
-import net.malisis.core.client.gui.GuiRenderer;
+import net.malisis.core.client.gui.render.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
@@ -47,7 +47,7 @@ public class LookingDebugPanel extends AbstractDebugPanel {
     }
 
     @Override
-    public void draw(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
+    public void render(final GuiRenderer renderer) {
         if (!this.isVisible()) {
             return;
         }
@@ -63,7 +63,7 @@ public class LookingDebugPanel extends AbstractDebugPanel {
         this.lookingAtEntity = omo != null && omo.typeOfHit == RayTraceResult.Type.ENTITY && omo.entityHit != null;
 
         if (this.lookingAtBlock || this.lookingAtEntity) {
-            super.draw(renderer, mouseX, mouseY, partialTick);
+            super.render(renderer);
         }
     }
 

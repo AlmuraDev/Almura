@@ -13,6 +13,7 @@ import com.almuradev.almura.feature.accessory.client.ClientAccessoryManager;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
+import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.decoration.UISeparator;
@@ -34,9 +35,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Mouse;
 
-import java.util.List;
-
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * Pick the accessories to wear: a type, then one of its styles, tried on the player preview before wearing it.
@@ -84,10 +84,10 @@ public final class AccessoryScreen extends BasicScreen {
     public void construct() {
         this.guiscreenBackground = false;
 
-        this.form = new BasicForm(this, FORM_WIDTH, FORM_HEIGHT, "Accessories");
+        this.form = new BasicForm(FORM_WIDTH, FORM_HEIGHT, "Accessories");
         this.form.setBackgroundAlpha(215);
 
-        final UIButton closeButton = new UIButtonBuilder(this)
+        final UIButton closeButton = new UIButtonBuilder()
                 .text("Close")
                 .width(50)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
@@ -96,7 +96,7 @@ public final class AccessoryScreen extends BasicScreen {
         this.form.add(closeButton);
 
         if (this.allowed.isEmpty()) {
-            final UILabel none = new UILabel(this, "You don't have any accessories you can wear.");
+            final UILabel none = new UILabel("You don't have any accessories you can wear.");
             none.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).build());
             none.setPosition(0, 0, Anchor.CENTER | Anchor.MIDDLE);
             this.form.add(none);
@@ -104,25 +104,25 @@ public final class AccessoryScreen extends BasicScreen {
             return;
         }
 
-        final UILabel typeLabel = new UILabel(this, "Accessory");
+        final UILabel typeLabel = new UILabel("Accessory");
         typeLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).build());
         typeLabel.setPosition(4, 4, Anchor.LEFT | Anchor.TOP);
 
-        this.typeSelect = new UISelect<>(this, 130, this.allowed);
+        this.typeSelect = new UISelect<>(130, this.allowed);
         this.typeSelect.setLabelFunction(AccessoryType::displayName);
         this.typeSelect.setPosition(4, 15, Anchor.LEFT | Anchor.TOP);
         this.typeSelect.register(this);
 
-        final UILabel styleLabel = new UILabel(this, "Style");
+        final UILabel styleLabel = new UILabel("Style");
         styleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).build());
         styleLabel.setPosition(4, 35, Anchor.LEFT | Anchor.TOP);
 
-        this.styleSelect = new UISelect<>(this, 130);
+        this.styleSelect = new UISelect<>(130);
         this.styleSelect.setPosition(4, 46, Anchor.LEFT | Anchor.TOP);
         this.styleSelect.maxDisplayedOptions(12);
         this.styleSelect.register(this);
 
-        this.previousButton = new UIButtonBuilder(this)
+        this.previousButton = new UIButtonBuilder()
                 .text("<")
                 .width(24)
                 .position(4, 66)
@@ -130,7 +130,7 @@ public final class AccessoryScreen extends BasicScreen {
                 .listener(this)
                 .build("button.previous");
 
-        this.nextButton = new UIButtonBuilder(this)
+        this.nextButton = new UIButtonBuilder()
                 .text(">")
                 .width(24)
                 .position(32, 66)
@@ -138,23 +138,23 @@ public final class AccessoryScreen extends BasicScreen {
                 .listener(this)
                 .build("button.next");
 
-        this.countLabel = new UILabel(this, "");
+        this.countLabel = new UILabel("");
         this.countLabel.setFontOptions(FontOptions.builder().from(FontColors.GRAY_FO).shadow(true).build());
         this.countLabel.setPosition(62, 70, Anchor.LEFT | Anchor.TOP);
 
-        this.statusLabel = new UILabel(this, "");
+        this.statusLabel = new UILabel("");
         this.statusLabel.setFontOptions(FontOptions.builder().from(FontColors.GOLD_FO).shadow(true).build());
         this.statusLabel.setPosition(4, 90, Anchor.LEFT | Anchor.TOP);
 
-        this.hideNameCheckbox = new UICheckBox(this, "Hide name");
+        this.hideNameCheckbox = new UICheckBox("Hide name");
         this.hideNameCheckbox.setPosition(4, 108, Anchor.LEFT | Anchor.TOP);
         this.hideNameCheckbox.setChecked(hideNameChoice);
 
-        this.hideTitleCheckbox = new UICheckBox(this, "Hide title");
+        this.hideTitleCheckbox = new UICheckBox("Hide title");
         this.hideTitleCheckbox.setPosition(4, 121, Anchor.LEFT | Anchor.TOP);
         this.hideTitleCheckbox.setChecked(hideTitleChoice);
 
-        this.hideHealthCheckbox = new UICheckBox(this, "Hide health bar");
+        this.hideHealthCheckbox = new UICheckBox("Hide health bar");
         this.hideHealthCheckbox.setPosition(4, 134, Anchor.LEFT | Anchor.TOP);
         this.hideHealthCheckbox.setChecked(hideHealthChoice);
 
@@ -168,14 +168,14 @@ public final class AccessoryScreen extends BasicScreen {
         divider.setSize(1, FORM_HEIGHT - 40);
         divider.setPosition(PREVIEW_LEFT - 8, 4, Anchor.LEFT | Anchor.TOP);
 
-        final UIButton wearButton = new UIButtonBuilder(this)
+        final UIButton wearButton = new UIButtonBuilder()
                 .text("Wear")
                 .width(50)
                 .anchor(Anchor.BOTTOM | Anchor.LEFT)
                 .listener(this)
                 .build("button.wear");
 
-        final UIButton removeButton = new UIButtonBuilder(this)
+        final UIButton removeButton = new UIButtonBuilder()
                 .text("Take Off")
                 .width(60)
                 .position(54, 0)
@@ -286,8 +286,10 @@ public final class AccessoryScreen extends BasicScreen {
     }
 
     @Override
-    public void update(final int mouseX, final int mouseY, final float partialTick) {
-        super.update(mouseX, mouseY, partialTick);
+    public void update() {
+        super.update();
+        final int mouseX = MalisisGui.MOUSE_POSITION.x();
+        final int mouseY = MalisisGui.MOUSE_POSITION.y();
 
         // Wearing/taking off is confirmed by the server, keep the status current
         if (this.typeSelect != null && this.styleSelect != null) {
@@ -377,10 +379,14 @@ public final class AccessoryScreen extends BasicScreen {
         entity.prevRotationYawHead = 0.0F;
         final RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
         renderManager.setPlayerViewY(180.0F);
+        // The nameplate faces the camera's pitch; level it, or looking up or down flattens the name and title into each other
+        final float playerViewX = renderManager.playerViewX;
+        renderManager.playerViewX = 0.0F;
         GlStateManager.disableLighting();
         renderManager.setRenderShadow(false);
         renderManager.renderEntity(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
         renderManager.setRenderShadow(true);
+        renderManager.playerViewX = playerViewX;
         entity.renderYawOffset = renderYawOffset;
         entity.prevRenderYawOffset = prevRenderYawOffset;
         entity.rotationYaw = rotationYaw;

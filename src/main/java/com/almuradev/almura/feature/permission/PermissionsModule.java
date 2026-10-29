@@ -15,5 +15,6 @@ public final class PermissionsModule extends AbstractModule implements CommonBin
     @Override
     protected void configure() {
         this.facet().add(PermissionsManager.class);
+        this.facet().add(SingleplayerOperator.class);
     }
 }

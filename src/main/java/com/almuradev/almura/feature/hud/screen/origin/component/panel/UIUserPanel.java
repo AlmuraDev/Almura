@@ -16,12 +16,12 @@ import com.almuradev.almura.shared.client.ui.Fonts;
 import com.almuradev.almura.shared.util.MathUtil;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.GuiRenderer;
+import net.malisis.core.client.gui.render.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
-import net.malisis.core.renderer.icon.Icon;
+import net.malisis.core.client.gui.render.GuiIcon;
 import net.malisis.core.util.FontColors;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
@@ -67,18 +67,18 @@ public class UIUserPanel extends AbstractPanel {
         this.userAvatarImage.setSize(16, 16);
 
         // Username
-        this.usernameLabel = new UILabel(gui, TextFormatting.WHITE + this.client.player.getDisplayName().getFormattedText());
+        this.usernameLabel = new UILabel(TextFormatting.WHITE + this.client.player.getDisplayName().getFormattedText());
         this.usernameLabel.setPosition(BasicScreen.getPaddedX(this.userAvatarImage, 3), 2);
 
         // Level
-        this.levelLabel = new UILabel(gui, "");
+        this.levelLabel = new UILabel("");
         this.levelLabel.setPosition(BasicScreen.getPaddedX(this.userAvatarImage, 3), BasicScreen.getPaddedY(this.usernameLabel, 0));
         this.levelLabel.setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.7F));
 
         // Currency
-        this.currencyImage = new UIImage(gui, MalisisGui.BLOCK_TEXTURE, Icon.from(Items.EMERALD));
+        this.currencyImage = new UIImage(GuiIcon.from(Items.EMERALD));
         this.currencyImage.setSize(8, 8);
-        this.currencyLabel = new UILabel(gui, "");
+        this.currencyLabel = new UILabel("");
         this.currencyLabel.setVisible(false);
         this.currencyImage.setVisible(false);
 
@@ -97,19 +97,19 @@ public class UIUserPanel extends AbstractPanel {
         this.experienceBar = new UIPropertyBar(gui, barWidth - 11, 7)
                 .setPosition(6, this.xpOrbImage.getY(), Anchor.TOP | Anchor.CENTER)
                 .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
-                .setColor(org.spongepowered.api.util.Color.ofRgb(0, 150, 0).getRgb());
+                .setBarColor(org.spongepowered.api.util.Color.ofRgb(0, 150, 0).getRgb());
 
         // Health
         // TODO Show effects (or icon) for golden apple, wither, poison, etc
         this.healthBar = new UIPropertyBar(gui, barWidth, barHeight)
-                .setColor(org.spongepowered.api.util.Color.ofRgb(187, 19, 19).getRgb())
+                .setBarColor(org.spongepowered.api.util.Color.ofRgb(187, 19, 19).getRgb())
                 .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
                 .setIcons(GuiConfig.Icon.VANILLA_HEART_BACKGROUND, GuiConfig.Icon.VANILLA_HEART_FOREGROUND);
         this.healthBar.setTooltip("Health Value");
 
         // Armor
         this.armorBar = new UIPropertyBar(gui, barWidth, barHeight)
-                .setColor(org.spongepowered.api.util.Color.ofRgb(102, 103, 109).getRgb())
+                .setBarColor(org.spongepowered.api.util.Color.ofRgb(102, 103, 109).getRgb())
                 .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
                 .setBackgroundIcon(GuiConfig.Icon.VANILLA_ARMOR);
         this.armorBar.setTooltip("Armor Value");
@@ -117,26 +117,26 @@ public class UIUserPanel extends AbstractPanel {
 
         // Hunger
         this.hungerBar = new UIPropertyBar(gui, barWidth, barHeight)
-                .setColor(org.spongepowered.api.util.Color.ofRgb(137, 89, 47).getRgb())
+                .setBarColor(org.spongepowered.api.util.Color.ofRgb(137, 89, 47).getRgb())
                 .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
                 .setIcons(GuiConfig.Icon.VANILLA_HUNGER_BACKGROUND, GuiConfig.Icon.VANILLA_HUNGER_FOREGROUND);
 
         // Stamina
         this.staminaBar = new UIPropertyBar(gui, barWidth, barHeight)
-                .setColor(org.spongepowered.api.util.Color.ofRgb(0, 148, 255).getRgb())
+                .setBarColor(org.spongepowered.api.util.Color.ofRgb(0, 148, 255).getRgb())
                 .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
                 .setBackgroundIcon(GuiConfig.Icon.STAMINA)
                 .setSpritesheet(GuiConfig.SpriteSheet.ALMURA); // You must call this if you are loading icon within the TexturePack when in-game.
 
         // Air
         this.airBar = new UIPropertyBar(gui, barWidth, barHeight)
-                .setColor(org.spongepowered.api.util.Color.ofRgb(0, 148, 255).getRgb())
+                .setBarColor(org.spongepowered.api.util.Color.ofRgb(0, 148, 255).getRgb())
                 .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
                 .setBackgroundIcon(GuiConfig.Icon.VANILLA_AIR);
 
         // Mount Health
         this.mountHealthBar = new UIPropertyBar(gui, barWidth, barHeight)
-                .setColor(org.spongepowered.api.util.Color.ofRgb(239, 126, 74).getRgb())
+                .setBarColor(org.spongepowered.api.util.Color.ofRgb(239, 126, 74).getRgb())
                 .setFontOptions(Fonts.colorAndScale(FontColors.WHITE, 0.8F))
                 .setBackgroundIcon(GuiConfig.Icon.VANILLA_MOUNT);
 

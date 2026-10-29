@@ -11,7 +11,7 @@ import com.almuradev.almura.feature.skills.SkillEntry;
 import com.almuradev.almura.feature.skills.client.ClientSkillsManager;
 import com.almuradev.almura.shared.client.ui.Fonts;
 import com.almuradev.almura.shared.util.MathUtil;
-import net.malisis.core.client.gui.GuiRenderer;
+import net.malisis.core.client.gui.render.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.util.FontColors;
 import net.minecraft.util.text.TextFormatting;

@@ -23,12 +23,13 @@ import com.almuradev.almura.shared.network.NetworkConfig;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.GuiTexture;
+import net.malisis.core.client.gui.render.GuiTexture;
+import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.decoration.UISeparator;
-import net.malisis.core.client.gui.component.interaction.BasicTextBox;
+import net.malisis.core.client.gui.component.interaction.BasicTextArea;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
 import net.malisis.core.renderer.font.FontOptions;
@@ -62,7 +63,7 @@ public final class DisconnectedGui extends BasicScreen {
     private boolean unlockMouse = true;
     private boolean update = true;
     private UILabel messageLabel;
-    private BasicTextBox reasonBox;
+    private BasicTextArea reasonBox;
     private BasicForm form;
     private UIButton buttonClose;
     private String reason;
@@ -84,7 +85,7 @@ public final class DisconnectedGui extends BasicScreen {
         this.guiscreenBackground = true;
         Keyboard.enableRepeatEvents(true);
 
-        this.form = new BasicForm(this, 350, 140, "Server Status");
+        this.form = new BasicForm(350, 140, "Server Status");
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(false);
         this.form.setClosable(false);
@@ -96,11 +97,11 @@ public final class DisconnectedGui extends BasicScreen {
         this.form.setLeftPadding(3);
 
         // Almura header
-        final UIImage almuraHeader = new UIImage(this, new GuiTexture(GuiConfig.Location.DEAD_STEVE), null);
+        final UIImage almuraHeader = new UIImage(GuiConfig.wholeTexture(GuiConfig.Location.DEAD_STEVE));
         almuraHeader.setSize(59, 59);
         almuraHeader.setPosition(0, 5, Anchor.TOP | Anchor.CENTER);
 
-        this.messageLabel = new UILabel(this, "Disconnected from Server");
+        this.messageLabel = new UILabel("Disconnected from Server");
         this.messageLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         this.messageLabel.setPosition(0, almuraHeader.getHeight() + 5, Anchor.CENTER | Anchor.TOP);
 
@@ -109,11 +110,11 @@ public final class DisconnectedGui extends BasicScreen {
         belowLabelSeparator.setPosition(0, this.messageLabel.getY() + 10, Anchor.CENTER | Anchor.TOP);
         this.form.add(belowLabelSeparator);
 
-        this.reasonBox = new BasicTextBox(this, "Unknown Reason", true);
+        this.reasonBox = new BasicTextArea("Unknown Reason");
         this.reasonBox.setAlpha(0);
         this.reasonBox.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.7F).build());
         this.reasonBox.setPosition(0, this.messageLabel.getY() + 14, Anchor.CENTER | Anchor.TOP);
-        this.reasonBox.setOptions(16238795,0,0);
+        this.reasonBox.setColors(16238795, 0, 0);
         this.reasonBox.setSize(this.form.getWidth() - 5, 15);
         if (reason.length() > 0) {
             this.reasonBox.setText(reason);
@@ -134,7 +135,7 @@ public final class DisconnectedGui extends BasicScreen {
         this.form.add(aboveButtonsSeparator);
 
         // Close button
-        this.buttonClose = new UIButtonBuilder(this)
+        this.buttonClose = new UIButtonBuilder()
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.CENTER)
                 //.text(I18n.format("almura.menu_button.quit"))
@@ -160,8 +161,8 @@ public final class DisconnectedGui extends BasicScreen {
     }
 
     @Override
-    public void update(int mouseX, int mouseY, float partialTick) {
-        super.update(mouseX, mouseY, partialTick);
+    public void update() {
+        super.update();
 
         if (this.unlockMouse && this.lastUpdate == 25) {
             Mouse.setGrabbed(false); // Force the mouse to be visible even though Mouse.isGrabbed() is false.  //#BugsUnited.
@@ -179,8 +180,8 @@ public final class DisconnectedGui extends BasicScreen {
     }
 
     @Override
-    protected void mouseClicked(int x, int y, int button) {
-        super.mouseClicked(x, y, button);
+    protected void mousePressed(final UIComponent component, final int button) {
+        super.mousePressed(component, button);
         this.lastUpdate = 0; // Reset the timer when mouse is pressed.
     }
 

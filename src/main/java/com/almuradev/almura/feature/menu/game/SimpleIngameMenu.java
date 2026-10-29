@@ -11,7 +11,7 @@ import com.almuradev.almura.shared.client.GuiConfig;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.GuiTexture;
+import net.malisis.core.client.gui.render.GuiTexture;
 import net.malisis.core.client.gui.UIConstants;
 import net.malisis.core.client.gui.component.container.BasicContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
@@ -47,17 +47,17 @@ public final class SimpleIngameMenu extends BasicScreen {
 
         this.guiscreenBackground = true;
 
-        final BasicContainer<?> contentContainer = new BasicContainer<>(this);
+        final BasicContainer<?> contentContainer = new BasicContainer<>();
         contentContainer.setBackgroundAlpha(0);
         contentContainer.setSize(220, 202);
         contentContainer.setAnchor(Anchor.MIDDLE | Anchor.CENTER);
 
         // Almura Header
-        final UIImage almuraHeader = new UIImage(this, new GuiTexture(GuiConfig.Location.ALMURA_LOGO), null);
+        final UIImage almuraHeader = new UIImage(GuiConfig.wholeTexture(GuiConfig.Location.ALMURA_LOGO));
         almuraHeader.setSize(60, 99);
         almuraHeader.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
-        final UIButton backButton = new UIButtonBuilder(this)
+        final UIButton backButton = new UIButtonBuilder()
                 .text(I18n.format("menu.returnToGame"))
                 .size(192, 20)
                 .position(0, BasicScreen.getPaddedY(almuraHeader, 10))
@@ -66,7 +66,7 @@ public final class SimpleIngameMenu extends BasicScreen {
                 .container(contentContainer)
                 .build("button.back");
 
-        final BasicContainer<?> shortcutContainer = new BasicContainer<>(this);
+        final BasicContainer<?> shortcutContainer = new BasicContainer<>();
         shortcutContainer.setBackgroundAlpha(0);
         shortcutContainer.setSize(192, 24);
         shortcutContainer.setPosition(backButton.getX(), BasicScreen.getPaddedY(backButton, PADDING));
@@ -75,7 +75,7 @@ public final class SimpleIngameMenu extends BasicScreen {
         final boolean lanAvaiable = Minecraft.getMinecraft().isSingleplayer() && !Minecraft.getMinecraft()
                 .getIntegratedServer().getPublic();
 
-        final UIButton shopButton = new UIButtonBuilder(this)
+        final UIButton shopButton = new UIButtonBuilder()
                 .container(shortcutContainer)
                 .icon(GuiConfig.Icon.FA_SHOPPING_BAG)
                 .size(UIConstants.Button.WIDTH_ICON, UIConstants.Button.HEIGHT_ICON)
@@ -84,7 +84,7 @@ public final class SimpleIngameMenu extends BasicScreen {
                 .tooltip(I18n.format("almura.menu_button.shop"))
                 .build("button.shop");
 
-        final UIButton mapButton = new UIButtonBuilder(this)
+        final UIButton mapButton = new UIButtonBuilder()
                 .container(shortcutContainer)
                 .icon(GuiConfig.Icon.FA_MAP)
                 .size(UIConstants.Button.WIDTH_ICON, UIConstants.Button.HEIGHT_ICON)
@@ -94,7 +94,7 @@ public final class SimpleIngameMenu extends BasicScreen {
                 .tooltip(I18n.format("item.map.name"))
                 .build("button.instance");
 
-        final UIButton statisticsButton = new UIButtonBuilder(this)
+        final UIButton statisticsButton = new UIButtonBuilder()
                 .container(shortcutContainer)
                 .icon(GuiConfig.Icon.FA_PIE_CHART)
                 .size(UIConstants.Button.WIDTH_ICON, UIConstants.Button.HEIGHT_ICON)
@@ -104,7 +104,7 @@ public final class SimpleIngameMenu extends BasicScreen {
                 .tooltip(I18n.format("gui.stats"))
                 .build("button.statistics");
 
-        final UIButton advancementsButton = new UIButtonBuilder(this)
+        final UIButton advancementsButton = new UIButtonBuilder()
                 .container(shortcutContainer)
                 .icon(GuiConfig.Icon.FA_TROPHY)
                 .size(UIConstants.Button.WIDTH_ICON, UIConstants.Button.HEIGHT_ICON)
@@ -114,7 +114,7 @@ public final class SimpleIngameMenu extends BasicScreen {
                 .tooltip(I18n.format("gui.advancements"))
                 .build("button.advancements");
 
-        final UIButton forumsButton = new UIButtonBuilder(this)
+        final UIButton forumsButton = new UIButtonBuilder()
                 .container(shortcutContainer)
                 .icon(GuiConfig.Icon.ENJIN)
                 .size(UIConstants.Button.WIDTH_ICON, UIConstants.Button.HEIGHT_ICON)
@@ -124,7 +124,7 @@ public final class SimpleIngameMenu extends BasicScreen {
                 .tooltip(I18n.format("almura.menu_button.forums"))
                 .build("button.forums");
 
-        final UIButton lanButton = new UIButtonBuilder(this)
+        final UIButton lanButton = new UIButtonBuilder()
                 .container(shortcutContainer)
                 .icon(GuiConfig.Icon.FA_SITEMAP)
                 .size(UIConstants.Button.WIDTH_ICON, UIConstants.Button.HEIGHT_ICON)
@@ -135,7 +135,7 @@ public final class SimpleIngameMenu extends BasicScreen {
                 .enabled(lanAvaiable)
                 .build("button.lan");
 
-        final UIButton optionsButton = new UIButtonBuilder(this)
+        final UIButton optionsButton = new UIButtonBuilder()
                 .container(shortcutContainer)
                 .icon(GuiConfig.Icon.FA_COG)
                 .size(UIConstants.Button.WIDTH_ICON, UIConstants.Button.HEIGHT_ICON)
@@ -145,7 +145,7 @@ public final class SimpleIngameMenu extends BasicScreen {
                 .tooltip(I18n.format("menu.options"))
                 .build("button.options");
 
-        final UIButton quitButton = new UIButtonBuilder(this)
+        final UIButton quitButton = new UIButtonBuilder()
                 .container(contentContainer)
                 .text(I18n.format("almura.menu_button.quit"))
                 .fontOptions(FontOptions.builder().from(FontColors.RED_FO).shadow(true).build())

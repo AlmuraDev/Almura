@@ -62,11 +62,11 @@ public class MultiplayerScreen extends PanoramicScreen {
     this.renderer.setDefaultTexture(GuiConfig.SpriteSheet.ALMURA);
 
     // Container to cover the screen (fixes issues with stuck button highlighting)
-    final BasicContainer<?> screenContainer = new BasicContainer(this);
+    final BasicContainer<?> screenContainer = new BasicContainer();
     screenContainer.setBackgroundAlpha(0);
 
     // Primary content
-    final BasicContainer<?> contentContainer = new BasicContainer(this, UIConstants.Button.WIDTH_LONG, 206 + AlmuraLogoHeader.HEIGHT - AlmuraLogoHeader.OLD_HEIGHT);
+    final BasicContainer<?> contentContainer = new BasicContainer(UIConstants.Button.WIDTH_LONG, 206 + AlmuraLogoHeader.HEIGHT - AlmuraLogoHeader.OLD_HEIGHT);
     contentContainer.setPosition(0, -10, Anchor.MIDDLE | Anchor.CENTER);
     contentContainer.setBackgroundAlpha(0);
     contentContainer.setClipContent(false); // The logo's figure reaches above it
@@ -77,7 +77,7 @@ public class MultiplayerScreen extends PanoramicScreen {
     logoImage.setPosition(0, 1, Anchor.TOP | Anchor.CENTER);
 
     // Container for server entries
-    this.serverList = new BasicList<>(this, UIConstants.Button.WIDTH_LONG - 2, 26);
+    this.serverList = new BasicList<>(UIConstants.Button.WIDTH_LONG - 2, 26);
     this.serverList.setPosition(0, BasicScreen.getPaddedY(logoImage, 9), Anchor.TOP | Anchor.CENTER); // Where it was before the logo moved down
     this.serverList.setColor(0x000000);
     this.serverList.setBackgroundAlpha(185);
@@ -90,7 +90,7 @@ public class MultiplayerScreen extends PanoramicScreen {
     this.serverList.createItemComponents();
 
     // Join button
-    this.joinButton = new UIButtonBuilder(this)
+    this.joinButton = new UIButtonBuilder()
       .text(I18n.format("almura.menu_button.join"))
       .enabled(false)
       .width(UIConstants.Button.WIDTH_LONG)
@@ -101,7 +101,7 @@ public class MultiplayerScreen extends PanoramicScreen {
       .build("button.join");
 
     // Back button
-    this.backButton = new UIButtonBuilder(this)
+    this.backButton = new UIButtonBuilder()
       .text(I18n.format("gui.back"))
       .width(UIConstants.Button.WIDTH_SHORT)
       .height(UIConstants.Button.HEIGHT)
@@ -111,7 +111,7 @@ public class MultiplayerScreen extends PanoramicScreen {
       .build("button.back");
 
     // Other button
-    this.otherButton = new UIButtonBuilder(this)
+    this.otherButton = new UIButtonBuilder()
       .text(I18n.format("almura.menu_button.other"))
       .width(UIConstants.Button.WIDTH_SHORT)
       .height(UIConstants.Button.HEIGHT)
@@ -264,14 +264,14 @@ public class MultiplayerScreen extends PanoramicScreen {
     protected void construct(final MalisisGui gui) {
       this.setHeight(24);
 
-      this.statusIndicatorContainer = new BasicContainer<>(gui, 5, this.height - (this.getLeftBorderSize() + this.getRightBorderSize()));
+      this.statusIndicatorContainer = new BasicContainer<>(5, this.getHeight() - (this.getLeftBorderSize() + this.getRightBorderSize()));
       this.statusIndicatorContainer.setPosition(2, -2, Anchor.TOP | Anchor.RIGHT);
 
       // Add components
-      this.itemLabel = new UIExpandingLabel(gui, TextFormatting.WHITE + this.item.name);
+      this.itemLabel = new UIExpandingLabel(TextFormatting.WHITE + this.item.name);
       this.itemLabel.setPosition(4, 0, Anchor.LEFT | Anchor.MIDDLE);
 
-      this.serverStatusLabel = new UILabel(gui, TextFormatting.WHITE + "??/??");
+      this.serverStatusLabel = new UILabel(TextFormatting.WHITE + "??/??");
       this.serverStatusLabel.setPosition(BasicScreen.getPaddedX(this.statusIndicatorContainer, 4, Anchor.RIGHT), 0, Anchor.RIGHT | Anchor.MIDDLE);
 
       this.add(this.itemLabel, this.serverStatusLabel, this.statusIndicatorContainer);
@@ -298,7 +298,7 @@ public class MultiplayerScreen extends PanoramicScreen {
       }
 
       // Update MOTD tooltip
-      this.setTooltip((this.item.motd == null || this.item.motd.isEmpty()) ? null : new UITooltip(this.getGui(), this.item.motd));
+      this.setTooltip((this.item.motd == null || this.item.motd.isEmpty()) ? null : new UITooltip(this.item.motd));
     }
   }
 

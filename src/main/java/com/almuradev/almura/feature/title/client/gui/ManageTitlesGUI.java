@@ -88,7 +88,7 @@ public final class ManageTitlesGUI extends BasicScreen {
 
 
         // Master Pane
-        this.form = new BasicForm(this, this.screenWidth, this.screenHeight, "Title Manager");
+        this.form = new BasicForm(this.screenWidth, this.screenHeight, "Title Manager");
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(true);
         this.form.setClosable(true);
@@ -100,7 +100,7 @@ public final class ManageTitlesGUI extends BasicScreen {
         this.form.setLeftPadding(3);
 
         // Title List Area
-        this.listArea = new BasicForm(this, 220, 260, "");
+        this.listArea = new BasicForm(220, 260, "");
         this.listArea.setPosition(0, 0, Anchor.LEFT | Anchor.TOP);
         this.listArea.setMovable(false);
         this.listArea.setClosable(false);
@@ -112,13 +112,13 @@ public final class ManageTitlesGUI extends BasicScreen {
         this.listArea.setLeftPadding(3);
 
         // Create left container
-        final BasicContainer<?> titleContainer = new BasicContainer(this, 200, UIComponent.INHERITED);
+        final BasicContainer<?> titleContainer = new BasicContainer(200, UIComponent.INHERITED);
         titleContainer.setBackgroundAlpha(0);
         titleContainer.setPosition(0, 0, Anchor.CENTER | Anchor.TOP);
         titleContainer.setPadding(4, 4);
         titleContainer.setTopPadding(20);
 
-        this.titleList = new BasicList<>(this, UIComponent.INHERITED, UIComponent.INHERITED);
+        this.titleList = new BasicList<>(UIComponent.INHERITED, UIComponent.INHERITED);
         this.titleList.setItemComponentFactory(TitleItemComponent::new);
         this.titleList.setItemComponentSpacing(1);
         this.titleList.setCanDeselect(false);
@@ -139,7 +139,7 @@ public final class ManageTitlesGUI extends BasicScreen {
         this.listArea.add(titleContainer);
 
         // Edit Container
-        this.editArea = new BasicForm(this, 220, 260, "");
+        this.editArea = new BasicForm(220, 260, "");
         this.editArea.setPosition(0, 0, Anchor.RIGHT | Anchor.TOP);
         this.editArea.setMovable(false);
         this.editArea.setClosable(false);
@@ -151,78 +151,48 @@ public final class ManageTitlesGUI extends BasicScreen {
         this.editArea.setLeftPadding(3);
         this.editArea.setVisible(false);
 
-        this.modeNameLabel = new UILabel(this, "Modify Title")
-            .setFontOptions(FontOptions.builder()
-                .from(FontColors.WHITE_FO)
-                .shadow(true)
-                .underline(false)
-                .scale(1.2F)
-                .build()
-            )
-            .setVisible(false)
-            .setPosition(0, 5, Anchor.CENTER | Anchor.TOP);
+        this.modeNameLabel = new UILabel("Modify Title");
+        this.modeNameLabel.setFontOptions(FontOptions.builder()
+            .from(FontColors.WHITE_FO)
+            .shadow(true)
+            .underline(false)
+            .scale(1.2F)
+            .build());
+        this.modeNameLabel.setVisible(false);
+        this.modeNameLabel.setPosition(0, 5, Anchor.CENTER | Anchor.TOP);
 
-        final UILabel idLabel = new UILabel(this, "ID:")
-            .setFontOptions(FontOptions.builder()
-                .from(FontColors.WHITE_FO)
-                .shadow(true)
-                .scale(1.0F)
-                .build()
-            )
-            .setPosition(5, 17, Anchor.LEFT | Anchor.TOP);
+        final UILabel idLabel = new UILabel("ID:");
+        idLabel.setFontOptions(FontOptions.builder()
+            .from(FontColors.WHITE_FO)
+            .shadow(true)
+            .scale(1.0F)
+            .build());
+        idLabel.setPosition(5, 17, Anchor.LEFT | Anchor.TOP);
 
-        this.idField = new UITextField(this, "", false)
-            .setSize(200, 0)
-            .setPosition(10, 30, Anchor.LEFT | Anchor.TOP)
-            .setEditable(false)
-            .setEnabled(false)
-            .setFontOptions(FontOptions.builder()
-                .from(FontColors.WHITE_FO)
-                .shadow(false)
-                .build()
-            );
+        this.idField = this.createField(30, false);
 
-        final UILabel permissionNodeLabel = new UILabel(this, "Permission:")
-            .setFontOptions(FontOptions.builder()
-                .from(FontColors.WHITE_FO)
-                .shadow(true)
-                .scale(1.0F)
-                .build()
-            ).setPosition(5, 57, Anchor.LEFT | Anchor.TOP);
+        final UILabel permissionNodeLabel = new UILabel("Permission:");
+        permissionNodeLabel.setFontOptions(FontOptions.builder()
+            .from(FontColors.WHITE_FO)
+            .shadow(true)
+            .scale(1.0F)
+            .build());
+        permissionNodeLabel.setPosition(5, 57, Anchor.LEFT | Anchor.TOP);
 
-        this.permissionField = new UITextField(this, "", false)
-            .setSize(200, 0)
-            .setPosition(10, 70, Anchor.LEFT | Anchor.TOP)
-            .setEditable(false)
-            .setEnabled(false)
-            .setFontOptions(FontOptions.builder()
-                .from(FontColors.WHITE_FO)
-                .shadow(false)
-                .build()
-            );
+        this.permissionField = this.createField(70, false);
 
-        final UILabel titleContextLabel = new UILabel(this, "Content:")
-            .setFontOptions(FontOptions.builder()
-                .from(FontColors.WHITE_FO)
-                .shadow(true)
-                .scale(1.0F)
-                .build()
-            ).setPosition(5, 97, Anchor.LEFT | Anchor.TOP);
+        final UILabel titleContextLabel = new UILabel("Content:");
+        titleContextLabel.setFontOptions(FontOptions.builder()
+            .from(FontColors.WHITE_FO)
+            .shadow(true)
+            .scale(1.0F)
+            .build());
+        titleContextLabel.setPosition(5, 97, Anchor.LEFT | Anchor.TOP);
 
-        this.contentField = new UITextField(this, "", false)
-            .setSize(200, 0)
-            .setPosition(10, 110, Anchor.LEFT | Anchor.TOP)
-            .setEditable(true)
-            .setEnabled(false)
-            .setFontOptions(FontOptions.builder()
-                .from(FontColors.WHITE_FO)
-
-                .shadow(false)
-                .build()
-            );
+        this.contentField = this.createField(110, true);
 
         // Color Selection dropdown
-        this.colorSelector = new UISelect<>(this,
+        this.colorSelector = new UISelect<>(
             110,
             Arrays.asList(
                 "§1Dark Blue§f - &1",
@@ -258,7 +228,7 @@ public final class ManageTitlesGUI extends BasicScreen {
         this.colorSelector.maxDisplayedOptions(7);
 
         // Add Color character button
-        this.buttonColor = new UIButtonBuilder(this)
+        this.buttonColor = new UIButtonBuilder()
             .width(40)
             .anchor(Anchor.TOP | Anchor.LEFT)
             .position(130, 125)
@@ -266,14 +236,14 @@ public final class ManageTitlesGUI extends BasicScreen {
             .listener(this)
             .build("button.color");
 
-        this.formattedCheckbox = new UICheckBox(this);
+        this.formattedCheckbox = new UICheckBox();
         this.formattedCheckbox.setText(TextFormatting.WHITE + "Formatted");
         this.formattedCheckbox.setPosition(9, 145, Anchor.LEFT | Anchor.TOP);
         this.formattedCheckbox.setChecked(false);
         this.formattedCheckbox.setName("checkbox.formatted");
         this.formattedCheckbox.register(this);
 
-        this.hiddenCheckbox = new UICheckBox(this);
+        this.hiddenCheckbox = new UICheckBox();
         this.hiddenCheckbox.setText(TextFormatting.WHITE + "Title Hidden from Players");
         this.hiddenCheckbox.setPosition(10, -7, Anchor.LEFT | Anchor.BOTTOM);
         this.hiddenCheckbox.setChecked(false);
@@ -281,7 +251,7 @@ public final class ManageTitlesGUI extends BasicScreen {
         this.hiddenCheckbox.register(this);
 
         // Save Changes button
-        final UIButton saveChangesButton = new UIButtonBuilder(this)
+        final UIButton saveChangesButton = new UIButtonBuilder()
             .width(30)
             .text(I18n.format("almura.button.save"))
             .position(0, -5)
@@ -294,7 +264,7 @@ public final class ManageTitlesGUI extends BasicScreen {
             this.colorSelector, this.buttonColor, this.formattedCheckbox, this.hiddenCheckbox, saveChangesButton);
 
         // Edit Container
-        this.playerArea = new BasicForm(this, 220, 260, "");
+        this.playerArea = new BasicForm(220, 260, "");
         this.playerArea.setPosition(0, 0, Anchor.RIGHT | Anchor.TOP);
         this.playerArea.setMovable(false);
         this.playerArea.setClosable(false);
@@ -306,18 +276,17 @@ public final class ManageTitlesGUI extends BasicScreen {
         this.playerArea.setLeftPadding(3);
         this.playerArea.setVisible(true);
 
-        final UILabel playerLabel = new UILabel(this, "Player Title")
-                .setFontOptions(FontOptions.builder()
-                        .from(FontColors.WHITE_FO)
-                        .shadow(true)
-                        .underline(false)
-                        .scale(1.2F)
-                        .build()
-                )
-                .setVisible(false)
-                .setPosition(0, 05, Anchor.CENTER | Anchor.TOP);
+        final UILabel playerLabel = new UILabel("Player Title");
+        playerLabel.setFontOptions(FontOptions.builder()
+                .from(FontColors.WHITE_FO)
+                .shadow(true)
+                .underline(false)
+                .scale(1.2F)
+                .build());
+        playerLabel.setVisible(false);
+        playerLabel.setPosition(0, 05, Anchor.CENTER | Anchor.TOP);
 
-        this.buttonApply = new UIButtonBuilder(this)
+        this.buttonApply = new UIButtonBuilder()
                 .text("Apply")
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .tooltip("Apply Title and Exit")
@@ -326,7 +295,7 @@ public final class ManageTitlesGUI extends BasicScreen {
                 .visible(true)
                 .build("button.apply");
 
-        this.buttonRemove = new UIButtonBuilder(this)
+        this.buttonRemove = new UIButtonBuilder()
                 .text("Remove")
                 .anchor(Anchor.BOTTOM | Anchor.LEFT)
                 .tooltip("Remove Title and Exit")
@@ -337,17 +306,16 @@ public final class ManageTitlesGUI extends BasicScreen {
 
         this.playerArea.add(playerLabel, this.buttonApply, this.buttonRemove);
 
-        this.titleSelectionLabel = new UILabel(this, "Available Titles:")
-            .setFontOptions(FontOptions.builder()
-                .from(FontColors.WHITE_FO)
-                .shadow(true)
-                .scale(1.1F)
-                .build()
-            )
-            .setPosition(5, 10, Anchor.LEFT | Anchor.TOP);
+        this.titleSelectionLabel = new UILabel("Available Titles:");
+        this.titleSelectionLabel.setFontOptions(FontOptions.builder()
+            .from(FontColors.WHITE_FO)
+            .shadow(true)
+            .scale(1.1F)
+            .build());
+        this.titleSelectionLabel.setPosition(5, 10, Anchor.LEFT | Anchor.TOP);
 
         // Add button
-        this.buttonAdd = new UIButtonBuilder(this)
+        this.buttonAdd = new UIButtonBuilder()
             .width(15)
             .x(5)
             .text(TextFormatting.GREEN + "+")
@@ -358,7 +326,7 @@ public final class ManageTitlesGUI extends BasicScreen {
             .build("button.add");
 
         // Remove button
-        this.buttonDelete = new UIButtonBuilder(this)
+        this.buttonDelete = new UIButtonBuilder()
             .width(15)
             .x(24)
             .text(TextFormatting.RED + "-")
@@ -368,7 +336,7 @@ public final class ManageTitlesGUI extends BasicScreen {
             .visible(false)
             .build("button.delete");
 
-        this.editModeCheckbox = new UICheckBox(this);
+        this.editModeCheckbox = new UICheckBox();
         this.editModeCheckbox.setText(TextFormatting.WHITE + "Edit Mode");
         this.editModeCheckbox.setPosition(0, -3, Anchor.CENTER | Anchor.BOTTOM);
         this.editModeCheckbox.setChecked(false);
@@ -377,7 +345,7 @@ public final class ManageTitlesGUI extends BasicScreen {
         this.editModeCheckbox.register(this);
 
         // Close button
-        final UIButton buttonClose = new UIButtonBuilder(this)
+        final UIButton buttonClose = new UIButtonBuilder()
             .width(40)
             .anchor(Anchor.BOTTOM | Anchor.RIGHT)
             .text(I18n.format("almura.button.close"))
@@ -461,14 +429,14 @@ public final class ManageTitlesGUI extends BasicScreen {
 
     @Subscribe
     public void onUIButtonClickEvent(UIButton.ClickEvent event) {
-        final String colorCode = this.colorSelector.getSelectedOption().getLabel().substring(0, 2);
-        final UITextField.CursorPosition cursorPos = this.contentField.getCursorPosition();
+        final String colorCode = this.colorSelector.getSelectedLabel().substring(0, 2);
 
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.color":
                 this.contentField.addText(colorCode);
+                final int cursorIndex = this.contentField.getCursorPosition().index();
                 this.formatContent(this.formattedCheckbox.isChecked());
-                this.contentField.setCursorPosition(cursorPos.getXOffset(), cursorPos.getYOffset());
+                this.contentField.getCursorPosition().jumpTo(cursorIndex);
                 this.contentField.setFocused(true);
 
                 break;
@@ -543,9 +511,23 @@ public final class ManageTitlesGUI extends BasicScreen {
         }
     }
 
+    private UITextField createField(final int y, final boolean editable) {
+        final UITextField field = new UITextField("");
+        field.setSize(200, 0);
+        field.setPosition(10, y, Anchor.LEFT | Anchor.TOP);
+        field.setEditable(editable);
+        field.setEnabled(false);
+        field.setFontOptions(FontOptions.builder()
+            .from(FontColors.WHITE_FO)
+            .shadow(false)
+            .build());
+        return field;
+    }
+
     private void formatContent(boolean value) {
         final String currentTitleContent = this.contentField.getText();
-        final UITextField.CursorPosition cursorPos = this.contentField.getCursorPosition();
+        // Ugly and friendly text swap '&' and the section sign one for one: the index stays valid
+        final int cursorIndex = this.contentField.getCursorPosition().index();
 
         if (!value) {
             // Need to convert the content from sectional -> ampersand
@@ -555,7 +537,7 @@ public final class ManageTitlesGUI extends BasicScreen {
             this.contentField.setText(TextUtil.asFriendlyText(currentTitleContent));
         }
 
-        this.contentField.setCursorPosition(cursorPos.getXOffset(), cursorPos.getYOffset());
+        this.contentField.getCursorPosition().jumpTo(cursorIndex);
         this.contentField.setFocused(true);
     }
 
@@ -578,8 +560,10 @@ public final class ManageTitlesGUI extends BasicScreen {
     }
 
     @Override
-    public void update(int mouseX, int mouseY, float partialTick) {
-        super.update(mouseX, mouseY, partialTick);
+    public void update() {
+        super.update();
+        final int mouseX = MalisisGui.MOUSE_POSITION.x();
+        final int mouseY = MalisisGui.MOUSE_POSITION.y();
 
         if (this.playerArea.isVisible()) {
             int i = this.form.screenX() + 285;
@@ -604,14 +588,14 @@ public final class ManageTitlesGUI extends BasicScreen {
             if (this.idField.isFocused()) {
                 this.idField.setFocused(false);
                 this.permissionField.setFocused(true);
-                this.permissionField.setCursorPosition(this.permissionField.getContentWidth() + 1, 0);  // Set position to last character
+                this.permissionField.getCursorPosition().jumpToEnd();  // Set position to last character
                 return;
             }
 
             if (this.permissionField.isFocused()) {
                 this.permissionField.setFocused(false);
                 this.contentField.setFocused(true);
-                this.contentField.setCursorPosition(0, 0);
+                this.contentField.getCursorPosition().jumpToStart();
                 return;
             }
         }
@@ -623,8 +607,8 @@ public final class ManageTitlesGUI extends BasicScreen {
     }
 
     @Override
-    protected void mouseClicked(int x, int y, int button) {
-        super.mouseClicked(x, y, button);
+    protected void mousePressed(final UIComponent component, final int button) {
+        super.mousePressed(component, button);
         this.lastUpdate = 0; // Reset the timer when mouse is pressed.
     }
 
@@ -672,7 +656,7 @@ public final class ManageTitlesGUI extends BasicScreen {
         protected void construct(final MalisisGui gui) {
             this.setSize(UIComponent.INHERITED, 20);
 
-            this.titleLabel = new UIExpandingLabel(gui, Text.of(TextColors.WHITE, item.getContent()));
+            this.titleLabel = new UIExpandingLabel(Text.of(TextColors.WHITE, item.getContent()));
             if (item.isHidden()) {
                 this.titleLabel.setText(this.titleLabel.getText() + TextFormatting.WHITE + " [HIDDEN]");
             }

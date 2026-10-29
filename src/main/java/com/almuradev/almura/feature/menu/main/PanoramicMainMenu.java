@@ -17,7 +17,6 @@ import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.UIConstants;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicContainer;
-import net.malisis.core.client.gui.component.container.UIBackgroundContainer;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
@@ -45,7 +44,7 @@ import java.util.Locale;
 public class PanoramicMainMenu extends PanoramicScreen {
 
     private static final int PADDING = 4;
-    private UIBackgroundContainer buttonContainer;
+    private BasicContainer<?> buttonContainer;
 
     public PanoramicMainMenu(@Nullable BasicScreen parent) {
         super(parent);
@@ -55,7 +54,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
     @SuppressWarnings("deprecation")
     @Override
     public void construct() {
-        final UIBackgroundContainer contentContainer = new UIBackgroundContainer(this);
+        final BasicContainer<?> contentContainer = new BasicContainer<>();
         contentContainer.setBackgroundAlpha(0);
         contentContainer.setClipContent(false); // The logo's figure reaches above it
         contentContainer.setPosition(0, -10, Anchor.MIDDLE | Anchor.CENTER);
@@ -65,12 +64,12 @@ public class PanoramicMainMenu extends PanoramicScreen {
         final BasicContainer<?> almuraHeader = AlmuraLogoHeader.create(this);
         almuraHeader.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
-        this.buttonContainer = new UIBackgroundContainer(this, UIConstants.Button.WIDTH_LONG + PADDING, (UIConstants.Button.HEIGHT * 4) +
+        this.buttonContainer = new BasicContainer<>(UIConstants.Button.WIDTH_LONG + PADDING, (UIConstants.Button.HEIGHT * 4) +
                 (PADDING * 3));
         this.buttonContainer.setPosition(0, BasicScreen.getPaddedY(almuraHeader, 10), Anchor.TOP | Anchor.CENTER);
         this.buttonContainer.setBackgroundAlpha(0);
 
-        final UIButton singleplayerButton = new UIButtonBuilder(this)
+        final UIButton singleplayerButton = new UIButtonBuilder()
                 .container(this.buttonContainer)
                 .text(I18n.format("menu.singleplayer"))
                 .size(UIConstants.Button.WIDTH_LONG, UIConstants.Button.HEIGHT)
@@ -79,7 +78,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
                 .listener(this)
                 .build("button.singleplayer");
 
-        final UIButton multiplayerButton = new UIButtonBuilder(this)
+        final UIButton multiplayerButton = new UIButtonBuilder()
                 .container(this.buttonContainer)
                 .text(I18n.format("menu.multiplayer"))
                 .size(UIConstants.Button.WIDTH_LONG, UIConstants.Button.HEIGHT)
@@ -88,7 +87,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
                 .listener(this)
                 .build("button.multiplayer");
 
-        final UIButton optionsButton = new UIButtonBuilder(this)
+        final UIButton optionsButton = new UIButtonBuilder()
                 .container(this.buttonContainer)
                 .text(I18n.format("options.title"))
                 .size(UIConstants.Button.WIDTH_TINY, UIConstants.Button.HEIGHT)
@@ -97,7 +96,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
                 .listener(this)
                 .build("button.options");
 
-        final UIButton modsButton = new UIButtonBuilder(this)
+        final UIButton modsButton = new UIButtonBuilder()
                 .container(this.buttonContainer)
                 .text(I18n.format("almura.menu_button.mods"))
                 .size(UIConstants.Button.WIDTH_TINY, UIConstants.Button.HEIGHT)
@@ -106,7 +105,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
                 .listener(this)
                 .build("button.mods");
 
-        final UIButton aboutButton = new UIButtonBuilder(this)
+        final UIButton aboutButton = new UIButtonBuilder()
                 .container(this.buttonContainer)
                 .text(I18n.format("almura.menu_button.about"))
                 .size(UIConstants.Button.WIDTH_TINY, UIConstants.Button.HEIGHT)
@@ -115,7 +114,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
                 .listener(this)
                 .build("button.about");
 
-        final UIButton quitButton = new UIButtonBuilder(this)
+        final UIButton quitButton = new UIButtonBuilder()
                 .container(this.buttonContainer)
                 .text(I18n.format("almura.menu_button.quit"))
                 .fontOptions(FontOptions.builder().from(FontColors.RED_FO).shadow(true).build())
@@ -126,7 +125,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
                 .listener(this)
                 .build("button.quit");
 
-        final UIButton forumsButton = new UIButtonBuilder(this)
+        final UIButton forumsButton = new UIButtonBuilder()
                 .container(this.buttonContainer)
                 .icon(GuiConfig.Icon.ENJIN)
                 .size(UIConstants.Button.WIDTH_ICON, UIConstants.Button.HEIGHT_ICON)
@@ -136,7 +135,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
                 .tooltip(I18n.format("almura.menu_button.forums"))
                 .build("button.forums");
 
-        final UIButton issuesButton = new UIButtonBuilder(this)
+        final UIButton issuesButton = new UIButtonBuilder()
                 .container(this.buttonContainer)
                 .icon(GuiConfig.Icon.FA_GITHUB)
                 .size(UIConstants.Button.WIDTH_ICON, UIConstants.Button.HEIGHT_ICON)
@@ -146,7 +145,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
                 .tooltip(I18n.format(I18n.format("almura.menu_button.issues")))
                 .build("button.issues");
 
-        final UIButton shopButton = new UIButtonBuilder(this)
+        final UIButton shopButton = new UIButtonBuilder()
                 .container(this.buttonContainer)
                 .icon(GuiConfig.Icon.FA_SHOPPING_BAG)
                 .size(UIConstants.Button.WIDTH_ICON, UIConstants.Button.HEIGHT_ICON)
@@ -156,10 +155,10 @@ public class PanoramicMainMenu extends PanoramicScreen {
                 .tooltip(I18n.format("almura.menu_button.shop"))
                 .build("button.shop");
 
-        final UILabel trademarkLabel = new UILabel(this, TextFormatting.YELLOW + I18n.format("almura.menu.main.trademark"));
+        final UILabel trademarkLabel = new UILabel(TextFormatting.YELLOW + I18n.format("almura.menu.main.trademark"));
         trademarkLabel.setPosition(PADDING, -PADDING, Anchor.BOTTOM | Anchor.LEFT);
 
-        final UILabel copyrightLabel = new UILabel(this, TextFormatting.YELLOW + I18n.format("almura.menu.main.copyright"));
+        final UILabel copyrightLabel = new UILabel(TextFormatting.YELLOW + I18n.format("almura.menu.main.copyright"));
         copyrightLabel
                 .setPosition(trademarkLabel.getX(), BasicScreen.getPaddedY(trademarkLabel, PADDING, Anchor.BOTTOM), trademarkLabel.getAnchor());
 
@@ -168,7 +167,7 @@ public class PanoramicMainMenu extends PanoramicScreen {
         // Disable escape key press
         registerKeyListener((keyChar, keyCode) -> keyCode == Keyboard.KEY_ESCAPE);
 
-        final BasicContainer<?> container = new BasicContainer(this, UIComponent.INHERITED, UIComponent.INHERITED);
+        final BasicContainer<?> container = new BasicContainer(UIComponent.INHERITED, UIComponent.INHERITED);
         container.setBackgroundAlpha(0);
         container.add(contentContainer);
         container.add(trademarkLabel);
@@ -182,10 +181,10 @@ public class PanoramicMainMenu extends PanoramicScreen {
 
         // OpenGL Warning
         if (!GLContext.getCapabilities().OpenGL20 && !OpenGlHelper.areShadersSupported()) {
-            final UILabel glWarning1 = new UILabel(this, TextFormatting.BOLD + "" + TextFormatting.DARK_RED + I18n.format("almura.menu.main.opengl.0"));
+            final UILabel glWarning1 = new UILabel(TextFormatting.BOLD + "" + TextFormatting.DARK_RED + I18n.format("almura.menu.main.opengl.0"));
             glWarning1.setPosition(2, 2, Anchor.TOP | Anchor.LEFT);
 
-            final UILabel glWarning2 = new UILabel(this, TextFormatting.BOLD + "" + TextFormatting.DARK_RED + I18n.format("almura.menu.main.opengl.1"));
+            final UILabel glWarning2 = new UILabel(TextFormatting.BOLD + "" + TextFormatting.DARK_RED + I18n.format("almura.menu.main.opengl.1"));
             glWarning2.setPosition(2, BasicScreen.getPaddedY(glWarning1, 2), Anchor.TOP | Anchor.LEFT);
 
             addToScreen(glWarning1);

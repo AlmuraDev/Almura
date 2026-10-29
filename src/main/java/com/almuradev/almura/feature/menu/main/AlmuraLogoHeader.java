@@ -10,7 +10,7 @@ package com.almuradev.almura.feature.menu.main;
 import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.shared.client.ui.component.UIPlayerFigure;
 import net.malisis.core.client.gui.Anchor;
-import net.malisis.core.client.gui.GuiTexture;
+import net.malisis.core.client.gui.render.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.container.BasicContainer;
 import net.malisis.core.client.gui.component.decoration.UIImage;
@@ -36,7 +36,7 @@ public final class AlmuraLogoHeader {
     }
 
     public static BasicContainer<?> create(final MalisisGui gui) {
-        final BasicContainer<?> header = new BasicContainer<>(gui, WIDTH, HEIGHT);
+        final BasicContainer<?> header = new BasicContainer<>(WIDTH, HEIGHT);
         header.setBackgroundAlpha(0);
         header.setPadding(0, 0);
         // The figure is raised above the header: the raised sword and its burst must not be cut off
@@ -46,7 +46,7 @@ public final class AlmuraLogoHeader {
         figure.setSize(FIGURE_WIDTH, FIGURE_HEIGHT);
         figure.setPosition(0, -FIGURE_LIFT, Anchor.TOP | Anchor.CENTER);
 
-        final UIImage text = new UIImage(gui, new GuiTexture(GuiConfig.Location.ALMURA_LOGO_TEXT), null);
+        final UIImage text = new UIImage(GuiConfig.wholeTexture(GuiConfig.Location.ALMURA_LOGO_TEXT));
         text.setSize(TEXT_WIDTH, TEXT_HEIGHT);
         text.setPosition(0, 0, Anchor.BOTTOM | Anchor.CENTER);
 

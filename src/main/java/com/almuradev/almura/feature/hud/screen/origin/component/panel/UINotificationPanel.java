@@ -10,7 +10,7 @@ package com.almuradev.almura.feature.hud.screen.origin.component.panel;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import net.malisis.core.client.gui.Anchor;
-import net.malisis.core.client.gui.GuiRenderer;
+import net.malisis.core.client.gui.render.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.util.FontColors;
@@ -31,11 +31,11 @@ public final class UINotificationPanel extends AbstractPanel {
 
         this.manager = manager;
 
-        this.notificationTitle = new UILabel(gui, "");
+        this.notificationTitle = new UILabel("");
         this.notificationTitle.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
         this.notificationTitle.setFontOptions(FontColors.RED_FO);
 
-        this.notificationLabel = new UILabel(gui, "");
+        this.notificationLabel = new UILabel("");
         this.notificationLabel.setPosition(0, 13, Anchor.TOP | Anchor.CENTER);
         this.notificationLabel.setFontOptions(FontColors.WHITE_FO);
 

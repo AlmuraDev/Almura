@@ -21,7 +21,8 @@ import com.almuradev.almura.shared.network.NetworkConfig;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.GuiTexture;
+import net.malisis.core.client.gui.render.GuiTexture;
+import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
@@ -87,7 +88,7 @@ public final class MembershipGui extends BasicScreen {
         this.guiscreenBackground = true;
         Keyboard.enableRepeatEvents(true);
 
-        this.form = new BasicForm(this, 310, 250, "Almura Memberships");
+        this.form = new BasicForm(310, 250, "Almura Memberships");
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(true);
         this.form.setClosable(true);
@@ -98,7 +99,7 @@ public final class MembershipGui extends BasicScreen {
         this.form.setTopPadding(20);
         this.form.setLeftPadding(3);
 
-        final BasicForm citizenArea = new BasicForm(this, 100, 200, "");
+        final BasicForm citizenArea = new BasicForm(100, 200, "");
         citizenArea.setPosition(0, 0, Anchor.LEFT | Anchor.TOP);
         citizenArea.setMovable(false);
         citizenArea.setClosable(false);
@@ -109,11 +110,11 @@ public final class MembershipGui extends BasicScreen {
         citizenArea.setTopPadding(3);
         citizenArea.setLeftPadding(3);
 
-        final UIImage citizenLogo = new UIImage(this, new GuiTexture(GuiConfig.Location.citizen_logo), null);
+        final UIImage citizenLogo = new UIImage(GuiConfig.wholeTexture(GuiConfig.Location.citizen_logo));
         citizenLogo.setSize(99, 99);
         citizenLogo.setPosition(0, -3, Anchor.TOP | Anchor.CENTER);
 
-        this.citizen_details_button = new UIButtonBuilder(this)
+        this.citizen_details_button = new UIButtonBuilder()
             .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
             .hoverFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
             .width(40)
@@ -124,11 +125,11 @@ public final class MembershipGui extends BasicScreen {
             .enabled(true)
             .build("button.citizen_details");
 
-        final UILabel citizenLabel0 = new UILabel(this, "Chose One");
+        final UILabel citizenLabel0 = new UILabel("Chose One");
         citizenLabel0.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).underline(true).shadow(true).scale(0.8F).build());
         citizenLabel0.setPosition(0, 125, Anchor.CENTER | Anchor.TOP);
 
-        this.citizen_donation_button = new UIButtonBuilder(this)
+        this.citizen_donation_button = new UIButtonBuilder()
                 .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
                 .hoverFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
                 .width(40)
@@ -139,7 +140,7 @@ public final class MembershipGui extends BasicScreen {
                 .enabled(currentMembershipLevel == 0)
                 .build("button.citizen_donation");
 
-        this.citizen_purchase_button = new UIButtonBuilder(this)
+        this.citizen_purchase_button = new UIButtonBuilder()
                 .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
                 .hoverFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
                 .width(40)
@@ -150,7 +151,7 @@ public final class MembershipGui extends BasicScreen {
                 .enabled(availableFunds >= 2500000 && currentMembershipLevel == 0)
                 .build("button.citizen_purchase");
 
-        this.citizen_skills_button = new UIButtonBuilder(this)
+        this.citizen_skills_button = new UIButtonBuilder()
                 .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
                 .hoverFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
                 .width(40)
@@ -163,7 +164,7 @@ public final class MembershipGui extends BasicScreen {
 
         citizenArea.add(citizenLogo,citizen_details_button, citizenLabel0, citizen_donation_button, citizen_skills_button, citizen_purchase_button);
 
-        final BasicForm explorerArea = new BasicForm(this, 100, 200, "");
+        final BasicForm explorerArea = new BasicForm(100, 200, "");
         explorerArea.setPosition(0, 0, Anchor.CENTER | Anchor.TOP);
         explorerArea.setMovable(false);
         explorerArea.setClosable(false);
@@ -174,11 +175,11 @@ public final class MembershipGui extends BasicScreen {
         explorerArea.setTopPadding(3);
         explorerArea.setLeftPadding(3);
 
-        final UIImage explorerLogo = new UIImage(this, new GuiTexture(GuiConfig.Location.explorer_logo), null);
+        final UIImage explorerLogo = new UIImage(GuiConfig.wholeTexture(GuiConfig.Location.explorer_logo));
         explorerLogo.setSize(99, 99);
         explorerLogo.setPosition(0, -3, Anchor.TOP | Anchor.CENTER);
 
-        this.explorer_details_button = new UIButtonBuilder(this)
+        this.explorer_details_button = new UIButtonBuilder()
             .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
             .hoverFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
             .width(40)
@@ -189,11 +190,11 @@ public final class MembershipGui extends BasicScreen {
             .enabled(true)
             .build("button.explorer_details");
 
-        final UILabel explorerLabel0 = new UILabel(this, "Chose One");
+        final UILabel explorerLabel0 = new UILabel("Chose One");
         explorerLabel0.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).underline(true).shadow(true).scale(0.8F).build());
         explorerLabel0.setPosition(0, 125, Anchor.CENTER | Anchor.TOP);
 
-        this.explorer_donation_button = new UIButtonBuilder(this)
+        this.explorer_donation_button = new UIButtonBuilder()
                 .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
                 .hoverFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
                 .width(40)
@@ -204,7 +205,7 @@ public final class MembershipGui extends BasicScreen {
                 .enabled(currentMembershipLevel == 0 || currentMembershipLevel == 1)
                 .build("button.explorer_donation");
 
-        this.explorer_purchase_button = new UIButtonBuilder(this)
+        this.explorer_purchase_button = new UIButtonBuilder()
                 .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
                 .hoverFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
                 .width(40)
@@ -215,7 +216,7 @@ public final class MembershipGui extends BasicScreen {
                 .enabled(availableFunds >=5000000 && (currentMembershipLevel == 0 || currentMembershipLevel == 1))
                 .build("button.explorer_purchase");
 
-        this.explorer_skills_button = new UIButtonBuilder(this)
+        this.explorer_skills_button = new UIButtonBuilder()
                 .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
                 .hoverFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
                 .width(40)
@@ -228,7 +229,7 @@ public final class MembershipGui extends BasicScreen {
 
         explorerArea.add(explorerLogo, explorer_details_button, explorerLabel0, explorer_donation_button, explorer_skills_button, explorer_purchase_button);
 
-        final BasicForm pioneerArea = new BasicForm(this, 100, 200, "");
+        final BasicForm pioneerArea = new BasicForm(100, 200, "");
         pioneerArea.setPosition(0, 0, Anchor.RIGHT | Anchor.TOP);
         pioneerArea.setMovable(false);
         pioneerArea.setClosable(false);
@@ -239,11 +240,11 @@ public final class MembershipGui extends BasicScreen {
         pioneerArea.setTopPadding(3);
         pioneerArea.setLeftPadding(3);
 
-        final UIImage pioneerLogo = new UIImage(this, new GuiTexture(GuiConfig.Location.pioneer_logo), null);
+        final UIImage pioneerLogo = new UIImage(GuiConfig.wholeTexture(GuiConfig.Location.pioneer_logo));
         pioneerLogo.setSize(99, 99);
         pioneerLogo.setPosition(0, -3, Anchor.TOP | Anchor.CENTER);
 
-        this.pioneer_details_button = new UIButtonBuilder(this)
+        this.pioneer_details_button = new UIButtonBuilder()
             .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
             .hoverFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
             .width(40)
@@ -254,11 +255,11 @@ public final class MembershipGui extends BasicScreen {
             .enabled(true)
             .build("button.pioneer_details");
 
-        final UILabel pioneerLabel0 = new UILabel(this, "Chose One");
+        final UILabel pioneerLabel0 = new UILabel("Chose One");
         pioneerLabel0.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).underline(true).shadow(true).scale(0.8F).build());
         pioneerLabel0.setPosition(0, 125, Anchor.CENTER | Anchor.TOP);
 
-        this.pioneer_donation_button = new UIButtonBuilder(this)
+        this.pioneer_donation_button = new UIButtonBuilder()
                 .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
                 .hoverFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
                 .width(40)
@@ -270,7 +271,7 @@ public final class MembershipGui extends BasicScreen {
                 .enabled(currentMembershipLevel == 0 || currentMembershipLevel == 1 || currentMembershipLevel == 2)
                 .build("button.pioneer_donation");
 
-        this.pioneer_purchase_button = new UIButtonBuilder(this)
+        this.pioneer_purchase_button = new UIButtonBuilder()
                 .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
                 .hoverFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
                 .width(40)
@@ -281,7 +282,7 @@ public final class MembershipGui extends BasicScreen {
                 .enabled(availableFunds >= 10000000 && (currentMembershipLevel == 0 || currentMembershipLevel == 1 || currentMembershipLevel == 2))
                 .build("button.pioneer_purchase");
 
-        this.pioneer_skills_button = new UIButtonBuilder(this)
+        this.pioneer_skills_button = new UIButtonBuilder()
                 .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
                 .hoverFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build())
                 .width(40)
@@ -294,11 +295,11 @@ public final class MembershipGui extends BasicScreen {
 
         pioneerArea.add(pioneerLogo, pioneer_details_button, pioneerLabel0, pioneer_donation_button, pioneer_skills_button, pioneer_purchase_button);
 
-        final UILabel skillsLabel = new UILabel(this, "Current Skills Total: ");
+        final UILabel skillsLabel = new UILabel("Current Skills Total: ");
         skillsLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(0.8F).build());
         skillsLabel.setPosition(10, -5, Anchor.LEFT | Anchor.BOTTOM);
 
-        final UILabel skillsLevelLabel = new UILabel(this, "" + skillsLevel);
+        final UILabel skillsLevelLabel = new UILabel("" + skillsLevel);
         skillsLevelLabel.setFontOptions(FontOptions.builder().from(FontColors.BLUE_FO).shadow(true).scale(0.8F).build());
         skillsLevelLabel.setPosition(skillsLabel.getX() + skillsLabel.getWidth(), -5, Anchor.LEFT | Anchor.BOTTOM);
 
@@ -312,7 +313,7 @@ public final class MembershipGui extends BasicScreen {
         aboveButtonsSeparator.setPosition(0, -20, Anchor.BOTTOM | Anchor.CENTER);
         this.form.add(aboveButtonsSeparator);
 
-        this.buttonClose = new UIButtonBuilder(this)
+        this.buttonClose = new UIButtonBuilder()
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .text(I18n.format("almura.menu_button.close"))
@@ -377,8 +378,8 @@ public final class MembershipGui extends BasicScreen {
     }
 
     @Override
-    public void update(int mouseX, int mouseY, float partialTick) {
-        super.update(mouseX, mouseY, partialTick);
+    public void update() {
+        super.update();
 
         if (this.unlockMouse && this.lastUpdate == 25) {
             Mouse.setGrabbed(false); // Force the mouse to be visible even though Mouse.isGrabbed() is false.  //#BugsUnited.
@@ -400,8 +401,8 @@ public final class MembershipGui extends BasicScreen {
     }
 
     @Override
-    protected void mouseClicked(int x, int y, int button) {
-        super.mouseClicked(x, y, button);
+    protected void mousePressed(final UIComponent component, final int button) {
+        super.mousePressed(component, button);
         this.lastUpdate = 0; // Reset the timer when mouse is pressed.
     }
 

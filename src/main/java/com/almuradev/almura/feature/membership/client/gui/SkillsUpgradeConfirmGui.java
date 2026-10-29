@@ -47,15 +47,15 @@ public class SkillsUpgradeConfirmGui extends BasicScreen {
         this.guiscreenBackground = true;
         Keyboard.enableRepeatEvents(true);
 
-        final BasicForm form = new BasicForm(this, 150, 125, "Confirmation");
+        final BasicForm form = new BasicForm(150, 125, "Confirmation");
         form.setZIndex(10);
         form.setBackgroundAlpha(255);
 
-        final UILabel label0 = new UILabel(this, "Do you wish to upgrade to:");
+        final UILabel label0 = new UILabel("Do you wish to upgrade to:");
         label0.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.0F).build());
         label0.setPosition(0, 10, Anchor.CENTER | Anchor.TOP);
 
-        final UILabel membershipLabel = new UILabel(this, membership);
+        final UILabel membershipLabel = new UILabel(membership);
         membershipLabel.setFontOptions(FontOptions.builder().from(FontColors.GOLD_FO).shadow(true).scale(1.0F).build());
         membershipLabel.setPosition(0, label0.getY() + 15, Anchor.CENTER | Anchor.TOP);
 
@@ -63,7 +63,7 @@ public class SkillsUpgradeConfirmGui extends BasicScreen {
         belowAmountSeparator.setSize(form.getWidth() -5, 1);
         belowAmountSeparator.setPosition(0, -45, Anchor.BOTTOM | Anchor.CENTER);
 
-        final UIButton buttonPurchase = new UIButtonBuilder(this)
+        final UIButton buttonPurchase = new UIButtonBuilder()
                 //.text(I18n.format("almura.button.close"))
                 .text("Upgrade Me!")
                 .anchor(Anchor.BOTTOM | Anchor.CENTER)
@@ -76,7 +76,7 @@ public class SkillsUpgradeConfirmGui extends BasicScreen {
         aboveCloseSeparator.setSize(form.getWidth() -5, 1);
         aboveCloseSeparator.setPosition(0, -20, Anchor.BOTTOM | Anchor.CENTER);
 
-        final UIButton buttonClose = new UIButtonBuilder(this)
+        final UIButton buttonClose = new UIButtonBuilder()
                 .text(I18n.format("almura.button.cancel"))
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .position(0, 0)

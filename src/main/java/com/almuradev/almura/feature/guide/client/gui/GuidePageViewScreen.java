@@ -8,16 +8,20 @@
 package com.almuradev.almura.feature.guide.client.gui;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.asm.ClientStaticAccess;
 import com.almuradev.almura.core.client.config.category.GeneralCategory;
 import com.almuradev.almura.feature.guide.ClientPageManager;
 import com.almuradev.almura.feature.guide.PageListEntry;
+import com.almuradev.almura.shared.client.ui.component.UIContextMenu;
 import com.almuradev.almura.shared.client.ui.component.WYSIWYGTextBox;
 import com.almuradev.almura.shared.util.TextUtil;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.GuiTexture;
+import net.malisis.core.client.gui.render.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
+import net.malisis.core.client.gui.UIConstants;
+import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.container.BasicList;
 import net.malisis.core.client.gui.component.container.dialog.BasicMessageBox;
@@ -26,14 +30,18 @@ import net.malisis.core.client.gui.component.container.dialog.MessageBoxResult;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import com.google.common.eventbus.Subscribe;
+import net.malisis.core.client.gui.component.interaction.BasicTextArea;
 import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UICheckBox;
 import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
+import net.malisis.core.client.gui.event.ComponentEvent;
 import net.malisis.core.client.gui.event.component.ContentUpdateEvent;
 import net.malisis.core.renderer.font.FontOptions;
 import net.malisis.core.renderer.font.MalisisFont;
 import net.malisis.core.util.FontColors;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiConfirmOpenLink;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
@@ -43,7 +51,10 @@ import org.lwjgl.input.Keyboard;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.plugin.PluginContainer;
 
+import java.awt.Desktop;
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -72,6 +83,17 @@ public class GuidePageViewScreen extends BasicScreen {
     private boolean canAdd, canRemove, canModify, canAddPlayer;
     private float snapshotScrollOffset;
     private int snapshotCursorPositionX, snapshotCursorPositionY;
+    // Only a text box that had focus gets it back, so a page just opened shows no cursor
+    private boolean snapshotFocused;
+    // Where the links are in the text shown to those who can't edit the page (empty while editing: the markup is shown)
+    private List<GuideLinks.Link> shownLinks = Collections.emptyList();
+    // The open page as written, and as it is shown while previewing (until an editor clicks into it)
+    private String pageText = "";
+    @Nullable private GuideLinks.Rendered shown;
+    // Whether the mouse was pressed on this screen since the link confirmation opened: coming back from it (its buttons act on the press)
+    // the release of that click lands here, and must not open the link again
+    private boolean pressedSinceShown = true;
+    private boolean previewing = true;
     private BasicForm form;
     private List<UICheckBox> checkBoxes = new ArrayList<>();
     private BasicList<PageListEntry> pagesList;
@@ -118,11 +140,11 @@ public class GuidePageViewScreen extends BasicScreen {
         guiscreenBackground = false;
         Keyboard.enableRepeatEvents(true);
 
-        final BasicForm form = new BasicForm(this, BASE_FORM_WIDTH, 315, TextFormatting.WHITE + I18n.format("almura.guide.view.form.title"));
+        final BasicForm form = new BasicForm(BASE_FORM_WIDTH, 315, TextFormatting.WHITE + I18n.format("almura.guide.view.form.title"));
         this.form = form;
 
         // Page list (widened to fit its entries by fitToPages)
-        this.pagesList = new BasicList<>(this, BASE_LIST_WIDTH, BasicScreen.getPaddedHeight(form));
+        this.pagesList = new BasicList<>(BASE_LIST_WIDTH, BasicScreen.getPaddedHeight(form));
         this.pagesList.setBorder(0xFFFFFF, 1, 215);
         this.pagesList.setPadding(2, 2);
         this.pagesList.setPosition(1, 0);
@@ -134,6 +156,7 @@ public class GuidePageViewScreen extends BasicScreen {
                 this.tbContent.getTextBox().setText("");
             } else {
                 if (manager.getPage() != null && !manager.getPage().getId().equalsIgnoreCase(i.getId())) {
+                    this.tbContent.getTextBox().setFocused(false);
                     this.clearCursorSnapshot();
                     this.restoreCursorSnapshot();
                 }
@@ -144,7 +167,7 @@ public class GuidePageViewScreen extends BasicScreen {
         if (this.hasEditControls()) {
             this.pagesList.setHeight(this.pagesList.getHeight() - 17);
 
-            this.buttonAdd = new UIButtonBuilder(this)
+            this.buttonAdd = new UIButtonBuilder()
                     .text(TextFormatting.GREEN + "+")
                     .onClick(() -> this.runScheduledTask("add"))
                     .anchor(Anchor.BOTTOM | Anchor.LEFT)
@@ -153,7 +176,7 @@ public class GuidePageViewScreen extends BasicScreen {
                     .tooltip(I18n.format("almura.guide.view.button.add.tooltip"))
                     .build("button.add");
 
-            this.buttonRemove = new UIButtonBuilder(this)
+            this.buttonRemove = new UIButtonBuilder()
                     .text(TextFormatting.RED + "-")
                     .onClick(() -> this.runScheduledTask("remove"))
                     .anchor(Anchor.BOTTOM | Anchor.LEFT)
@@ -162,7 +185,7 @@ public class GuidePageViewScreen extends BasicScreen {
                     .tooltip(I18n.format("almura.guide.view.button.remove.tooltip"))
                     .build("button.remove");
 
-            this.buttonDetails = new UIButtonBuilder(this)
+            this.buttonDetails = new UIButtonBuilder()
                     .text(TextFormatting.YELLOW + "?")
                     .onClick(() -> this.runScheduledTask("details"))
                     .anchor(Anchor.BOTTOM | Anchor.LEFT)
@@ -174,13 +197,18 @@ public class GuidePageViewScreen extends BasicScreen {
 
         this.tbContent = new WYSIWYGTextBox(this, BasicScreen.getPaddedHeight(form), "");
         this.tbContent.setPosition(BasicScreen.getPaddedX(this.pagesList, 2), 0);
-        this.tbContent.getTextBox().setOptions(0x555555, 0xc8c8c8, 0x00000);
+        this.tbContent.getTextBox().setColors(0x555555, 0xc8c8c8, 0x00000);
         // Editing and the formatter bar follow the open page (updateEditing)
         this.tbContent.getTextBox().setEditable(false);
         // Save is only clickable once the text differs from the page as loaded
         this.tbContent.getTextBox().register(this);
+        // Links: clicked to open them (ctrl+click while editing), and a right click menu to make and change them
+        this.tbContent.setOnTextClick(this::onTextClick);
+        // The formatter bar shows while the page is previewed too: using it starts editing
+        this.tbContent.setOnBeforeFormat(this::startEditing);
+        UIContextMenu.attach(this.tbContent.getTextBox(), c -> this.textMenu());
 
-        final UIButton buttonClose = new UIButtonBuilder(this)
+        final UIButton buttonClose = new UIButtonBuilder()
             .width(50)
             .anchor(Anchor.BOTTOM | Anchor.RIGHT)
 
@@ -192,20 +220,13 @@ public class GuidePageViewScreen extends BasicScreen {
 
         this.tbContent.setHeight(BasicScreen.getPaddedHeight(form) - 17);
         if (this.hasEditControls()) {
-            this.buttonSave = new UIButtonBuilder(this)
+            this.buttonSave = new UIButtonBuilder()
                 .width(50)
                 .anchor(Anchor.RIGHT | Anchor.BOTTOM)
                 .position(BasicScreen.getPaddedX(buttonClose, 2, Anchor.RIGHT), 0)
                 //.position(-20,0)
                 .text(I18n.format("almura.button.save"))
-                .onClick(() -> {
-                    if (manager.getPage() != null) {
-                        if (!manager.preSnapshot.equalsIgnoreCase(this.tbContent.getTextBox().getText())) {
-                            manager.getPage().setContent(this.tbContent.getTextBox().getText());
-                            manager.requestSavePage();
-                        }
-                    }
-                })
+                .onClick(this::savePage)
                 .build("button.save");
             form.add(buttonSave);
         }
@@ -238,9 +259,13 @@ public class GuidePageViewScreen extends BasicScreen {
         for (final UICheckBox checkBox : this.checkBoxes) {
             checkBoxesWidth += checkBox.getWidth();
         }
-        int checkBoxX = (BasicScreen.getPaddedWidth(this.form) - checkBoxesWidth) / 2;
+        // Centred in the space between the edit buttons on the left and Save/Close on the right
+        final int left = this.buttonDetails != null && this.buttonDetails.isVisible() ? BasicScreen.getPaddedX(this.buttonDetails, CHECKBOX_SPACING) : 0;
+        final int right = BasicScreen.getPaddedWidth(this.form) - 50 - (this.buttonSave != null ? 52 : 0) - CHECKBOX_SPACING;
+        int checkBoxX = left + (right - left - checkBoxesWidth) / 2;
         for (final UICheckBox checkBox : this.checkBoxes) {
-            checkBox.setPosition(checkBoxX, -3, Anchor.BOTTOM | Anchor.LEFT);
+            // Level with the middle of the 15 high buttons
+            checkBox.setPosition(checkBoxX, -(15 - checkBox.getHeight()) / 2, Anchor.BOTTOM | Anchor.LEFT);
             checkBoxX += checkBox.getWidth() + CHECKBOX_SPACING;
         }
     }
@@ -292,7 +317,7 @@ public class GuidePageViewScreen extends BasicScreen {
     }
 
     private UICheckBox createCheckBox(final String name, final String text, final boolean checked) {
-        final UICheckBox checkBox = new UICheckBox(this, text);
+        final UICheckBox checkBox = new UICheckBox(text);
         checkBox.setName(name);
         checkBox.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).build());
         checkBox.setChecked(checked);
@@ -327,10 +352,13 @@ public class GuidePageViewScreen extends BasicScreen {
      * Lets the open page be edited (with the formatter bar unless hidden) if this player may edit it.
      */
     private void updateEditing() {
-        final boolean editable = this.canEditPage();
+        // Not while the page is shown as it reads: an editor clicks into it first
+        final boolean editable = this.canEditPage() && !this.previewing;
         this.tbContent.getTextBox().setEditable(editable);
+        // setEditable greys out read only text; a page being read keeps its normal colour
+        this.tbContent.getTextBox().setFontOptions(UIConstants.DEFAULT_TEXTBOX_FO);
 
-        final boolean showToolbar = editable && !ClientStaticAccess.configAdapter.get().general.guideHideFormatterBar;
+        final boolean showToolbar = this.canEditPage() && !ClientStaticAccess.configAdapter.get().general.guideHideFormatterBar;
         // Only on a change, so a collapsed bar stays collapsed between pages
         if (this.toolbarShown == null || this.toolbarShown != showToolbar) {
             if (showToolbar) {
@@ -344,7 +372,7 @@ public class GuidePageViewScreen extends BasicScreen {
 
     private void runScheduledTask(final String details) {
         // Null this so we don't see it drawing on any screens we open
-        this.tooltipComponent = null;
+        this.tooltip = null;
 
         Sponge.getScheduler().createTaskBuilder().delayTicks(5).execute(task -> {
             switch (details.toUpperCase()) {
@@ -382,7 +410,7 @@ public class GuidePageViewScreen extends BasicScreen {
             return;
         }
 
-        if (manager.preSnapshot.equals(this.tbContent.getTextBox().getText())) {
+        if (this.previewing || manager.preSnapshot.equals(this.tbContent.getTextBox().getText())) {
             super.close();
             return;
         }
@@ -425,31 +453,258 @@ public class GuidePageViewScreen extends BasicScreen {
     public void refreshPage() {
         Keyboard.enableRepeatEvents(true);
         this.snapshotCursor();
-        this.tbContent.getTextBox().setText(TextUtil.asFriendlyText(manager.getPage() == null ? "" : manager.getPage().getContent()));
-        this.tbContent.getTextBox().getCursorPosition().jumpToBeginning();
-        manager.preSnapshot = this.tbContent.getTextBox().getText();
+        this.showPageText();
+        this.tbContent.getTextBox().getCursorPosition().jumpToStart();
+        // The page as written: what the text box holds once editing starts
+        manager.preSnapshot = this.pageText;
 
         this.updateButtons();
         this.restoreCursorSnapshot();
         this.clearCursorSnapshot();
     }
 
+    /**
+     * Shows the open page as it reads, its links as link text, to everyone; those who may edit it choose Edit page (or use the formatter
+     * bar) to edit the page as written, link markup and all (see {@link #startEditing()}).
+     */
+    private void showPageText() {
+        this.pageText = TextUtil.asFriendlyText(manager.getPage() == null ? "" : manager.getPage().getContent());
+        this.shown = GuideLinks.render(this.pageText);
+        this.shownLinks = this.shown.links;
+        this.previewing = true;
+        this.tbContent.getTextBox().setText(this.shown.text);
+    }
+
+    /**
+     * Swaps the page as it reads for the page as written, keeping the cursor on the same spot, and makes it editable.
+     */
+    private void startEditing() {
+        if (!this.previewing || !this.canEditPage()) {
+            return;
+        }
+        final BasicTextArea textBox = this.tbContent.getTextBox();
+        final int index = this.shown == null ? 0 : this.shown.toPageIndex(textBox.getCursorPosition().index());
+        final float scroll = textBox.getScrollbar().offset();
+
+        this.previewing = false;
+        this.shown = null;
+        this.shownLinks = Collections.emptyList();
+        textBox.setText(this.pageText);
+        this.updateEditing();
+
+        textBox.getScrollbar().scrollTo(scroll);
+        textBox.focus();
+        textBox.getCursorPosition().jumpTo(index);
+        this.updateSaveButton();
+    }
+
+    /**
+     * @return The link the text box cursor is on: in the markup while editing, in the shown link text otherwise
+     */
+    @Nullable
+    private GuideLinks.Link linkAtCursor() {
+        final BasicTextArea textBox = this.tbContent.getTextBox();
+        final List<GuideLinks.Link> links = textBox.isEditable() ? GuideLinks.find(textBox.getText()) : this.shownLinks;
+        return GuideLinks.at(links, textBox.getCursorPosition().index());
+    }
+
+    @Override
+    protected void mousePressed(final UIComponent component, final int button) {
+        this.pressedSinceShown = true;
+        super.mousePressed(component, button);
+    }
+
+    private boolean onTextClick() {
+        // The release of a click that started on another screen
+        if (!this.pressedSinceShown) {
+            return true;
+        }
+        final BasicTextArea textBox = this.tbContent.getTextBox();
+        // A drag that selected text
+        if (!textBox.getSelectedText().isEmpty()) {
+            return false;
+        }
+        final GuideLinks.Link link = this.linkAtCursor();
+        if (this.previewing) {
+            // A link opens; other clicks just read. Editing starts on purpose: right click > Edit page, or the formatter bar
+            if (link != null) {
+                this.openLink(link.url);
+                return true;
+            }
+            return false;
+        }
+        // While editing a click places the cursor, ctrl+click opens a link
+        if (link == null || !GuiScreen.isCtrlKeyDown()) {
+            return false;
+        }
+        this.openLink(link.url);
+        return true;
+    }
+
+    private UIContextMenu textMenu() {
+        final BasicTextArea textBox = this.tbContent.getTextBox();
+        final String selected = textBox.getSelectedText();
+        // With nothing selected the menu is for what was right clicked
+        if (selected.isEmpty()) {
+            textBox.getCursorPosition().fromMouse();
+        }
+        final int selectionStart = Math.min(textBox.getCursorPosition().index(), textBox.getSelectionPosition().index());
+        final int selectionEnd = Math.max(textBox.getCursorPosition().index(), textBox.getSelectionPosition().index());
+        final boolean editable = textBox.isEditable();
+        final GuideLinks.Link link = this.linkAtCursor();
+
+        final UIContextMenu menu = new UIContextMenu(this);
+        if (link != null) {
+            menu.add("Open link", () -> this.openLink(link.url));
+        }
+        if (this.previewing && this.canEditPage()) {
+            if (link != null) {
+                // Start editing (the cursor lands in the link's markup), act on that markup, then save and show the page again: the
+                // popup's Save saves the page; cancelling it just shows the page again
+                menu.add("Edit link...", () -> {
+                    this.startEditing();
+                    final GuideLinks.Link markup = this.linkAtCursor();
+                    if (markup == null) {
+                        this.stopEditing();
+                        return;
+                    }
+                    new GuideLinkScreen(this, markup.text, markup.url, url -> {
+                        this.replaceText(markup.start, markup.end, "[" + markup.text + "](" + url + ")");
+                        this.savePage();
+                        this.stopEditing();
+                    }, this::stopEditing).display();
+                });
+                menu.add("Remove link", () -> {
+                    this.startEditing();
+                    final GuideLinks.Link markup = this.linkAtCursor();
+                    if (markup != null) {
+                        this.replaceText(markup.start, markup.end, markup.text);
+                        this.savePage();
+                    }
+                    this.stopEditing();
+                });
+            }
+            // At the right clicked spot
+            menu.add("Edit page", this::startEditing);
+        }
+        if (editable) {
+            if (link != null) {
+                menu.add("Edit link...", () -> this.editLink(link));
+                menu.add("Remove link", () -> this.replaceText(link.start, link.end, link.text));
+            } else {
+                // The link text can't hold brackets or line breaks
+                menu.add("Create link...", () -> new GuideLinkScreen(this, selected, "",
+                                url -> this.replaceText(selectionStart, selectionEnd, "[" + selected + "](" + url + ")"), null).display(),
+                        () -> !selected.isEmpty() && !selected.matches("(?s).*[\\[\\]\\n].*"));
+            }
+            menu.separator();
+            menu.add("Cut", () -> {
+                GuiScreen.setClipboardString(selected);
+                textBox.deleteSelectedText();
+            }, () -> !selected.isEmpty());
+        }
+        menu.add("Copy", () -> GuiScreen.setClipboardString(selected), () -> !selected.isEmpty());
+        if (editable) {
+            menu.add("Paste", () -> textBox.addText(GuiScreen.getClipboardString()), () -> !GuiScreen.getClipboardString().isEmpty());
+        }
+        return menu;
+    }
+
+    /**
+     * Asks for a new address for a link in the markup.
+     */
+    private void editLink(final GuideLinks.Link markup) {
+        new GuideLinkScreen(this, markup.text, markup.url,
+                url -> this.replaceText(markup.start, markup.end, "[" + markup.text + "](" + url + ")"), null).display();
+    }
+
+    /**
+     * Sends the page being edited to the server, if its text changed since it was loaded (or last saved).
+     */
+    private void savePage() {
+        final String text = this.tbContent.getTextBox().getText();
+        if (manager.getPage() == null || this.previewing || manager.preSnapshot.equalsIgnoreCase(text)) {
+            return;
+        }
+        manager.getPage().setContent(text);
+        manager.requestSavePage();
+    }
+
+    /**
+     * Shows the page as it reads again (as last saved, or as just sent to be saved), leaving editing.
+     */
+    private void stopEditing() {
+        // The link screen turned key repeat off when it closed
+        Keyboard.enableRepeatEvents(true);
+        final BasicTextArea textBox = this.tbContent.getTextBox();
+        final float scroll = textBox.getScrollbar().offset();
+        textBox.setFocused(false);
+        this.showPageText();
+        this.updateEditing();
+        this.updateSaveButton();
+        textBox.getScrollbar().scrollTo(scroll);
+    }
+
+    /**
+     * Replaces the text from {@code start} to {@code end} with {@code replacement}, keeping the scroll position.
+     */
+    private void replaceText(final int start, final int end, final String replacement) {
+        // The link screen turned key repeat off when it closed
+        Keyboard.enableRepeatEvents(true);
+        final BasicTextArea textBox = this.tbContent.getTextBox();
+        final String text = textBox.getText();
+        if (start < 0 || end > text.length() || start > end) {
+            return;
+        }
+        final float scroll = textBox.getScrollbar().offset();
+        textBox.setText(text.substring(0, start) + replacement + text.substring(end));
+        textBox.getScrollbar().scrollTo(scroll);
+        textBox.getCursorPosition().jumpTo(start + replacement.length());
+        this.updateSaveButton();
+    }
+
+    /**
+     * Asks before opening a link in the browser, as chat links do.
+     */
+    private void openLink(final String url) {
+        final String address = GuideLinks.toWebAddress(url);
+        if (address == null) {
+            return;
+        }
+        // Until the mouse is pressed here again (MalisisGui doesn't call initGui when shown again)
+        this.pressedSinceShown = false;
+        this.mc.displayGuiScreen(new GuiConfirmOpenLink((confirmed, id) -> {
+            if (confirmed) {
+                try {
+                    Desktop.getDesktop().browse(new URI(address));
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            this.mc.displayGuiScreen(this);
+        }, address, 0, false));
+    }
+
     private void snapshotCursor() {
-        this.snapshotScrollOffset = this.tbContent.getTextBox().getScrollbar().getOffset();
-        this.snapshotCursorPositionX = this.tbContent.getTextBox().getCursorPosition().getXOffset();
-        this.snapshotCursorPositionY = this.tbContent.getTextBox().getCursorPosition().getYOffset();
+        this.snapshotScrollOffset = this.tbContent.getTextBox().getScrollbar().offset();
+        this.snapshotCursorPositionX = this.tbContent.getTextBox().getCursorPosition().index(); // the text index
+        this.snapshotCursorPositionY = 0;
+        this.snapshotFocused = this.tbContent.getTextBox().isFocused();
     }
 
     private void restoreCursorSnapshot() {
-        this.tbContent.getTextBox().focus();
+        if (this.snapshotFocused) {
+            this.tbContent.getTextBox().focus();
+        }
         this.tbContent.getTextBox().getScrollbar().scrollTo(this.snapshotScrollOffset);
-        this.tbContent.getTextBox().getCursorPosition().setPosition(this.snapshotCursorPositionX, this.snapshotCursorPositionY);
+        this.tbContent.getTextBox().getCursorPosition().jumpTo(this.snapshotCursorPositionX);
     }
 
     private void clearCursorSnapshot() {
         this.snapshotScrollOffset = 0;
         this.snapshotCursorPositionX = 0;
         this.snapshotCursorPositionY = 0;
+        this.snapshotFocused = false;
     }
 
     private void updateButtons() {
@@ -477,14 +732,28 @@ public class GuidePageViewScreen extends BasicScreen {
     }
 
     /**
+     * Typing, deleting and the formatter bar: the text box sends the text it is about to hold.
+     */
+    @Subscribe
+    public void onTextChange(final ComponentEvent.ValueChange<?, ?> event) {
+        if (this.tbContent != null && event.getComponent() == this.tbContent.getTextBox() && event.getNewValue() instanceof String) {
+            this.updateSaveButton((String) event.getNewValue());
+        }
+    }
+
+    private void updateSaveButton() {
+        this.updateSaveButton(this.tbContent.getTextBox().getText());
+    }
+
+    /**
      * Save is clickable when the open page may be edited and its text has changed since it was loaded (or last saved).
      */
-    private void updateSaveButton() {
+    private void updateSaveButton(final String text) {
         if (this.buttonSave == null) {
             return;
         }
-        this.buttonSave.setEnabled(this.canEditPage() && manager.preSnapshot != null
-                && !manager.preSnapshot.equals(this.tbContent.getTextBox().getText()));
+        this.buttonSave.setEnabled(this.canEditPage() && !this.previewing && manager.preSnapshot != null
+                && !manager.preSnapshot.equals(text));
     }
 
     @Override
@@ -492,7 +761,7 @@ public class GuidePageViewScreen extends BasicScreen {
         // Drawn behind the create/details screens and dialogs: no hover or tooltip of its own (the tooltip of the button that opened them
         // would otherwise stay under the mouse, on top of theirs)
         if (Minecraft.getMinecraft().currentScreen != this) {
-            this.tooltipComponent = null;
+            this.tooltip = null;
             mouseX = -1;
             mouseY = -1;
         }
@@ -521,7 +790,7 @@ public class GuidePageViewScreen extends BasicScreen {
         protected void construct(final MalisisGui gui) {
             super.construct(gui);
 
-            final UIImage icon = null;//this.item.getIcon() == null ? null : new UIImage(gui, this.item.getIcon());
+            final UIImage icon = null;//this.item.getIcon() == null ? null : new UIImage(this.item.getIcon());
             if (icon != null) {
                 icon.setPosition(2, 0, Anchor.MIDDLE | Anchor.LEFT);
                 this.add(icon);
@@ -534,11 +803,11 @@ public class GuidePageViewScreen extends BasicScreen {
 
             // Player guides: the name, then whose it is (they aren't "Category - Name" like server guides)
             if (this.item.isPlayerGuide()) {
-                final UILabel nameLabel = new UILabel(gui, this.item.getName());
+                final UILabel nameLabel = new UILabel(this.item.getName());
                 nameLabel.setPosition(xPos, 0, Anchor.TOP | Anchor.LEFT);
                 nameLabel.setFontOptions(FontColors.WHITE_FO);
 
-                final UILabel ownerLabel = new UILabel(gui, TextFormatting.ITALIC + (this.item.isMine()
+                final UILabel ownerLabel = new UILabel(TextFormatting.ITALIC + (this.item.isMine()
                         ? I18n.format("almura.guide.view.label.my_guide")
                         : I18n.format("almura.guide.view.label.player_guide", this.item.getOwnerName())));
                 ownerLabel.setPosition(xPos, BasicScreen.getPaddedY(nameLabel, 2));
@@ -548,7 +817,7 @@ public class GuidePageViewScreen extends BasicScreen {
             }
 
             final String[] splitName = this.item.getName().split(" - ");
-            final UILabel categoryLabel = new UILabel(gui, splitName[0]);
+            final UILabel categoryLabel = new UILabel(splitName[0]);
             categoryLabel.setPosition(xPos, 0, Anchor.MIDDLE | Anchor.LEFT);
             categoryLabel.setFontOptions(FontColors.WHITE_FO);
             this.add(categoryLabel);
@@ -556,7 +825,7 @@ public class GuidePageViewScreen extends BasicScreen {
             if (splitName.length > 1) {
                 categoryLabel.setAnchor(Anchor.TOP | Anchor.LEFT);
 
-                final UILabel nameLabel = new UILabel(gui, splitName[1]);
+                final UILabel nameLabel = new UILabel(splitName[1]);
                 nameLabel.setPosition(xPos, BasicScreen.getPaddedY(categoryLabel, 2));
                 nameLabel.setFontOptions(FontColors.GRAY_FO);
                 this.add(nameLabel);
@@ -588,9 +857,9 @@ public class GuidePageViewScreen extends BasicScreen {
 
         private UIButton arrowButton(final MalisisGui gui, final ResourceLocation texture, final int direction, final int y,
                 final boolean enabled) {
-            final UIImage arrow = new UIImage(gui, new GuiTexture(texture), null);
+            final UIImage arrow = new UIImage(GuiConfig.wholeTexture(texture));
             arrow.setSize(9, 5);
-            final UIButton button = new UIButtonBuilder(gui)
+            final UIButton button = new UIButtonBuilder()
                     .image(arrow)
                     .anchor(Anchor.MIDDLE | Anchor.RIGHT)
                     .position(0, y)
@@ -599,7 +868,6 @@ public class GuidePageViewScreen extends BasicScreen {
                     .onClick(() -> manager.movePage(this.item.getId(), direction))
                     .build("button.move." + (direction < 0 ? "up" : "down"));
             // The button graphic has a 1 pixel black outline: at 15 x 11 the 9 x 5 arrow sits in the middle of the grey inside it
-            button.setAutoSize(false);
             button.setSize(15, ARROW_BUTTON_HEIGHT);
             return button;
         }

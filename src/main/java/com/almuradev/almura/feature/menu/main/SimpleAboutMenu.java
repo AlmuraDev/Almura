@@ -16,14 +16,16 @@ import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicContainerScreen;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.GuiRenderer;
-import net.malisis.core.client.gui.GuiTexture;
+import net.malisis.core.client.gui.render.GuiRenderer;
+import net.malisis.core.client.gui.render.GuiIcon;
+import net.malisis.core.client.gui.render.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicList;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
+import net.malisis.core.client.gui.component.interaction.UITextArea;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
 import net.malisis.core.renderer.font.FontOptions;
@@ -65,7 +67,7 @@ public class SimpleAboutMenu extends BasicContainerScreen {
     public void construct() {
         super.construct();
 
-        this.list = new BasicList<>(this, 125, UIComponent.INHERITED);
+        this.list = new BasicList<>(125, UIComponent.INHERITED);
         this.list.setPosition(4, 0);
         this.list.setItemComponentSpacing(4);
         this.list.setCanDeselect(false);
@@ -74,7 +76,7 @@ public class SimpleAboutMenu extends BasicContainerScreen {
 
         // Static entry
         elementDataList.add(new AboutItemData(this.list,
-                new UIImage(this, new GuiTexture(GuiConfig.Location.ALMURA_MAN), null), 5, 0, 23, 32, 8, AboutConfig.TITLE, AboutConfig.STORY));
+                new UIImage(GuiConfig.wholeTexture(GuiConfig.Location.ALMURA_MAN)), 5, 0, 23, 32, 8, AboutConfig.TITLE, AboutConfig.STORY));
 
         // Dynamic entry
         AboutConfig.ENTRIES.forEach(entry -> {
@@ -83,19 +85,19 @@ public class SimpleAboutMenu extends BasicContainerScreen {
                 titles = titles.toBuilder().append(Text.of("  • ", I18n.format(title)), Text.NEW_LINE).build();
             }
             elementDataList.add(new AboutItemData(this.list,
-                    new UIImage(this, new GuiRemoteTexture(
+                    new UIImage(new GuiIcon(new GuiRemoteTexture(
                             GuiConfig.Location.GENERIC_AVATAR,
                             new ResourceLocation(Almura.ID, "textures/gui/skins/avatars/" + entry.uniqueId + ".png"),
                             String.format(GuiConfig.Url.SKINS, entry.uniqueId, 32),
                             32,
-                            32), null), 2, 0, 32, 32, 4,
+                            32), 0F, 0F, 1F, 1F)), 2, 0, 32, 32, 4,
                     Text.of(entry.color, I18n.format(entry.name)),
                     Text.of(TextColors.WHITE, I18n.format(entry.description), Text.NEW_LINE, Text.NEW_LINE, TextStyles.BOLD,
                             I18n.format("almura.menu.about.titles"), TextStyles.RESET, TextColors.RESET, Text.NEW_LINE, titles))
             );
         });
 
-        final UIButton doneButton = new UIButtonBuilder(this)
+        final UIButton doneButton = new UIButtonBuilder()
                 .text(I18n.format("gui.done"))
                 .size(98, 20)
                 .position(0, -15, 1)
@@ -103,7 +105,7 @@ public class SimpleAboutMenu extends BasicContainerScreen {
                 .listener(this)
                 .build("button.done");
 
-        this.textField = new UITextField(this, "", true);
+        this.textField = new UITextArea("");
         this.textField.setPosition(BasicScreen.getPaddedX(this.list, 4), 0);
         this.textField.setEditable(false);
         this.textField.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
@@ -124,19 +126,19 @@ public class SimpleAboutMenu extends BasicContainerScreen {
         this.getContainer().add(this.list, this.textField, this.figure);
 
         // SpongeForge
-        final UILabel spongeForgeVersionLabel = new UILabel(this, TextFormatting.WHITE + "SpongeForge: " + ((Optional<String>) Sponge.getPlatform()
+        final UILabel spongeForgeVersionLabel = new UILabel(TextFormatting.WHITE + "SpongeForge: " + ((Optional<String>) Sponge.getPlatform()
                 .asMap().get("ImplementationVersion")).orElse("dev"));
         spongeForgeVersionLabel.setPosition(4, -24, Anchor.LEFT | Anchor.BOTTOM);
 
         // Forge
         final PluginContainer forgeContainer = Sponge.getPluginManager().getPlugin("Forge").orElseThrow(NullPointerException::new);
-        final UILabel forgeVersionLabel = new UILabel(this, TextFormatting.WHITE + "Forge: " + forgeContainer.getVersion().orElse("dev"));
+        final UILabel forgeVersionLabel = new UILabel(TextFormatting.WHITE + "Forge: " + forgeContainer.getVersion().orElse("dev"));
         forgeVersionLabel.setPosition(4, -14, Anchor.LEFT | Anchor.BOTTOM);
         addToScreen(forgeVersionLabel);
 
         // Almura
         final PluginContainer almuraContainer = Sponge.getPluginManager().getPlugin("almura").orElseThrow(NullPointerException::new);
-        final UILabel almuraVersionLabel = new UILabel(this, TextFormatting.WHITE + "Almura 3.1 - " + Almura.buildNumber);
+        final UILabel almuraVersionLabel = new UILabel(TextFormatting.WHITE + "Almura 3.1 - " + Almura.buildNumber);
         almuraVersionLabel.setPosition(4, -4, Anchor.LEFT | Anchor.BOTTOM);
         addToScreen(almuraVersionLabel);
 
@@ -181,7 +183,7 @@ public class SimpleAboutMenu extends BasicContainerScreen {
 
             this.parent = parent;
 
-            this.label = new UILabel(gui, TextSerializers.LEGACY_FORMATTING_CODE.serialize(this.item.getTitle()));
+            this.label = new UILabel(TextSerializers.LEGACY_FORMATTING_CODE.serialize(this.item.getTitle()));
             this.label.setPosition(BasicScreen.getPaddedX(this.item.getImage(), this.item.getPadding()), 2);
 
             // Add image/label
@@ -200,8 +202,8 @@ public class SimpleAboutMenu extends BasicContainerScreen {
 
         @SuppressWarnings("unchecked")
         @Override
-        public boolean onClick(final int x, final int y) {
-            final UIComponent component = getComponentAt(x, y);
+        public boolean onClick() {
+            final UIComponent component = getComponentAt(MalisisGui.MOUSE_POSITION.x(), MalisisGui.MOUSE_POSITION.y());
             if (this.label.equals(component) || this.item.getImage().equals(component) || this.equals(component)) {
                 ((BasicList<AboutItemData>) this.parent).setSelectedItem(this.item);
             }
@@ -209,18 +211,12 @@ public class SimpleAboutMenu extends BasicContainerScreen {
         }
 
         @Override
-        public void drawBackground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
-            if (this.parent instanceof BasicList) {
-                final BasicList parent = (BasicList) this.parent;
-
-                final int width = parent.getContentWidth() - (parent.getScrollBar().isEnabled() ? parent.getScrollBar().getRawWidth() + 1 : 0);
-
-                setSize(width, getHeight());
-
-                if (this.item == parent.getSelectedItem()) {
-                    super.drawBackground(renderer, mouseX, mouseY, partialTick);
-                }
-            }
+        public void render(final GuiRenderer renderer) {
+            // Only the selected entry shows its background and border (the width follows the list, see ItemComponent)
+            final boolean selected = this.parent instanceof BasicList && this.item == ((BasicList<?>) this.parent).getSelectedItem();
+            this.setBackgroundAlpha(selected ? 255 : 0);
+            this.setBorder(BORDER_COLOR, 1, selected ? 255 : 0);
+            super.render(renderer);
         }
     }
 

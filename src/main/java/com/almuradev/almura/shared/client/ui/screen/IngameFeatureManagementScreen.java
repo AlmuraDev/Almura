@@ -12,7 +12,7 @@ import com.almuradev.almura.shared.feature.IngameFeature;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.GuiRenderer;
+import net.malisis.core.client.gui.render.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicContainer;
@@ -80,9 +80,9 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Basi
     public void construct() {
         this.guiscreenBackground = false;
 
-        this.form = new BasicForm(this, requiredScreenWidth, requiredScreenHeight, this.title);
+        this.form = new BasicForm(requiredScreenWidth, requiredScreenHeight, this.title);
 
-        this.featureList = new BasicList<>(this, 120, requiredScreenHeight - 40);
+        this.featureList = new BasicList<>(120, requiredScreenHeight - 40);
         this.featureList.setSelectConsumer(this.onSelect());
         this.featureList.setItemComponentFactory((g, l, i) -> new IngameFeatureItemComponent(this, l, i));
         this.featureList.setItemComponentSpacing(1);
@@ -94,7 +94,7 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Basi
 
         this.form.add(this.featureList);
 
-        final BasicContainer<?> container = new BasicContainer(this);
+        final BasicContainer<?> container = new BasicContainer();
         container.setBorder(0xFFFFFF, 1, 215);
         container.setPadding(4, 4);
         container.setAnchor(Anchor.RIGHT | Anchor.TOP);
@@ -103,7 +103,7 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Basi
         container.setBackgroundAlpha(0);
 
         // ID
-        this.tbId = new BasicTextBox(this, "");
+        this.tbId = new BasicTextBox("");
         this.tbId.setAcceptsReturn(false);
         this.tbId.setAcceptsTab(false);
         this.tbId.setTabIndex(0);
@@ -114,11 +114,11 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Basi
         this.tbId.register(this);
         this.tbId.setFilter(s -> s.replaceAll(filter, "").toLowerCase());
 
-        final UILabel idLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.id") + ":")
+        final UILabel idLabel = new UILabel(TextFormatting.WHITE + I18n.format("almura.feature.common.text.id") + ":")
                 .setPosition(0, this.tbId.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         // Title
-        this.tbTitle = new BasicTextBox(this, "");
+        this.tbTitle = new BasicTextBox("");
         this.tbTitle.setAcceptsReturn(false);
         this.tbTitle.setAcceptsTab(false);
         this.tbTitle.setTabIndex(1);
@@ -127,11 +127,11 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Basi
         this.tbTitle.setPosition(0, BasicScreen.getPaddedY(this.tbId, 2), Anchor.RIGHT | Anchor.TOP);
         this.tbTitle.register(this);
 
-        final UILabel titleLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.title") + ":")
+        final UILabel titleLabel = new UILabel(TextFormatting.WHITE + I18n.format("almura.feature.common.text.title") + ":")
                 .setPosition(0, this.tbTitle.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         // Permission
-        this.tbPermission = new BasicTextBox(this, "");
+        this.tbPermission = new BasicTextBox("");
         this.tbPermission.setAcceptsReturn(false);
         this.tbPermission.setAcceptsTab(false);
         this.tbPermission.setTabIndex(2);
@@ -141,44 +141,44 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Basi
         this.tbPermission.register(this);
         this.tbPermission.setFilter(s -> s.replaceAll(filter, "").toLowerCase());
 
-        final UILabel permissionLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.permission") + ":")
+        final UILabel permissionLabel = new UILabel(TextFormatting.WHITE + I18n.format("almura.feature.common.text.permission") + ":")
                 .setPosition(0, this.tbPermission.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         // Created by (name)
-        this.tbCreatorName = new BasicTextBox(this, "");
+        this.tbCreatorName = new BasicTextBox("");
         this.tbCreatorName.setSize(140, 0);
         this.tbCreatorName.setPosition(0, BasicScreen.getPaddedY(this.tbPermission, 2), Anchor.RIGHT | Anchor.TOP);
         this.tbCreatorName.setEditable(false);
 
-        this.creatorNameLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.creator_name") + ":")
+        this.creatorNameLabel = new UILabel(TextFormatting.WHITE + I18n.format("almura.feature.common.text.creator_name") + ":")
                 .setPosition(0, this.tbCreatorName.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         // Created by (Unique ID)
-        this.tbCreatorUniqueId = new BasicTextBox(this, "");
+        this.tbCreatorUniqueId = new BasicTextBox("");
         this.tbCreatorUniqueId.setSize(140, 0);
         this.tbCreatorUniqueId.setPosition(0, BasicScreen.getPaddedY(this.tbCreatorName, 2), Anchor.RIGHT | Anchor.TOP);
         this.tbCreatorUniqueId.setEditable(false);
 
-        this.creatorUniqueIdLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.creator_uuid") + ":")
+        this.creatorUniqueIdLabel = new UILabel(TextFormatting.WHITE + I18n.format("almura.feature.common.text.creator_uuid") + ":")
                 .setPosition(0, this.tbCreatorUniqueId.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
         // Created on
-        this.tbCreated = new BasicTextBox(this, "");
+        this.tbCreated = new BasicTextBox("");
         this.tbCreated.setSize(140, 0);
         this.tbCreated.setPosition(0, BasicScreen.getPaddedY(this.tbCreatorUniqueId, 2), Anchor.RIGHT | Anchor.TOP);
         this.tbCreated.setEditable(false);
 
-        this.createdLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.created") + ":")
+        this.createdLabel = new UILabel(TextFormatting.WHITE + I18n.format("almura.feature.common.text.created") + ":")
                 .setPosition(0, this.tbCreated.getY() + 3, Anchor.LEFT | Anchor.TOP);
 
-        this.hiddenCheckbox = new UICheckBox(this);
+        this.hiddenCheckbox = new UICheckBox();
         this.hiddenCheckbox.setText(TextFormatting.WHITE + I18n.format("almura.feature.common.text.hidden"));
         this.hiddenCheckbox.setPosition(0, 0, Anchor.LEFT | Anchor.BOTTOM);
         this.hiddenCheckbox.setChecked(false);
         this.hiddenCheckbox.setName("checkbox.hidden");
         this.hiddenCheckbox.register(this);
 
-        this.buttonSave = new UIButtonBuilder(this)
+        this.buttonSave = new UIButtonBuilder()
                 .width(40)
                 .text(I18n.format("almura.button.save"))
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
@@ -186,7 +186,7 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Basi
                 .onClick(this::save)
                 .build("button.save");
 
-        this.buttonOpen = new UIButtonBuilder(this)
+        this.buttonOpen = new UIButtonBuilder()
                 .width(40)
                 .text(I18n.format("almura.button.open"))
                 .position(BasicScreen.getPaddedX(this.buttonSave, 2, Anchor.RIGHT), 0)
@@ -204,7 +204,7 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Basi
                 this.hiddenCheckbox, this.buttonOpen, this.buttonSave);
 
         // Add button
-        this.buttonAdd = new UIButtonBuilder(this)
+        this.buttonAdd = new UIButtonBuilder()
                 .text(TextFormatting.GREEN + "+")
                 .anchor(Anchor.BOTTOM | Anchor.LEFT)
                 .onClick(() -> {
@@ -214,7 +214,7 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Basi
                 .build("button.add");
 
         // Remove button
-        this.buttonDelete = new UIButtonBuilder(this)
+        this.buttonDelete = new UIButtonBuilder()
                 .x(BasicScreen.getPaddedX(this.buttonAdd, 2))
                 .text(TextFormatting.RED + "-")
                 .anchor(Anchor.BOTTOM | Anchor.LEFT)
@@ -233,7 +233,7 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Basi
                 .build("button.delete");
 
         // Close button
-        final UIButton buttonClose = new UIButtonBuilder(this)
+        final UIButton buttonClose = new UIButtonBuilder()
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .text(I18n.format("almura.button.close"))
@@ -421,11 +421,8 @@ public class IngameFeatureManagementScreen<T extends IngameFeature> extends Basi
         @Override
         public void construct(final MalisisGui gui) {
             this.setSize(UIComponent.INHERITED, 20);
-        }
-
-        @Override
-        public void drawForeground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
-            renderer.drawText(TextFormatting.WHITE + item.getName(), 4, (this.height - Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT) / 2f, 0);
+            this.setForeground(renderer -> renderer.drawText(TextFormatting.WHITE + this.item.getName(), 4,
+                (this.getHeight() - Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT) / 2, 0));
         }
     }
 }

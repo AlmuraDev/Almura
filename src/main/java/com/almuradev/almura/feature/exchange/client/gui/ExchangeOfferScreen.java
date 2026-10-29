@@ -57,19 +57,19 @@ public class ExchangeOfferScreen extends BasicScreen {
         this.guiscreenBackground = false;
 
         // Form
-        final BasicForm form = new BasicForm(this, 400, 325, I18n.format("almura.feature.exchange.title.offer"));
+        final BasicForm form = new BasicForm(400, 325, I18n.format("almura.feature.exchange.title.offer"));
         form.setZIndex(10); // Fixes issue overlapping draws from parent
         form.setBackgroundAlpha(255);
 
         // OK/Cancel buttons
-        final UIButton buttonOk = new UIButtonBuilder(this)
+        final UIButton buttonOk = new UIButtonBuilder()
             .width(40)
             .text(I18n.format("almura.button.ok"))
             .x(1)
             .anchor(Anchor.BOTTOM | Anchor.RIGHT)
             .onClick(this::transact)
             .build("button.ok");
-        final UIButton buttonCancel = new UIButtonBuilder(this)
+        final UIButton buttonCancel = new UIButtonBuilder()
             .width(40)
             .text(I18n.format("almura.button.cancel"))
             .x(getPaddedX(buttonOk, 2, Anchor.RIGHT))

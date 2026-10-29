@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.store.client.gui;
 
 import com.almuradev.almura.asm.ClientStaticAccess;
+import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.FeatureSortTypes;
 import com.almuradev.almura.feature.FeatureSortType;
@@ -35,7 +36,7 @@ import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.container.BasicList;
 import net.malisis.core.client.gui.component.decoration.BasicLine;
 import net.malisis.core.client.gui.component.decoration.UIImage;
-import net.malisis.core.client.gui.GuiTexture;
+import net.malisis.core.client.gui.render.GuiTexture;
 import net.minecraft.util.ResourceLocation;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.decoration.UITooltip;
@@ -149,48 +150,48 @@ public class StoreScreen extends BasicScreen {
     public void construct() {
         guiscreenBackground = false;
 
-        final BasicForm form = new BasicForm(this, 257, 300, this.store.getName());
+        final BasicForm form = new BasicForm(257, 300, this.store.getName());
         form.setBackgroundAlpha(255);
 
-        final BasicContainer<?> storeContainer = new BasicContainer<>(this, 251, UIComponent.INHERITED);
+        final BasicContainer<?> storeContainer = new BasicContainer<>(251, UIComponent.INHERITED);
         storeContainer.setBorder(FontColors.WHITE, 1, 185);
         storeContainer.setPadding(3);
         storeContainer.setColor(0);
 
         // Buy tab
         final int leftOffset = storeContainer.getLeftPadding() - storeContainer.getLeftBorderSize();
-        this.buyTabContainer = new BasicContainer<>(this, this.tabWidth, this.tabHeight);
+        this.buyTabContainer = new BasicContainer<>(this.tabWidth, this.tabHeight);
         this.buyTabContainer.setBorders(FontColors.WHITE, 185, 1, 1, 1, 0);
         this.buyTabContainer.setPosition(2, 2);
         this.buyTabContainer.setColor(defaultTabColor);
         this.buyTabContainer.attachData(SideType.BUY);
 
         // Buy tab label
-        this.buyTabLabel = new UILabel(this, I18n.format("almura.feature.common.button.buy"));
+        this.buyTabLabel = new UILabel(I18n.format("almura.feature.common.button.buy"));
         this.buyTabLabel.setPosition(0, 1, Anchor.MIDDLE | Anchor.CENTER);
         this.buyTabLabel.attachData(this.buyTabContainer.getData()); // Always use the same data as their parent
         this.buyTabContainer.add(this.buyTabLabel);
 
         // Sell tab
-        this.sellTabContainer = new BasicContainer<>(this, this.tabWidth, this.tabHeight);
+        this.sellTabContainer = new BasicContainer<>(this.tabWidth, this.tabHeight);
         this.sellTabContainer.setBorders(FontColors.WHITE, 185, 1, 1, 1, 0);
         this.sellTabContainer.setColor(defaultTabColor);
         this.sellTabContainer.setPosition(-2, 2, Anchor.TOP | Anchor.RIGHT);
         this.sellTabContainer.attachData(SideType.SELL);
 
         // Sell tab label
-        this.sellTabLabel = new UILabel(this, I18n.format("almura.feature.common.button.sell"));
+        this.sellTabLabel = new UILabel(I18n.format("almura.feature.common.button.sell"));
         this.sellTabLabel.setPosition(0, 1, Anchor.MIDDLE | Anchor.CENTER);
         this.sellTabLabel.attachData(this.sellTabContainer.getData()); // Always use the same data as their parent
         this.sellTabContainer.add(this.sellTabLabel);
 
         // Doesn't exist.
-        this.thisDoesNotExistLine = new BasicLine(this, this.tabWidth - 2);
+        this.thisDoesNotExistLine = new BasicLine(this.tabWidth - 2);
         this.thisDoesNotExistLine.setBackgroundAlpha(255);
         this.thisDoesNotExistLine.setColor(selectedTabColor);
 
         // Bottom tab line
-        final BasicLine tabContainerLineBottom = new BasicLine(this,
+        final BasicLine tabContainerLineBottom = new BasicLine(
                 storeContainer.getWidth() - (storeContainer.getLeftBorderSize() + storeContainer.getRightBorderSize()), 1);
         tabContainerLineBottom.setPosition(-leftOffset, BasicScreen.getPaddedY(this.buyTabContainer, 0));
 
@@ -198,12 +199,12 @@ public class StoreScreen extends BasicScreen {
         final int searchY = BasicScreen.getPaddedY(tabContainerLineBottom, 2);
 
         // Item Display Name Search Label
-        final UILabel itemSearchLabel = new UILabel(this, I18n.format("almura.feature.exchange.text.item_name") + ":");
+        final UILabel itemSearchLabel = new UILabel(I18n.format("almura.feature.exchange.text.item_name") + ":");
         itemSearchLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).build());
         itemSearchLabel.setPosition(1, searchY + 3, Anchor.LEFT | Anchor.TOP);
 
         // Item Display Name Search Text Box
-        this.itemDisplayNameSearchBox = new BasicTextBox(this, "");
+        this.itemDisplayNameSearchBox = new BasicTextBox("");
         this.itemDisplayNameSearchBox.setAcceptsReturn(false);
         this.itemDisplayNameSearchBox.setAcceptsTab(false);
         this.itemDisplayNameSearchBox.setTabIndex(0);
@@ -213,7 +214,7 @@ public class StoreScreen extends BasicScreen {
         this.itemDisplayNameSearchBox.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
         // Sort combobox
-        this.comboBoxSortType = new UISelect<>(this, 78);
+        this.comboBoxSortType = new UISelect<>(78);
         this.comboBoxSortType.setPosition(BasicScreen.getPaddedX(this.itemDisplayNameSearchBox, innerPadding), searchY + 1);
         this.comboBoxSortType.setOptions(Arrays.asList(
           SHOP_ORDER,
@@ -228,7 +229,7 @@ public class StoreScreen extends BasicScreen {
         this.comboBoxSortType.select(SHOP_ORDER);
 
         // Search button
-        final UIButton buttonSearch = new UIButtonBuilder(this)
+        final UIButton buttonSearch = new UIButtonBuilder()
           .width(50)
           .anchor(Anchor.RIGHT | Anchor.TOP)
           .position(0, searchY)
@@ -237,7 +238,7 @@ public class StoreScreen extends BasicScreen {
           .build("button.search");
 
         // List
-        this.itemList = new BasicList<>(this, UIComponent.INHERITED, BasicScreen.getPaddedHeight(form) - this.buyTabContainer.getHeight()
+        this.itemList = new BasicList<>(UIComponent.INHERITED, BasicScreen.getPaddedHeight(form) - this.buyTabContainer.getHeight()
           - tabContainerLineBottom.getHeight() - buttonSearch.getHeight() - 30);
         this.itemList.setPosition(0, BasicScreen.getPaddedY(buttonSearch, 2));
         this.itemList.setSelectConsumer(i -> this.updateStoreControls());
@@ -246,14 +247,14 @@ public class StoreScreen extends BasicScreen {
         this.itemList.setPadding(2);
         this.itemList.setItemComponentFactory(StoreItemComponent::new);
 
-        this.buttonTransactOne = new UIButtonBuilder(this)
+        this.buttonTransactOne = new UIButtonBuilder()
                 .width(60)
                 .anchor(Anchor.BOTTOM | Anchor.LEFT)
                 .enabled(false)
                 .onClick(() -> this.transact(1))
                 .build("button.transact.single");
 
-        this.buttonTransactStack = new UIButtonBuilder(this)
+        this.buttonTransactStack = new UIButtonBuilder()
                 .width(60)
                 .x(BasicScreen.getPaddedX(this.buttonTransactOne, 2))
                 .anchor(Anchor.BOTTOM | Anchor.LEFT)
@@ -267,7 +268,7 @@ public class StoreScreen extends BasicScreen {
                 })
                 .build("button.transact.stack");
 
-        this.buttonTransactAll = new UIButtonBuilder(this)
+        this.buttonTransactAll = new UIButtonBuilder()
                 .width(60)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .enabled(false)
@@ -292,7 +293,7 @@ public class StoreScreen extends BasicScreen {
                 })
                 .build("button.transact.all");
 
-        this.buttonTransactQuantity = new UIButtonBuilder(this)
+        this.buttonTransactQuantity = new UIButtonBuilder()
                 .width(60)
                 .x(BasicScreen.getPaddedX(this.buttonTransactAll, 2, Anchor.RIGHT))
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
@@ -319,7 +320,7 @@ public class StoreScreen extends BasicScreen {
             this.playerFormWidth = form.getWidth();
 
             // Create admin pane
-            final BasicContainer<?> adminContainer = new BasicContainer(this, 220, UIComponent.INHERITED);
+            final BasicContainer<?> adminContainer = new BasicContainer(220, UIComponent.INHERITED);
             this.adminContainer = adminContainer;
             adminContainer.setPosition(BasicScreen.getPaddedX(storeContainer, 4), 0);
             adminContainer.setBorder(FontColors.WHITE, 1, 185);
@@ -327,11 +328,11 @@ public class StoreScreen extends BasicScreen {
             adminContainer.setColor(0);
 
             // Buy tab label
-            this.typeLabel = new UILabel(this, TextFormatting.WHITE + "Type: ");
+            this.typeLabel = new UILabel(TextFormatting.WHITE + "Type: ");
             this.typeLabel.setPosition(0, 2, Anchor.TOP | Anchor.LEFT);
 
             // Item location selection
-            this.locationSelect = new UISelect<>(this, UIComponent.INHERITED);
+            this.locationSelect = new UISelect<>(UIComponent.INHERITED);
             this.locationSelect.setOptions(itemFinderRelationshipMap.keySet());
             this.locationSelect.setLabelFunction(o -> I18n.format(o.translationKey));
             this.locationSelect.setPosition(30, 0);
@@ -340,13 +341,13 @@ public class StoreScreen extends BasicScreen {
             this.locationSelect.register(this);
 
             // Search text box
-            this.adminSearchTextBox = new BasicTextBox(this, "");
+            this.adminSearchTextBox = new BasicTextBox("");
             this.adminSearchTextBox.setSize(UIComponent.INHERITED, this.locationSelect.getHeight());
             this.adminSearchTextBox.setPosition(0, BasicScreen.getPaddedY(this.locationSelect, 2));
             this.adminSearchTextBox.register(this);
 
             // Item list
-            this.adminItemList = new BasicList<>(this, UIComponent.INHERITED,
+            this.adminItemList = new BasicList<>(UIComponent.INHERITED,
                     BasicScreen.getPaddedHeight(form) - this.locationSelect.getHeight() - this.adminSearchTextBox.getHeight() - 28);
             this.adminItemList.setItemComponentFactory(AdminItemComponent::new);
             this.adminItemList.setItemComponentSpacing(1);
@@ -355,14 +356,14 @@ public class StoreScreen extends BasicScreen {
             this.adminItemList.setBorder(FontColors.WHITE, 1, 185);
             this.adminItemList.setSelectConsumer(i -> this.updateAdminControls());
 
-            this.buttonAdminList = new UIButtonBuilder(this)
+            this.buttonAdminList = new UIButtonBuilder()
                     .width(50)
                     .anchor(Anchor.BOTTOM | Anchor.LEFT)
                     .enabled(false)
                     .onClick(this::listOrModify)
                     .text(I18n.format("almura.feature.common.button.list"))
                     .build("button.list");
-            this.buttonAdminUnlist = new UIButtonBuilder(this)
+            this.buttonAdminUnlist = new UIButtonBuilder()
                     .width(50)
                     .anchor(Anchor.BOTTOM | Anchor.LEFT)
                     .position(BasicScreen.getPaddedX(this.buttonAdminList, 2), 0)
@@ -371,7 +372,7 @@ public class StoreScreen extends BasicScreen {
                     .text(I18n.format("almura.feature.common.button.unlist"))
                     .build("button.unlist");
 
-            this.adminListTotalLabel = new UILabel(this, TextFormatting.WHITE + I18n.format("almura.feature.common.text.total") + ": ");
+            this.adminListTotalLabel = new UILabel(TextFormatting.WHITE + I18n.format("almura.feature.common.text.total") + ": ");
             this.adminListTotalLabel.setPosition(0, -2, Anchor.BOTTOM | Anchor.RIGHT);
 
             adminContainer.add(this.typeLabel, this.locationSelect, this.adminSearchTextBox, this.adminItemList, this.buttonAdminList,
@@ -380,7 +381,7 @@ public class StoreScreen extends BasicScreen {
             form.add(adminContainer);
 
             // Edit mode, at the left of the title bar: off shows the store as players see it
-            final UICheckBox editMode = new UICheckBox(this, I18n.format("almura.feature.store.checkbox.edit_mode"));
+            final UICheckBox editMode = new UICheckBox(I18n.format("almura.feature.store.checkbox.edit_mode"));
             editMode.setName("checkbox.edit_mode");
             editMode.setFontOptions(FontColors.WHITE_FO.toBuilder().shadow(false).build());
             editMode.setTooltip(I18n.format("almura.feature.store.checkbox.edit_mode.tooltip"));
@@ -463,7 +464,9 @@ public class StoreScreen extends BasicScreen {
     }
 
     @Override
-    protected void mouseClicked(final int x, final int y, final int button) {
+    protected void mousePressed(final UIComponent component, final int button) {
+        final int x = MalisisGui.MOUSE_POSITION.x();
+        final int y = MalisisGui.MOUSE_POSITION.y();
         this.getTabContainer(x, y).ifPresent(tab -> {
             final SideType targetSide = (SideType) tab.getData();;
 
@@ -478,7 +481,7 @@ public class StoreScreen extends BasicScreen {
             this.currentSide = targetSide;
             this.refresh(false);
         });
-        super.mouseClicked(x, y, button);
+        super.mousePressed(component, button);
     }
 
     @Override
@@ -539,10 +542,10 @@ public class StoreScreen extends BasicScreen {
         }
 
         this.buyTabContainer.setTooltip(this.store.getBuyingItems().size() == 0
-          ? new UITooltip(this, I18n.format("almura.feature.store.text.no_items_for_sale"))
+          ? new UITooltip(I18n.format("almura.feature.store.text.no_items_for_sale"))
           : null);
         this.sellTabContainer.setTooltip(this.store.getSellingItems().size() == 0
-          ? new UITooltip(this, I18n.format("almura.feature.store.text.no_items_for_purchase"))
+          ? new UITooltip(I18n.format("almura.feature.store.text.no_items_for_purchase"))
           : null);
 
         this.search();
@@ -671,8 +674,8 @@ public class StoreScreen extends BasicScreen {
      * @return The tab container for that location if present, empty otherwise
      */
     private Optional<BasicContainer> getTabContainer(final int x, final int y) {
-        final UIComponent<?> componentAt = this.getComponentAt(x, y);
-        final UIComponent<?> componentAtParent = componentAt != null ? componentAt.getParent() : null;
+        final UIComponent componentAt = this.getComponentAt(x, y);
+        final UIComponent componentAtParent = componentAt != null ? componentAt.getParent() : null;
         if (this.buyTabContainer.equals(componentAt) || this.sellTabContainer.equals(componentAt)) {
             return Optional.of((BasicContainer) componentAt);
         } else if (this.buyTabContainer.equals(componentAtParent) || this.sellTabContainer.equals(componentAtParent)) {
@@ -840,13 +843,13 @@ public class StoreScreen extends BasicScreen {
             this.setSize(0, 24);
 
             // Sold out container
-            this.soldOutContainer = new BasicContainer<>(this.getGui(), UIComponent.INHERITED, UIComponent.INHERITED);
+            this.soldOutContainer = new BasicContainer<>(UIComponent.INHERITED, UIComponent.INHERITED);
             this.soldOutContainer.setColor(FontColors.DARK_GRAY);
             this.soldOutContainer.setBackgroundAlpha(180);
             this.soldOutContainer.setVisible(false);
 
             // Sold out label
-            this.soldOutLabel = new UILabel(this.getGui(), I18n.format("almura.feature.store.text.soldout"));
+            this.soldOutLabel = new UILabel(I18n.format("almura.feature.store.text.soldout"));
             this.soldOutLabel.setFontOptions(FontColors.RED_FO.toBuilder().scale(2f).build());
             this.soldOutLabel.setPosition(0, 1, Anchor.MIDDLE | Anchor.CENTER);
             this.soldOutContainer.add(this.soldOutLabel);
@@ -860,25 +863,25 @@ public class StoreScreen extends BasicScreen {
             final EntityPlayer player = Minecraft.getMinecraft().player;
             final boolean useAdvancedTooltips = Minecraft.getMinecraft().gameSettings.advancedItemTooltips;
 
-            this.image = new UIImage(gui, fakeStack);
+            this.image = new UIImage(fakeStack);
             this.image.setPosition(0, 0, Anchor.LEFT | Anchor.MIDDLE);
-            this.image.setTooltip(new UISaneTooltip(gui, String.join("\n", fakeStack.getTooltip(player, useAdvancedTooltips
+            this.image.setTooltip(new UISaneTooltip(String.join("\n", fakeStack.getTooltip(player, useAdvancedTooltips
                     ? ITooltipFlag.TooltipFlags.ADVANCED
                     : ITooltipFlag.TooltipFlags.NORMAL))));
 
-            this.itemLabel = new UIExpandingLabel(gui, "");
+            this.itemLabel = new UIExpandingLabel("");
             this.itemLabel.setPosition(getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
 
             // Exact value
             if (this.item.getQuantity() >= (int) FeatureConstants.ONE_MILLION) {
-                this.itemLabel.setTooltip(new UISaneTooltip(gui, FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getQuantity())));
+                this.itemLabel.setTooltip(new UISaneTooltip(FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getQuantity())));
             }
 
             // Store admins in edit mode get move arrows right of the price
             final StoreScreen screen = (StoreScreen) gui;
             this.hasMoveArrows = screen.isAdmin && screen.editMode;
 
-            this.priceLabel = new UIExpandingLabel(gui, "");
+            this.priceLabel = new UIExpandingLabel("");
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-(this.hasMoveArrows ? ARROW_BUTTON_WIDTH + ARROW_GAP : 6), 0, Anchor.RIGHT | Anchor.MIDDLE);
 
@@ -909,9 +912,9 @@ public class StoreScreen extends BasicScreen {
 
         private UIButton arrowButton(final MalisisGui gui, final StoreScreen screen, final ResourceLocation texture, final int direction,
             final int y, final boolean enabled, @Nullable final String disabledTooltip) {
-            final UIImage arrow = new UIImage(gui, new GuiTexture(texture), null);
+            final UIImage arrow = new UIImage(GuiConfig.wholeTexture(texture));
             arrow.setSize(9, 5);
-            final UIButton button = new UIButtonBuilder(gui)
+            final UIButton button = new UIButtonBuilder()
                 .image(arrow)
                 .anchor(Anchor.MIDDLE | Anchor.RIGHT)
                 .position(0, y)
@@ -921,7 +924,6 @@ public class StoreScreen extends BasicScreen {
                 .onClick(() -> screen.moveItem(this.item, direction))
                 .build("button.move." + (direction < 0 ? "up" : "down"));
             // The button graphic has a 1 pixel black outline: at 15 x 11 the 9 x 5 arrow sits in the middle of the grey inside it
-            button.setAutoSize(false);
             button.setSize(ARROW_BUTTON_WIDTH, ARROW_BUTTON_HEIGHT);
             return button;
         }
@@ -993,7 +995,7 @@ public class StoreScreen extends BasicScreen {
             // Default available space
             this.itemNameSpaceAvailable = this.getWidth();
 
-            this.listedIndicatorContainer = new BasicContainer<>(gui, 5, this.height - (this.getLeftBorderSize() + this.getRightBorderSize()));
+            this.listedIndicatorContainer = new BasicContainer<>(5, this.getHeight() - (this.getLeftBorderSize() + this.getRightBorderSize()));
             this.listedIndicatorContainer.setVisible(false);
             this.listedIndicatorContainer.setPosition(2, -2, Anchor.TOP | Anchor.RIGHT);
 
@@ -1003,27 +1005,27 @@ public class StoreScreen extends BasicScreen {
             final EntityPlayer player = Minecraft.getMinecraft().player;
             final boolean useAdvancedTooltips = Minecraft.getMinecraft().gameSettings.advancedItemTooltips;
 
-            this.image = new UIImage(gui, fakeStack);
+            this.image = new UIImage(fakeStack);
             this.image.setPosition(0, 0, Anchor.LEFT | Anchor.MIDDLE);
-            this.image.setTooltip(new UISaneTooltip(gui, String.join("\n", fakeStack.getTooltip(player, useAdvancedTooltips
+            this.image.setTooltip(new UISaneTooltip(String.join("\n", fakeStack.getTooltip(player, useAdvancedTooltips
                     ? ITooltipFlag.TooltipFlags.ADVANCED
                     : ITooltipFlag.TooltipFlags.NORMAL))));
 
-            this.itemLabel = new UIExpandingLabel(gui, "");
+            this.itemLabel = new UIExpandingLabel("");
             this.itemLabel.setPosition(getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
 
             // Prices
-            this.buyPriceLabel = new UIExpandingLabel(gui, "");
+            this.buyPriceLabel = new UIExpandingLabel("");
             this.buyPriceLabel.setFontOptions(this.buyPriceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.buyPriceLabel.setPosition(-(this.listedIndicatorContainer.getWidth() + 6), 2, Anchor.TOP | Anchor.RIGHT);
 
-            this.sellPriceLabel = new UIExpandingLabel(gui, "");
+            this.sellPriceLabel = new UIExpandingLabel("");
             this.sellPriceLabel.setFontOptions(this.sellPriceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.sellPriceLabel.setPosition(-(this.listedIndicatorContainer.getWidth() + 6), 0, Anchor.BOTTOM | Anchor.RIGHT);
 
             // Exact value
             if (this.item.getCount() >= (int) FeatureConstants.ONE_MILLION) {
-                this.itemLabel.setTooltip(new UISaneTooltip(gui, FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getCount())));
+                this.itemLabel.setTooltip(new UISaneTooltip(FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(this.item.getCount())));
             }
 
             this.add(this.image, this.itemLabel, this.buyPriceLabel, this.sellPriceLabel, this.listedIndicatorContainer);

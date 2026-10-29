@@ -22,7 +22,7 @@ import com.almuradev.almura.shared.network.NetworkConfig;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.GuiTexture;
+import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
@@ -45,11 +45,8 @@ import org.spongepowered.api.network.ChannelBinding;
 import org.spongepowered.api.network.ChannelId;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
-import org.spongepowered.api.text.Text;
 
 import javax.inject.Inject;
-
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Random;
 import java.util.function.Consumer;
@@ -90,7 +87,7 @@ public final class PlayerDiedGUI extends BasicScreen {
         this.guiscreenBackground = true;
         Keyboard.enableRepeatEvents(true);
 
-        this.form = new BasicForm(this, 50, 200, "You have died.");
+        this.form = new BasicForm(50, 200, "You have died.");
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(false);
         this.form.setClosable(false);
@@ -102,22 +99,22 @@ public final class PlayerDiedGUI extends BasicScreen {
         this.form.setLeftPadding(3);
 
         // Almura header
-        final UIImage almuraHeader = new UIImage(this, new GuiTexture(GuiConfig.Location.DEAD_STEVE), null);
+        final UIImage almuraHeader = new UIImage(GuiConfig.wholeTexture(GuiConfig.Location.DEAD_STEVE));
         almuraHeader.setSize(99, 99);
         almuraHeader.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
-        this.messageLabel = new UILabel(this, getMessage(this.player.getName()));
+        this.messageLabel = new UILabel(getMessage(this.player.getName()));
         this.messageLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         this.messageLabel.setPosition(0, 102, Anchor.CENTER | Anchor.TOP);
 
         final DecimalFormat dFormat = new DecimalFormat("###,###,###,###.00");
 
-        this.droppedLabel = new UILabel(this, "You dropped: " + TextFormatting.GOLD + "$" + dFormat.format(this.droppedAmount) + TextFormatting.RESET + ".");
+        this.droppedLabel = new UILabel("You dropped: " + TextFormatting.GOLD + "$" + dFormat.format(this.droppedAmount) + TextFormatting.RESET + ".");
         this.droppedLabel.setVisible(this.dropCoins);
         this.droppedLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         this.droppedLabel.setPosition(0, -40, Anchor.CENTER | Anchor.BOTTOM);
 
-        this.deathTaxLabel = new UILabel(this, "You lost: " + TextFormatting.RED + "$" + dFormat.format(this.deathTaxAmount) + TextFormatting.RESET + " to death taxes.");
+        this.deathTaxLabel = new UILabel("You lost: " + TextFormatting.RED + "$" + dFormat.format(this.deathTaxAmount) + TextFormatting.RESET + " to death taxes.");
         this.deathTaxLabel.setVisible(this.dropCoins);
         this.deathTaxLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         this.deathTaxLabel.setPosition(0, -26, Anchor.CENTER | Anchor.BOTTOM);
@@ -153,7 +150,7 @@ public final class PlayerDiedGUI extends BasicScreen {
         this.form.add(belowMessageSeparator);
 
         // Revive button
-        this.buttonRevive = new UIButtonBuilder(this)
+        this.buttonRevive = new UIButtonBuilder()
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.LEFT)
                 .text("Revive")
@@ -162,7 +159,7 @@ public final class PlayerDiedGUI extends BasicScreen {
                 .build("button.revive");
 
         // Respawn button
-        this.buttonRespawn = new UIButtonBuilder(this)
+        this.buttonRespawn = new UIButtonBuilder()
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.CENTER)
                 .position(0, 0)
@@ -171,7 +168,7 @@ public final class PlayerDiedGUI extends BasicScreen {
                 .build("button.respawn");
 
         // Rage Quit button
-        this.buttonRagequit = new UIButtonBuilder(this)
+        this.buttonRagequit = new UIButtonBuilder()
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .text(I18n.format("almura.menu_button.quit"))
@@ -225,8 +222,8 @@ public final class PlayerDiedGUI extends BasicScreen {
     }
 
     @Override
-    public void update(int mouseX, int mouseY, float partialTick) {
-        super.update(mouseX, mouseY, partialTick);
+    public void update() {
+        super.update();
 
         if (this.unlockMouse && this.lastUpdate == 25) {
             Mouse.setGrabbed(false); // Force the mouse to be visible even though Mouse.isGrabbed() is false.  //#BugsUnited.
@@ -249,8 +246,8 @@ public final class PlayerDiedGUI extends BasicScreen {
     }
 
     @Override
-    protected void mouseClicked(int x, int y, int button) {
-        super.mouseClicked(x, y, button);
+    protected void mousePressed(final UIComponent component, final int button) {
+        super.mousePressed(component, button);
         this.lastUpdate = 0; // Reset the timer when mouse is pressed.
     }
 

@@ -58,22 +58,22 @@ public final class MenuConfirmScreen extends PanoramicScreen {
     public void construct() {
         this.renderer.setDefaultTexture(GuiConfig.SpriteSheet.ALMURA);
 
-        final BasicContainer<?> box = new BasicContainer<>(this, WIDTH, 100);
+        final BasicContainer<?> box = new BasicContainer<>(WIDTH, 100);
         box.setPosition(0, 0, Anchor.MIDDLE | Anchor.CENTER);
         box.setColor(0x000000);
         box.setBackgroundAlpha(185);
         box.setBorder(0xFFFFFF, 1, 185);
         box.setPadding(PADDING);
 
-        final UILabel titleLabel = new UILabel(this, TextFormatting.WHITE + this.title);
+        final UILabel titleLabel = new UILabel(TextFormatting.WHITE + this.title);
         titleLabel.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
 
-        final UILabel messageLabel = new UILabel(this, true);
+        final UILabel messageLabel = new UILabel(true);
         messageLabel.setSize(WIDTH - PADDING * 2 - 2, 40);
         messageLabel.setText(TextFormatting.GRAY + this.message);
         messageLabel.setPosition(0, BasicScreen.getPaddedY(titleLabel, 6), Anchor.TOP | Anchor.CENTER);
 
-        final UIButtonBuilder confirm = new UIButtonBuilder(this)
+        final UIButtonBuilder confirm = new UIButtonBuilder()
             .text(this.confirmText)
             .width(UIConstants.Button.WIDTH_TINY + 20)
             .height(UIConstants.Button.HEIGHT)
@@ -85,7 +85,7 @@ public final class MenuConfirmScreen extends PanoramicScreen {
                 .hoverFontOptions(FontOptions.builder().color(Color.ofRgb(255, 89, 89).getRgb()).shadow(true).build());
         }
 
-        final UIButtonBuilder cancel = new UIButtonBuilder(this)
+        final UIButtonBuilder cancel = new UIButtonBuilder()
             .text(I18n.format("gui.cancel"))
             .width(UIConstants.Button.WIDTH_TINY + 20)
             .height(UIConstants.Button.HEIGHT)

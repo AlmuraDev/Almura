@@ -23,7 +23,9 @@ import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.BasicScreen;
+import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicForm;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
@@ -96,7 +98,7 @@ public final class NicknameGUI extends BasicScreen {
         Keyboard.enableRepeatEvents(true);
 
         // Master Panel
-        this.form = new BasicForm(this, 400, 225, "");
+        this.form = new BasicForm(400, 225, "");
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(true);
         this.form.setClosable(true);
@@ -107,12 +109,12 @@ public final class NicknameGUI extends BasicScreen {
         this.form.setTopPadding(20);
         this.form.setLeftPadding(3);
 
-        final UILabel titleLabel = new UILabel(this, "Nicknames");
+        final UILabel titleLabel = new UILabel("Nicknames");
         titleLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         titleLabel.setPosition(0, -15, Anchor.CENTER | Anchor.TOP);
 
         // Player Render Area
-        final BasicForm playerArea = new BasicForm(this, 175, 185, "");
+        final BasicForm playerArea = new BasicForm(175, 185, "");
         playerArea.setPosition(0, 0, Anchor.RIGHT | Anchor.MIDDLE);
         playerArea.setMovable(false);
         playerArea.setClosable(false);
@@ -124,7 +126,7 @@ public final class NicknameGUI extends BasicScreen {
         playerArea.setLeftPadding(3);
 
         // Nickname List Area
-        final BasicForm listArea = new BasicForm(this, 217, 85, "");
+        final BasicForm listArea = new BasicForm(217, 85, "");
         listArea.setPosition(0, 0, Anchor.LEFT | Anchor.TOP);
         listArea.setMovable(false);
         listArea.setClosable(false);
@@ -135,24 +137,24 @@ public final class NicknameGUI extends BasicScreen {
         listArea.setTopPadding(3);
         listArea.setLeftPadding(3);
 
-        final UILabel nicknameLabel = new UILabel(this, "Enter desired nickname:");
+        final UILabel nicknameLabel = new UILabel("Enter desired nickname:");
         nicknameLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         nicknameLabel.setPosition(7, 10, Anchor.LEFT | Anchor.TOP);
 
         // Nickname Entry Textbox
-        this.nicknameTextbox = new UITextField(this, "", false);
+        this.nicknameTextbox = new UITextField("");
         this.nicknameTextbox.setSize(150, 0);
         this.nicknameTextbox.setText(this.originalNickname);
         this.nicknameTextbox.setPosition(7, 23, Anchor.LEFT | Anchor.TOP);
         this.nicknameTextbox.setEditable(true);
         this.nicknameTextbox.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
-        final UILabel colorLabel = new UILabel(this, "Add colors:");
+        final UILabel colorLabel = new UILabel("Add colors:");
         colorLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         colorLabel.setPosition(7, 40, Anchor.LEFT | Anchor.TOP);
 
         // Color Selection dropdown
-        this.colorSelector = new UISelect<>(this,
+        this.colorSelector = new UISelect<>(
                 100,
                 Arrays.asList(
                         "§1Dark Blue",
@@ -181,7 +183,7 @@ public final class NicknameGUI extends BasicScreen {
         this.colorSelector.select("§1Dark Blue");
 
         // Add Color character button
-        final UIButton buttonColor = new UIButtonBuilder(this)
+        final UIButton buttonColor = new UIButtonBuilder()
                 .width(40)
                 .position(110, 49, Anchor.LEFT | Anchor.TOP)
                 .text(I18n.format("almura.button.add"))
@@ -189,7 +191,7 @@ public final class NicknameGUI extends BasicScreen {
                 .build("button.color");
 
         // Reset button
-        final UIButton buttonReset = new UIButtonBuilder(this)
+        final UIButton buttonReset = new UIButtonBuilder()
                 .width(40)
                 .position(150, 49, Anchor.LEFT | Anchor.TOP)
                 .text(I18n.format("almura.button.reset"))
@@ -197,7 +199,7 @@ public final class NicknameGUI extends BasicScreen {
                 .build("button.reset");
 
         // Remove Nickname button
-        final UIButton buttonRemove = new UIButtonBuilder(this)
+        final UIButton buttonRemove = new UIButtonBuilder()
                 .width(70)
                 .position(105, 65, Anchor.LEFT | Anchor.TOP)
                 .text(I18n.format("almura.button.nick.remove"))
@@ -205,12 +207,12 @@ public final class NicknameGUI extends BasicScreen {
                 .listener(this)
                 .build("button.remove");
 
-        final UILabel nicknameRulesLabel = new UILabel(this, "Please follow nickname rules.");
+        final UILabel nicknameRulesLabel = new UILabel("Please follow nickname rules.");
         nicknameRulesLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
         nicknameRulesLabel.setPosition(3, -2, Anchor.LEFT | Anchor.BOTTOM);
 
         // Close button
-        final UIButton buttonClose = new UIButtonBuilder(this)
+        final UIButton buttonClose = new UIButtonBuilder()
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .text("almura.button.close")
@@ -218,7 +220,7 @@ public final class NicknameGUI extends BasicScreen {
                 .build("button.close");
 
         // Apply button
-        final UIButton buttonApply = new UIButtonBuilder(this)
+        final UIButton buttonApply = new UIButtonBuilder()
                 .width(40)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .position(-40, 0)
@@ -236,7 +238,7 @@ public final class NicknameGUI extends BasicScreen {
     public void onUIButtonClickEvent(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.color":
-                final String colorCode = this.colorSelector.getSelectedOption().getLabel().substring(0,2);
+                final String colorCode = this.colorSelector.getSelectedLabel().substring(0,2);
                 this.nicknameTextbox.addText(colorCode);
                 break;
 
@@ -292,8 +294,10 @@ public final class NicknameGUI extends BasicScreen {
     }
 
     @Override
-    public void update(int mouseX, int mouseY, float partialTick) {
-        super.update(mouseX, mouseY, partialTick);
+    public void update() {
+        super.update();
+        final int mouseX = MalisisGui.MOUSE_POSITION.x();
+        final int mouseY = MalisisGui.MOUSE_POSITION.y();
 
         if (this.update) {
             this.setRendererName(this.entityPlayer, this.nicknameTextbox.getText());
@@ -325,8 +329,8 @@ public final class NicknameGUI extends BasicScreen {
     }
 
     @Override
-    protected void mouseClicked(int x, int y, int button) {
-        super.mouseClicked(x, y, button);
+    protected void mousePressed(final UIComponent component, final int button) {
+        super.mousePressed(component, button);
         this.lastUpdate = 0; // Reset the timer when mouse is pressed.
     }
 
@@ -358,11 +362,15 @@ public final class NicknameGUI extends BasicScreen {
         GlStateManager.translate(0.0F, 0.0F, 0.0F);
         RenderManager rendermanager = Minecraft.getMinecraft().getRenderManager();
         rendermanager.setPlayerViewY(180.0F);
+        // The nameplate faces the camera's pitch; level it, or looking up or down flattens the name and title into each other
+        final float playerViewX = rendermanager.playerViewX;
+        rendermanager.playerViewX = 0.0F;
         // Fix player model being dependent on environmental lighting.
         GlStateManager.disableLighting();
         rendermanager.setRenderShadow(false);
         rendermanager.renderEntity(ent, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
         rendermanager.setRenderShadow(true);
+        rendermanager.playerViewX = playerViewX;
         ent.renderYawOffset = f;
         ent.rotationYaw = f1;
         ent.rotationPitch = f2;

@@ -21,8 +21,8 @@ import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicContainer;
 import net.malisis.core.client.gui.component.container.BasicForm;
-import net.malisis.core.client.gui.component.control.UIScrollBar;
-import net.malisis.core.client.gui.component.control.UISlimScrollbar;
+import net.malisis.core.client.gui.component.scrolling.UIScrollBar;
+import net.malisis.core.client.gui.component.scrolling.UISlimScrollbar;
 import net.malisis.core.client.gui.component.decoration.UIImage;
 import net.malisis.core.client.gui.component.decoration.UILabel;
 import net.malisis.core.client.gui.component.interaction.UIButton;
@@ -85,7 +85,7 @@ public class IngameFarmersAlmanac extends BasicScreen {
     public void construct() {
         guiscreenBackground = false;
 
-        final BasicForm form = new BasicForm(this, formWidth, formHeight, formTitle);
+        final BasicForm form = new BasicForm(formWidth, formHeight, formTitle);
         form.setClosable(false);
 
         final WorldClient world = this.client.world;
@@ -96,33 +96,33 @@ public class IngameFarmersAlmanac extends BasicScreen {
 
         // Block image
         final ItemStack pickStack = blockState.getBlock().getPickBlock(blockState, omo, this.client.world, omo.getBlockPos(), this.client.player);
-        final UIImage blockImage = new UIImage(this, pickStack);
+        final UIImage blockImage = new UIImage(pickStack);
         blockImage.setPosition(leftPad / 2, 0, Anchor.LEFT | Anchor.TOP);
         form.add(blockImage);
 
         // Localized name
-        final UILabel labelLocalizedName = new UILabel(this, block.getLocalizedName());
+        final UILabel labelLocalizedName = new UILabel(block.getLocalizedName());
         labelLocalizedName.setFontOptions(FontColors.WHITE_FO);
         labelLocalizedName.setPosition(BasicScreen.getPaddedX(blockImage, 4), 0);
         form.add(labelLocalizedName);
 
         // Registry name
         final String registryName = block.getRegistryName() == null ? "unknown" : block.getRegistryName().toString();
-        final UILabel labelRegistryName = new UILabel(this, registryName);
+        final UILabel labelRegistryName = new UILabel(registryName);
         labelRegistryName.setFontOptions(FontColors.GRAY_FO);
         labelRegistryName.setPosition(labelLocalizedName.getX(), BasicScreen.getPaddedY(labelLocalizedName, 2));
         form.add(labelRegistryName);
 
         // Property container
-        this.propertyContainer = new BasicContainer<>(this);
-        new UISlimScrollbar(this, this.propertyContainer, UIScrollBar.Type.VERTICAL).setAutoHide(true);
+        this.propertyContainer = new BasicContainer<>();
+        new UISlimScrollbar(this.propertyContainer, UIScrollBar.Type.VERTICAL).setAutoHide(true);
         this.propertyContainer.setBackgroundAlpha(35);
         this.propertyContainer.setPosition(0, BasicScreen.getPaddedY(labelRegistryName, 5), Anchor.TOP | Anchor.CENTER);
         this.propertyContainer.setBorder(FontColors.WHITE, 1, 185);
 
         form.add(this.propertyContainer);
 
-        this.cropStatusLabel = new UILabel(this); // Init this early so we can load stuff to it later.
+        this.cropStatusLabel = new UILabel(); // Init this early so we can load stuff to it later.
 
         // Get all displayed properties
         loadProperties(world, blockState, blockPos);
@@ -147,7 +147,7 @@ public class IngameFarmersAlmanac extends BasicScreen {
         this.cropStatusLabel.setPosition(1, -3, Anchor.BOTTOM | Anchor.LEFT);
         form.add(cropStatusLabel);
 
-        final UIButton closeButton = new UIButtonBuilder(this)
+        final UIButton closeButton = new UIButtonBuilder()
                 .text("Close")
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .onClick(this::close)
@@ -166,8 +166,8 @@ public class IngameFarmersAlmanac extends BasicScreen {
     }
 
     @Override
-    public void update(int mouseX, int mouseY, float partialTick) {
-        super.update(mouseX, mouseY, partialTick);
+    public void update() {
+        super.update();
         if (this.unlockMouse && this.lastUpdate == 25) {
             Mouse.setGrabbed(false); // Force the mouse to be visible even though Mouse.isGrabbed() is false.  //#BugsUnited.
             this.unlockMouse = false; // Only unlock once per session.
@@ -355,7 +355,7 @@ public class IngameFarmersAlmanac extends BasicScreen {
     @SuppressWarnings("deprecation")
     private void addLineLabel(Text text, int indent) {
         final String prefix = indent > 0 ? String.format("%" + indent + "s", "") : "";
-        final UILabel lineLabel = new UILabel(this, TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(prefix, text)));
+        final UILabel lineLabel = new UILabel(TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(prefix, text)));
         lineLabel.setPosition(leftPad, this.lastPropertyY);
         this.propertyContainer.add(lineLabel);
         this.lastPropertyY += lineLabel.getHeight() + 2;

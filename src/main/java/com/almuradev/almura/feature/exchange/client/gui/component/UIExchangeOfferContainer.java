@@ -17,7 +17,8 @@ import com.almuradev.almura.shared.util.MathUtil;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.GuiRenderer;
+import net.malisis.core.client.gui.render.GuiRenderer;
+import net.malisis.core.client.gui.render.IGuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicContainer;
@@ -87,12 +88,12 @@ public class UIExchangeOfferContainer extends BasicDualListContainer<VanillaStac
 
         // Add property bars
         this.leftPropertyBar = new UIPropertyBar(gui, BasicScreen.getPaddedWidth(this.leftContainer), 14);
-        this.leftPropertyBar.setColor(0x008200);
+        this.leftPropertyBar.setBarColor(0x008200);
         this.leftPropertyBar.setPosition(-1, 0, Anchor.BOTTOM | Anchor.LEFT);
         this.leftPropertyBar.setText("0/" + this.leftLimit);
 
         this.rightPropertyBar = new UIPropertyBar(gui, BasicScreen.getPaddedWidth(this.rightContainer), 14);
-        this.rightPropertyBar.setColor(0x008200);
+        this.rightPropertyBar.setBarColor(0x008200);
         this.rightPropertyBar.setPosition(-1, 0, Anchor.BOTTOM | Anchor.LEFT);
         this.rightPropertyBar.setText("0/" + this.rightLimit);
 
@@ -100,15 +101,17 @@ public class UIExchangeOfferContainer extends BasicDualListContainer<VanillaStac
         this.rightContainer.add(this.rightPropertyBar);
 
         this.updateControls(null, SideType.RIGHT);
-    }
 
-    @Override
-    public void drawBackground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
-        super.drawBackground(renderer, mouseX, mouseY, partialTick);
-
-        // Draw: bottom-left -> bottom-right (title line)
-        renderer.drawRectangle(this.getLeftBorderSize(), this.leftContainer.getHeight() - this.leftPropertyBar.getHeight() - 6, 1,
-                this.getRawWidth() - (this.getLeftBorderSize() + this.getRightBorderSize()), 1, FontColors.WHITE, 185);
+        // The container background, then a line above the property bars
+        final IGuiRenderer background = this.backgroundRenderer.get();
+        this.setBackground(renderer -> {
+            if (background != null) {
+                background.render(renderer);
+            }
+            // Draw: bottom-left -> bottom-right (title line)
+            renderer.drawRectangle(this.getLeftBorderSize(), this.leftContainer.getHeight() - this.leftPropertyBar.getHeight() - 6, 1,
+                    this.getRawWidth() - (this.getLeftBorderSize() + this.getRightBorderSize()), 1, FontColors.WHITE, 185);
+        });
     }
 
     @Override
@@ -117,12 +120,12 @@ public class UIExchangeOfferContainer extends BasicDualListContainer<VanillaStac
             this.targetSide = SideType.RIGHT;
         }
 
-        final BasicContainer<?> middleContainer = new BasicContainer<>(gui, 38, 111);
+        final BasicContainer<?> middleContainer = new BasicContainer<>(38, 111);
         middleContainer.setPosition(0, 0, Anchor.MIDDLE | Anchor.CENTER);
         middleContainer.setBorder(FontColors.WHITE, 1, 185);
         middleContainer.setBackgroundAlpha(0);
 
-        this.buttonSingle = new UIButtonBuilder(gui)
+        this.buttonSingle = new UIButtonBuilder()
                 .size(20)
                 .position(0, 3)
                 .anchor(Anchor.TOP | Anchor.CENTER)
@@ -132,7 +135,7 @@ public class UIExchangeOfferContainer extends BasicDualListContainer<VanillaStac
                 .enabled(false)
                 .build("button.one");
 
-        this.buttonStack = new UIButtonBuilder(gui)
+        this.buttonStack = new UIButtonBuilder()
                 .size(20)
                 .position(0, BasicScreen.getPaddedY(this.buttonSingle, 2))
                 .anchor(Anchor.TOP | Anchor.CENTER)
@@ -142,11 +145,11 @@ public class UIExchangeOfferContainer extends BasicDualListContainer<VanillaStac
                 .enabled(false)
                 .build("button.stack");
 
-        this.labelDirection = new UILabel(gui, "->");
+        this.labelDirection = new UILabel("->");
         this.labelDirection.setFontOptions(FontColors.WHITE_FO);
         this.labelDirection.setPosition(0, BasicScreen.getPaddedY(this.buttonStack, 6), Anchor.TOP | Anchor.CENTER);
 
-        this.buttonType = new UIButtonBuilder(gui)
+        this.buttonType = new UIButtonBuilder()
                 .size(20)
                 .position(0, BasicScreen.getPaddedY(this.labelDirection, 6))
                 .anchor(Anchor.TOP | Anchor.CENTER)
@@ -156,7 +159,7 @@ public class UIExchangeOfferContainer extends BasicDualListContainer<VanillaStac
                 .enabled(false)
                 .build("button.type");
 
-        this.buttonAll = new UIButtonBuilder(gui)
+        this.buttonAll = new UIButtonBuilder()
                 .size(20)
                 .position(0, BasicScreen.getPaddedY(this.buttonType, 2))
                 .anchor(Anchor.TOP | Anchor.CENTER)
@@ -401,9 +404,9 @@ public class UIExchangeOfferContainer extends BasicDualListContainer<VanillaStac
             final EntityPlayer player = Minecraft.getMinecraft().player;
             final boolean useAdvancedTooltips = Minecraft.getMinecraft().gameSettings.advancedItemTooltips;
 
-            this.image = new UIImage(gui, fakeStack);
+            this.image = new UIImage(fakeStack);
             this.image.setPosition(0, 0, Anchor.LEFT | Anchor.MIDDLE);
-            this.image.setTooltip(new UISaneTooltip(gui, String.join("\n", fakeStack.getTooltip(player, useAdvancedTooltips
+            this.image.setTooltip(new UISaneTooltip(String.join("\n", fakeStack.getTooltip(player, useAdvancedTooltips
                     ? ITooltipFlag.TooltipFlags.ADVANCED
                     : ITooltipFlag.TooltipFlags.NORMAL))));
 
@@ -428,11 +431,11 @@ public class UIExchangeOfferContainer extends BasicDualListContainer<VanillaStac
             this.itemLabelText = TextFormatting.WHITE + displayName;
             this.itemQuantityText = TextFormatting.GRAY + " x " + FeatureConstants.withSuffix(this.item.getQuantity());
 
-            this.itemLabel = new UIExpandingLabel(gui, this.itemLabelText + this.itemQuantityText);
+            this.itemLabel = new UIExpandingLabel(this.itemLabelText + this.itemQuantityText);
             this.itemLabel.setPosition(BasicScreen.getPaddedX(this.image, 4), 0, Anchor.LEFT | Anchor.MIDDLE);
 
             if (this.item.getQuantity() >= (int) FeatureConstants.ONE_MILLION) {
-                this.itemLabel.setTooltip(new UISaneTooltip(gui, FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(item.getQuantity())));
+                this.itemLabel.setTooltip(new UISaneTooltip(FeatureConstants.CURRENCY_DECIMAL_FORMAT.format(item.getQuantity())));
             }
 
             this.lastKnownQuantity = this.item.getQuantity();
@@ -441,14 +444,14 @@ public class UIExchangeOfferContainer extends BasicDualListContainer<VanillaStac
         }
 
         @Override
-        public void drawForeground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
+        public void render(final GuiRenderer renderer) {
             // Update the item label if the quantity has changed to reflect the new quantity
             if (this.lastKnownQuantity != this.item.getQuantity()) {
                 this.itemQuantityText = TextFormatting.GRAY + " x " + FeatureConstants.withSuffix(this.item.getQuantity());
                 this.itemLabel.setText(this.itemLabelText + this.itemQuantityText);
                 this.lastKnownQuantity = this.item.getQuantity();
             }
-            super.drawForeground(renderer, mouseX, mouseY, partialTick);
+            super.render(renderer);
         }
     }
 }

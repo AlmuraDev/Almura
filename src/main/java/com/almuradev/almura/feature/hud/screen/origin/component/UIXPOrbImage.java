@@ -7,31 +7,26 @@
  */
 package com.almuradev.almura.feature.hud.screen.origin.component;
 
-import net.malisis.core.client.gui.GuiRenderer;
-import net.malisis.core.client.gui.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.decoration.UIImage;
-import net.malisis.core.renderer.icon.Icon;
-import net.malisis.core.renderer.icon.provider.GuiIconProvider;
+import net.malisis.core.client.gui.render.GuiIcon;
+import net.malisis.core.client.gui.render.GuiTexture;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+/**
+ * The experience orb, tinted green.
+ */
 @SideOnly(Side.CLIENT)
 public class UIXPOrbImage extends UIImage {
 
     private static final GuiTexture TEXTURE = new GuiTexture(new ResourceLocation("textures/entity/experience_orb.png"), 64, 64);
-    private static final Icon ICON = TEXTURE.getIcon(4, 4, 8, 8);
+    private static final GuiIcon ICON = new GuiIcon(TEXTURE, 4, 4, 8, 8);
 
     public UIXPOrbImage(MalisisGui gui) {
-        super(gui, TEXTURE, ICON);
-    }
-
-    @Override
-    public void drawForeground(GuiRenderer renderer, int mouseX, int mouseY, float partialTick) {
-        renderer.bindTexture(TEXTURE);
-        ((GuiIconProvider) this.iconProvider).setIcon(ICON);
-        this.rp.setColor(org.spongepowered.api.util.Color.ofRgb(0, 150, 0).getRgb());
-        renderer.drawShape(this.shape, this.rp);
+        super(ICON);
+        // The image's shape uses the component color
+        this.setColor(org.spongepowered.api.util.Color.ofRgb(0, 150, 0).getRgb());
     }
 }

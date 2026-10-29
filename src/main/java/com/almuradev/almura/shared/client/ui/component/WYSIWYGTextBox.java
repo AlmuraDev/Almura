@@ -8,16 +8,15 @@
 package com.almuradev.almura.shared.client.ui.component;
 
 import com.almuradev.almura.shared.util.TextUtil;
-import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.GuiRenderer;
+import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.UIConstants;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicContainer;
 import net.malisis.core.client.gui.component.decoration.UILabel;
-import net.malisis.core.client.gui.component.interaction.BasicTextBox;
-import net.malisis.core.client.gui.event.component.SpaceChangeEvent;
+import net.malisis.core.client.gui.component.interaction.BasicTextArea;
+import net.malisis.core.client.gui.render.GuiRenderer;
 import net.malisis.core.util.FontColors;
 import net.minecraft.util.text.TextFormatting;
 import org.spongepowered.api.text.Text;
@@ -27,6 +26,9 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BooleanSupplier;
+
+import javax.annotation.Nullable;
 
 public class WYSIWYGTextBox extends BasicContainer {
 
@@ -51,21 +53,25 @@ public class WYSIWYGTextBox extends BasicContainer {
     private static final int colorContainerPadding = 1;
     private final BasicContainer<?> colorStyleContainer, rawFormatContainer;
     private final UILabel collapsedLabel;
-    private final BasicTextBox tbContent;
+    private final BasicTextArea tbContent;
+    /** The width is set by the toolbar. */
+    private final int fixedWidth;
+    /** Gets left clicks on the text first, returning true when it handled one (the text box then doesn't). */
+    @Nullable private BooleanSupplier onTextClick;
+    /** Run before a toolbar button changes the text, e.g. to make the text editable first. */
+    @Nullable private Runnable onBeforeFormat;
     private ToolbarState state = ToolbarState.EXPANDED;
     private boolean showRaw = false;
 
     @SuppressWarnings("unchecked")
     public WYSIWYGTextBox(final BasicScreen screen, final int height, final String text) {
-        super(screen);
-
-        this.collapsedLabel = new UILabel(screen, "...");
+        this.collapsedLabel = new UILabel("...");
         this.collapsedLabel.setPosition(0, 1, Anchor.BOTTOM | Anchor.CENTER);
         this.collapsedLabel.setFontOptions(FontColors.GRAY_FO);
 
         this.setBackgroundAlpha(0);
 
-        this.colorStyleContainer = new BasicContainer<>(screen, 0, colorContainerSize);
+        this.colorStyleContainer = new BasicContainer<>(0, colorContainerSize);
         this.colorStyleContainer.setColor(FontColors.GRAY);
         this.colorStyleContainer.add(this.collapsedLabel);
 
@@ -92,58 +98,49 @@ public class WYSIWYGTextBox extends BasicContainer {
         this.colorStyleContainer.setWidth(this.colorStyleContainer.getWidth() + this.rawFormatContainer.getWidth());
 
         // Content textbox
-        this.tbContent = new BasicTextBox(screen, text, true);
+        this.tbContent = new BasicTextArea(text) {
+            @Override
+            public boolean onClick() {
+                final BooleanSupplier handler = WYSIWYGTextBox.this.onTextClick;
+                return handler != null && handler.getAsBoolean() || super.onClick();
+            }
+        };
         this.tbContent.setFontOptions(UIConstants.DEFAULT_TEXTBOX_FO);
-        this.tbContent.getScrollbar().setAutoHide(true);
+        this.tbContent.getScrollbar().autoHide = true;
 
-        this.width = this.colorStyleContainer.getWidth() + this.getLeftPadding() + this.getRightPadding();
-        this.setHeight(height);
+        this.fixedWidth = this.colorStyleContainer.getWidth() + this.getLeftPadding() + this.getRightPadding();
 
         this.add(this.colorStyleContainer, this.tbContent);
 
-        this.updateControls();
-    }
-
-    @Override
-    @Deprecated
-    public UIComponent setSize(final int width, final int height) {
-        throw new UnsupportedOperationException("This component does not support setting the 'width' property!");
-    }
-
-    @Override
-    @Deprecated
-    public BasicContainer setWidth(final int width) {
-        throw new UnsupportedOperationException("This component does not support setting this property!");
+        this.setHeight(height);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public WYSIWYGTextBox setHeight(final int height) {
-        this.height = height;
-        fireEvent(new SpaceChangeEvent.SizeChangeEvent<>(this, this.width, this.height));
+        super.setSize(this.fixedWidth, height);
+        this.updateControls();
         return this;
     }
 
-    @Subscribe
-    public void onResize(final SpaceChangeEvent.SizeChangeEvent event) {
-        if (this.equals(event.getComponent())) {
-            this.updateControls();
-        }
-    }
-
     @Override
-    public boolean onClick(final int x, final int y) {
+    public boolean onClick() {
+        final int x = MalisisGui.MOUSE_POSITION.x();
+        final int y = MalisisGui.MOUSE_POSITION.y();
 
-        final UIComponent<?> componentAt = this.getComponentAt(x, y);
-        if (componentAt.getData() instanceof TextColor) {
+        final UIComponent componentAt = this.getComponentAt(x, y);
+        if (componentAt != null && componentAt.getData() instanceof TextColor) {
+            this.beforeFormat();
             this.color((TextColor) componentAt.getData());
             return true;
-        } else if (componentAt.getData() instanceof TextFormatting) {
+        } else if (componentAt != null && componentAt.getData() instanceof TextFormatting) {
+            this.beforeFormat();
             this.color((TextFormatting) componentAt.getData());
             return true;
         }
 
         if (this.rawFormatContainer.isInsideBounds(x, y)) {
+            this.beforeFormat();
             this.showRaw = !this.showRaw;
             this.format();
             return true;
@@ -163,12 +160,12 @@ public class WYSIWYGTextBox extends BasicContainer {
             return true;
         }
 
-        return super.onClick(x, y);
+        return super.onClick();
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void draw(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
+    public void render(final GuiRenderer renderer) {
         // Reset alpha values
         this.colorStyleContainer.getComponents()
                 .stream()
@@ -181,7 +178,7 @@ public class WYSIWYGTextBox extends BasicContainer {
                         || (c.getName() != null && c.getName().startsWith("container.label")))
                 .forEach(c -> ((BasicContainer) c).setColor(0));
 
-        final UIComponent<?> componentAt = this.getComponentAt(mouseX, mouseY);
+        final UIComponent componentAt = this.getComponentAt(MalisisGui.MOUSE_POSITION.x(), MalisisGui.MOUSE_POSITION.y());
         if (componentAt != null) {
             if (componentAt.getData() instanceof TextColor) {
                 ((BasicContainer) componentAt).setBackgroundAlpha(200);
@@ -191,11 +188,31 @@ public class WYSIWYGTextBox extends BasicContainer {
                 ((BasicContainer) componentAt).setBackgroundAlpha(200);
             }
         }
-        super.draw(renderer, mouseX, mouseY, partialTick);
+        super.render(renderer);
     }
 
-    public BasicTextBox getTextBox() {
+    public BasicTextArea getTextBox() {
         return this.tbContent;
+    }
+
+    /**
+     * @param onTextClick Called on a left click on the text, after the cursor moved there; returns true when it handled the click
+     */
+    public void setOnTextClick(@Nullable final BooleanSupplier onTextClick) {
+        this.onTextClick = onTextClick;
+    }
+
+    /**
+     * @param onBeforeFormat Run before a toolbar button (colour, style, raw) changes the text
+     */
+    public void setOnBeforeFormat(@Nullable final Runnable onBeforeFormat) {
+        this.onBeforeFormat = onBeforeFormat;
+    }
+
+    private void beforeFormat() {
+        if (this.onBeforeFormat != null) {
+            this.onBeforeFormat.run();
+        }
     }
 
     public void showToolbar() {
@@ -249,8 +266,9 @@ public class WYSIWYGTextBox extends BasicContainer {
     }
 
     private void format() {
-        final float scrollPos = this.getTextBox().getScrollbar().getOffset();
-        final BasicTextBox.CursorPosition cursorPos = this.getTextBox().getCursorPosition();
+        final float scrollPos = this.getTextBox().getScrollbar().offset();
+        // Raw and friendly text swap '&' and the section sign one for one: the cursor index stays valid
+        final int cursorIndex = this.getTextBox().getCursorPosition().index();
 
         final String currentContent = this.getTextBox().getText();
         if (this.showRaw) {
@@ -261,7 +279,7 @@ public class WYSIWYGTextBox extends BasicContainer {
             this.getTextBox().setText(TextUtil.asFriendlyText(currentContent));
         }
         this.getTextBox().getScrollbar().scrollTo(scrollPos);
-        this.getTextBox().setCursorPosition(cursorPos.getXOffset(), cursorPos.getYOffset());
+        this.getTextBox().getCursorPosition().jumpTo(cursorIndex);
         this.getTextBox().focus();
     }
 
@@ -275,8 +293,8 @@ public class WYSIWYGTextBox extends BasicContainer {
     }
 
     private void color(final String value) {
-        final float scrollPosition = this.tbContent.getScrollbar().getOffset();
-        final BasicTextBox.CursorPosition cursorPosition = this.tbContent.getCursorPosition();
+        final float scrollPosition = this.tbContent.getScrollbar().offset();
+        final int cursorIndex = this.tbContent.getCursorPosition().index();
 
         if (this.tbContent.getSelectedText().isEmpty()) {
             // Add the value to the text
@@ -290,14 +308,14 @@ public class WYSIWYGTextBox extends BasicContainer {
 
         // Go back to the original position
         this.tbContent.getScrollbar().scrollTo(scrollPosition);
-        this.tbContent.setCursorPosition(cursorPosition.getXOffset(), cursorPosition.getYOffset());
+        this.tbContent.getCursorPosition().jumpTo(cursorIndex);
 
         // Focus the textbox
         this.tbContent.focus();
     }
 
     private BasicContainer<?> generateBaseContainer(final BasicScreen screen, final String name, final int x) {
-        final BasicContainer<?> baseContainer = new BasicContainer<>(screen, colorContainerSize, colorContainerSize);
+        final BasicContainer<?> baseContainer = new BasicContainer<>(colorContainerSize, colorContainerSize);
         baseContainer.setPosition(x, 0);
         baseContainer.setBorder(FontColors.WHITE, 1, 185);
         baseContainer.setName("container." + name);
@@ -319,7 +337,7 @@ public class WYSIWYGTextBox extends BasicContainer {
         baseContainer.setTooltip(style.getFriendlyName());
         baseContainer.setColor(0);
 
-        final UILabel formatLabel = new UILabel(screen, style + style.getFriendlyName().substring(0, 1));
+        final UILabel formatLabel = new UILabel(style + style.getFriendlyName().substring(0, 1));
         final int y = style == TextFormatting.BOLD || style == TextFormatting.ITALIC ? 1 : 0;
         formatLabel.setFontOptions(UIConstants.DEFAULT_TEXTBOX_FO);
         formatLabel.setPosition(0, y, Anchor.MIDDLE | Anchor.CENTER);
@@ -333,7 +351,7 @@ public class WYSIWYGTextBox extends BasicContainer {
         baseContainer.setTooltip(tooltip);
         baseContainer.setColor(0);
 
-        final UILabel formatLabel = new UILabel(screen, value);
+        final UILabel formatLabel = new UILabel(value);
         formatLabel.setFontOptions(UIConstants.DEFAULT_TEXTBOX_FO);
         formatLabel.setPosition(0, 1, Anchor.MIDDLE | Anchor.CENTER);
         baseContainer.add(formatLabel);

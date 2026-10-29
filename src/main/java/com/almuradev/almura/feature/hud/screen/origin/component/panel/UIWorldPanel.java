@@ -11,10 +11,11 @@ import com.almuradev.almura.feature.claim.ClientClaimManager;
 import com.almuradev.almura.feature.hud.HeadUpDisplay;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.GuiRenderer;
+import net.malisis.core.client.gui.render.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.decoration.UILabel;
+import net.malisis.core.client.gui.element.Padding;
 import net.malisis.core.renderer.font.FontOptions;
 import net.malisis.core.util.FontColors;
 import net.minecraft.util.text.TextFormatting;
@@ -39,15 +40,15 @@ public class UIWorldPanel extends AbstractPanel {
   public UIWorldPanel(final MalisisGui gui) {
     super(gui, minWidth, 35);
 
-    this.worldLabel = new UILabel(gui, "");
+    this.worldLabel = new UILabel("");
     this.worldLabel.setPosition(0, 0, Anchor.TOP | Anchor.CENTER);
     this.worldLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
-    this.claimLabel = new UILabel(gui, "");
+    this.claimLabel = new UILabel("");
     this.claimLabel.setPosition(0, 0, Anchor.MIDDLE | Anchor.CENTER);
     this.claimLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
-    this.compassLabel = new UILabel(gui, "");
+    this.compassLabel = new UILabel("");
     this.compassLabel.setPosition(0, 1, Anchor.BOTTOM | Anchor.CENTER);
     this.compassLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(false).build());
 
@@ -60,14 +61,31 @@ public class UIWorldPanel extends AbstractPanel {
       return;
     }
     super.drawForeground(renderer, mouseX, mouseY, partialTick);
+  }
+
+  /**
+   * Fills in the labels and resizes to fit. Call once per frame before drawing, so the first frame isn't an empty panel.
+   *
+   * @return Whether there is anything to show (no player while joining a world)
+   */
+  public boolean refresh() {
+    if (this.client.player == null || this.client.player.world == null) {
+      return false;
+    }
     this.updateWorld();
     this.updateClaim();
     this.updateCompass();
     this.updateSize();
+    return true;
   }
 
   private void updateSize() {
-    this.width = Math.max(minWidth, this.getContentWidth());
+    // The labels are centred, so size from their own widths rather than where they currently sit
+    final int widest = this.getComponents().stream()
+      .filter(UIComponent::isVisible)
+      .mapToInt(c -> c instanceof UILabel ? ((UILabel) c).getContentWidth() : c.getWidth())
+      .max().orElse(0);
+    this.width = Math.max(minWidth, widest + Padding.of(this).left() + Padding.of(this).right() + 2);
     this.height = this.getContentHeight();
   }
 
@@ -75,7 +93,7 @@ public class UIWorldPanel extends AbstractPanel {
     if (hudData.worldName.isEmpty()) {
       this.remove(this.worldLabel);
     } else {
-      if (!this.components.contains(this.worldLabel)) {
+      if (!this.getComponents().contains(this.worldLabel)) {
         this.add(this.worldLabel);
       }
       this.worldLabel.setText(hudData.worldName);
@@ -84,7 +102,7 @@ public class UIWorldPanel extends AbstractPanel {
   }
 
   private void updateClaim() {
-    if (!this.components.contains(this.claimLabel)) {
+    if (!this.getComponents().contains(this.claimLabel)) {
       this.add(this.claimLabel);
     }
     if (!clientClaimManager.isClaim || clientClaimManager.isWilderness) {
@@ -112,7 +130,7 @@ public class UIWorldPanel extends AbstractPanel {
       }
     }
 
-    final int y = this.components.contains(this.worldLabel) ? BasicScreen.getPaddedY(this.worldLabel, 2) : 2;
+    final int y = this.getComponents().contains(this.worldLabel) ? BasicScreen.getPaddedY(this.worldLabel, 2) : 2;
     this.claimLabel.setPosition(1, y, Anchor.TOP | Anchor.CENTER);
   }
 
@@ -120,7 +138,7 @@ public class UIWorldPanel extends AbstractPanel {
   private void updateCompass() {
     this.compassLabel.setText(TextSerializers.LEGACY_FORMATTING_CODE.serialize(hudData.getCompass()));
 
-    final UIComponent lowestComponent = this.components
+    final UIComponent lowestComponent = this.getComponents()
       .stream()
       .filter(c -> this.compassLabel != c)
       .max(Comparator.comparingInt(UIComponent::getY)).orElse(null);

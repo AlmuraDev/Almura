@@ -8,11 +8,12 @@
 package com.almuradev.almura.shared.client.ui.component;
 
 import com.almuradev.almura.shared.client.ui.Fonts;
-import net.malisis.core.client.gui.GuiRenderer;
+import net.malisis.core.client.gui.render.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.renderer.font.FontOptions;
 import net.malisis.core.util.FontColors;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
@@ -42,7 +43,7 @@ import javax.annotation.Nullable;
  * entry is clicked, when clicking anywhere else or on escape. Opened by {@code MixinUIComponent} (UIComponent#onRightClick).</p>
  */
 @SideOnly(Side.CLIENT)
-public final class UIContextMenu extends UIComponent<UIContextMenu> {
+public final class UIContextMenu extends UIComponent {
 
     /**
      * Builds the menu for a right click on the component it is attached to, or returns null for no menu.
@@ -51,7 +52,7 @@ public final class UIContextMenu extends UIComponent<UIContextMenu> {
     public interface Provider {
 
         @Nullable
-        UIContextMenu create(UIComponent<?> component);
+        UIContextMenu create(UIComponent component);
     }
 
     /**
@@ -81,19 +82,22 @@ public final class UIContextMenu extends UIComponent<UIContextMenu> {
     private final List<Entry> entries = new ArrayList<>();
 
     public UIContextMenu(final MalisisGui gui) {
-        super(gui);
+        // Opened on its gui before it is added to it
+        this.gui = gui;
         this.setZIndex(500);
         this.setVisible(false);
+        this.setBackground(this::drawBackground);
+        this.setForeground(this::drawForeground);
     }
 
     /**
      * Gives a component (and everything inside it) a right click menu.
      */
-    public static void attach(final UIComponent<?> component, final Provider provider) {
+    public static void attach(final UIComponent component, final Provider provider) {
         ((Holder) component).almura$setContextMenu(provider);
     }
 
-    public static void detach(final UIComponent<?> component) {
+    public static void detach(final UIComponent component) {
         ((Holder) component).almura$setContextMenu(null);
     }
 
@@ -102,7 +106,7 @@ public final class UIContextMenu extends UIComponent<UIContextMenu> {
      *
      * @return True if a menu opened (the click is handled)
      */
-    public static boolean openFor(final UIComponent<?> component, final int mouseX, final int mouseY) {
+    public static boolean openFor(final UIComponent component, final int mouseX, final int mouseY) {
         final Provider provider = ((Holder) component).almura$getContextMenu();
         if (provider == null) {
             return false;
@@ -123,7 +127,7 @@ public final class UIContextMenu extends UIComponent<UIContextMenu> {
         if (menu == null || !menu.isVisible()) {
             return false;
         }
-        for (UIComponent<?> hovered = MalisisGui.getHoveredComponent(); hovered != null; hovered = hovered.getParent()) {
+        for (UIComponent hovered = MalisisGui.getHoveredComponent(); hovered != null; hovered = hovered.getParent()) {
             if (hovered == menu) {
                 return true;
             }
@@ -187,13 +191,15 @@ public final class UIContextMenu extends UIComponent<UIContextMenu> {
         if (this.isFocused()) {
             this.setFocused(false);
         }
-        this.getGui().removeFromScreen(this);
+        if (this.getGui() != null) {
+            this.getGui().removeFromScreen(this);
+        }
     }
 
     @Nullable
     private Entry entryAt(final int mouseX, final int mouseY) {
-        final int x = this.relativeX(mouseX);
-        final int y = this.relativeY(mouseY);
+        final int x = mouseX - this.screenX();
+        final int y = mouseY - this.screenY();
         if (x < 0 || x >= this.getWidth()) {
             return null;
         }
@@ -208,11 +214,11 @@ public final class UIContextMenu extends UIComponent<UIContextMenu> {
         return null;
     }
 
-    @Override
-    public void drawBackground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
-        // Clicking anywhere else takes the focus: close
+    private void drawBackground(final GuiRenderer renderer) {
+        // Clicking anywhere else takes the focus: close, once the screen is done drawing its components
         if (!this.isFocused()) {
-            this.close();
+            this.setVisible(false);
+            Minecraft.getMinecraft().addScheduledTask(this::close);
             return;
         }
 
@@ -221,7 +227,7 @@ public final class UIContextMenu extends UIComponent<UIContextMenu> {
         renderer.drawRectangle(0, 0, 0, width, height, BORDER, 255);
         renderer.drawRectangle(1, 1, 0, width - 2, height - 2, BACKGROUND, 240);
 
-        final Entry hovered = this.entryAt(mouseX, mouseY);
+        final Entry hovered = this.entryAt(MalisisGui.MOUSE_POSITION.x(), MalisisGui.MOUSE_POSITION.y());
         int top = 1;
         for (final Entry entry : this.entries) {
             if (entry == null) {
@@ -236,8 +242,7 @@ public final class UIContextMenu extends UIComponent<UIContextMenu> {
         }
     }
 
-    @Override
-    public void drawForeground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
+    private void drawForeground(final GuiRenderer renderer) {
         int top = 1;
         for (final Entry entry : this.entries) {
             if (entry == null) {
@@ -250,8 +255,8 @@ public final class UIContextMenu extends UIComponent<UIContextMenu> {
     }
 
     @Override
-    public boolean onClick(final int x, final int y) {
-        final Entry entry = this.entryAt(x, y);
+    public boolean onClick() {
+        final Entry entry = this.entryAt(MalisisGui.MOUSE_POSITION.x(), MalisisGui.MOUSE_POSITION.y());
         if (entry == null || !entry.enabled.getAsBoolean()) {
             return true; // Separator, disabled entry or the border: keep the menu open
         }
@@ -261,7 +266,7 @@ public final class UIContextMenu extends UIComponent<UIContextMenu> {
     }
 
     @Override
-    public boolean onRightClick(final int x, final int y) {
+    public boolean onRightClick() {
         return true;
     }
 

@@ -60,29 +60,29 @@ public class GuidePageDetailsScreen extends BasicScreen {
         assert manager.getPage() != null;
 
         // The fields keep their width, the name's format palette gets a column to their right
-        final BasicForm form = new BasicForm(this, 150 + UIFormatPalette.SIZE + PALETTE_GAP, 225, I18n.format("almura.guide.details.form.title"));
+        final BasicForm form = new BasicForm(150 + UIFormatPalette.SIZE + PALETTE_GAP, 225, I18n.format("almura.guide.details.form.title"));
         final int fieldWidth = BasicScreen.getPaddedWidth(form) - UIFormatPalette.SIZE - PALETTE_GAP;
         form.setZIndex(10);
         form.setBackgroundAlpha(255);
 
         // File name
-        final UILabel labelId = new UILabel(this, I18n.format("almura.guide.label.id"));
+        final UILabel labelId = new UILabel(I18n.format("almura.guide.label.id"));
         labelId.setAnchor(Anchor.TOP | Anchor.LEFT);
         labelId.setFontOptions(FontColors.WHITE_FO);
 
-        final BasicTextBox tbId = new BasicTextBox(this, manager.getPage().getId());
+        final BasicTextBox tbId = new BasicTextBox(manager.getPage().getId());
         tbId.setAnchor(Anchor.TOP | Anchor.LEFT);
         tbId.setPosition(0, BasicScreen.getPaddedY(labelId, 1));
         tbId.setSize(fieldWidth, 0);
         tbId.setEditable(false);
 
         // Index
-        final UILabel labelIndex = new UILabel(this, I18n.format("almura.guide.label.index"));
+        final UILabel labelIndex = new UILabel(I18n.format("almura.guide.label.index"));
         labelIndex.setAnchor(Anchor.TOP | Anchor.LEFT);
         labelIndex.setPosition(0, BasicScreen.getPaddedY(tbId, padding));
         labelIndex.setFontOptions(FontColors.WHITE_FO);
 
-        this.tbIndex = new BasicTextBox(this, Integer.toString(manager.getPage().getIndex()));
+        this.tbIndex = new BasicTextBox(Integer.toString(manager.getPage().getIndex()));
         this.tbIndex.setAcceptsReturn(false);
         this.tbIndex.setAcceptsTab(false);
         this.tbIndex.setTabIndex(0);
@@ -95,12 +95,12 @@ public class GuidePageDetailsScreen extends BasicScreen {
         this.tbIndex.setEditable(manager.getPageEntry() == null || !manager.getPageEntry().isPlayerGuide());
 
         // Title
-        final UILabel labelName = new UILabel(this, I18n.format("almura.guide.label.name"));
+        final UILabel labelName = new UILabel(I18n.format("almura.guide.label.name"));
         labelName.setAnchor(Anchor.TOP | Anchor.LEFT);
         labelName.setPosition(0, BasicScreen.getPaddedY(this.tbIndex, padding));
         labelName.setFontOptions(FontColors.WHITE_FO);
 
-        this.tbName = new BasicTextBox(this, manager.getPage().getName());
+        this.tbName = new BasicTextBox(manager.getPage().getName());
         this.tbName.setAcceptsReturn(false);
         this.tbName.setAcceptsTab(false);
         this.tbName.setTabIndex(0);
@@ -110,62 +110,62 @@ public class GuidePageDetailsScreen extends BasicScreen {
         this.tbName.setSize(fieldWidth, 0);
 
         // Creator
-        final UILabel labelCreator = new UILabel(this, I18n.format("almura.guide.label.creator"));
+        final UILabel labelCreator = new UILabel(I18n.format("almura.guide.label.creator"));
         labelCreator.setAnchor(Anchor.TOP | Anchor.LEFT);
         labelCreator.setPosition(0, BasicScreen.getPaddedY(this.tbName, padding));
         labelCreator.setFontOptions(FontColors.WHITE_FO);
 
-        final BasicTextBox tbCreator = new BasicTextBox(this, manager.getPage().getCreator().toString());
+        final BasicTextBox tbCreator = new BasicTextBox(manager.getPage().getCreator().toString());
         tbCreator.setAnchor(Anchor.TOP | Anchor.LEFT);
         tbCreator.setPosition(0, BasicScreen.getPaddedY(labelCreator, 1));
         tbCreator.setSize(fieldWidth, 0);
         tbCreator.setEditable(false);
 
         // Created
-        final UILabel labelCreated = new UILabel(this, I18n.format("almura.guide.label.created"));
+        final UILabel labelCreated = new UILabel(I18n.format("almura.guide.label.created"));
         labelCreated.setAnchor(Anchor.TOP | Anchor.LEFT);
         labelCreated.setPosition(0, BasicScreen.getPaddedY(tbCreator, padding));
         labelCreated.setFontOptions(FontColors.WHITE_FO);
 
-        final BasicTextBox tbCreated = new BasicTextBox(this, formatter.format(manager.getPage().getCreated()));
+        final BasicTextBox tbCreated = new BasicTextBox(formatter.format(manager.getPage().getCreated()));
         tbCreated.setAnchor(Anchor.TOP | Anchor.LEFT);
         tbCreated.setPosition(0, BasicScreen.getPaddedY(labelCreated, 1));
         tbCreated.setSize(fieldWidth, 0);
         tbCreated.setEditable(false);
 
         // Last Modifier
-        final UILabel labelLastModifier = new UILabel(this, I18n.format("almura.guide.label.last_modifier"));
+        final UILabel labelLastModifier = new UILabel(I18n.format("almura.guide.label.last_modifier"));
         labelLastModifier.setAnchor(Anchor.TOP | Anchor.LEFT);
         labelLastModifier.setPosition(0, BasicScreen.getPaddedY(tbCreated, padding));
         labelLastModifier.setFontOptions(FontColors.WHITE_FO);
 
-        final BasicTextBox tbLastModifier = new BasicTextBox(this, manager.getPage().getLastModifier().toString());
+        final BasicTextBox tbLastModifier = new BasicTextBox(manager.getPage().getLastModifier().toString());
         tbLastModifier.setAnchor(Anchor.TOP | Anchor.LEFT);
         tbLastModifier.setPosition(0, BasicScreen.getPaddedY(labelLastModifier, 1));
         tbLastModifier.setSize(fieldWidth, 0);
         tbLastModifier.setEditable(false);
 
         // Last Modified
-        final UILabel labelLastModified = new UILabel(this, I18n.format("almura.guide.label.last_modified"));
+        final UILabel labelLastModified = new UILabel(I18n.format("almura.guide.label.last_modified"));
         labelLastModified.setAnchor(Anchor.TOP | Anchor.LEFT);
         labelLastModified.setPosition(0, BasicScreen.getPaddedY(tbLastModifier, padding));
         labelLastModified.setFontOptions(FontColors.WHITE_FO);
 
-        final BasicTextBox tbLastModified = new BasicTextBox(this, formatter.format(manager.getPage().getLastModified()));
+        final BasicTextBox tbLastModified = new BasicTextBox(formatter.format(manager.getPage().getLastModified()));
         tbLastModified.setAnchor(Anchor.TOP | Anchor.LEFT);
         tbLastModified.setPosition(0, BasicScreen.getPaddedY(labelLastModified, 1));
         tbLastModified.setSize(fieldWidth, 0);
         tbLastModified.setEditable(false);
 
         // Save/Cancel
-        final UIButton buttonSave = new UIButtonBuilder(this)
+        final UIButton buttonSave = new UIButtonBuilder()
                 .text(I18n.format("almura.button.save"))
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .width(40)
                 .onClick(this::save)
                 .build("button.save");
 
-        final UIButton buttonCancel = new UIButtonBuilder(this)
+        final UIButton buttonCancel = new UIButtonBuilder()
                 .text(I18n.format("almura.button.cancel"))
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .position(BasicScreen.getPaddedX(buttonSave, 2, Anchor.RIGHT), 0)

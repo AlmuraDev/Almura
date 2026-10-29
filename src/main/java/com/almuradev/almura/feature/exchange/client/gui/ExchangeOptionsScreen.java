@@ -51,25 +51,25 @@ public final class ExchangeOptionsScreen extends BasicScreen {
     public void construct() {
         final GeneralCategory general = ClientStaticAccess.configAdapter.get().general;
 
-        final BasicForm form = new BasicForm(this, 200, 100, "Exchange Options");
+        final BasicForm form = new BasicForm(200, 100, "Exchange Options");
         form.setZIndex(10);
         form.setBackgroundAlpha(255);
 
-        this.hideOwnListings = new UICheckBox(this, "Hide my listed items in search");
+        this.hideOwnListings = new UICheckBox("Hide my listed items in search");
         this.hideOwnListings.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).build());
         this.hideOwnListings.setPosition(4, 6, Anchor.LEFT | Anchor.TOP);
         this.hideOwnListings.setChecked(general.exchangeHideOwnListings);
 
-        final UILabel sortLabel = new UILabel(this, "Default sort order:");
+        final UILabel sortLabel = new UILabel("Default sort order:");
         sortLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).build());
         sortLabel.setPosition(4, 26, Anchor.LEFT | Anchor.TOP);
 
-        this.defaultSort = new UISelect<>(this, 90, SORT_ORDERS.keySet());
+        this.defaultSort = new UISelect<>(90, SORT_ORDERS.keySet());
         this.defaultSort.setLabelFunction(SORT_ORDERS::get);
         this.defaultSort.setPosition(4, 38, Anchor.LEFT | Anchor.TOP);
         this.defaultSort.setSelectedOption(SORT_ORDERS.containsKey(general.exchangeDefaultSort) ? general.exchangeDefaultSort : "item_name");
 
-        final UIButton closeButton = new UIButtonBuilder(this)
+        final UIButton closeButton = new UIButtonBuilder()
                 .text("Close")
                 .width(50)
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)

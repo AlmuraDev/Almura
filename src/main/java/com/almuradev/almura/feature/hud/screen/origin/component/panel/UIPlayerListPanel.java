@@ -13,7 +13,7 @@ import com.almuradev.almura.feature.nick.ClientNickManager;
 import com.google.common.base.Strings;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
-import net.malisis.core.client.gui.GuiRenderer;
+import net.malisis.core.client.gui.render.GuiRenderer;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.container.BasicList;
 import net.minecraft.client.Minecraft;
@@ -71,16 +71,16 @@ public class UIPlayerListPanel extends AbstractPanel {
     public UIPlayerListPanel(MalisisGui gui, int width, int height) {
         super(gui, width, height);
 
-        this.playerList = new BasicList<>(gui, 0, 0);
+        this.playerList = new BasicList<>(0, 0);
         this.playerList.setItemComponentFactory(PlayerListElement::new);
-        this.playerList.getScrollBar().setAutoHide(false);
+        this.playerList.getScrollBar().autoHide = false;
         this.playerList.setItemComponentSpacing(2);
         this.playerList.register(this);
         this.add(this.playerList);
     }
 
     @Override
-    public boolean onScrollWheel(int x, int y, int delta) {
+    public boolean onScrollWheel(int delta) {
         this.playerList.getScrollBar().scrollBy(-delta * this.getScrollStep());
         return true;
     }
@@ -229,23 +229,15 @@ public class UIPlayerListPanel extends AbstractPanel {
             // Set alphas and colors
             this.setBackgroundAlpha(0);
             this.setBorder(BORDER_COLOR, 1, this.row.isHeader() ? 0 : 75);
+
+            // The columns, under the avatar (the row's width follows the list, see ItemComponent)
+            this.setForeground(renderer -> {
+                this.drawColumns(renderer);
+                this.content.render(renderer);
+            });
         }
 
-        @Override
-        public void drawBackground(final GuiRenderer renderer, final int mouseX, final int mouseY, final float partialTick) {
-            if (!(this.parent instanceof BasicList)) {
-                return;
-            }
-
-            final BasicList parent = (BasicList) this.parent;
-
-            // Adjust width for scrollbar
-            final int width = parent.getContentWidth() - (parent.getScrollBar().isEnabled() ? parent.getScrollBar().getRawWidth() + 1 : 0);
-            this.setSize(width, this.getHeight());
-
-            // Call to the super and draw
-            super.drawBackground(renderer, mouseX, mouseY, partialTick);
-
+        private void drawColumns(final GuiRenderer renderer) {
             final int[] widths = this.row.getColumnWidths();
             final String[] columns = this.row.getColumns();
             int x = getLeftPadding() + 2 + ICON_SIZE;
