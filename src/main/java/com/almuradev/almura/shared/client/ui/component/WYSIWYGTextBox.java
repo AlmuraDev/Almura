@@ -26,6 +26,9 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BooleanSupplier;
+
+import javax.annotation.Nullable;
 
 public class WYSIWYGTextBox extends BasicContainer {
 
@@ -53,6 +56,10 @@ public class WYSIWYGTextBox extends BasicContainer {
     private final BasicTextArea tbContent;
     /** The width is set by the toolbar. */
     private final int fixedWidth;
+    /** Gets left clicks on the text first, returning true when it handled one (the text box then doesn't). */
+    @Nullable private BooleanSupplier onTextClick;
+    /** Run before a toolbar button changes the text, e.g. to make the text editable first. */
+    @Nullable private Runnable onBeforeFormat;
     private ToolbarState state = ToolbarState.EXPANDED;
     private boolean showRaw = false;
 
@@ -91,7 +98,13 @@ public class WYSIWYGTextBox extends BasicContainer {
         this.colorStyleContainer.setWidth(this.colorStyleContainer.getWidth() + this.rawFormatContainer.getWidth());
 
         // Content textbox
-        this.tbContent = new BasicTextArea(text);
+        this.tbContent = new BasicTextArea(text) {
+            @Override
+            public boolean onClick() {
+                final BooleanSupplier handler = WYSIWYGTextBox.this.onTextClick;
+                return handler != null && handler.getAsBoolean() || super.onClick();
+            }
+        };
         this.tbContent.setFontOptions(UIConstants.DEFAULT_TEXTBOX_FO);
         this.tbContent.getScrollbar().autoHide = true;
 
@@ -117,14 +130,17 @@ public class WYSIWYGTextBox extends BasicContainer {
 
         final UIComponent componentAt = this.getComponentAt(x, y);
         if (componentAt != null && componentAt.getData() instanceof TextColor) {
+            this.beforeFormat();
             this.color((TextColor) componentAt.getData());
             return true;
         } else if (componentAt != null && componentAt.getData() instanceof TextFormatting) {
+            this.beforeFormat();
             this.color((TextFormatting) componentAt.getData());
             return true;
         }
 
         if (this.rawFormatContainer.isInsideBounds(x, y)) {
+            this.beforeFormat();
             this.showRaw = !this.showRaw;
             this.format();
             return true;
@@ -177,6 +193,26 @@ public class WYSIWYGTextBox extends BasicContainer {
 
     public BasicTextArea getTextBox() {
         return this.tbContent;
+    }
+
+    /**
+     * @param onTextClick Called on a left click on the text, after the cursor moved there; returns true when it handled the click
+     */
+    public void setOnTextClick(@Nullable final BooleanSupplier onTextClick) {
+        this.onTextClick = onTextClick;
+    }
+
+    /**
+     * @param onBeforeFormat Run before a toolbar button (colour, style, raw) changes the text
+     */
+    public void setOnBeforeFormat(@Nullable final Runnable onBeforeFormat) {
+        this.onBeforeFormat = onBeforeFormat;
+    }
+
+    private void beforeFormat() {
+        if (this.onBeforeFormat != null) {
+            this.onBeforeFormat.run();
+        }
     }
 
     public void showToolbar() {
