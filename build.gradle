@@ -49,6 +49,8 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 archivesBaseName = project.name.toLowerCase()
+// The build number: the jar's name, mcmod.info and Almura.buildNumber (the window title and About menu) all take it from here
+ext.internalBuild = '121'
 version = "mc[${project.minecraftVersion}]-forge[${project.forgeBuild}]-sf[${project.spongeImplVersion.split("-")[2]}]-b${project.internalBuild}"
 
 minecraft {
@@ -60,6 +62,10 @@ minecraft {
 
     // We don't use the obfuscated dev jar currently
     makeObfSourceJar = false
+
+    // Almura.buildNumber, written into the source Gradle compiles (an IntelliJ run compiles it as is, and shows "dev")
+    replace '@internalBuild@', project.internalBuild
+    replaceIn 'Almura.java'
 }
 
 mixin {
@@ -209,9 +215,12 @@ compileJava {
 }
 
 processResources {
+    // So a new build number or Minecraft version reprocesses mcmod.info (Gradle otherwise sees nothing changed)
+    inputs.property 'internalBuild', project.internalBuild
+    inputs.property 'minecraftVersion', project.minecraftVersion
     filesMatching('**/mcmod.info') {
         filter ReplaceTokens, tokens: [
-            'build': project.internalBuild,  // this doesn't update unless you clear the /build/ cache folder... thanks gradle....
+            'build': project.internalBuild,
             'minecraftVersion': project.minecraftVersion
         ]
     }

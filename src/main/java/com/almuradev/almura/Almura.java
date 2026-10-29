@@ -35,7 +35,9 @@ public class Almura implements com.almuradev.almura.shared.plugin.Plugin {
     public static boolean debug = true;
     public static boolean isShuttingDown = false;
     public static NetworkManager networkManager;
-    public static String buildNumber = "b120";
+    // Set in build.gradle (ext.internalBuild), which Gradle writes in here as it compiles; "dev" when compiled as is (an IntelliJ run)
+    private static final String INTERNAL_BUILD = "@internalBuild@";
+    public static String buildNumber = INTERNAL_BUILD.startsWith("@") ? "dev" : "b" + INTERNAL_BUILD;
 
     @SidedProxy(
             modId = ID,
