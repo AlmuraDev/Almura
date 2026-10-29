@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.store;
 
+import com.almuradev.almura.feature.permission.SingleplayerFeatures;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.google.inject.Inject;
@@ -39,6 +40,11 @@ final class StoreCommandsCreator {
             .executor((src, args) -> {
                 final Player player = args.<Player>getOne("player").orElse(null);
                 if (player == null) {
+                    return CommandResult.empty();
+                }
+
+                // Not in singleplayer worlds (see SingleplayerFeatures)
+                if (SingleplayerFeatures.blocked(player)) {
                     return CommandResult.empty();
                 }
 

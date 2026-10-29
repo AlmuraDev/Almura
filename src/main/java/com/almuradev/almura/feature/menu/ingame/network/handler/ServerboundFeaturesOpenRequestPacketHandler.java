@@ -12,7 +12,7 @@ import com.almuradev.almura.feature.menu.ingame.network.ClientboundFeaturesOpenR
 import com.almuradev.almura.feature.menu.ingame.network.ServerboundFeaturesOpenRequestPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.PacketUtil;
-import net.malisis.core.MalisisCore;
+import com.almuradev.almura.feature.permission.SingleplayerFeatures;
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
@@ -52,7 +52,10 @@ public final class ServerboundFeaturesOpenRequestPacketHandler implements Messag
                 final PlayerConnection playerConnection = (PlayerConnection) connection;
                 final Player player = playerConnection.getPlayer();
 
-                if (!player.hasPermission(Almura.ID + ".feature.base") || player.hasPermission(Almura.ID + ".singleplayer") && MalisisCore.isObfEnv) {
+                if (SingleplayerFeatures.blocked(player)) {
+                    return;
+                }
+                if (!player.hasPermission(Almura.ID + ".feature.base")) {
                     player.sendMessage(Text.of(TextColors.WHITE, "Access denied, missing permission: ", TextColors.AQUA, "almura.feature.base",
                             TextColors.WHITE, "."));
                     return;

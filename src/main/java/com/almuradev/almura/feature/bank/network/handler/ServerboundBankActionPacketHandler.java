@@ -9,6 +9,7 @@ package com.almuradev.almura.feature.bank.network.handler;
 
 import com.almuradev.almura.feature.bank.ServerBankManager;
 import com.almuradev.almura.feature.bank.network.ServerboundBankActionPacket;
+import com.almuradev.almura.feature.permission.SingleplayerFeatures;
 import com.almuradev.almura.shared.util.PacketUtil;
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.api.Platform;
@@ -32,7 +33,10 @@ public final class ServerboundBankActionPacketHandler implements MessageHandler<
     public void handleMessage(final ServerboundBankActionPacket message, final RemoteConnection connection, final Platform.Type side) {
         if (side.isServer() && connection instanceof PlayerConnection && message.action != null && PacketUtil
             .checkThreadAndEnqueue((MinecraftServer) Sponge.getServer(), message, this, connection, side)) {
-            this.bankManager.handleAction(((PlayerConnection) connection).getPlayer(), message);
+            // Not in singleplayer worlds (see SingleplayerFeatures)
+            if (!SingleplayerFeatures.blocked(((PlayerConnection) connection).getPlayer())) {
+                this.bankManager.handleAction(((PlayerConnection) connection).getPlayer(), message);
+            }
         }
     }
 }

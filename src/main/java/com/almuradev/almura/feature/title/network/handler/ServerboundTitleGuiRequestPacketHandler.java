@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.title.network.handler;
 
+import com.almuradev.almura.feature.permission.SingleplayerFeatures;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.feature.title.network.ClientboundTitleGuiResponsePacket;
@@ -43,6 +44,10 @@ public final class ServerboundTitleGuiRequestPacketHandler implements MessageHan
         if (side.isServer() && connection instanceof PlayerConnection && PacketUtil
                 .checkThreadAndEnqueue((MinecraftServer) Sponge.getServer(), message, this, connection, side)) {
             final Player player = ((PlayerConnection) connection).getPlayer();
+            // Not in singleplayer worlds (see SingleplayerFeatures)
+            if (SingleplayerFeatures.blocked(player)) {
+                return;
+            }
 
             if (!player.hasPermission(Almura.ID + ".title.base")) {
                 this.notificationManager.sendPopupNotification(player, Text.of("Title Manager"), Text.of("Insufficient Permissions to view Title Manager!"), 2);

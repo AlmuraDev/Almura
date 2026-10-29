@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.nick.network.handler;
 
+import com.almuradev.almura.feature.permission.SingleplayerFeatures;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.nick.network.ClientboundNicknameOpenResponsePacket;
 import com.almuradev.almura.feature.nick.network.ServerboundNicknameOpenRequestPacket;
@@ -44,6 +45,10 @@ public final class ServerboundNicknameOpenRequestPacketHandler implements Messag
             final MinecraftServer threadListener = (MinecraftServer) Sponge.getServer();
             if (PacketUtil.checkThreadAndEnqueue(threadListener, message, this, connection, side)) {
                 final Player player = ((PlayerConnection) connection).getPlayer();
+                // Not in singleplayer worlds (see SingleplayerFeatures)
+                if (SingleplayerFeatures.blocked(player)) {
+                    return;
+                }
 
                 if (!player.hasPermission(Almura.ID + ".nickname.base")) {
                     this.notificationManager.sendPopupNotification(player, Text.of("Nickname Manager"), Text.of("Insufficient Permissions to view Nickname Manager!"), 2);

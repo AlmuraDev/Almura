@@ -23,6 +23,7 @@ import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.SubjectData;
 import org.spongepowered.api.util.Tristate;
 
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -34,6 +35,14 @@ public final class SingleplayerOperator implements Witness {
 
     // Every permission, to LuckPerms and the other permissions plugins
     private static final String ALL = "*";
+    // Permissions that op or * would grant but that take things away, set to false (a permission set explicitly beats both):
+    // Nucleus vanishes players with nucleus.vanish.onlogin and keeps those with its AFK exemptions from going AFK. (Almura's
+    // server features stay closed in singleplayer whatever the permissions, see SingleplayerFeatures.)
+    private static final String[] DENIED = {
+            "nucleus.vanish.onlogin",
+            "nucleus.afk.exempt.toggle",
+            "nucleus.afk.exempt.kick"
+    };
 
     // First, so the join listeners that check permissions (the guide at login) already see the op
     @Listener(order = Order.FIRST)
@@ -54,22 +63,30 @@ public final class SingleplayerOperator implements Witness {
             players.addOp(profile);
         }
 
-        grantAllInPermissionPlugin(player);
+        grantPermissions(player);
     }
 
     /**
-     * A permissions plugin (LuckPerms) replaces Sponge's own service, and to it an op is nobody special: give the owner every
-     * permission there instead, through Sponge's API so it works with any plugin. The plugin saves it, like a permission set
-     * by command.
+     * Sponge's own permission service gives an op every permission; a permissions plugin (LuckPerms) replaces it, and to it an
+     * op is nobody special, so the owner is given * there. Either way those in {@link #DENIED} are set to false (both honour a
+     * permission set explicitly over op or the wildcard). Through Sponge's API, so it works with any plugin; every join sets
+     * them again (Sponge's own service only keeps them until the game closes).
      */
-    private static void grantAllInPermissionPlugin(final Player player) {
+    private static void grantPermissions(final Player player) {
         final Optional<ProviderRegistration<PermissionService>> service = Sponge.getServiceManager().getRegistration(PermissionService.class);
-        if (!service.isPresent() || service.get().getPlugin().getId().equals("sponge")) {
-            return; // Sponge's own service: ops already have every permission
+        if (!service.isPresent()) {
+            return;
         }
         final SubjectData data = player.getSubjectData();
-        if (!Boolean.TRUE.equals(data.getPermissions(SubjectData.GLOBAL_CONTEXT).get(ALL))) {
+        final Map<String, Boolean> permissions = data.getPermissions(SubjectData.GLOBAL_CONTEXT);
+        final boolean permissionPlugin = !service.get().getPlugin().getId().equals("sponge");
+        if (permissionPlugin && !Boolean.TRUE.equals(permissions.get(ALL))) {
             data.setPermission(SubjectData.GLOBAL_CONTEXT, ALL, Tristate.TRUE);
+        }
+        for (final String denied : DENIED) {
+            if (!Boolean.FALSE.equals(permissions.get(denied))) {
+                data.setPermission(SubjectData.GLOBAL_CONTEXT, denied, Tristate.FALSE);
+            }
         }
     }
 }

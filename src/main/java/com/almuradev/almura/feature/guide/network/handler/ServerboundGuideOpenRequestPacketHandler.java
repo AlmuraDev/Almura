@@ -16,7 +16,7 @@ import com.almuradev.almura.feature.guide.network.GuideOpenType;
 import com.almuradev.almura.feature.guide.network.ServerboundGuideOpenRequestPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.almura.shared.util.PacketUtil;
-import net.malisis.core.MalisisCore;
+import com.almuradev.almura.feature.permission.SingleplayerFeatures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.api.Platform;
@@ -62,7 +62,10 @@ public final class ServerboundGuideOpenRequestPacketHandler implements MessageHa
             if (PacketUtil.checkThreadAndEnqueue(server, message, this, connection, side)) {
                 final Player player = ((PlayerConnection) connection).getPlayer();
 
-                if (!player.hasPermission("almura.guide.open") || player.hasPermission("almura.singleplayer") && MalisisCore.isObfEnv) {
+                if (SingleplayerFeatures.blocked(player)) {
+                    return;
+                }
+                if (!player.hasPermission("almura.guide.open")) {
                     player.sendMessage(
                             Text.of(TextColors.WHITE, "Access denied, missing permission: ", TextColors.AQUA, "almura.guide.open", TextColors.WHITE,
                                     "."));

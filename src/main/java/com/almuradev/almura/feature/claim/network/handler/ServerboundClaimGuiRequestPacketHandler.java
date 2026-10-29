@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.claim.network.handler;
 
+import com.almuradev.almura.feature.permission.SingleplayerFeatures;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.claim.ServerClaimManager;
 import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiRequestPacket;
@@ -45,6 +46,10 @@ public final class ServerboundClaimGuiRequestPacketHandler implements MessageHan
         if (side.isServer() && connection instanceof PlayerConnection && PacketUtil
                 .checkThreadAndEnqueue((MinecraftServer) Sponge.getServer(), message, this, connection, side)) {
             final Player player = ((PlayerConnection) connection).getPlayer();
+            // Not in singleplayer worlds (see SingleplayerFeatures)
+            if (SingleplayerFeatures.blocked(player)) {
+                return;
+            }
 
             if (!player.hasPermission(Almura.ID + ".claim.base")) {
                 this.notificationManager.sendPopupNotification(player, ServerClaimManager.notificationTitle, Text.of("Insufficient Permissions to manage this claim!"), 2);

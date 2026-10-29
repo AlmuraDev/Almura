@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.membership.network.handler;
 
+import com.almuradev.almura.feature.permission.SingleplayerFeatures;
 import com.almuradev.almura.feature.membership.MembershipHandler;
 import com.almuradev.almura.feature.membership.network.ServerboundMembershipGuiOpenRequestPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
@@ -49,6 +50,10 @@ public final class ServerboundMembershipGuiOpenRequestPacketHandler implements M
             if (PacketUtil.checkThreadAndEnqueue(server, message, this, connection, side)) {
                 final PlayerConnection playerConnection = (PlayerConnection) connection;
                 final Player player = playerConnection.getPlayer();
+                // Not in singleplayer worlds (see SingleplayerFeatures)
+                if (SingleplayerFeatures.blocked(player)) {
+                    return;
+                }
 
                 membershipHandler.requestClientGui(player);
             }
