@@ -34,7 +34,9 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
 
@@ -146,7 +148,8 @@ public final class RelightCommand {
 
     /**
      * Relights the light sources of a chunk that leave a transparent neighbour darker than their light allows, returning how many.
-     * Their stored light is cleared first, so Minecraft's light check sees it as wrong and spreads it again.
+     * The light is spread here, on the server thread, while the chunks are loaded: World.checkLightFor is no use, as Sponge's async
+     * lighting only queues it, and drops it once the chunk is queued to unload (which the world relight does straight after).
      */
     static int relight(final WorldServer world, final Chunk chunk) {
         int relit = 0;
@@ -164,8 +167,7 @@ public final class RelightCommand {
                         // the world aware light value, which modded light sources (such as flickering lights) answer
                         final int light = state.getLightValue(world, pos);
                         if (light > 1 && leavesNeighborDark(world, pos, neighbor, light)) {
-                            world.setLightFor(EnumSkyBlock.BLOCK, pos, 0);
-                            world.checkLightFor(EnumSkyBlock.BLOCK, pos);
+                            spread(world, pos.toImmutable(), light);
                             relit++;
                         }
                     }
@@ -173,6 +175,36 @@ public final class RelightCommand {
             }
         }
         return relit;
+    }
+
+    /**
+     * Spreads a light source's block light the way Minecraft raises light: each neighbour gets the light less its opacity (at least
+     * 1) where that is brighter than what it has, outward until the light runs out. Light is only ever raised, never lowered.
+     */
+    private static void spread(final WorldServer world, final BlockPos source, final int light) {
+        if (world.getLightFor(EnumSkyBlock.BLOCK, source) < light) {
+            world.setLightFor(EnumSkyBlock.BLOCK, source, light);
+        }
+        final Deque<BlockPos> queue = new ArrayDeque<>();
+        queue.add(source);
+        while (!queue.isEmpty()) {
+            final BlockPos pos = queue.poll();
+            final int level = world.getLightFor(EnumSkyBlock.BLOCK, pos);
+            if (level <= 1) {
+                continue;
+            }
+            for (final EnumFacing facing : EnumFacing.values()) {
+                final BlockPos next = pos.offset(facing);
+                if (next.getY() < 0 || next.getY() > 255 || !world.isBlockLoaded(next)) {
+                    continue;
+                }
+                final int nextLevel = level - Math.max(1, world.getBlockState(next).getLightOpacity(world, next));
+                if (nextLevel > world.getLightFor(EnumSkyBlock.BLOCK, next)) {
+                    world.setLightFor(EnumSkyBlock.BLOCK, next, nextLevel);
+                    queue.add(next);
+                }
+            }
+        }
     }
 
     private static boolean leavesNeighborDark(final WorldServer world, final BlockPos pos, final BlockPos.MutableBlockPos neighbor, final int light) {
