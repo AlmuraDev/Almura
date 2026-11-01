@@ -178,7 +178,7 @@ public class MultiplayerScreen extends PanoramicScreen {
       serverList.setHeight(28);
     }
 
-    this.joinButton.setEnabled(entry != null && entry.status == ServerStatus.ONLINE);
+    this.joinButton.setEnabled(entry != null && (entry.status == ServerStatus.ONLINE || entry.status == ServerStatus.LOCKED));
     this.joinButton.setPosition(0, BasicScreen.getPaddedY(this.serverList, 2));
     this.backButton.setPosition(0, BasicScreen.getPaddedY(this.joinButton, 2));
     this.otherButton.setPosition(0, BasicScreen.getPaddedY(this.joinButton, 2));
@@ -220,6 +220,10 @@ public class MultiplayerScreen extends PanoramicScreen {
         }
         if (e.maxPlayers > 0 && e.status == ServerStatus.UPDATING) {
           e.status = ServerStatus.ONLINE;
+        }
+        // Whitelisted servers stay joinable (for those on the whitelist) but show as locked
+        if (e.status == ServerStatus.ONLINE && e.query.isWhitelisted()) {
+          e.status = ServerStatus.LOCKED;
         }
       }
     });
@@ -306,7 +310,8 @@ public class MultiplayerScreen extends PanoramicScreen {
     OFFLINE("almura.multiplayer.status.offline", TextFormatting.RED, 0xFF5555),
     ONLINE("almura.multiplayer.status.online", TextFormatting.GREEN, 0x055FF55),
     RESTARTING("almura.multiplayer.status.restarting", TextFormatting.YELLOW, 0xFFFFAA),
-    UPDATING("almura.multiplayer.status.updating", TextFormatting.DARK_PURPLE, 0xAA00AA);
+    UPDATING("almura.multiplayer.status.updating", TextFormatting.DARK_PURPLE, 0xAA00AA),
+    LOCKED("almura.multiplayer.status.locked", TextFormatting.GRAY, 0xAAAAAA);
 
     private final String translationKey;
     private final TextFormatting textFormatting;

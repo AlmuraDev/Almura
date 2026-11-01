@@ -176,4 +176,12 @@ public class Query {
   public boolean isOnline() {
     return this.online;
   }
+
+  /**
+   * Whether the server's last query answer said its whitelist is on. Vanilla doesn't send this, Almura servers add it
+   * (see MixinRConThreadQuery), so other servers always read as not whitelisted.
+   */
+  public boolean isWhitelisted() {
+    return this.values != null && "true".equals(this.values.get("whitelist"));
+  }
 }

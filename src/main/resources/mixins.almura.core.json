@@ -15,6 +15,9 @@
         "util.MixinFoodStats",
         "world.MixinBossBarColor"
     ],
+    "server": [
+        "network.rcon.MixinRConThreadQuery"
+    ],
     "client": [
         "client.gui.MixinBasicListItemComponent",
         "client.gui.MixinGuiBossOverlay",

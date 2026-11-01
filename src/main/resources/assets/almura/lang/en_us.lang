@@ -125,6 +125,7 @@ almura.multiplayer.status.offline=Offline
 almura.multiplayer.status.online=Online
 almura.multiplayer.status.restarting=Restarting
 almura.multiplayer.status.updating=Updating
+almura.multiplayer.status.locked=Locked
 
 # --------------------
 # -- feature.common --
