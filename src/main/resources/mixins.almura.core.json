@@ -25,6 +25,7 @@
         "client.renderer.tileentity.MixinTileEntitySignRenderer",
         "client.renderer.tileentity.MixinTileEntityChestRenderer",
         "client.MixinChunkProviderClient",
+        "client.network.MixinNetHandlerPlayClient",
         "client.MixinLoadingScreenRenderer",
         "client.MixinModelLoader",
         "client.MixinWorld_DynamicLight",
