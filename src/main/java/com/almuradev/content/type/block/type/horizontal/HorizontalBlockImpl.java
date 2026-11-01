@@ -7,6 +7,7 @@
  */
 package com.almuradev.content.type.block.type.horizontal;
 
+import com.almuradev.content.type.block.PlacementRotation;
 import com.almuradev.content.type.block.flicker.FlickerLightTileEntity;
 import com.almuradev.content.type.block.flicker.FlickerLights;
 import com.almuradev.content.type.block.type.horizontal.state.HorizontalBlockStateDefinition;
@@ -23,6 +24,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -189,12 +191,39 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
     @Override
     public IBlockState getStateForPlacement(final World world, final BlockPos pos, final EnumFacing facing, final float hitX, final float hitY, final float hitZ, final int meta, final EntityLivingBase placer) {
         EnumFacing placed = placer.getHorizontalFacing().getOpposite();
-        // e.g. straight pipes, whose model runs across the facing: placed against the side of a block (such as the end of another pipe),
-        // turn them so they continue out from that block. Placed on a floor or ceiling, they keep the usual facing.
-        if (facing.getAxis().isHorizontal() && this.definition(EnumFacing.NORTH).rotatePlacement) {
-            placed = facing.rotateY();
+        // Pipes placed against the side of a block (such as the end of another pipe) turn to connect to it: a straight pipe, whose
+        // model runs across the facing, continues out from that block; a T pipe points its branch into it; a corner puts one arm
+        // into it. Placed on a floor or ceiling, they keep the usual facing.
+        final PlacementRotation rotation = this.definition(EnumFacing.NORTH).rotatePlacement;
+        if (facing.getAxis().isHorizontal() && rotation != null) {
+            switch (rotation) {
+                case ACROSS:
+                    placed = facing.rotateY();
+                    break;
+                case TOWARD:
+                    placed = facing.getOpposite();
+                    break;
+                case CORNER:
+                    placed = cornerFacing(facing, pos, placer);
+                    break;
+            }
         }
         return this.getDefaultState().withProperty(FACING, placed);
+    }
+
+    /**
+     * The facing of a corner (arms west and south when facing north) placed against a block's side: one arm into that block, the
+     * other toward the side the player stands on, or looks toward when standing in line with it.
+     */
+    private static EnumFacing cornerFacing(final EnumFacing clickedFace, final BlockPos pos, final EntityLivingBase placer) {
+        final EnumFacing right = clickedFace.getOpposite().rotateY(); // right of the arm into the clicked block
+        double side = (placer.posX - (pos.getX() + 0.5)) * right.getXOffset() + (placer.posZ - (pos.getZ() + 0.5)) * right.getZOffset();
+        if (Math.abs(side) < 0.5) {
+            final Vec3d look = placer.getLookVec();
+            side = look.x * right.getXOffset() + look.z * right.getZOffset();
+        }
+        // facing the clicked face, the arms point into the clicked block and to its right; facing right, into it and to its left
+        return side >= 0 ? clickedFace : right;
     }
 
     @Deprecated

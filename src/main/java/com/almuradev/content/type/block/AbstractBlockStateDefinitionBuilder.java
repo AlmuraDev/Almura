@@ -32,7 +32,7 @@ public abstract class AbstractBlockStateDefinitionBuilder<D extends BlockStateDe
     protected @Nullable Boolean opaque;
     protected @Nullable Boolean drip;
     protected @Nullable Boolean flicker;
-    protected @Nullable Boolean rotatePlacement;
+    protected @Nullable PlacementRotation rotatePlacement;
     protected OptionalDouble resistance = OptionalDouble.empty();
     @Nullable protected Delegate<BlockSoundGroup> sound;
     @Nullable protected Delegate<BlockDestroyAction> destroyAction;
@@ -87,7 +87,7 @@ public abstract class AbstractBlockStateDefinitionBuilder<D extends BlockStateDe
     }
 
     @Override
-    public void rotatePlacement(final boolean rotatePlacement) {
+    public void rotatePlacement(final PlacementRotation rotatePlacement) {
         this.rotatePlacement = rotatePlacement;
     }
 

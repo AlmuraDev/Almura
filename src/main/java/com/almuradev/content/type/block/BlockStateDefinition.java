@@ -37,7 +37,7 @@ public interface BlockStateDefinition {
 
         void flicker(final boolean flicker);
 
-        void rotatePlacement(final boolean rotatePlacement);
+        void rotatePlacement(final PlacementRotation rotatePlacement);
 
         void opaque(final boolean opaque);
 
