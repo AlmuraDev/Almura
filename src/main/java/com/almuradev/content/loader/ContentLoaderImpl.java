@@ -115,7 +115,12 @@ abstract class ContentLoaderImpl<C extends CatalogedContent, B extends ContentBu
 
     protected final boolean queue(final Path path, final boolean longIndent) {
         final String indent = longIndent ? "            " : "        ";
-        if (JSON_MATCHER.matches(path) && !path.getParent().getFileName().toString().equals("_recipes")) {
+        // Recipes are loaded by the RecipeManager, and dot files (.gitkeep) only keep folders in git: skipped without a word, so
+        // "Ignoring invalid" only names files that don't belong
+        if (path.getParent().getFileName().toString().equals(RecipeManager.DIRECTORY) || path.getFileName().toString().startsWith(".")) {
+            return false;
+        }
+        if (JSON_MATCHER.matches(path)) {
             if (this.names.add(pathName(path))) {
                 this.logger.debug("{}Found {}", indent, path.toAbsolutePath());
                 return true;
