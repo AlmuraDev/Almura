@@ -29,6 +29,7 @@ import com.almuradev.almura.feature.menu.ingame.FeaturesModule;
 import com.almuradev.almura.feature.moc.MocModule;
 import com.almuradev.almura.feature.nick.NickModule;
 import com.almuradev.almura.feature.notification.NotificationModule;
+import com.almuradev.almura.feature.relight.RelightModule;
 import com.almuradev.almura.feature.offhand.OffHandListener;
 import com.almuradev.almura.feature.permission.PermissionsModule;
 import com.almuradev.almura.feature.sign.SignEditFeature;
@@ -57,6 +58,7 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.install(new HeadUpDisplayModule());
         this.install(new NickModule());
         this.install(new NotificationModule());
+        this.install(new RelightModule());
         this.install(new TitleModule());
         this.install(new GuideModule());
         this.install(new ComplexContentModule());
