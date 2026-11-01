@@ -31,6 +31,10 @@ import javax.inject.Inject;
 public class UIWorldPanel extends AbstractPanel {
 
   private static final int minWidth = 50;
+  // Space on each side of the widest line, inside the padding: the background's border is 5 wide, the padding only 3
+  private static final int TEXT_MARGIN = 7;
+  // Space below the compass, inside the padding, for the same border
+  private static final int BOTTOM_MARGIN = 2;
 
   @Inject private static HeadUpDisplay hudData;
   @Inject private static ClientClaimManager clientClaimManager;
@@ -85,8 +89,11 @@ public class UIWorldPanel extends AbstractPanel {
       .filter(UIComponent::isVisible)
       .mapToInt(c -> c instanceof UILabel ? ((UILabel) c).getContentWidth() : c.getWidth())
       .max().orElse(0);
-    this.width = Math.max(minWidth, widest + Padding.of(this).left() + Padding.of(this).right() + 2);
-    this.height = this.getContentHeight();
+    // Room for the panel's border (drawn over the padding) and a gap inside it, as short names get from minWidth
+    this.width = Math.max(minWidth, widest + Padding.of(this).left() + Padding.of(this).right() + TEXT_MARGIN * 2);
+    // The content's height counts the padding above it but not below (6.5.x added both): without it the compass ran into
+    // the bottom border
+    this.height = this.getContentHeight() + Padding.of(this).bottom() + BOTTOM_MARGIN;
   }
 
   private void updateWorld() {

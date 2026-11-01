@@ -37,21 +37,41 @@ public class UISkillsPanel extends AbstractPanel {
 
     @Inject private static ClientSkillsManager skillsManager;
 
+    // The text's distance in from the padding (the background's border is wider than it), and the least gap between a skill's
+    // name and its level
+    private static final int TEXT_INSET = 2;
+    private static final int NAME_GAP = 6;
+
     private List<SkillEntry> skills = Collections.emptyList();
+    // Its width with short names: it grows for longer ones (see refresh)
+    private final int minWidth;
 
     public UISkillsPanel(final MalisisGui gui, final int width) {
         super(gui, width, 0);
+        this.minWidth = width;
     }
 
     /**
-     * Picks up the current selection and resizes to fit. Call once per frame before drawing.
+     * Picks up the current selection and resizes to fit: tall enough for every skill, wide enough for the longest name and level
+     * side by side. Call once per frame before drawing.
      */
     public void refresh() {
         this.skills = skillsManager.getHudSkills();
         this.setVisible(!this.skills.isEmpty());
         if (!this.skills.isEmpty()) {
-            this.setSize(this.width, PADDING * 2 + this.skills.size() * ROW_HEIGHT - ROW_GAP);
+            int widest = 0;
+            for (final SkillEntry skill : this.skills) {
+                final int name = (int) Math.ceil(Fonts.MINECRAFT.getStringWidth(skill.name, FontColors.WHITE_FO));
+                final int level = (int) Math.ceil(Fonts.MINECRAFT.getStringWidth(level(skill), FontColors.WHITE_FO));
+                widest = Math.max(widest, name + NAME_GAP + level);
+            }
+            this.setSize(Math.max(this.minWidth, (PADDING + TEXT_INSET) * 2 + widest),
+                    PADDING * 2 + this.skills.size() * ROW_HEIGHT - ROW_GAP);
         }
+    }
+
+    private static String level(final SkillEntry skill) {
+        return TextFormatting.WHITE + "Lv. " + skill.level + TextFormatting.GRAY + " / " + skill.maxLevel;
     }
 
     @Override
@@ -76,11 +96,11 @@ public class UISkillsPanel extends AbstractPanel {
 
         int y = PADDING;
         for (final SkillEntry skill : this.skills) {
-            renderer.drawText(Fonts.MINECRAFT, skill.name, PADDING, y, this.getZIndex(), FontColors.WHITE_FO);
+            renderer.drawText(Fonts.MINECRAFT, skill.name, PADDING + TEXT_INSET, y, this.getZIndex(), FontColors.WHITE_FO);
 
-            final String level = TextFormatting.WHITE + "Lv. " + skill.level + TextFormatting.GRAY + " / " + skill.maxLevel;
-            final int levelWidth = (int) Fonts.MINECRAFT.getStringWidth(level, FontColors.WHITE_FO);
-            renderer.drawText(Fonts.MINECRAFT, level, this.width - PADDING - levelWidth, y, this.getZIndex(), FontColors.WHITE_FO);
+            final String level = level(skill);
+            final int levelWidth = (int) Math.ceil(Fonts.MINECRAFT.getStringWidth(level, FontColors.WHITE_FO));
+            renderer.drawText(Fonts.MINECRAFT, level, this.width - PADDING - TEXT_INSET - levelWidth, y, this.getZIndex(), FontColors.WHITE_FO);
             y += ROW_HEIGHT;
         }
     }
