@@ -8,6 +8,7 @@
 package com.almuradev.almura.shared.tileentity;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.asm.ClientStaticAccess;
 import com.almuradev.almura.shared.capability.ISingleSlotItemHandler;
 import com.almuradev.almura.shared.capability.SharedCapabilities;
 import com.almuradev.almura.shared.capability.impl.SingleSlotItemHandler;
@@ -60,6 +61,14 @@ public final class SingleSlotTileEntity extends TileEntity {
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
         this.readFromNBT(pkt.getNbtCompound());
+    }
+
+    // Minecraft stops rendering tile entities past 64 blocks; caches render to the cache render distance option (up to 128)
+    @SideOnly(Side.CLIENT)
+    @Override
+    public double getMaxRenderDistanceSquared() {
+        final int distance = ClientStaticAccess.configAdapter.get().general.cacheRenderDistance;
+        return Math.max(super.getMaxRenderDistanceSquared(), (double) distance * distance);
     }
 
     @Override

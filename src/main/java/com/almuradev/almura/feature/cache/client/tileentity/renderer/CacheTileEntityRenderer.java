@@ -65,6 +65,11 @@ public final class CacheTileEntityRenderer extends TileEntitySpecialRenderer<Sin
 
         final ItemStack cache = itemHandler.getStackInSlot(0);
 
+        // The item and the text both show within the cache render distance (0: no limit of ours)
+        final int distance = configuration.general.cacheRenderDistance;
+        final boolean inRange = distance <= 0 || viewer != null && te.hasWorld()
+                && te.getDistanceSq(viewer.posX, viewer.posY, viewer.posZ) <= (double) distance * distance;
+
         final BlockPos pos = te.getPos();
 
         if (!(blockState.getBlock() instanceof CacheBlock)) {
@@ -120,14 +125,7 @@ public final class CacheTileEntityRenderer extends TileEntitySpecialRenderer<Sin
         GlStateManager.scale(0.5F, 0.5F, 0.5F);
 
         // FIXED is meant for ItemFrame rendering which we are mimicing
-        boolean renderItem = true;
-        if (configuration.general.itemFrameRenderDistance > 0) {
-            if (viewer == null || !te.hasWorld() || te.getDistanceSq(viewer.posX, viewer.posY, viewer.posZ) >
-                (configuration.general.itemFrameRenderDistance * 16)) {
-                renderItem = false;
-            }
-        }
-        if (renderItem) {
+        if (inRange) {
             this.client.getRenderItem().renderItem(cache, ItemCameraTransforms.TransformType.FIXED);
         }
 
@@ -152,16 +150,7 @@ public final class CacheTileEntityRenderer extends TileEntitySpecialRenderer<Sin
         String displayName;
         String cacheQuantity = ZERO_QUANTITY;
 
-        boolean renderText = true;
-
-        if (configuration.general.signTextRenderDistance > 0) {
-            if (viewer == null || !te.hasWorld() || te.getDistanceSq(viewer.posX, viewer.posY, viewer.posZ) >
-                (configuration.general.signTextRenderDistance * 16)) {
-                renderText = false;
-            }
-        }
-
-        if (renderText) {
+        if (inRange) {
             boolean empty = cache.isEmpty();
 
             if (empty) {

@@ -36,7 +36,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
 
 @SideOnly(Side.CLIENT)
 public final class SimpleOptionsMenu extends BasicScreen {
@@ -180,86 +179,79 @@ public final class SimpleOptionsMenu extends BasicScreen {
         this.sliderOriginHudOpacity.setAlpha(isOrigin ? 255 : 128);
         this.updatePosition(this.sliderOriginHudOpacity, Anchor.RIGHT);
 
-        final UISlider<OptionsConverter.Options> sliderChestDistance = new UISliderBuilder(OPTIONS_CONVERTER)
+        final UISlider<OptionsConverter.Distance> sliderChestDistance = new UISliderBuilder(OPTIONS_CONVERTER)
                 .text("Chest Distance: %s")
-                .value(Arrays.stream(OptionsConverter.Options.values())
-                        .filter(o -> o.value == general.chestRenderDistance)
-                        .findFirst()
-                        .orElse(OptionsConverter.Options.DEFAULT))
+                .value(new OptionsConverter.Distance(general.chestRenderDistance))
                 .size(CONTROL_WIDTH, CONTROL_HEIGHT)
                 .listener(this)
                 .build("slider.chestRenderDistance");
         this.updatePosition(sliderChestDistance, Anchor.RIGHT);
 
-        final UISlider<OptionsConverter.Options> sliderSignTextDistance = new UISliderBuilder(OPTIONS_CONVERTER)
+        final UISlider<OptionsConverter.Distance> sliderSignTextDistance = new UISliderBuilder(OPTIONS_CONVERTER)
                 .text("Sign Text Distance: %s")
-                .value(Arrays.stream(OptionsConverter.Options.values())
-                        .filter(o -> o.value == general.signTextRenderDistance)
-                        .findFirst()
-                        .orElse(OptionsConverter.Options.DEFAULT))
+                .value(new OptionsConverter.Distance(general.signTextRenderDistance))
                 .size(CONTROL_WIDTH, CONTROL_HEIGHT)
                 .listener(this)
                 .build("slider.signTextRenderDistance");
         this.updatePosition(sliderSignTextDistance, Anchor.RIGHT);
 
-        final UISlider<OptionsConverter.Options> sliderItemFrameDistance = new UISliderBuilder(OPTIONS_CONVERTER)
+        final UISlider<OptionsConverter.Distance> sliderItemFrameDistance = new UISliderBuilder(OPTIONS_CONVERTER)
                 .text("Item Frame Distance: %s")
-                .value(Arrays.stream(OptionsConverter.Options.values())
-                        .filter(o -> o.value == general.itemFrameRenderDistance)
-                        .findFirst()
-                        .orElse(OptionsConverter.Options.DEFAULT))
+                .value(new OptionsConverter.Distance(general.itemFrameRenderDistance))
                 .size(CONTROL_WIDTH, CONTROL_HEIGHT)
                 .listener(this)
                 .build("slider.itemFrameRenderDistance");
         this.updatePosition(sliderItemFrameDistance, Anchor.RIGHT);
 
-        final UISlider<OptionsConverter.Options> sliderPlayerNameRenderDistance = new UISliderBuilder(OPTIONS_CONVERTER)
+        final UISlider<OptionsConverter.Distance> sliderCacheDistance = new UISliderBuilder(OPTIONS_CONVERTER)
+                .text("Cache Distance: %s")
+                .value(new OptionsConverter.Distance(general.cacheRenderDistance))
+                .size(CONTROL_WIDTH, CONTROL_HEIGHT)
+                .listener(this)
+                .build("slider.cacheRenderDistance");
+        this.updatePosition(sliderCacheDistance, Anchor.RIGHT);
+
+        final UISlider<OptionsConverter.Distance> sliderPlayerNameRenderDistance = new UISliderBuilder(OPTIONS_CONVERTER)
                 .text("Player Name Distance: %s")
-                .value(Arrays.stream(OptionsConverter.Options.values())
-                        .filter(o -> o.value == general.playerNameRenderDistance)
-                        .findFirst()
-                        .orElse(OptionsConverter.Options.DEFAULT))
+                .value(new OptionsConverter.Distance(general.playerNameRenderDistance))
                 .size(CONTROL_WIDTH, CONTROL_HEIGHT)
                 .listener(this)
                 .build("slider.playerNameRenderDistance");
         this.updatePosition(sliderPlayerNameRenderDistance, Anchor.RIGHT);
 
-        final UISlider<OptionsConverter.Options> sliderEnemyNameRenderDistance = new UISliderBuilder(OPTIONS_CONVERTER)
+        final UISlider<OptionsConverter.Distance> sliderEnemyNameRenderDistance = new UISliderBuilder(OPTIONS_CONVERTER)
                 .text("Enemy Name Distance: %s")
-                .value(Arrays.stream(OptionsConverter.Options.values())
-                        .filter(o -> o.value == general.enemyNameRenderDistance)
-                        .findFirst()
-                        .orElse(OptionsConverter.Options.DEFAULT))
+                .value(new OptionsConverter.Distance(general.enemyNameRenderDistance))
                 .size(CONTROL_WIDTH, CONTROL_HEIGHT)
                 .listener(this)
                 .build("slider.enemyNameRenderDistance");
         this.updatePosition(sliderEnemyNameRenderDistance, Anchor.RIGHT);
 
-        final UISlider<OptionsConverter.Options> sliderAnimalNameRenderDistance = new UISliderBuilder(OPTIONS_CONVERTER)
+        final UISlider<OptionsConverter.Distance> sliderAnimalNameRenderDistance = new UISliderBuilder(OPTIONS_CONVERTER)
                 .text("Animal Name Distance: %s")
-                .value(Arrays.stream(OptionsConverter.Options.values())
-                        .filter(o -> o.value == general.animalNameRenderDistance)
-                        .findFirst()
-                        .orElse(OptionsConverter.Options.DEFAULT))
+                .value(new OptionsConverter.Distance(general.animalNameRenderDistance))
                 .size(CONTROL_WIDTH, CONTROL_HEIGHT)
                 .listener(this)
                 .build("slider.animalNameRenderDistance");
         this.updatePosition(sliderAnimalNameRenderDistance, Anchor.RIGHT);
 
 
+        // Under whichever column is longer
+        final int doneY = Math.max(leftColumnEnd == null ? 10 : getPaddedY(leftColumnEnd, 10),
+                this.lastComponent == null ? 10 : getPaddedY(this.lastComponent, 10));
         final UIButton buttonDone = new UIButtonBuilder()
                 .text(I18n.format("gui.done"))
                 .size(200, CONTROL_HEIGHT)
-                // Under whichever column is longer
-                .position(0, Math.max(leftColumnEnd == null ? 10 : getPaddedY(leftColumnEnd, 10),
-                        this.lastComponent == null ? 10 : getPaddedY(this.lastComponent, 10)))
+                .position(0, doneY)
                 .anchor(Anchor.TOP | Anchor.CENTER)
                 .listener(this)
                 .build("button.done");
+        // Tall enough for the done button: the container clips what lies outside it
+        optionsContainer.setSize(optionsContainer.getWidth(), doneY + CONTROL_HEIGHT);
 
         optionsContainer.add(this.buttonOptimized, this.buttonHudType, this.sliderOriginHudOpacity, checkboxWorldCompassWidget, checkboxLocationWidget,
                 checkboxPerformanceStats, checkboxNumericHUDValues, checkboxDisplayNames, checkboxDisplayHealthbars, checkboxDisableOffhandTorchPlacement, checkboxDisplayGuideOnLogin,
-                checkboxExtendedView, sliderChestDistance, sliderSignTextDistance, sliderItemFrameDistance, sliderPlayerNameRenderDistance,
+                checkboxExtendedView, sliderChestDistance, sliderSignTextDistance, sliderItemFrameDistance, sliderCacheDistance, sliderPlayerNameRenderDistance,
                 sliderEnemyNameRenderDistance, sliderAnimalNameRenderDistance, buttonDone);
         addToScreen(optionsContainer);
     }
@@ -324,22 +316,25 @@ public final class SimpleOptionsMenu extends BasicScreen {
                 configuration.general.originHudOpacity = (int) event.getNewValue();
                 break;
             case "slider.chestRenderDistance" :
-                configuration.general.chestRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
+                configuration.general.chestRenderDistance = ((OptionsConverter.Distance) event.getNewValue()).value;
                 break;
             case "slider.signTextRenderDistance" :
-                configuration.general.signTextRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
+                configuration.general.signTextRenderDistance = ((OptionsConverter.Distance) event.getNewValue()).value;
                 break;
             case "slider.itemFrameRenderDistance" :
-                configuration.general.itemFrameRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
+                configuration.general.itemFrameRenderDistance = ((OptionsConverter.Distance) event.getNewValue()).value;
+                break;
+            case "slider.cacheRenderDistance" :
+                configuration.general.cacheRenderDistance = ((OptionsConverter.Distance) event.getNewValue()).value;
                 break;
             case "slider.playerNameRenderDistance" :
-                configuration.general.playerNameRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
+                configuration.general.playerNameRenderDistance = ((OptionsConverter.Distance) event.getNewValue()).value;
                 break;
             case "slider.enemyNameRenderDistance" :
-                configuration.general.enemyNameRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
+                configuration.general.enemyNameRenderDistance = ((OptionsConverter.Distance) event.getNewValue()).value;
                 break;
             case "slider.animalNameRenderDistance" :
-                configuration.general.animalNameRenderDistance = ((OptionsConverter.Options) event.getNewValue()).value;
+                configuration.general.animalNameRenderDistance = ((OptionsConverter.Distance) event.getNewValue()).value;
                 break;
             case "checkbox.world_compass_widget" :
                 configuration.general.displayWorldCompassWidget = (boolean) event.getNewValue();
@@ -374,47 +369,42 @@ public final class SimpleOptionsMenu extends BasicScreen {
     }
 
 
-    private static class OptionsConverter extends Converter<Float, OptionsConverter.Options> {
+    /**
+     * Render distance sliders: every block from 0 (Disabled, no limit of ours) to {@link Distance#MAX}.
+     */
+    private static class OptionsConverter extends Converter<Float, OptionsConverter.Distance> {
         @Override
-        protected Options doForward(Float val) {
-            final int i = Math.round(val * (Options.values().length - 1));
-            return Arrays.stream(Options.values())
-                    .filter(o -> o.index == i)
-                    .findFirst()
-                    .orElse(Options.DEFAULT);
+        protected Distance doForward(Float val) {
+            return new Distance(Math.round(val * Distance.MAX));
         }
 
         @Override
-        protected Float doBackward(Options option) {
-            if (Options.values().length == 0){
-                return 0f;
-            } else {
-                return (float) option.index / (Options.values().length - 1);
-            }
+        protected Float doBackward(Distance distance) {
+            return (float) distance.value / Distance.MAX;
         }
 
-        protected enum Options {
-            DEFAULT("Disabled", 0, 0),
-            V4("4", 1, 4),
-            V8("8", 2, 8),
-            V16("16", 3, 16),
-            V32("32", 4, 32),
-            V64("64", 5, 64),
-            V128("128", 6, 128);
+        protected static final class Distance {
+            static final int MAX = 128;
 
-            public final String name;
-            public final int index;
             public final int value;
 
-            Options(String name, int index, int value) {
-                this.name = name;
-                this.index = index;
-                this.value = value;
+            Distance(int value) {
+                this.value = Math.max(0, Math.min(MAX, value));
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                return o instanceof Distance && ((Distance) o).value == this.value;
+            }
+
+            @Override
+            public int hashCode() {
+                return this.value;
             }
 
             @Override
             public String toString() {
-                return this.name;
+                return this.value == 0 ? "Disabled" : String.valueOf(this.value);
             }
         }
     }

@@ -32,10 +32,10 @@ public final class GeneralCategory {
     @Setting(value = "display-animal-heat-status", comment = "Toggles the showing of an Animal's heat status above their head")
     public boolean displayAnimalHeatStatus = true;
 
-    @Setting(value = "chest-render-distance", comment = "Controls a chest's render distance. Valid options are 0|16|32|64|128 (blocks)")
+    @Setting(value = "chest-render-distance", comment = "Controls a chest's render distance. Range: 0-128 (blocks, 0 for no limit)")
     public int chestRenderDistance = 16;
 
-    @Setting(value = "item-frame-render-distance", comment = "Controls an item frame's render distance. Valid options are 0|16|32|64|128 (blocks)")
+    @Setting(value = "item-frame-render-distance", comment = "Controls an item frame's render distance. Range: 0-128 (blocks, 0 for no limit)")
     public int itemFrameRenderDistance = 16;
 
     @Setting(value = "player-name-render-distance", comment = "Controls the Player Name render distance")
@@ -47,8 +47,11 @@ public final class GeneralCategory {
     @Setting(value = "animal-name-render-distance", comment = "Controls the Animal Name render distance")
     public int animalNameRenderDistance = 4;
 
-    @Setting(value = "sign-text-render-distance", comment = "Controls a sign text's render distance. Valid options are 0|16|32|64|128 (blocks)")
+    @Setting(value = "sign-text-render-distance", comment = "Controls a sign text's render distance. Range: 0-128 (blocks, 0 for no limit)")
     public int signTextRenderDistance = 16;
+
+    @Setting(value = "cache-render-distance", comment = "Controls the render distance of a cache's item and text. Range: 0-128 (blocks, 0 for no limit)")
+    public int cacheRenderDistance = 16;
 
     @Setting(value = "origin-hud-opacity", comment = "Determines the opacity used for the Origin HUD. Default: 255; Range: 0-255")
     public int originHudOpacity = 255;
