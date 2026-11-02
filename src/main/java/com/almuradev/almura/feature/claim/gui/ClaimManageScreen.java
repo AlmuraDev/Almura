@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.claim.gui;
 
 import com.almuradev.almura.feature.claim.ClientClaimManager;
+import com.almuradev.almura.feature.claim.ClientClaimVisuals;
 import com.almuradev.almura.feature.claim.network.*;
 import com.almuradev.almura.feature.hud.HeadUpDisplay;
 import com.almuradev.almura.shared.network.NetworkConfig;
@@ -46,6 +47,7 @@ public final class ClaimManageScreen extends BasicScreen {
 
     @Inject @ChannelId(NetworkConfig.CHANNEL) private static ChannelBinding.IndexedMessageChannel network;
     @Inject private static ClientClaimManager clientClaimManager;
+    @Inject private static ClientClaimVisuals clientClaimVisuals;
     @Inject private static HeadUpDisplay hudData;
 
     private int lastUpdate = 0;
@@ -387,7 +389,7 @@ public final class ClaimManageScreen extends BasicScreen {
     public void onUIButtonClickEvent(UIButton.ClickEvent event) {
         switch (event.getComponent().getName().toLowerCase()) {
             case "button.visuals":
-                this.toggleVisuals = !this.toggleVisuals;
+                this.toggleVisuals = !clientClaimVisuals.isShowing();
                 if (clientClaimManager.isWilderness) {
                     this.toggleVisuals = false;  // Forces disable.
                 }

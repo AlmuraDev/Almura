@@ -10,6 +10,7 @@ package com.almuradev.almura.feature.claim;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.claim.network.ClientboundClaimDataPacket;
 import com.almuradev.almura.feature.claim.network.ClientboundClaimGuiResponsePacket;
+import com.almuradev.almura.feature.claim.network.ClientboundClaimVisualPacket;
 import com.almuradev.almura.feature.notification.ServerNotificationManager;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
@@ -324,20 +325,49 @@ public final class ServerClaimManager implements Witness {
     }
 
     public void toggleVisuals(final Player player, final Claim claim, final boolean value) {
-        if (GriefDefender.getCore().getWorldEditProvider() == null) {
-            return;
-        }
-
-        if (!GriefDefender.getCore().getWorldEditProvider().hasCUISupport(player.getUniqueId())) {
-            this.serverNotificationManager.sendPopupNotification(player, notificationTitle, Text.of("WECUI Mod not loaded!"), 2);
-            return;
-        }
-
-        // The below is tested and verified working!
+        // Almura draws the outline itself; an empty packet clears it.
+        final ClientboundClaimVisualPacket packet = new ClientboundClaimVisualPacket();
         if (value && !claim.isWilderness()) {
-            GriefDefender.getCore().getWorldEditProvider().displayClaimCUIVisual(claim, player.getUniqueId());
+            // Show the whole claim the player is in, with its subdivisions, even when standing in a subdivision.
+            Claim top = claim;
+            while (top.isSubdivision() && top.getParent() != null) {
+                top = top.getParent();
+            }
+            packet.boxes.add(this.visualBox(top));
+            for (final Claim child : top.getChildren(true)) {
+                packet.boxes.add(this.visualBox(child));
+            }
+        }
+        this.network.sendTo(player, packet);
+    }
+
+    private ClientboundClaimVisualPacket.Box visualBox(final Claim claim) {
+        final byte type;
+        if (claim.isAdminClaim()) {
+            type = ClientboundClaimVisualPacket.ADMIN;
+        } else if (claim.isTown()) {
+            type = ClientboundClaimVisualPacket.TOWN;
+        } else if (claim.isSubdivision()) {
+            type = ClientboundClaimVisualPacket.SUBDIVISION;
         } else {
-            GriefDefender.getCore().getWorldEditProvider().revertAllVisuals(player.getUniqueId());
+            type = ClientboundClaimVisualPacket.BASIC;
+        }
+        final int[] lesser = corner(claim, "getLesserBoundaryCorner");
+        final int[] greater = corner(claim, "getGreaterBoundaryCorner");
+        return new ClientboundClaimVisualPacket.Box(type, claim.isCuboid(), lesser[0], lesser[1], lesser[2], greater[0], greater[1], greater[2]);
+    }
+
+    // The corners are read by reflection: the API jar Almura compiles against returns GriefDefender's relocated Vector3i
+    // (com.griefdefender.lib.flowpowered), while the GriefDefender on the server returns Sponge's com.flowpowered one, so a direct call fails
+    // with NoSuchMethodError.
+    private static int[] corner(final Claim claim, final String method) {
+        try {
+            final Object vector = Claim.class.getMethod(method).invoke(claim);
+            final Class<?> type = vector.getClass();
+            return new int[] {(int) type.getMethod("getX").invoke(vector), (int) type.getMethod("getY").invoke(vector),
+                (int) type.getMethod("getZ").invoke(vector)};
+        } catch (final ReflectiveOperationException e) {
+            throw new IllegalStateException("Unable to read claim corner " + method, e);
         }
     }
 

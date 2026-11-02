@@ -38,6 +38,7 @@ import com.almuradev.almura.feature.storage.StorageModule;
 import com.almuradev.almura.feature.store.StoreModule;
 import com.almuradev.almura.feature.title.TitleModule;
 import com.almuradev.almura.feature.treefeller.TreeFellerModule;
+import com.almuradev.almura.feature.worldedit.WorldEditModule;
 import com.almuradev.almura.feature.worldload.WorldLoadModule;
 import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
@@ -82,6 +83,7 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.facet().add(ItemReturnHelper.class);
         this.nerfVanillaFood();
         this.install(new ClaimModule());
+        this.install(new WorldEditModule());
         this.install(new MembershipModule());
         this.install(new SkillsModule());
         this.install(new FlickerLightModule());
