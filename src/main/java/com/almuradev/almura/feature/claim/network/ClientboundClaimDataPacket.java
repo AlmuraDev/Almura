@@ -35,6 +35,9 @@ public final class ClientboundClaimDataPacket implements Message {
     public boolean hasWECUI;
     public double claimTaxBalance;
     public double claimSalePrice;
+    // A bitmask of ClaimFlag.bit().
+    public int claimFlags;
+    public boolean killMonsters;
 
     public ClientboundClaimDataPacket() {
     }
@@ -42,7 +45,7 @@ public final class ClientboundClaimDataPacket implements Message {
     public ClientboundClaimDataPacket(final boolean isClaim, final String claimName, final String claimOwner, final boolean isWilderness, final boolean isTownClaim, final boolean isAdminClaim, final boolean isBasicClaim, final boolean isSubdivision,
             final double claimEconBalance, final String claimGreeting, final String claimFarewell, final String dateCreated, final String claimType, final int claimSize, final boolean isForSale,
             final boolean showWarnings, final double claimTaxRate, final double claimTaxes, final double claimBlockCost, final double claimBlockSell, final boolean hasWECUI,
-            final double claimTaxBalance, final double claimSalePrice) {
+            final double claimTaxBalance, final double claimSalePrice, final int claimFlags, final boolean killMonsters) {
         this.isClaim = isClaim;
         this.claimName = claimName;
         this.claimOwner = claimOwner;
@@ -66,6 +69,8 @@ public final class ClientboundClaimDataPacket implements Message {
         this.hasWECUI = hasWECUI;
         this.claimTaxBalance = claimTaxBalance;
         this.claimSalePrice = claimSalePrice;
+        this.claimFlags = claimFlags;
+        this.killMonsters = killMonsters;
     }
 
     @Override
@@ -93,6 +98,8 @@ public final class ClientboundClaimDataPacket implements Message {
         this.hasWECUI = buf.readBoolean();
         this.claimTaxBalance = buf.readDouble();
         this.claimSalePrice = buf.readDouble();
+        this.claimFlags = buf.readInteger();
+        this.killMonsters = buf.readBoolean();
     }
 
     @Override
@@ -120,5 +127,7 @@ public final class ClientboundClaimDataPacket implements Message {
         buf.writeBoolean(this.hasWECUI);
         buf.writeDouble(this.claimTaxBalance);
         buf.writeDouble(this.claimSalePrice);
+        buf.writeInteger(this.claimFlags);
+        buf.writeBoolean(this.killMonsters);
     }
 }

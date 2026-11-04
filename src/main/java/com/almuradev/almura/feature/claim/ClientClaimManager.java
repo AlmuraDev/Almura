@@ -48,6 +48,9 @@ public final class ClientClaimManager implements Witness {
     public double claimTaxRate;
     public double claimTaxBalance;
     public double claimSalePrice;
+    // A bitmask of ClaimFlag.bit().
+    public int claimFlags;
+    public boolean killMonsters;
 
     @Inject
     public ClientClaimManager(@ChannelId(NetworkConfig.CHANNEL) final ChannelBinding.IndexedMessageChannel network) {

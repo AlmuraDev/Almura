@@ -12,6 +12,7 @@ import com.almuradev.almura.feature.claim.network.ClientboundClaimDataPacket;
 import com.almuradev.almura.feature.claim.network.ClientboundClaimGuiResponsePacket;
 import com.almuradev.almura.feature.claim.network.ClientboundClaimVisualPacket;
 import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiAbandonRequestPacket;
+import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiFlagsRequestPacket;
 import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiForSaleRequestPacket;
 import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiRequestPacket;
 import com.almuradev.almura.feature.claim.network.ServerboundClaimGuiSaveRequestPacket;
@@ -22,6 +23,7 @@ import com.almuradev.almura.feature.claim.network.handler.ClientboundClaimDataPa
 import com.almuradev.almura.feature.claim.network.handler.ClientboundClaimGuiResponsePacketHandler;
 import com.almuradev.almura.feature.claim.network.handler.ClientboundClaimVisualPacketHandler;
 import com.almuradev.almura.feature.claim.network.handler.ServerboundClaimGuiAbandonRequestPacketHandler;
+import com.almuradev.almura.feature.claim.network.handler.ServerboundClaimGuiFlagsRequestPacketHandler;
 import com.almuradev.almura.feature.claim.network.handler.ServerboundClaimGuiForSaleRequestPacketHandler;
 import com.almuradev.almura.feature.claim.network.handler.ServerboundClaimGuiRequestPacketHandler;
 import com.almuradev.almura.feature.claim.network.handler.ServerboundClaimGuiSaveRequestPacketHandler;
@@ -70,6 +72,7 @@ public final class ClaimModule extends AbstractModule implements CommonBinder {
                         this.packet().bind(ServerboundClaimGuiToggleDenyMessagesRequestPacket.class);
                         this.packet().bind(ServerboundClaimGuiForSaleRequestPacket.class);
                         this.packet().bind(ServerboundClaimGuiSetSpawnRequestPacket.class);
+                        this.packet().bind(ServerboundClaimGuiFlagsRequestPacket.class);
                     }
 
                     this.requestStaticInjection(ClaimManageScreen.class);
@@ -89,6 +92,7 @@ public final class ClaimModule extends AbstractModule implements CommonBinder {
         this.packet().bind(ServerboundClaimGuiToggleDenyMessagesRequestPacket.class, binder -> binder.handler(ServerboundClaimGuiToggleDenyMessagesRequestPacketHandler.class, Platform.Type.SERVER));
         this.packet().bind(ServerboundClaimGuiForSaleRequestPacket.class, binder -> binder.handler(ServerboundClaimGuiForSaleRequestPacketHandler.class, Platform.Type.SERVER));
         this.packet().bind(ServerboundClaimGuiSetSpawnRequestPacket.class, binder -> binder.handler(ServerboundClaimGuiSetSpawnRequestPacketHandler.class, Platform.Type.SERVER));
+        this.packet().bind(ServerboundClaimGuiFlagsRequestPacket.class, binder -> binder.handler(ServerboundClaimGuiFlagsRequestPacketHandler.class, Platform.Type.SERVER));
         this.facet().add(ServerClaimManager.class);
     }
 }

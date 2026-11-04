@@ -16,9 +16,6 @@ import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicContainerScreen;
 import net.malisis.core.client.gui.BasicScreen;
-import net.malisis.core.client.gui.render.GuiRenderer;
-import net.malisis.core.client.gui.render.GuiIcon;
-import net.malisis.core.client.gui.render.GuiTexture;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
 import net.malisis.core.client.gui.component.container.BasicList;
@@ -28,6 +25,8 @@ import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.UITextArea;
 import net.malisis.core.client.gui.component.interaction.UITextField;
 import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
+import net.malisis.core.client.gui.render.GuiIcon;
+import net.malisis.core.client.gui.render.GuiRenderer;
 import net.malisis.core.renderer.font.FontOptions;
 import net.malisis.core.util.FontColors;
 import net.minecraft.client.resources.I18n;
@@ -42,10 +41,9 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
-
-import javax.annotation.Nullable;
 
 @SideOnly(Side.CLIENT)
 public class SimpleAboutMenu extends BasicContainerScreen {
@@ -138,7 +136,7 @@ public class SimpleAboutMenu extends BasicContainerScreen {
 
         // Almura
         final PluginContainer almuraContainer = Sponge.getPluginManager().getPlugin("almura").orElseThrow(NullPointerException::new);
-        final UILabel almuraVersionLabel = new UILabel(TextFormatting.WHITE + "Almura 3.1 - " + Almura.buildNumber);
+        final UILabel almuraVersionLabel = new UILabel(TextFormatting.WHITE + "Almura 3.5 - " + Almura.buildNumber);
         almuraVersionLabel.setPosition(4, -4, Anchor.LEFT | Anchor.BOTTOM);
         addToScreen(almuraVersionLabel);
 

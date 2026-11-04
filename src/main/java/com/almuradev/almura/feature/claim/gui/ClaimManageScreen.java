@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.claim.gui;
 
+import com.almuradev.almura.feature.claim.ClaimFlag;
 import com.almuradev.almura.feature.claim.ClientClaimManager;
 import com.almuradev.almura.feature.claim.ClientClaimVisuals;
 import com.almuradev.almura.feature.claim.network.*;
@@ -40,7 +41,10 @@ import org.spongepowered.api.network.ChannelId;
 import javax.inject.Inject;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 @SideOnly(Side.CLIENT)
 public final class ClaimManageScreen extends BasicScreen {
@@ -54,13 +58,21 @@ public final class ClaimManageScreen extends BasicScreen {
     private boolean unlockMouse = true;
     private boolean update = true;
 
-    private BasicForm form, functionsArea, econArea;
+    private BasicForm form, functionsArea, flagsArea, econArea;
     private UITextField claimNameField, claimOwnerField, claimGreetingField, claimFarewellField, claimSizeField, claimValueField, claimTaxField, claimTaxBalanceField;
     private UITextField forSalePriceField, claimTaxRateField, dateCreatedField, claimTypeField;
     private UILabel claimNameLabel, claimForSaleLabel, claimOwnerLabel, claimGreetingLabel, claimFarewellLabel, claimSizeLabel, claimTaxLabel, claimTaxBalanceLabel;
     private UILabel econTitleLabel, claimValueLabel, claimFunctionsLabel, forSaleLabel, taxRateLabel, dateCreatedLabel, claimTypeLabel, wildernessLabel;
-    private UICheckBox showWarningsCheckbox;
+    private UICheckBox showWarningsCheckbox, killMonstersCheckbox;
+    private final Map<ClaimFlag, UICheckBox> flagCheckboxes = new EnumMap<>(ClaimFlag.class);
+    // Flags checkboxes the player just clicked, by option name, until when their new state is kept over older values from the server.
+    private final Map<String, Long> pendingFlags = new HashMap<>();
     private UIButton buttonVisuals, buttonHideVisuals, buttonAbandon, buttonSetForSale, buttonSetSpawnLocation;
+
+    // Wide enough for the claim details, the Flags section and Claim Functions side by side.
+    private static final int FORM_WIDTH = 580;
+    private static final String FLAG_CHECKBOX = "checkbox.flag.";
+    private static final long PENDING_MILLIS = 3000;
 
     private boolean isOwner, isTrusted, isAdmin, toggleVisuals, closeOnAbandon;
 
@@ -78,7 +90,7 @@ public final class ClaimManageScreen extends BasicScreen {
 
         final DecimalFormat dFormat = new DecimalFormat("###,###,##0.00");
 
-        this.form = new BasicForm(400, 260, "");
+        this.form = new BasicForm(FORM_WIDTH, 260, "");
         this.form.setAnchor(Anchor.CENTER | Anchor.MIDDLE);
         this.form.setMovable(true);
         this.form.setClosable(true);
@@ -331,6 +343,53 @@ public final class ClaimManageScreen extends BasicScreen {
 
         this.functionsArea.add(claimFunctionsLabel, functionsSeparator, buttonAbandon, buttonSetForSale, buttonSetSpawnLocation, buttonVisuals, claimForSaleLabel);
 
+        // Flags Container
+        this.flagsArea = new BasicForm(170, 200, "");
+        this.flagsArea.setPosition(-125, 5, Anchor.RIGHT | Anchor.TOP);
+        this.flagsArea.setMovable(false);
+        this.flagsArea.setClosable(false);
+        this.flagsArea.setBorder(FontColors.WHITE, 1, 185);
+        this.flagsArea.setBackgroundAlpha(215);
+        this.flagsArea.setBottomPadding(3);
+        this.flagsArea.setRightPadding(3);
+        this.flagsArea.setTopPadding(3);
+        this.flagsArea.setLeftPadding(3);
+        this.flagsArea.setVisible(!clientClaimManager.isWilderness);
+
+        final UILabel flagsLabel = new UILabel("Flags");
+        flagsLabel.setFontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).scale(1.1F).build());
+        flagsLabel.setPosition(0, 4, Anchor.CENTER | Anchor.TOP);
+
+        final UISeparator flagsSeparator = new UISeparator(this);
+        flagsSeparator.setSize(this.flagsArea.getWidth() - 15, 1);
+        flagsSeparator.setPosition(0, 15, Anchor.TOP | Anchor.CENTER);
+
+        this.flagsArea.add(flagsLabel, flagsSeparator);
+        int flagY = 22;
+        for (final ClaimFlag flag : ClaimFlag.values()) {
+            final UICheckBox checkbox = new UICheckBox();
+            checkbox.setText(TextFormatting.WHITE + flag.label);
+            checkbox.setTooltip(flag.tooltip);
+            checkbox.setPosition(4, flagY, Anchor.LEFT | Anchor.TOP);
+            checkbox.setName(FLAG_CHECKBOX + flag.name());
+            checkbox.register(this);
+            this.flagCheckboxes.put(flag, checkbox);
+            this.flagsArea.add(checkbox);
+            flagY += 14;
+
+            if (flag == ClaimFlag.PREVENT_MONSTERS) {
+                // A sub-option of Prevent Monsters, indented under it and only usable while it is on.
+                this.killMonstersCheckbox = new UICheckBox();
+                this.killMonstersCheckbox.setText(TextFormatting.WHITE + "Kill monsters in claim");
+                this.killMonstersCheckbox.setTooltip("Removes monsters that wander into this claim");
+                this.killMonstersCheckbox.setPosition(16, flagY, Anchor.LEFT | Anchor.TOP);
+                this.killMonstersCheckbox.setName("checkbox.killmonsters");
+                this.killMonstersCheckbox.register(this);
+                this.flagsArea.add(this.killMonstersCheckbox);
+                flagY += 14;
+            }
+        }
+
         this.showWarningsCheckbox = new UICheckBox();
         this.showWarningsCheckbox.setText(TextFormatting.WHITE + "Show Permission Denied Messages");
         this.showWarningsCheckbox.setPosition(7, -1, Anchor.LEFT | Anchor.BOTTOM);
@@ -368,7 +427,7 @@ public final class ClaimManageScreen extends BasicScreen {
 
         this.form.add(titleLabel, separator, wildernessLabel, claimNameLabel, this.claimNameField, this.claimOwnerLabel, this.claimOwnerField, this.claimGreetingLabel,
                 this.claimGreetingField, this.claimFarewellLabel, this.claimFarewellField, this.dateCreatedLabel, this.dateCreatedField, this.claimTypeLabel, this.claimTypeField,
-                this.econArea, this.functionsArea, this.showWarningsCheckbox, buttonHideVisuals, buttonSave, buttonClose);
+                this.econArea, this.functionsArea, this.flagsArea, this.showWarningsCheckbox, buttonHideVisuals, buttonSave, buttonClose);
 
         updateValues();
 
@@ -382,7 +441,37 @@ public final class ClaimManageScreen extends BasicScreen {
                 network.sendToServer(new ServerboundClaimGuiToggleDenyMessagesRequestPacket(this.mc.player.posX, this.mc.player.posY, this.mc
                     .player.posZ, hudData.worldName, !this.showWarningsCheckbox.isChecked()));
                 break;
+            // Like the checkbox above, the event comes before the box changes, so the new value is the opposite of isChecked().
+            case "checkbox.killmonsters":
+                this.sendFlag(ServerboundClaimGuiFlagsRequestPacket.KILL_MONSTERS, !this.killMonstersCheckbox.isChecked());
+                break;
+            default:
+                if (event.getComponent().getName().startsWith(FLAG_CHECKBOX)) {
+                    final String flag = event.getComponent().getName().substring(FLAG_CHECKBOX.length());
+                    this.sendFlag(flag, !((UICheckBox) event.getComponent()).isChecked());
+                }
         }
+    }
+
+    private void sendFlag(final String option, final boolean value) {
+        this.pendingFlags.put(option, System.currentTimeMillis() + PENDING_MILLIS);
+        network.sendToServer(new ServerboundClaimGuiFlagsRequestPacket(this.mc.player.posX, this.mc.player.posY, this.mc.player.posZ, hudData.worldName,
+            option, value));
+    }
+
+    /**
+     * Shows the server's value for a Flags checkbox, except right after the player clicked it: claim updates sent for other reasons can still
+     * carry the old value, so the box keeps what the player chose until the server agrees or {@link #PENDING_MILLIS} passes.
+     */
+    private void showFlag(final String option, final UICheckBox checkbox, final boolean serverValue) {
+        final Long pendingUntil = this.pendingFlags.get(option);
+        if (pendingUntil != null) {
+            if (serverValue != checkbox.isChecked() && System.currentTimeMillis() < pendingUntil) {
+                return;
+            }
+            this.pendingFlags.remove(option);
+        }
+        checkbox.setChecked(serverValue);
     }
 
     @Subscribe
@@ -475,6 +564,13 @@ public final class ClaimManageScreen extends BasicScreen {
         this.claimTaxRateField.setText("$ " + TextFormatting.GOLD + dFormat.format(clientClaimManager.claimTaxRate));
         this.econArea.setVisible(!clientClaimManager.isWilderness);
         this.functionsArea.setVisible(!clientClaimManager.isWilderness);
+        this.flagsArea.setVisible(!clientClaimManager.isWilderness);
+        this.flagCheckboxes.forEach((flag, checkbox) -> {
+            this.showFlag(flag.name(), checkbox, flag.in(clientClaimManager.claimFlags));
+            checkbox.setEnabled(this.isOwner || this.isAdmin);
+        });
+        this.showFlag(ServerboundClaimGuiFlagsRequestPacket.KILL_MONSTERS, this.killMonstersCheckbox, clientClaimManager.killMonsters);
+        this.killMonstersCheckbox.setEnabled((this.isOwner || this.isAdmin) && this.flagCheckboxes.get(ClaimFlag.PREVENT_MONSTERS).isChecked());
 
         if (clientClaimManager.claimType.equalsIgnoreCase("admin")) {
             this.claimTypeField.setText(TextFormatting.RED + "Admin");
@@ -504,7 +600,7 @@ public final class ClaimManageScreen extends BasicScreen {
         if (clientClaimManager.isWilderness) {
             this.form.setSize(300, 125);
         } else {
-            this.form.setSize(400, 260);
+            this.form.setSize(FORM_WIDTH, 260);
             this.claimSizeField.setText("" + NumberFormat.getNumberInstance(Locale.US).format(clientClaimManager.claimSize));
         }
         // Update visibility based on whether or not its a real claim or wilderness
