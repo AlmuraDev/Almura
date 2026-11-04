@@ -12,6 +12,7 @@ import com.almuradev.content.type.generation.GenerationModule;
 import com.almuradev.content.type.generation.type.feature.tree.processor.BigTreeProcessor;
 import com.almuradev.content.type.generation.type.feature.tree.processor.ChanceProcessor;
 import com.almuradev.content.type.generation.type.feature.tree.processor.RequiresProcessor;
+import com.almuradev.content.type.generation.type.feature.tree.processor.TemperatureProcessor;
 import com.almuradev.content.type.generation.type.feature.tree.processor.TreeProcessor;
 import com.almuradev.content.type.generation.type.feature.tree.processor.WorldsProcessor;
 
@@ -23,6 +24,7 @@ public final class TreeGeneratorModule extends GenerationModule.Module {
                 .only(BigTreeProcessor.class, GenerationGenre.TREE_FEATURE)
                 .only(ChanceProcessor.class, GenerationGenre.TREE_FEATURE)
                 .only(RequiresProcessor.class, GenerationGenre.TREE_FEATURE)
+                .only(TemperatureProcessor.class, GenerationGenre.TREE_FEATURE)
                 .only(TreeProcessor.class, GenerationGenre.TREE_FEATURE)
                 .only(WorldsProcessor.class, GenerationGenre.TREE_FEATURE);
     }

@@ -13,6 +13,7 @@ import com.almuradev.content.type.generation.ContentGenerator;
 import com.almuradev.content.type.generation.type.feature.FeatureGenerator;
 import com.almuradev.content.type.tree.Tree;
 import com.almuradev.content.util.DoubleRangeFunctionPredicatePair;
+import com.almuradev.toolbox.util.math.DoubleRange;
 import net.minecraft.world.biome.Biome;
 
 import java.util.List;
@@ -24,6 +25,8 @@ public interface TreeGenerator extends FeatureGenerator {
         void biomes(final List<DoubleRangeFunctionPredicatePair<Biome>> biomes);
 
         void requires(final List<LazyBlockState> requires);
+
+        void temperature(final DoubleRange temperature);
 
         void tree(final Delegate<Tree> tree);
 

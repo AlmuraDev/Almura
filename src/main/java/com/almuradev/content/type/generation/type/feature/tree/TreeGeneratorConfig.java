@@ -11,6 +11,7 @@ public interface TreeGeneratorConfig {
     String BIG_TREE = "big_tree";
     String CHANCE = "chance";
     String REQUIRES = "requires";
+    String TEMPERATURE = "temperature";
     String TREE = "tree";
     String WORLDS = "worlds";
 

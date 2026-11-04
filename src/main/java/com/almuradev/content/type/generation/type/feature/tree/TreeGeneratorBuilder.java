@@ -12,6 +12,7 @@ import com.almuradev.content.type.block.state.LazyBlockState;
 import com.almuradev.content.type.generation.ContentGenerator;
 import com.almuradev.content.type.tree.Tree;
 import com.almuradev.content.util.DoubleRangeFunctionPredicatePair;
+import com.almuradev.toolbox.util.math.DoubleRange;
 import net.minecraft.world.biome.Biome;
 
 import java.util.Collections;
@@ -21,6 +22,7 @@ public final class TreeGeneratorBuilder extends ContentGenerator.Builder.Impl<Tr
     private List<String> worlds = Collections.emptyList();
     private List<DoubleRangeFunctionPredicatePair<Biome>> biomes = Collections.emptyList();
     private List<LazyBlockState> requires = Collections.emptyList();
+    private DoubleRange temperature = TreeGeneratorImpl.DEFAULT_TEMPERATURE;
     private Delegate<Tree> tree;
     private Delegate<Tree> bigTree;
     private List<DoubleRangeFunctionPredicatePair<Biome>> bigTreeChances;
@@ -41,6 +43,11 @@ public final class TreeGeneratorBuilder extends ContentGenerator.Builder.Impl<Tr
     }
 
     @Override
+    public void temperature(final DoubleRange temperature) {
+        this.temperature = temperature;
+    }
+
+    @Override
     public void tree(final Delegate<Tree> tree) {
         this.tree = tree;
     }
@@ -48,10 +55,12 @@ public final class TreeGeneratorBuilder extends ContentGenerator.Builder.Impl<Tr
     @Override
     public void bigTree(final Delegate<Tree> tree, final List<DoubleRangeFunctionPredicatePair<Biome>> chances) {
         this.bigTree = tree;
+        // No chances means no big trees (TreeGeneratorImpl would otherwise pick a random entry from an empty list)
+        this.bigTreeChances = chances.isEmpty() ? null : chances;
     }
 
     @Override
     public TreeGenerator build() {
-        return new TreeGeneratorImpl(this.worlds, this.biomes, this.requires, this.tree, this.bigTree, this.bigTreeChances);
+        return new TreeGeneratorImpl(this.worlds, this.biomes, this.requires, this.temperature, this.tree, this.bigTree, this.bigTreeChances);
     }
 }
