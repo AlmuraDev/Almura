@@ -33,13 +33,13 @@ import java.util.Map;
 
 public class ContentMover implements Witness {
   private static final String EXPECTED_NAMESPACE = Almura.ID;
-  private static final String BLOCK_MIGRATION_FILE = "migrations.json";
+  private static final String MIGRATIONS_FILE = "migrations.json";
   private static final Gson GSON = new Gson();
   private Map<String, String> migrations = new HashMap<>();
   @Contract(pure = true)
   @Inject
   public ContentMover(@Named("assets") final @NotNull Path assets, final Logger logger) {
-    final Path file = assets.resolve(RootContentLoader.FILESYSTEM_ASSETS).resolve(BLOCK_MIGRATION_FILE);
+    final Path file = assets.resolve(RootContentLoader.FILESYSTEM_ASSETS).resolve(MIGRATIONS_FILE);
     try {
       this.migrations = GSON.fromJson(Files.newBufferedReader(file), ContentMover.class).migrations;
     } catch (IOException e) {
