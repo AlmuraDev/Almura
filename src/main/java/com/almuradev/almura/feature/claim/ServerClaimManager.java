@@ -184,8 +184,9 @@ public final class ServerClaimManager implements Witness {
     private void onLpPermChange(final GroupDataRecalculateEvent event) {
         if (Sponge.getServer().getOnlinePlayers().size() > 0) {
             if (event.getGroup().getName().equalsIgnoreCase("griefdefender_default")) {
-                // This will send an update to everyone on the server if a flag change is detected within GD.
-                sendUpdateTo(null, null, null, true, "lpPermsChange");
+                // This will send an update to everyone on the server if a flag change is detected within GD. LuckPerms posts this event on
+                // its own thread, so the claim lookups happen on the server thread instead.
+                Task.builder().execute(t -> this.sendUpdateTo(null, null, null, true, "lpPermsChange")).submit(this.container);
             }
         }
     }
@@ -250,7 +251,7 @@ public final class ServerClaimManager implements Witness {
         if (player == null && players == null && claim == null && everyone) {
             for (final Player onlinePlayer : Sponge.getServer().getOnlinePlayers()) {
                 if (onlinePlayer != null && onlinePlayer.getWorld() != null) {
-                    claim = GriefDefender.getCore().getClaimManager(onlinePlayer.getWorld().getUniqueId()).getClaimAt(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
+                    claim = GriefDefender.getCore().getClaimManager(onlinePlayer.getWorld().getUniqueId()).getClaimAt(onlinePlayer.getLocation().getBlockX(), onlinePlayer.getLocation().getBlockY(), onlinePlayer.getLocation().getBlockZ());
                     if (claim != null) {
                         final Claim finalClaim = claim;
                         Task.builder().delayTicks(10).execute(t -> this.sendUpdate(onlinePlayer, finalClaim)).submit(this.container);
