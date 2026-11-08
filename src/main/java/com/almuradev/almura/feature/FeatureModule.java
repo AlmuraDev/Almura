@@ -85,7 +85,9 @@ public final class FeatureModule extends AbstractModule implements CommonBinder 
         this.install(new ClaimModule());
         this.install(new WorldEditModule());
         this.install(new MembershipModule());
-        this.install(new SkillsModule());
+        if (Loader.isModLoaded("skills")) {
+            this.install(new SkillsModule());
+        }
         this.install(new FlickerLightModule());
         this.install(new WorldLoadModule());
         this.install(new HarvestSackModule());
