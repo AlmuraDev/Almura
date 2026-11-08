@@ -40,7 +40,7 @@ public class UIDetailsPanel extends AbstractPanel {
 
     // The panel's starting size (it fits itself to what it shows from the first frame) and the height of its three coordinate lines
     public static final int WIDTH = 124, HEIGHT = 37;
-    private static final int COORDINATE_LINES = 3, TEXT_X = 2, TEXT_Y = 2, ICON_Y = 2, ICON_SIZE = 16, GAP = 6;
+    private static final int COORDINATE_LINES = 3, TEXT_X = 2, TEXT_Y = 2, ICON_Y = 2, ICON_SIZE = 16, GAP = 6, DESCENDER = 2;
     // The widest the lines usually get, so the panel doesn't twitch wider and narrower as the numbers change
     private static final String COORDINATE_TEMPLATE = TextFormatting.GOLD + "X: " + TextFormatting.RESET + "-0000.00 ";
     private static final String STATS_TEMPLATE = TextFormatting.GOLD + "FPS: " + TextFormatting.RESET + "999  " + TextFormatting.GOLD + "TPS: "
@@ -93,7 +93,11 @@ public class UIDetailsPanel extends AbstractPanel {
      */
     private void autoSize(final List<String> lines, final boolean stats) {
         final int lineHeight = this.coordsLabel.getLineHeight();
-        final int height = Math.max(HEIGHT, lines.size() * lineHeight + HEIGHT - COORDINATE_LINES * lineHeight);
+        int height = Math.max(HEIGHT, lines.size() * lineHeight + HEIGHT - COORDINATE_LINES * lineHeight);
+        // The coordinate and FPS / TPS lines have no letters below the line, but "Ping" does: room for its "g"
+        if (lines.size() > COORDINATE_LINES + 1) {
+            height += DESCENDER;
+        }
 
         int icons = 2 + ICON_SIZE; // the clock and its margin
         if (this.playerCountImage.isVisible()) {
@@ -129,6 +133,10 @@ public class UIDetailsPanel extends AbstractPanel {
         if (stats) {
             lines.add(TextFormatting.GOLD + "FPS: " + TextFormatting.RESET + Minecraft.getDebugFPS()
                     + "  " + TextFormatting.GOLD + "TPS: " + formatTps(hudData.serverTps));
+            // Ping only means something on a server
+            if (!this.client.isSingleplayer()) {
+                lines.add(TextFormatting.GOLD + "Ping: " + this.formatPing());
+            }
         }
         this.coordsLabel.setText(String.join("\n", lines));
         this.updatePlayerCount();
@@ -145,6 +153,18 @@ public class UIDetailsPanel extends AbstractPanel {
         final double shown = Math.min(20.0, tps);
         final TextFormatting color = shown >= 18.0 ? TextFormatting.GREEN : shown >= 15.0 ? TextFormatting.YELLOW : TextFormatting.RED;
         return color + this.tpsFormat.format(shown);
+    }
+
+    /**
+     * The round trip of Almura's once-a-second ping, green up to 50ms, yellow up to 150ms, red above ("--" until the first answer).
+     */
+    private String formatPing() {
+        final int ping = hudData.ping;
+        if (ping < 0) {
+            return TextFormatting.GRAY + "--";
+        }
+        final TextFormatting color = ping <= 50 ? TextFormatting.GREEN : ping <= 150 ? TextFormatting.YELLOW : TextFormatting.RED;
+        return color + Integer.toString(ping) + "ms";
     }
 
     private void updatePlayerCount() {

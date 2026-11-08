@@ -31,6 +31,8 @@ public class HeadUpDisplay {
     public int maxPlayerCount = 0;
     // The server's ticks per second, sent every second; negative until the first arrives
     public double serverTps = -1;
+    // The round trip of Almura's once-a-second ping in ms (set on the network thread); negative until the first answer
+    public volatile int ping = -1;
 
     public boolean isEconomyPresent = false;
     public String economyAmount = "";
