@@ -25,7 +25,8 @@ import javax.inject.Inject;
     dependencies = {
         @Dependency(id = "nucleus", optional = true),
         @Dependency(id = "griefdefender", optional = true),
-        @Dependency(id = "terraincontrol", optional = true)
+        @Dependency(id = "terraincontrol", optional = true),
+        @Dependency(id = "skills", optional = true)
     }
 )
 public class Almura implements com.almuradev.almura.shared.plugin.Plugin {

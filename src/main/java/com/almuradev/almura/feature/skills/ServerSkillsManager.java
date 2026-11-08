@@ -11,6 +11,7 @@ import com.almuradev.almura.feature.skills.network.ClientboundSkillsPacket;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
 import net.kyori.membrane.facet.Activatable;
+import net.minecraftforge.fml.common.Loader;
 import org.inspirenxe.skills.api.Skill;
 import org.inspirenxe.skills.api.SkillHolder;
 import org.inspirenxe.skills.api.SkillHolderContainer;
@@ -72,7 +73,7 @@ public final class ServerSkillsManager extends Witness.Impl implements Activatab
 
     @Override
     public boolean active() {
-        return this.game.isServerAvailable();
+        return this.game.isServerAvailable() && Loader.isModLoaded("skills");
     }
 
     @Override
