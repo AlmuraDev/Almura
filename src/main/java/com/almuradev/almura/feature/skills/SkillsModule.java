@@ -16,6 +16,7 @@ import com.almuradev.almura.shared.inject.ClientBinder;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
 import org.spongepowered.api.Platform;
+import org.spongepowered.api.Sponge;
 
 public final class SkillsModule extends AbstractModule implements CommonBinder {
 
@@ -25,7 +26,10 @@ public final class SkillsModule extends AbstractModule implements CommonBinder {
         this.packet().bind(ClientboundSkillsPacket.class, binder -> binder.handler(ClientboundSkillsPacketHandler.class, Platform.Type.CLIENT));
 
         this.facet().add(SkillsHandler.class);
-        this.facet().add(ServerSkillsManager.class);
+        // ServerSkillsManager uses Skills types in its methods, so it can only be registered when the plugin is there
+        if (Sponge.getPluginManager().isLoaded(SkillsHandler.PLUGIN_ID)) {
+            this.facet().add(ServerSkillsManager.class);
+        }
 
         this.on(Platform.Type.CLIENT, () -> {
             final class ClientModule extends AbstractModule implements ClientBinder {

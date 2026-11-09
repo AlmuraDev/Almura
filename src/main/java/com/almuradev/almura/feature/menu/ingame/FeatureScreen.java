@@ -16,6 +16,7 @@ import com.almuradev.almura.feature.guide.ClientPageManager;
 import com.almuradev.almura.feature.membership.ClientMembershipManager;
 import com.almuradev.almura.feature.nick.ClientNickManager;
 import com.almuradev.almura.feature.notification.history.NotificationHistoryScreen;
+import com.almuradev.almura.feature.skills.client.ClientSkillsManager;
 import com.almuradev.almura.feature.skills.client.gui.SkillsScreen;
 import com.almuradev.almura.feature.store.client.ClientStoreManager;
 import com.almuradev.almura.feature.title.ClientTitleManager;
@@ -59,6 +60,7 @@ public final class FeatureScreen extends BasicScreen {
   @Inject private static ClientMembershipManager membershipManager;
   @Inject private static ClientAccessoryManager accessoryManager;
   @Inject private static ClientBankManager bankManager;
+  @Inject private static ClientSkillsManager skillsManager;
 
   public FeatureScreen(EntityPlayerSP player, World worldIn, boolean isAdmin) {
     this.player = player;
@@ -76,6 +78,12 @@ public final class FeatureScreen extends BasicScreen {
 
     if (!isAdmin) {
       form.setSize(form.getWidth(), 204);
+    }
+
+    // The server only sends skills when it runs the Skills plugin
+    final boolean hasSkills = !skillsManager.getSkills().isEmpty();
+    if (!hasSkills) {
+      form.setSize(form.getWidth(), form.getHeight() - 18);
     }
 
     // Guide button
@@ -148,6 +156,7 @@ public final class FeatureScreen extends BasicScreen {
         .anchor(Anchor.TOP | Anchor.CENTER)
         .position(0, bankingButton.getY() + 18)
         .text("Skills")
+        .visible(hasSkills)
         .onClick(() -> new SkillsScreen(this).display())
         .build("button.skills");
 
@@ -155,7 +164,7 @@ public final class FeatureScreen extends BasicScreen {
     notificationsButton = new UIButtonBuilder()
         .width(100)
         .anchor(Anchor.TOP | Anchor.CENTER)
-        .position(0, skillsButton.getY() + 18)
+        .position(0, (hasSkills ? skillsButton : bankingButton).getY() + 18)
         .text("Notifications")
         .onClick(() -> new NotificationHistoryScreen(this).display())
         .build("button.notifications");

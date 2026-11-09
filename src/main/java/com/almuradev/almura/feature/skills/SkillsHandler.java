@@ -19,7 +19,13 @@ import org.spongepowered.api.network.ChannelId;
 
 import javax.inject.Inject;
 
+/**
+ * Skill levels for other features. Always available, so no method here may name a Skills type in its signature: without the Skills plugin that
+ * would fail as soon as this class is inspected. Every method returns a negative value when Skills isn't installed.
+ */
 public final class SkillsHandler implements Witness {
+
+    public static final String PLUGIN_ID = "skills";
 
     private final ServerNotificationManager serverNotificationManager;
     private final ChannelBinding.IndexedMessageChannel network;
@@ -31,6 +37,9 @@ public final class SkillsHandler implements Witness {
     }
 
     public double getExperienceForSkill(Player player, String skillName) {
+        if (!Sponge.getPluginManager().isLoaded(PLUGIN_ID)) {
+            return -1;
+        }
         final SkillService service = Sponge.getServiceManager().provide(SkillService.class).orElse(null);
         if (service == null) {
             return -1;
@@ -54,10 +63,17 @@ public final class SkillsHandler implements Witness {
         return -3;
     }
 
-    public int getLevelForSkill(Player player, SkillType skillType) {
+    public int getLevelForSkill(Player player, String skillName) {
+        if (!Sponge.getPluginManager().isLoaded(PLUGIN_ID)) {
+            return -1;
+        }
         final SkillService service = Sponge.getServiceManager().provide(SkillService.class).orElse(null);
         if (service == null) {
             return -1;
+        }
+        final SkillType skillType = Sponge.getRegistry().getType(SkillType.class, "skills:" + skillName).orElse(null);
+        if (skillType == null) {
+            return -2;
         }
         SkillHolderContainer container = service.getContainer(player.getWorld().getUniqueId()).orElse(null);
         if (container != null) {
@@ -74,30 +90,21 @@ public final class SkillsHandler implements Witness {
     }
 
     public int getTotalSkillLevel(Player player) {
-        final SkillService service = Sponge.getServiceManager().provide(SkillService.class).orElse(null);
-        if (service == null) {
+        if (!Sponge.getPluginManager().isLoaded(PLUGIN_ID)) {
             return -1;
         }
-        final SkillType farmingSkillType = Sponge.getRegistry().getType(SkillType.class, "skills:farming").orElse(null);
-        final SkillType miningSkillType = Sponge.getRegistry().getType(SkillType.class, "skills:mining").orElse(null);
-        final SkillType diggerSkillType = Sponge.getRegistry().getType(SkillType.class, "skills:digger").orElse(null);
-        final SkillType woodcuttingSkillType = Sponge.getRegistry().getType(SkillType.class, "skills:woodcutting").orElse(null);
-        final SkillType craftingSkillType = Sponge.getRegistry().getType(SkillType.class, "skills:crafting").orElse(null);
-
-        if (farmingSkillType == null || miningSkillType == null || diggerSkillType == null || woodcuttingSkillType == null || craftingSkillType == null) {
-            return -2;
+        int total = 0;
+        boolean missing = false;
+        for (final String skillName : ServerSkillsManager.SKILLS) {
+            final int level = getLevelForSkill(player, skillName);
+            if (level == -2) {
+                return -2;
+            }
+            if (level <= -1) {
+                missing = true;
+            }
+            total += level;
         }
-
-        int farmingLevel = getLevelForSkill(player, farmingSkillType);
-        int miningLevel = getLevelForSkill(player, miningSkillType);
-        int diggerLevel = getLevelForSkill(player, diggerSkillType);
-        int woodcuttingLevel = getLevelForSkill(player, woodcuttingSkillType);
-        int craftingLevel = getLevelForSkill(player, craftingSkillType);
-
-        if (farmingLevel <= -1 || miningLevel <= -1 || diggerLevel <= -1 || woodcuttingLevel <= -1 || craftingLevel <= -1) {
-            return -1;
-        }
-
-        return farmingLevel + miningLevel + diggerLevel + woodcuttingLevel + craftingLevel;
+        return missing ? -1 : total;
     }
 }

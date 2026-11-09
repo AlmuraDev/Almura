@@ -160,6 +160,7 @@ public final class MembershipGui extends BasicScreen {
                 .text("Skills total at 250+")
                 .listener(this)
                 .enabled(skillsLevel >= 250 && currentMembershipLevel == 0)
+                .visible(skillsLevel >= 0)
                 .build("button.citizen_skills");
 
         citizenArea.add(citizenLogo,citizen_details_button, citizenLabel0, citizen_donation_button, citizen_skills_button, citizen_purchase_button);
@@ -225,6 +226,7 @@ public final class MembershipGui extends BasicScreen {
                 .text("Skills total at 375+")
                 .listener(this)
                 .enabled(skillsLevel >= 375 && (currentMembershipLevel == 0 || currentMembershipLevel ==1))
+                .visible(skillsLevel >= 0)
                 .build("button.explorer_skills");
 
         explorerArea.add(explorerLogo, explorer_details_button, explorerLabel0, explorer_donation_button, explorer_skills_button, explorer_purchase_button);
@@ -291,6 +293,7 @@ public final class MembershipGui extends BasicScreen {
                 .text("Skills total at 400+")
                 .listener(this)
                 .enabled(skillsLevel >= 400 && (currentMembershipLevel == 0 || currentMembershipLevel == 1 || currentMembershipLevel == 2))
+                .visible(skillsLevel >= 0)
                 .build("button.pioneer_skills");
 
         pioneerArea.add(pioneerLogo, pioneer_details_button, pioneerLabel0, pioneer_donation_button, pioneer_skills_button, pioneer_purchase_button);
@@ -302,6 +305,10 @@ public final class MembershipGui extends BasicScreen {
         final UILabel skillsLevelLabel = new UILabel("" + skillsLevel);
         skillsLevelLabel.setFontOptions(FontOptions.builder().from(FontColors.BLUE_FO).shadow(true).scale(0.8F).build());
         skillsLevelLabel.setPosition(skillsLabel.getX() + skillsLabel.getWidth(), -5, Anchor.LEFT | Anchor.BOTTOM);
+
+        // A negative level means the server has no skill data for this player, usually because it doesn't run the Skills plugin
+        skillsLabel.setVisible(skillsLevel >= 0);
+        skillsLevelLabel.setVisible(skillsLevel >= 0);
 
         final UISeparator topWindowTitleSeparator = new UISeparator(this);
         topWindowTitleSeparator.setSize(this.form.getWidth() , 1);
