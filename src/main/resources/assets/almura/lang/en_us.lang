@@ -339,6 +339,7 @@ almura.button.nick.remove=Remove Nickname
 # ---------------
 
 item.farmers_almanac.name=Farmer's Almanac
+item.skills_handbook.name=Skills Handbook
 item.light_repair_wand.name=Area Light Repair Wand
 item.glass_cruet.name=Glass Cruet
 item.glass_water_cruet.name=Water Filled Cruet

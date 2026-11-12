@@ -14,6 +14,9 @@ import com.almuradev.almura.feature.complex.item.almanac.network.ClientboundCrop
 import com.almuradev.almura.feature.complex.item.almanac.network.ClientboundCropListOpenPacketHandler;
 import com.almuradev.almura.feature.complex.item.almanac.network.ClientboundWorldPositionInformationPacket;
 import com.almuradev.almura.feature.complex.item.almanac.network.ClientboundWorldPositionInformationPacketHandler;
+import com.almuradev.almura.feature.complex.item.handbook.item.SkillsHandbookItem;
+import com.almuradev.almura.feature.complex.item.handbook.network.ClientboundSkillsHandbookPacket;
+import com.almuradev.almura.feature.complex.item.handbook.network.ClientboundSkillsHandbookPacketHandler;
 import com.almuradev.almura.shared.inject.CommonBinder;
 import net.kyori.violet.AbstractModule;
 import org.spongepowered.api.Platform;
@@ -25,9 +28,11 @@ public final class ComplexContentModule extends AbstractModule implements Common
         this.packet().bind(ClientboundWorldPositionInformationPacket.class, binder -> binder.handler
                 (ClientboundWorldPositionInformationPacketHandler.class, Platform.Type.CLIENT));
         this.packet().bind(ClientboundCropListOpenPacket.class, binder -> binder.handler(ClientboundCropListOpenPacketHandler.class, Platform.Type.CLIENT));
+        this.packet().bind(ClientboundSkillsHandbookPacket.class, binder -> binder.handler(ClientboundSkillsHandbookPacketHandler.class, Platform.Type.CLIENT));
         this.facet().add(ComplexContentFeature.class);
 
         this.requestStaticInjection(FarmersAlmanacItem.class);
+        this.requestStaticInjection(SkillsHandbookItem.class);
         this.requestStaticInjection(CoinExchange.class);
         this.requestStaticInjection(MembershipExchange.class);
     }
