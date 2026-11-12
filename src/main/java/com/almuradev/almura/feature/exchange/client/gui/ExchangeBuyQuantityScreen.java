@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui;
 
+import com.almuradev.almura.shared.client.ui.BottomRow;
 import com.almuradev.almura.feature.exchange.Exchange;
 import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.shared.feature.FeatureConstants;
@@ -98,6 +99,10 @@ public class ExchangeBuyQuantityScreen extends BasicScreen {
                 .anchor(Anchor.RIGHT | Anchor.BOTTOM)
                 .onClick(this::close)
                 .build("button.cancel");
+
+        // Tall enough for the contents, with the same gap above the bottom buttons as below them
+
+        BottomRow.fitHeight(this.form, this.totalLabel, this.buttonBuy);
 
         this.form.add(this.quantityLabel, this.quantityTextBox,
                       this.perItemLabel, this.perItemValueLabel,

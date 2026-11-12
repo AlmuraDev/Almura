@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.speed.client.gui;
 
+import com.almuradev.almura.shared.client.ui.BottomRow;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
@@ -58,7 +59,6 @@ public class AppliedTexturePackGui extends BasicScreen {
 
         final UISeparator aboveCloseSeparator = new UISeparator(this);
         aboveCloseSeparator.setSize(form.getWidth() -5, 1);
-        aboveCloseSeparator.setPosition(0, -20, Anchor.BOTTOM | Anchor.CENTER);
 
         final UIButton buttonClose = new UIButtonBuilder()
                 .text(I18n.format("almura.button.close"))
@@ -67,6 +67,9 @@ public class AppliedTexturePackGui extends BasicScreen {
                 .width(40)
                 .listener(this)
                 .build("button.close");
+
+        // The separator sits as far above the bottom buttons as the form's bottom padding is below them
+        aboveCloseSeparator.setPosition(0, -BottomRow.above(form, buttonClose.getHeight()), Anchor.BOTTOM | Anchor.CENTER);
 
         form.add(buttonClose, label0, label1, aboveCloseSeparator, belowAmountSeparator);
 

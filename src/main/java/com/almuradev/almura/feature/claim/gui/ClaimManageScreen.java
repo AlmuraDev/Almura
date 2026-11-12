@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.claim.gui;
 
+import com.almuradev.almura.shared.client.ui.BottomRow;
 import com.almuradev.almura.feature.claim.ClaimFlag;
 import com.almuradev.almura.feature.claim.ClientClaimManager;
 import com.almuradev.almura.feature.claim.ClientClaimVisuals;
@@ -424,6 +425,9 @@ public final class ClaimManageScreen extends BasicScreen {
             .text("almura.button.close")
             .listener(this)
             .build("button.close");
+
+        // Tall enough for the panels, with the same gap above the bottom buttons as below them
+        BottomRow.fitHeight(this.form, buttonClose, this.econArea, this.functionsArea, this.flagsArea);
 
         this.form.add(titleLabel, separator, wildernessLabel, claimNameLabel, this.claimNameField, this.claimOwnerLabel, this.claimOwnerField, this.claimGreetingLabel,
                 this.claimGreetingField, this.claimFarewellLabel, this.claimFarewellField, this.dateCreatedLabel, this.dateCreatedField, this.claimTypeLabel, this.claimTypeField,

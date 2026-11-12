@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.store.client.gui;
 
+import com.almuradev.almura.shared.client.ui.BottomRow;
 import com.almuradev.almura.asm.ClientStaticAccess;
 import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.Almura;
@@ -28,6 +29,7 @@ import com.almuradev.almura.shared.client.ui.component.UISaneTooltip;
 import com.almuradev.almura.shared.feature.FeatureConstants;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
+import net.malisis.core.client.gui.element.size.Size;
 import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.MalisisGui;
 import net.malisis.core.client.gui.component.UIComponent;
@@ -254,6 +256,11 @@ public class StoreScreen extends BasicScreen {
                 .onClick(() -> this.transact(1))
                 .build("button.transact.single");
 
+        // The list ends as far above the transact buttons as the container's bottom padding is below them. Worked out when drawn: the
+        // container takes its height from the form, which it isn't in yet
+        this.itemList.setSize(Size.of(BasicScreen.getPaddedWidth(storeContainer), () -> BasicScreen.getPaddedHeight(storeContainer)
+            - this.itemList.getY() - BottomRow.above(storeContainer, this.buttonTransactOne.getHeight())));
+
         this.buttonTransactStack = new UIButtonBuilder()
                 .width(60)
                 .x(BasicScreen.getPaddedX(this.buttonTransactOne, 2))
@@ -363,6 +370,11 @@ public class StoreScreen extends BasicScreen {
                     .onClick(this::listOrModify)
                     .text(I18n.format("almura.feature.common.button.list"))
                     .build("button.list");
+
+            // The list ends as far above the list/unlist buttons as the container's bottom padding is below them
+            // (worked out when drawn, as the container takes its height from the form)
+            this.adminItemList.setSize(Size.of(BasicScreen.getPaddedWidth(adminContainer), () -> BasicScreen.getPaddedHeight(adminContainer)
+                - this.adminItemList.getY() - BottomRow.above(adminContainer, this.buttonAdminList.getHeight())));
             this.buttonAdminUnlist = new UIButtonBuilder()
                     .width(50)
                     .anchor(Anchor.BOTTOM | Anchor.LEFT)

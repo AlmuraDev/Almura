@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.guide.client.gui;
 
+import com.almuradev.almura.shared.client.ui.BottomRow;
 import com.almuradev.almura.feature.guide.ClientPageManager;
 import com.google.common.eventbus.Subscribe;
 import net.malisis.core.client.gui.Anchor;
@@ -146,6 +147,10 @@ public class GuidePageCreateScreen extends BasicScreen {
                 .width(40)
                 .onClick(this::close)
                 .build("button.cancel");
+
+        // Tall enough for the contents, with the same gap above the bottom buttons as below them
+
+        BottomRow.fitHeight(form, this.tbName, buttonSave);
 
         form.add(labelId, this.tbId,
                  labelIndex, this.tbIndex,

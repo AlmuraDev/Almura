@@ -15,6 +15,7 @@ package com.almuradev.almura.feature.menu.main;
  * All Rights Reserved.
  */
 
+import com.almuradev.almura.shared.client.ui.BottomRow;
 import com.almuradev.almura.feature.death.network.ServerboundReviveRequestPacket;
 import com.almuradev.almura.feature.menu.multiplayer.MultiplayerScreen;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
@@ -131,7 +132,6 @@ public final class DisconnectedGui extends BasicScreen {
 
         final UISeparator aboveButtonsSeparator = new UISeparator(this);
         aboveButtonsSeparator.setSize(this.form.getWidth() -5, 1);
-        aboveButtonsSeparator.setPosition(0, -20, Anchor.BOTTOM | Anchor.CENTER);
         this.form.add(aboveButtonsSeparator);
 
         // Close button
@@ -144,6 +144,9 @@ public final class DisconnectedGui extends BasicScreen {
                 .fontOptions(FontOptions.builder().from(FontColors.WHITE_FO).shadow(true).build())
                 .listener(this)
                 .build("button.return");
+
+        // The separator sits as far above the bottom buttons as the form's bottom padding is below them
+        aboveButtonsSeparator.setPosition(0, -BottomRow.above(this.form, this.buttonClose.getHeight()), Anchor.BOTTOM | Anchor.CENTER);
 
         this.form.add(almuraHeader, this.messageLabel, this.reasonBox, this.buttonClose);
 

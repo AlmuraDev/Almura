@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.store.client.gui;
 
+import com.almuradev.almura.shared.client.ui.BottomRow;
 import com.almuradev.almura.feature.store.Store;
 import com.almuradev.almura.feature.store.client.ClientStoreManager;
 import com.almuradev.almura.feature.store.listing.StoreItem;
@@ -213,6 +214,9 @@ public class StoreListScreen extends BasicScreen {
           .width(50)
           .build("button.cancel");
 
+        // The containers end as far above the buttons as the form's bottom padding is below them (a negative height is the form's, less that)
+        this.buyContainer.setHeight(-BottomRow.above(this.form, this.buttonList.getHeight()));
+        this.sellContainer.setHeight(-BottomRow.above(this.form, this.buttonList.getHeight()));
         this.form.add(this.buyContainer, this.sellContainer, this.buttonCancel, this.buttonList);
         this.addToScreen(this.form);
 

@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.bank.client.gui;
 
+import com.almuradev.almura.shared.client.ui.BottomRow;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.component.UIComponent;
@@ -77,6 +78,10 @@ public final class BankNameScreen extends BasicScreen implements BankScreen.Chil
             .position(BasicScreen.getPaddedX(buttonSave, 2, Anchor.RIGHT), 0)
             .onClick(this::close)
             .build("button.cancel");
+
+        // Tall enough for the contents, with the same gap above the bottom buttons as below them
+
+        BottomRow.fitHeight(form, this.nameTextBox, buttonSave);
 
         form.add(this.nameTextBox, buttonSave, buttonCancel);
         this.addToScreen(form);

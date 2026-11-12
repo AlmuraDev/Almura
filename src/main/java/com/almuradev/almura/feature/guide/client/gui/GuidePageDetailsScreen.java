@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.guide.client.gui;
 
+import com.almuradev.almura.shared.client.ui.BottomRow;
 import com.almuradev.almura.feature.guide.ClientPageManager;
 import com.almuradev.almura.shared.client.ui.component.UIFormatPalette;
 import com.google.inject.Inject;
@@ -176,6 +177,10 @@ public class GuidePageDetailsScreen extends BasicScreen {
         // Colors and styles for the name, beside it
         final UIFormatPalette namePalette = new UIFormatPalette(this, this.tbName);
         namePalette.setPosition(0, labelName.getY(), Anchor.TOP | Anchor.RIGHT);
+
+        // Tall enough for the contents, with the same gap above the bottom buttons as below them
+
+        BottomRow.fitHeight(form, tbLastModified, buttonSave);
 
         form.add(labelId, tbId,
                  labelIndex, this.tbIndex,

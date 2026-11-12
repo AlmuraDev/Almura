@@ -41,6 +41,11 @@ import javax.annotation.Nullable;
 @SuppressWarnings("deprecation")
 public final class HorizontalBlockImpl extends BlockHorizontal implements HorizontalBlock {
     private final Map<EnumFacing, HorizontalBlockStateDefinition> states = new EnumMap<>(EnumFacing.class);
+    // Light is asked for constantly while chunks are lit and rendered, so each state's light value and flicker flag are worked out
+    // once here. Indexed together; a light value of -1 means "use the block's own light value". Null until the constructor finishes.
+    @Nullable private IBlockState[] lightStates;
+    @Nullable private int[] lightValues;
+    @Nullable private boolean[] flickerStates;
 
     HorizontalBlockImpl(final HorizontalBlockBuilder builder, final List<HorizontalBlockStateDefinition> states) {
         super((Material) builder.material.get());
@@ -61,6 +66,8 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
         for (final HorizontalBlockStateDefinition state : states) {
             this.states.put(state.facing, state);
         }
+
+        this.cacheLight();
     }
 
     @Override
@@ -124,33 +131,66 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
         return lightOpacity;
     }
 
+    private void cacheLight() {
+        final List<IBlockState> validStates = this.getBlockState().getValidStates();
+        final IBlockState[] lightStates = new IBlockState[validStates.size()];
+        final int[] lightValues = new int[lightStates.length];
+        final boolean[] flickerStates = new boolean[lightStates.length];
+        for (int i = 0; i < lightStates.length; i++) {
+            final IBlockState state = validStates.get(i);
+            final HorizontalBlockStateDefinition definition = this.definition(state);
+            lightStates[i] = state;
+            lightValues[i] = definition == null ? -1 : PrimitiveOptionals.mapToInt(definition.lightEmission, value -> (int) (15f * value)).orElse(-1);
+            flickerStates[i] = definition != null && definition.flicker;
+        }
+        this.lightValues = lightValues;
+        this.flickerStates = flickerStates;
+        this.lightStates = lightStates; // Last, as it's what marks the cache as ready
+    }
+
+    /**
+     * @return the index of the state in the light cache, or -1 when the cache isn't ready or doesn't have it
+     */
+    private int lightIndex(final IBlockState state) {
+        final IBlockState[] lightStates = this.lightStates;
+        if (lightStates != null) {
+            for (int i = 0; i < lightStates.length; i++) {
+                if (lightStates[i] == state) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
     @Deprecated
     @Override
     public int getLightValue(final IBlockState state) {
+        final int index = this.lightIndex(state);
+        if (index >= 0) {
+            final int lightValue = this.lightValues[index];
+            return lightValue >= 0 ? lightValue : super.getLightValue(state);
+        }
         if(state != null && this.states != null) {
             final HorizontalBlockStateDefinition definition = this.definition(state);
-            int lightValue = PrimitiveOptionals.mapToInt(definition.lightEmission, value -> (int) (15f * value)).orElseGet(() -> super.getLightValue(state));
-            //System.out.println("getLightValue (state) = " + lightValue);
-            return lightValue;
-        } else {
-            //System.out.println("getLightValue (fallback) = 0");
-            return 0;
+            return PrimitiveOptionals.mapToInt(definition.lightEmission, value -> (int) (15f * value)).orElseGet(() -> super.getLightValue(state));
         }
+        return 0;
     }
 
     @Override
     public int getLightValue(final IBlockState state, final IBlockAccess world, final BlockPos pos) {
-        if (state != null) {
-            final int lightValue = this.getLightValue(state);
-            // Flickering lights only dim on the client; the server always gets the steady light
-            if (this.isFlicker(state)) {
-                return FlickerLights.getLightValue(world, pos, lightValue);
-            }
-            return lightValue;
-        } else {
-            //System.out.println("getLightValue Fallback2 = 0");
+        if (state == null) {
             return 0;
         }
+        final int index = this.lightIndex(state);
+        final int cached = index >= 0 ? this.lightValues[index] : -1;
+        final int lightValue = cached >= 0 ? cached : this.getLightValue(state);
+        // Flickering lights only dim on the client; the server always gets the steady light
+        if (index >= 0 ? this.flickerStates[index] : this.isFlicker(state)) {
+            return FlickerLights.getLightValue(world, pos, lightValue);
+        }
+        return lightValue;
     }
 
     @Deprecated
@@ -250,6 +290,10 @@ public final class HorizontalBlockImpl extends BlockHorizontal implements Horizo
     }
 
     private boolean isFlicker(final IBlockState state) {
+        final int index = this.lightIndex(state);
+        if (index >= 0) {
+            return this.flickerStates[index];
+        }
         // Can be asked before the states are filled in during construction
         if (this.states == null) {
             return false;

@@ -10,6 +10,8 @@ package com.almuradev.almura.feature.complex;
 import com.almuradev.almura.feature.complex.block.coinexchange.CoinExchange;
 import com.almuradev.almura.feature.complex.block.membershipexchange.MembershipExchange;
 import com.almuradev.almura.feature.complex.item.almanac.item.FarmersAlmanacItem;
+import com.almuradev.almura.feature.complex.item.almanac.network.ClientboundCropListOpenPacket;
+import com.almuradev.almura.feature.complex.item.almanac.network.ClientboundCropListOpenPacketHandler;
 import com.almuradev.almura.feature.complex.item.almanac.network.ClientboundWorldPositionInformationPacket;
 import com.almuradev.almura.feature.complex.item.almanac.network.ClientboundWorldPositionInformationPacketHandler;
 import com.almuradev.almura.shared.inject.CommonBinder;
@@ -22,6 +24,7 @@ public final class ComplexContentModule extends AbstractModule implements Common
     protected void configure() {
         this.packet().bind(ClientboundWorldPositionInformationPacket.class, binder -> binder.handler
                 (ClientboundWorldPositionInformationPacketHandler.class, Platform.Type.CLIENT));
+        this.packet().bind(ClientboundCropListOpenPacket.class, binder -> binder.handler(ClientboundCropListOpenPacketHandler.class, Platform.Type.CLIENT));
         this.facet().add(ComplexContentFeature.class);
 
         this.requestStaticInjection(FarmersAlmanacItem.class);

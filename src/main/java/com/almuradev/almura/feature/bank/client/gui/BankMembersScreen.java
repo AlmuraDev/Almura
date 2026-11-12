@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.bank.client.gui;
 
+import com.almuradev.almura.shared.client.ui.BottomRow;
 import com.almuradev.almura.feature.bank.BankAccountView;
 import com.almuradev.almura.feature.bank.BankAction;
 import com.almuradev.almura.feature.bank.client.ClientBankManager;
@@ -118,6 +119,10 @@ public final class BankMembersScreen extends BasicScreen implements BankScreen.C
             .anchor(Anchor.BOTTOM | Anchor.RIGHT)
             .onClick(this::close)
             .build("button.close");
+
+        // The list ends as far above the bottom buttons as the form's bottom padding is below them
+        this.memberList.setSize(this.memberList.getWidth(), BasicScreen.getPaddedHeight(form) - this.memberList.getY()
+            - BottomRow.above(form, buttonClose.getHeight()));
 
         form.add(this.nameTextBox, this.canWithdrawCheckBox, buttonAdd, this.memberList, this.buttonToggle, this.buttonRemove, buttonClose);
         this.addToScreen(form);

@@ -50,7 +50,7 @@ targetCompatibility = '1.8'
 
 archivesBaseName = project.name.toLowerCase()
 // The build number: the jar's name, mcmod.info and Almura.buildNumber (the window title and About menu) all take it from here
-ext.internalBuild = '124'
+ext.internalBuild = '126'
 version = "mc[${project.minecraftVersion}]-forge[${project.forgeBuild}]-sf[${project.spongeImplVersion.split("-")[2]}]-b${project.internalBuild}"
 
 minecraft {
@@ -75,7 +75,23 @@ mixin {
 deobfMcMCP { failOnAtError = false }
 deobfMcSRG { failOnAtError = false }
 
+// The Skills project's own build, when it's next to this one (see repositories)
+// (-PpublishedSkills uses the published one anyway)
+ext.localSkillsBuild = !project.hasProperty('publishedSkills') && file('../Skills/build/libs/skills-1.0.0-SNAPSHOT.jar').exists() && file('../Skills/build/libs/skills-1.0.0-SNAPSHOT-api.jar').exists()
+
 repositories {
+    // Skills: when the Skills project sits next to this one and has been built, use its build, so the dev client runs the rules being worked
+    // on (the published snapshot on Sponge's repository is from 2022). ForgeGradle puts Sponge's repository ahead of these, so the local
+    // build is asked for as version 'local', which only this repository has. Still a module, so it stays out of Almura's shaded jar.
+    if (localSkillsBuild) {
+        ivy {
+            name = 'localSkills'
+            url = file('../Skills/build/libs').toURI()
+            layout('pattern') {
+                artifact '[module]-1.0.0-SNAPSHOT(-[classifier]).[ext]'
+            }
+        }
+    }
 	// These three always first!!!
     mavenLocal()
     mavenCentral()
@@ -167,9 +183,23 @@ dependencies {
     // Almura only uses it when the plugin is installed (see UchatUtil).
     compileOnly 'br.net.fabiozumbi12.UltimateChat:UltimateChat-Sponge-56-1.9.1'
     compile 'org.spongepowered:configurate-json:3.5'
-    compile 'org.inspirenxe:skills:1.0.0-SNAPSHOT:api'
+    if (localSkillsBuild) {
+        // The local build has no descriptor, so both of its jars are named on the one dependency
+        compile('org.inspirenxe:skills:local') {
+            artifact { name = 'skills'; type = 'jar'; extension = 'jar' }
+            artifact { name = 'skills'; classifier = 'api'; type = 'jar'; extension = 'jar' }
+        }
+        // The published Skills brings in lunar 1.0.7-SNAPSHOT, which Almura shades in place of the older one it asks for; keep it the same
+        compile 'net.kyori:lunar:1.0.7-SNAPSHOT'
+        // Likewise SpongeAPI 7.2.0-SNAPSHOT, in place of toolbox's 7.0.0 whose old configurate breaks SpongeForge in the dev client
+        compile 'org.spongepowered:spongeapi:7.2.0-SNAPSHOT'
+    } else {
+        compile 'org.inspirenxe:skills:1.0.0-SNAPSHOT:api'
+    }
     compile 'com.almuradev:toolbox:1.0.0-SNAPSHOT'
-    compile 'org.inspirenxe:skills:1.0.0-SNAPSHOT'
+    if (!localSkillsBuild) {
+        compile 'org.inspirenxe:skills:1.0.0-SNAPSHOT'
+    }
     compile "org.jooq:jooq:${project.jooqVersion}"
     compile "org.jooq:jooq-meta:${project.jooqVersion}"
     compile "org.jooq:jooq-codegen:${project.jooqVersion}"

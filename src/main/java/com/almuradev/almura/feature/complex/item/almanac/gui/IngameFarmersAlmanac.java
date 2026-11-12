@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.complex.item.almanac.gui;
 
+import com.almuradev.almura.shared.client.ui.BottomRow;
 import com.almuradev.almura.feature.complex.item.almanac.asm.interfaces.IMixinBlockCrops;
 import com.almuradev.almura.feature.complex.item.almanac.network.ClientboundWorldPositionInformationPacket;
 import com.almuradev.almura.shared.util.MathUtil;
@@ -155,7 +156,9 @@ public class IngameFarmersAlmanac extends BasicScreen {
         form.add(closeButton);
 
         // Adjust the size of the form to better fit content
-        form.setSize(form.getContentWidth() + leftPad, form.getContentHeight() + closeButton.getHeight() + 10);
+        form.setSize(form.getContentWidth() + leftPad, form.getHeight());
+        // Tall enough for the properties, with the same gap above the close button as below it
+        BottomRow.fitHeight(form, this.propertyContainer, closeButton);
 
         // Readjust size for width because MalisisCore doesn't account for the scrollbar with UIComponent.INHERITED
         this.propertyContainer.setSize(propertyContainer.getWidth(), propertyContainer.getHeight());

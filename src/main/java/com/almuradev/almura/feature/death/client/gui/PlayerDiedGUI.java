@@ -15,6 +15,7 @@ package com.almuradev.almura.feature.death.client.gui;
  * All Rights Reserved.
  */
 
+import com.almuradev.almura.shared.client.ui.BottomRow;
 import com.almuradev.almura.feature.death.network.ServerboundReviveRequestPacket;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.shared.client.GuiConfig;
@@ -140,7 +141,6 @@ public final class PlayerDiedGUI extends BasicScreen {
 
         final UISeparator aboveButtonsSeparator = new UISeparator(this);
         aboveButtonsSeparator.setSize(this.form.getWidth() -5, 1);
-        aboveButtonsSeparator.setPosition(0, -20, Anchor.BOTTOM | Anchor.CENTER);
         this.form.add(aboveButtonsSeparator);
 
         final UISeparator belowMessageSeparator = new UISeparator(this);
@@ -175,6 +175,9 @@ public final class PlayerDiedGUI extends BasicScreen {
                 .fontOptions(FontOptions.builder().from(FontColors.RED_FO).shadow(true).build())
                 .listener(this)
                 .build("button.ragequit");
+
+        // The separator sits as far above the bottom buttons as the form's bottom padding is below them
+        aboveButtonsSeparator.setPosition(0, -BottomRow.above(this.form, this.buttonRagequit.getHeight()), Anchor.BOTTOM | Anchor.CENTER);
 
         this.form.add(almuraHeader, this.messageLabel, this.droppedLabel, this.deathTaxLabel, this.buttonRespawn, this.buttonRevive, this.buttonRagequit);
 

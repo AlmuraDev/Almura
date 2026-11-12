@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.notification.history;
 
+import com.almuradev.almura.shared.client.ui.BottomRow;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.MalisisGui;
@@ -66,6 +67,11 @@ public final class NotificationHistoryScreen extends BasicScreen {
         // Received notifications, newest first
         this.recordList = new BasicList<>(LIST_WIDTH, BasicScreen.getPaddedHeight(form) - 22);
         this.recordList.setPosition(0, 0);
+        // Boxed like the detail beside it, with the rows inside the border
+        this.recordList.setColor(0x000000);
+        this.recordList.setBackgroundAlpha(255);
+        this.recordList.setBorder(0x808080, 1, 255);
+        this.recordList.setPadding(2, 2);
         this.recordList.setItemComponentSpacing(1);
         this.recordList.setItemComponentFactory(RecordItemComponent::new);
         this.recordList.setSelectConsumer(this::showRecord);
@@ -115,6 +121,12 @@ public final class NotificationHistoryScreen extends BasicScreen {
                 .text(I18n.format("almura.button.close"))
                 .onClick(this::close)
                 .build("button.close");
+
+        // The list and the detail end as far above the bottom buttons as the form's bottom padding is below them
+        final int listHeight = BasicScreen.getPaddedHeight(form) - BottomRow.above(form, closeButton.getHeight());
+        this.recordList.setSize(this.recordList.getWidth(), listHeight);
+        detail.setSize(detail.getWidth(), listHeight);
+        this.messageLabel.setSize(BasicScreen.getPaddedWidth(detail), BasicScreen.getPaddedHeight(detail) - 28);
 
         form.add(this.recordList, this.emptyLabel, detail, this.clearButton, closeButton);
         addToScreen(form);

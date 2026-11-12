@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.guide.client.gui;
 
+import com.almuradev.almura.shared.client.ui.BottomRow;
 import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.component.container.BasicForm;
@@ -113,6 +114,10 @@ final class GuideLinkScreen extends BasicScreen {
                 .width(40)
                 .onClick(this::close)
                 .build("button.cancel");
+
+        // Tall enough for the contents, with the same gap above the bottom buttons as below them
+
+        BottomRow.fitHeight(form, this.errorLabel, buttonDone);
 
         form.add(textLabel, urlLabel, this.tbUrl, this.errorLabel, buttonDone, buttonCancel);
         this.addToScreen(form);

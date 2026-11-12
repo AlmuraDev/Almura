@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.store.client.gui;
 
+import com.almuradev.almura.shared.client.ui.BottomRow;
 import com.almuradev.almura.feature.store.SideType;
 import com.almuradev.almura.feature.store.Store;
 import com.almuradev.almura.feature.store.client.ClientStoreManager;
@@ -120,6 +121,10 @@ public class StoreTransactQuantityScreen extends BasicScreen {
       .anchor(Anchor.RIGHT | Anchor.BOTTOM)
       .onClick(this::close)
       .build("button.cancel");
+
+    // Tall enough for the contents, with the same gap above the bottom buttons as below them
+
+    BottomRow.fitHeight(this.form, this.totalLabel, this.buttonTransact);
 
     this.form.add(this.quantityLabel, this.quantityTextBox,
       this.perItemLabel, this.perItemValueLabel,

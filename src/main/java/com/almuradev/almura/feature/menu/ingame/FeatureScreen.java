@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.menu.ingame;
 
+import com.almuradev.almura.shared.client.ui.BottomRow;
 import com.almuradev.almura.feature.accessory.client.ClientAccessoryManager;
 import com.almuradev.almura.feature.bank.BankAction;
 import com.almuradev.almura.feature.bank.client.ClientBankManager;
@@ -211,6 +212,9 @@ public final class FeatureScreen extends BasicScreen {
         .text(I18n.format("almura.button.close"))
         .onClick(this::close)
         .build("button.close");
+
+    // Tall enough for the buttons shown, with the same gap above the close button as below it
+    BottomRow.fitHeight(form, isAdmin ? manageStoreButton : notificationsButton, buttonClose);
 
     form.add(guideButton, manageExchangeButton, titleButton, nicknameButton, functionsSeparator, adminLabel, functionsSeparator2, accessoriesButton, membershipButton, bankingButton, skillsButton, notificationsButton, manageStoreButton, claimButton, buttonClose);
 

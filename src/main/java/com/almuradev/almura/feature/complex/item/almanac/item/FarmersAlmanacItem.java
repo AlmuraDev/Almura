@@ -9,7 +9,10 @@ package com.almuradev.almura.feature.complex.item.almanac.item;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.complex.item.ComplexItem;
+import com.almuradev.almura.feature.complex.item.almanac.network.ClientboundCropListOpenPacket;
 import com.almuradev.almura.feature.complex.item.almanac.network.ClientboundWorldPositionInformationPacket;
+import com.almuradev.almura.feature.skills.SkillsCropLevels;
+import com.almuradev.almura.feature.skills.SkillsHandler;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.content.type.block.type.crop.CropBlockImpl;
 import com.almuradev.content.type.itemgroup.ItemGroup;
@@ -20,6 +23,7 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -47,6 +51,9 @@ public final class FarmersAlmanacItem extends ComplexItem {
     @Inject
     @ChannelId(NetworkConfig.CHANNEL)
     private static ChannelBinding.IndexedMessageChannel network;
+
+    @Inject
+    private static SkillsHandler skillsHandler;
 
     public FarmersAlmanacItem() {
         super(new ResourceLocation(Almura.ID, "normal/tool/farmers_almanac"), "farmers_almanac");
@@ -87,7 +94,9 @@ public final class FarmersAlmanacItem extends ComplexItem {
             pipe = Block.getBlockFromName("almura:horizontal/agriculture/pipe");
 
             if (pipe != null) {
-                for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.getAllInBoxMutable(pos.add(-6, 1, -6), pos.add(6, 1, 6))) {
+                // Same area farmland checks (MixinBlockFarmland): 6 blocks around and 1 to 6 above the farmland, which is below a crop
+                final BlockPos farmland = block instanceof BlockCrops ? pos.down() : pos;
+                for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.getAllInBoxMutable(farmland.add(-6, 1, -6), farmland.add(6, 6, 6))) {
                     if (((WorldServer) world).getChunkProvider().chunkExists(pos.getX() >> 4, pos.getZ() >> 4) && !irrigationPipeNear) {
                         Block posBlock = world.getBlockState(blockpos$mutableblockpos).getBlock();
                         if (posBlock.getRegistryName().toString().length() > 30 && posBlock.getRegistryName().toString().substring(0,30).equalsIgnoreCase("almura:horizontal/agriculture/")) {
@@ -103,7 +112,7 @@ public final class FarmersAlmanacItem extends ComplexItem {
                 final float biomeTemperature = biome.getTemperature(pos);
                 final float biomeRainfall = biome.getRainfall();
                 final int blockLight = world.getLightFor(EnumSkyBlock.BLOCK, pos);
-                final int skyLight = world.getLightFor(EnumSkyBlock.SKY, pos) - world.getSkylightSubtracted();
+                final int skyLight = Math.max(0, world.getLightFor(EnumSkyBlock.SKY, pos) - world.getSkylightSubtracted());
                 final int combinedLight = world.getLightFromNeighbors(pos);
                 final boolean isDaytime = world.isDaytime();
                 final boolean canSeeSky = world.canSeeSky(pos);
@@ -115,12 +124,43 @@ public final class FarmersAlmanacItem extends ComplexItem {
                         biome.getRegistryName().toString(), biomeTemperature, biomeRainfall, blockLight, skyLight, combinedLight, isDaytime,
                         canSeeSky, hasAdditionalLightHeatSource, irrigationPipe, irrigationPipeNear));
             } else {
-                spongePlayer.sendMessage(Text.of("The ", TextColors.AQUA,"Farmer's Almanac", TextColors.WHITE, " can only be "
-                        + "used on crops, farmland or irrigation pipes."));
+                // Anything that isn't farming shows the list of every crop
+                player.swingArm(hand);
+                network.sendTo(spongePlayer, cropListPacket(world, player));
             }
         }
 
-        return EnumActionResult.PASS;
+        // Handled on both sides, so the client doesn't go on to right click the item as well and open the list twice
+        return EnumActionResult.SUCCESS;
+    }
+
+    @Override
+    public ActionResult<ItemStack> onItemRightClick(final World world, final EntityPlayer player, final EnumHand hand) {
+        // Right clicking the air shows the list of every crop
+        if (!world.isRemote) {
+            final Player spongePlayer = (Player) player;
+            if (!spongePlayer.hasPermission("almura.item.farmers_almanac")) {
+                spongePlayer.sendMessage(Text.of("Access denied, missing permission: ", TextColors.AQUA, "almura.item.farmers_"
+                        + "almanac", TextColors.WHITE, "."));
+                return new ActionResult<>(EnumActionResult.FAIL, player.getHeldItem(hand));
+            }
+            network.sendTo(spongePlayer, cropListPacket(world, player));
+        }
+        return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+    }
+
+    // The ground temperature where the player is standing, which the client can't work out itself for TerrainControl's biomes
+    private static ClientboundCropListOpenPacket cropListPacket(final World world, final EntityPlayer player) {
+        final BlockPos position = player.getPosition();
+        final Biome biome = world.getBiome(position);
+        final ClientboundCropListOpenPacket packet = new ClientboundCropListOpenPacket(biome.getRegistryName() == null ? "" : biome.getRegistryName().toString(),
+                biome.getTemperature(position));
+        // The farming levels to plant and harvest each crop, only when the server runs the Skills plugin
+        if (Sponge.getPluginManager().isLoaded(SkillsHandler.PLUGIN_ID) && SkillsCropLevels.fill(packet.levels)) {
+            packet.skills = true;
+            packet.farmingLevel = skillsHandler == null ? -1 : Math.max(-1, skillsHandler.getLevelForSkill((Player) player, "farming"));
+        }
+        return packet;
     }
 
     @SideOnly(Side.CLIENT)

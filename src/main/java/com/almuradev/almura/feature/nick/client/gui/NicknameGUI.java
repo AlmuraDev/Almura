@@ -15,6 +15,7 @@ package com.almuradev.almura.feature.nick.client.gui;
  * All Rights Reserved.
  */
 
+import com.almuradev.almura.shared.client.ui.BottomRow;
 import com.almuradev.almura.feature.nick.ClientNickManager;
 import com.almuradev.almura.feature.nick.NickUtil;
 import com.almuradev.almura.feature.nick.asm.mixin.iface.IMixinEntityPlayer;
@@ -115,7 +116,8 @@ public final class NicknameGUI extends BasicScreen {
 
         // Player Render Area
         final BasicForm playerArea = new BasicForm(175, 185, "");
-        playerArea.setPosition(0, 0, Anchor.RIGHT | Anchor.MIDDLE);
+        // From the top, so it ends above the close button rather than running into it
+        playerArea.setPosition(0, 0, Anchor.RIGHT | Anchor.TOP);
         playerArea.setMovable(false);
         playerArea.setClosable(false);
         playerArea.setBorder(FontColors.WHITE, 1, 185);
@@ -229,6 +231,9 @@ public final class NicknameGUI extends BasicScreen {
                 .listener(this)
                 .build("button.apply");
 
+
+        // Tall enough for the panels, with the same gap above the bottom buttons as below them
+        BottomRow.fitHeight(this.form, buttonClose, playerArea, listArea);
 
         this.form.add(titleLabel, listArea, playerArea, nicknameLabel, this.nicknameTextbox, nicknameRulesLabel, colorLabel, this.colorSelector, buttonColor, buttonReset, buttonRemove, buttonClose, buttonApply);
         addToScreen(this.form);

@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.menu.singleplayer;
 
+import com.almuradev.almura.shared.client.ui.BottomRow;
 import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.shared.client.ui.screen.PanoramicScreen;
 import net.malisis.core.client.gui.Anchor;
@@ -14,6 +15,7 @@ import net.malisis.core.client.gui.BasicScreen;
 import net.malisis.core.client.gui.UIConstants;
 import net.malisis.core.client.gui.component.container.BasicContainer;
 import net.malisis.core.client.gui.component.decoration.UILabel;
+import net.malisis.core.client.gui.component.interaction.UIButton;
 import net.malisis.core.client.gui.component.interaction.button.builder.UIButtonBuilder;
 import net.malisis.core.renderer.font.FontOptions;
 import net.malisis.core.util.FontColors;
@@ -93,7 +95,10 @@ public final class MenuConfirmScreen extends PanoramicScreen {
             .anchor(Anchor.BOTTOM | Anchor.CENTER)
             .onClick(this::close);
 
-        box.add(titleLabel, messageLabel, confirm.build("button.confirm"), cancel.build("button.cancel"));
+        final UIButton confirmButton = confirm.build("button.confirm");
+        // Tall enough for the message, with the same gap above the buttons as below them
+        BottomRow.fitHeight(box, messageLabel, confirmButton);
+        box.add(titleLabel, messageLabel, confirmButton, cancel.build("button.cancel"));
         this.addToScreen(box);
     }
 }

@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui;
 
+import com.almuradev.almura.shared.client.ui.BottomRow;
 import com.almuradev.almura.asm.ClientStaticAccess;
 import com.almuradev.almura.core.client.config.category.GeneralCategory;
 import com.google.common.collect.ImmutableMap;
@@ -75,6 +76,10 @@ public final class ExchangeOptionsScreen extends BasicScreen {
                 .anchor(Anchor.BOTTOM | Anchor.RIGHT)
                 .listener(this)
                 .build("button.close");
+
+        // Tall enough for the contents, with the same gap above the bottom buttons as below them
+
+        BottomRow.fitHeight(form, this.defaultSort, closeButton);
 
         form.add(this.hideOwnListings, sortLabel, closeButton, this.defaultSort);
         this.addToScreen(form);

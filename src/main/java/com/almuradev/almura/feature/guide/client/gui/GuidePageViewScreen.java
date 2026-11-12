@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.guide.client.gui;
 
+import com.almuradev.almura.shared.client.ui.BottomRow;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.shared.client.GuiConfig;
 import com.almuradev.almura.asm.ClientStaticAccess;
@@ -165,8 +166,6 @@ public class GuidePageViewScreen extends BasicScreen {
         });
 
         if (this.hasEditControls()) {
-            this.pagesList.setHeight(this.pagesList.getHeight() - 17);
-
             this.buttonAdd = new UIButtonBuilder()
                     .text(TextFormatting.GREEN + "+")
                     .onClick(() -> this.runScheduledTask("add"))
@@ -193,6 +192,9 @@ public class GuidePageViewScreen extends BasicScreen {
                     .visible(this.hasEditControls())
                     .tooltip(I18n.format("almura.guide.view.button.details.tooltip"))
                     .build("button.details");
+
+            // The list ends as far above its buttons as the form's bottom padding is below them
+            this.pagesList.setHeight(this.pagesList.getHeight() - BottomRow.above(form, this.buttonAdd.getHeight()));
         }
 
         this.tbContent = new WYSIWYGTextBox(this, BasicScreen.getPaddedHeight(form), "");
@@ -218,7 +220,8 @@ public class GuidePageViewScreen extends BasicScreen {
 
         form.add(this.pagesList, this.tbContent, this.buttonAdd, buttonRemove, buttonDetails, buttonClose);
 
-        this.tbContent.setHeight(BasicScreen.getPaddedHeight(form) - 17);
+        // The page ends as far above the bottom buttons as the form's bottom padding is below them
+        this.tbContent.setHeight(BasicScreen.getPaddedHeight(form) - BottomRow.above(form, buttonClose.getHeight()));
         if (this.hasEditControls()) {
             this.buttonSave = new UIButtonBuilder()
                 .width(50)

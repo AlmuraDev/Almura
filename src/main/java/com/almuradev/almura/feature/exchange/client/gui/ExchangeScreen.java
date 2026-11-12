@@ -94,6 +94,8 @@ public final class ExchangeScreen extends BasicScreen {
     private UILabel headerItemName, headerPrice, headerSeller;
     // Width of the widest seller name on the current page: prices are right aligned this far from the sellers
     private static int pageSellerWidth;
+    // The Seller heading's width, sorted (with its arrow): the seller column is never narrower, so Price never sits on top of it
+    private static int sellerHeaderWidth;
 
     public BasicList<ListItem> listItemList;
     public BasicList<ForSaleItem> forSaleList;
@@ -214,6 +216,7 @@ public final class ExchangeScreen extends BasicScreen {
         this.headerItemName = this.createHeader("Item Name");
         this.headerItemName.setPosition(HEADER_ITEM_X, headerY, Anchor.LEFT | Anchor.TOP);
         this.headerSeller = this.createHeader("Seller");
+        sellerHeaderWidth = this.createHeader("Seller \u25B2").getWidth();
         this.headerSeller.setPosition(-HEADER_RIGHT_INSET, headerY, Anchor.RIGHT | Anchor.TOP);
         this.headerPrice = this.createHeader("Price");
         this.headerPrice.setPosition(-(priceColumnInset() + EXPANDING_LABEL_PADDING), headerY, Anchor.RIGHT | Anchor.TOP);
@@ -451,8 +454,15 @@ public final class ExchangeScreen extends BasicScreen {
     /**
      * @return How far from the right edge of a row the prices end: past the sellers (widest on the page) and a gap
      */
+    /**
+     * @return the width of the seller column and the gap before the prices: the widest seller name on the page, or the heading if wider
+     */
+    private static int sellerColumnWidth() {
+        return Math.max(pageSellerWidth, sellerHeaderWidth) + 8;
+    }
+
     private static int priceColumnInset() {
-        return HEADER_RIGHT_INSET + (pageSellerWidth > 0 ? pageSellerWidth + 8 : 0);
+        return HEADER_RIGHT_INSET + sellerColumnWidth();
     }
 
     /**
@@ -923,7 +933,7 @@ public final class ExchangeScreen extends BasicScreen {
             final double price = this.item.getPrice().doubleValue();
 
             // Prices end just left of the widest seller name on the page (lined up, leaving the item name the rest of the row)
-            final int maxPlayerTextWidth = pageSellerWidth > 0 ? pageSellerWidth + 8 : 0;
+            final int maxPlayerTextWidth = sellerColumnWidth();
             this.priceLabel = new UIExpandingLabel(TextFormatting.GOLD + FeatureConstants.withSuffix(price) + TextFormatting.GRAY + "/ea");
             this.priceLabel.setFontOptions(this.priceLabel.getFontOptions().toBuilder().scale(0.8f).build());
             this.priceLabel.setPosition(-(innerPadding + maxPlayerTextWidth), 0, Anchor.RIGHT | Anchor.MIDDLE);

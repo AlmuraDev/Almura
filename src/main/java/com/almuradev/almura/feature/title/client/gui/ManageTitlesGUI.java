@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.title.client.gui;
 
+import com.almuradev.almura.shared.client.ui.BottomRow;
 import com.almuradev.almura.feature.notification.ClientNotificationManager;
 import com.almuradev.almura.feature.notification.type.PopupNotification;
 import com.almuradev.almura.feature.title.ClientTitleManager;
@@ -351,6 +352,9 @@ public final class ManageTitlesGUI extends BasicScreen {
             .text(I18n.format("almura.button.close"))
             .listener(this)
             .build("button.close");
+
+        // Tall enough for the panels, with the same gap above the bottom buttons as below them
+        BottomRow.fitHeight(this.form, buttonClose, this.listArea, this.editArea, this.playerArea);
 
         this.form.add(this.listArea, this.editArea, this.playerArea, this.titleSelectionLabel, this.buttonAdd, this.buttonDelete, this
             .editModeCheckbox, buttonClose);

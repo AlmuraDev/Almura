@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.exchange.client.gui;
 
+import com.almuradev.almura.shared.client.ui.BottomRow;
 import com.almuradev.almura.feature.exchange.client.ClientExchangeManager;
 import com.almuradev.almura.feature.exchange.Exchange;
 import com.almuradev.almura.feature.exchange.InventoryAction;
@@ -80,7 +81,7 @@ public class ExchangeOfferScreen extends BasicScreen {
         // Swap container
         final NonNullList<ItemStack> mainInventory = Minecraft.getMinecraft().player.inventory.mainInventory;
         final int totalItemsForSale = this.exchange.getForSaleItemsFor(Minecraft.getMinecraft().player.getUniqueID()).map(List::size).orElse(0);
-        this.offerContainer = new UIExchangeOfferContainer(this, getPaddedWidth(form), getPaddedHeight(form) - 20,
+        this.offerContainer = new UIExchangeOfferContainer(this, getPaddedWidth(form), getPaddedHeight(form) - BottomRow.above(form, buttonOk.getHeight()),
                 TextFormatting.WHITE + I18n.format("almura.feature.exchange.text.inventory"),
                 TextFormatting.WHITE + I18n.format("almura.feature.exchange.text.unlisted_items"),
                 mainInventory.size(),
