@@ -17,15 +17,24 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandler;
 
+import java.util.function.Supplier;
+
 @SideOnly(Side.CLIENT)
 public final class DualItemHandlerGui extends GuiContainer {
 
-    private final ITextComponent upperTitle, lowerTitle;
+    // The upper title is asked for each time it's drawn, so it can follow what's in the inventory
+    private final Supplier<ITextComponent> upperTitle;
+    private final ITextComponent lowerTitle;
 
     private final int slotCount;
     private final int inventoryRows;
 
     public DualItemHandlerGui(IItemHandler upperItemHandler, IItemHandler lowerItemHandler, ITextComponent upperTitle, ITextComponent lowerTitle) {
+        this(upperItemHandler, lowerItemHandler, () -> upperTitle, lowerTitle);
+    }
+
+    public DualItemHandlerGui(IItemHandler upperItemHandler, IItemHandler lowerItemHandler, Supplier<ITextComponent> upperTitle,
+            ITextComponent lowerTitle) {
         super(new DualItemHandlerContainer(upperItemHandler, lowerItemHandler));
         this.allowUserInput = false;
 
@@ -48,7 +57,7 @@ public final class DualItemHandlerGui extends GuiContainer {
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         // Copy-paste from GuiChest but modified to use titles passed in
-        this.fontRenderer.drawString("§f" + this.upperTitle.getUnformattedText(), 8, 6, 4210752);
+        this.fontRenderer.drawString("§f" + this.upperTitle.get().getUnformattedText(), 8, 6, 4210752);
         this.fontRenderer.drawString(this.lowerTitle.getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
     }
 

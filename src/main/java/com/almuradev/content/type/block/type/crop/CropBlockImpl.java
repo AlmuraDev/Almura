@@ -324,7 +324,14 @@ public final class CropBlockImpl extends BlockCrops implements CropBlock, ModelH
      * @return True if the stack is something this sack harvestable crop can drop (its seed or an item of a stage's destroy drops)
      */
     public boolean isSackHarvestItem(final ItemStack stack) {
-        if (this.sackHarvestResetAge < 0 || stack.isEmpty()) {
+        return this.sackHarvestResetAge >= 0 && this.isCropItem(stack);
+    }
+
+    /**
+     * @return True if the stack is this crop's seed or something one of its stages drops (its produce)
+     */
+    public boolean isCropItem(final ItemStack stack) {
+        if (stack.isEmpty()) {
             return false;
         }
 

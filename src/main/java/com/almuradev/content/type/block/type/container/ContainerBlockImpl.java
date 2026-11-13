@@ -17,6 +17,9 @@ import net.minecraft.block.BlockContainer;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
+import net.minecraft.block.Block;
+import net.minecraft.block.properties.IProperty;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -33,6 +36,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.property.ExtendedBlockState;
+import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.common.property.IUnlistedProperty;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 public final class ContainerBlockImpl extends BlockContainer implements ContainerBlock {
@@ -79,6 +86,11 @@ public final class ContainerBlockImpl extends BlockContainer implements Containe
             return true;
         }
 
+        // A barrel made for a single crop turns into the storage barrel, keeping its facing and contents
+        if (StorageBarrel.isCropBarrel(this)) {
+            convertToStorageBarrel(world, pos, state);
+        }
+
         player.openGui(Almura.ID, 0, world, pos.getX(), pos.getY(), pos.getZ());
 
         return true;
@@ -93,7 +105,37 @@ public final class ContainerBlockImpl extends BlockContainer implements Containe
 
     @Override
     protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, BlockHorizontal.FACING);
+        // The storage barrel's label is passed to its model as an unlisted property
+        return new ExtendedBlockState(this, new IProperty<?>[] {BlockHorizontal.FACING}, new IUnlistedProperty<?>[] {StorageBarrel.LABEL});
+    }
+
+    @Override
+    public IBlockState getExtendedState(final IBlockState state, final IBlockAccess world, final BlockPos pos) {
+        if (StorageBarrel.is(this) && state instanceof IExtendedBlockState) {
+            final TileEntity te = world.getTileEntity(pos);
+            if (te instanceof MultiSlotTileEntity) {
+                return ((IExtendedBlockState) state).withProperty(StorageBarrel.LABEL, ((MultiSlotTileEntity) te).getLabel());
+            }
+        }
+        return state;
+    }
+
+    private static void convertToStorageBarrel(final World world, final BlockPos pos, final IBlockState state) {
+        final Block barrel = ForgeRegistries.BLOCKS.getValue(StorageBarrel.ID);
+        final TileEntity old = world.getTileEntity(pos);
+        if (barrel == null || !(old instanceof MultiSlotTileEntity)) {
+            return;
+        }
+        final NBTTagCompound contents = old.writeToNBT(new NBTTagCompound());
+        // Replacing the block doesn't drop its contents (only harvesting it does), and they're put back in the new barrel
+        world.setBlockState(pos, barrel.getDefaultState().withProperty(BlockHorizontal.FACING, state.getValue(BlockHorizontal.FACING)), 3);
+        final TileEntity converted = world.getTileEntity(pos);
+        if (converted instanceof MultiSlotTileEntity) {
+            converted.readFromNBT(contents);
+            converted.markDirty();
+            final IBlockState now = world.getBlockState(pos);
+            world.notifyBlockUpdate(pos, now, now, 3);
+        }
     }
 
     @Override

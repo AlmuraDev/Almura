@@ -10,8 +10,10 @@ package com.almuradev.almura.feature.storage;
 import com.almuradev.almura.shared.inventory.DualItemHandlerContainer;
 import com.almuradev.almura.shared.network.handler.DualItemHandlerGui;
 import com.almuradev.almura.shared.tileentity.MultiSlotTileEntity;
+import com.almuradev.content.type.block.type.container.StorageBarrel;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
@@ -74,7 +76,22 @@ public final class CapabilityDualItemHandlerGuiHandler implements IGuiHandler {
             return null;
         }
 
-        return new DualItemHandlerGui(teItemHandler, playerItemHandler, new TextComponentString(block.getLocalizedName()), new TextComponentTranslation
-                ("container.inventory"));
+        return new DualItemHandlerGui(teItemHandler, playerItemHandler, () -> new TextComponentString(title(block, (MultiSlotTileEntity) te)),
+                new TextComponentTranslation("container.inventory"));
+    }
+
+    /**
+     * @return the block's name, and for a storage barrel holding something, what it holds first: "Basil Storage Barrel" for basil, "Basil Seed
+     *     Storage Barrel" for its seeds (the client knows the first slot from the barrel's label)
+     */
+    private static String title(final Block block, final MultiSlotTileEntity te) {
+        final String name = block.getLocalizedName();
+        final ItemStack label = te.getLabel();
+        if (!StorageBarrel.is(block) || label.isEmpty()) {
+            return name;
+        }
+        // What it holds, as named: seeds keep "Seed" ("Dragonfruit Seed Storage Barrel"), so a barrel of seeds isn't taken for the fruit
+        final String contents = label.getDisplayName().trim();
+        return contents.isEmpty() ? name : contents + " " + name;
     }
 }

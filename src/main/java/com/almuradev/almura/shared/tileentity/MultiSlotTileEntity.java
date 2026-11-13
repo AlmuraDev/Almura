@@ -13,11 +13,14 @@ import com.almuradev.almura.shared.capability.IMultiSlotItemHandler;
 import com.almuradev.almura.shared.capability.SharedCapabilities;
 import com.almuradev.almura.shared.capability.impl.MultiSlotItemHandler;
 import com.almuradev.content.type.block.type.container.ContainerBlock;
+import com.almuradev.content.type.block.type.container.StorageBarrel;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -31,7 +34,10 @@ import javax.annotation.Nullable;
 public final class MultiSlotTileEntity extends TileEntity {
 
     private static final String LIMIT_TAG = "Limit";
+    private static final String LABEL_TAG = "Label";
     private int limit;
+    // A storage barrel's label on the client: the item in its first slot, sent by the server
+    private ItemStack label = ItemStack.EMPTY;
 
     private final MultiSlotItemHandler itemHandler = new MultiSlotItemHandler() {
         @Override
@@ -56,6 +62,11 @@ public final class MultiSlotTileEntity extends TileEntity {
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
             final BlockPos pos = MultiSlotTileEntity.this.pos;
             final IBlockState state = world.getBlockState(pos);
+
+            // The storage barrel holds any seed or crop
+            if (StorageBarrel.is(state.getBlock())) {
+                return StorageBarrel.accepts(stack);
+            }
 
             String blockName =  state.getBlock().getTranslationKey();
             String stackName = stack.getTranslationKey();
@@ -691,6 +702,64 @@ public final class MultiSlotTileEntity extends TileEntity {
         compound.setTag("ForgeCaps", forgeCaps);
 
         return compound;
+    }
+
+
+    /**
+     * @return what a storage barrel's label shows on the client: the item in its first slot, or empty
+     */
+    public ItemStack getLabel() {
+        return this.label;
+    }
+
+    private boolean isStorageBarrel() {
+        return this.world != null && StorageBarrel.is(this.world.getBlockState(this.pos).getBlock());
+    }
+
+    // A storage barrel tells the players around it what's in its first slot, for its label. Sent when a chunk is loaded (the update tag)
+    // and whenever the contents change (the update packet, sent by the block update onContentsChanged makes)
+    @Override
+    public NBTTagCompound getUpdateTag() {
+        final NBTTagCompound tag = super.getUpdateTag();
+        if (this.isStorageBarrel()) {
+            final ItemStack first = this.itemHandler.getSlots() > 0 ? this.itemHandler.getStackInSlot(0) : ItemStack.EMPTY;
+            final ItemStack label = first.isEmpty() ? ItemStack.EMPTY : first.copy();
+            label.setCount(label.isEmpty() ? 0 : 1);
+            tag.setTag(LABEL_TAG, label.writeToNBT(new NBTTagCompound()));
+        }
+        return tag;
+    }
+
+    @Nullable
+    @Override
+    public SPacketUpdateTileEntity getUpdatePacket() {
+        return this.isStorageBarrel() ? new SPacketUpdateTileEntity(this.pos, 0, this.getUpdateTag()) : null;
+    }
+
+    @Override
+    public void onDataPacket(final NetworkManager net, final SPacketUpdateTileEntity packet) {
+        // Only ever called on the client
+        this.readLabel(packet.getNbtCompound());
+    }
+
+    @Override
+    public void handleUpdateTag(final NBTTagCompound tag) {
+        if (tag.hasKey(LABEL_TAG)) {
+            this.readLabel(tag);
+        } else {
+            super.handleUpdateTag(tag);
+        }
+    }
+
+    private void readLabel(final NBTTagCompound tag) {
+        final ItemStack label = tag.hasKey(LABEL_TAG) ? new ItemStack(tag.getCompoundTag(LABEL_TAG)) : ItemStack.EMPTY;
+        if (!ItemStack.areItemStacksEqual(label, this.label)) {
+            this.label = label;
+            if (this.world != null) {
+                // The label is part of the block's model, so the block is drawn again
+                this.world.markBlockRangeForRenderUpdate(this.pos, this.pos);
+            }
+        }
     }
 
     public void setSizeLimit(int limit) {
