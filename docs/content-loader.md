@@ -53,21 +53,26 @@ Translations are keyed by the file's name in its folder (`aniseseed.name`, `anis
 
 | Type | Files | State |
 | --- | --- | --- |
-| `item_group` | 24 | first slice |
-| `item/normal` | 186 | first slice |
-| `item/food` | 413 | first slice (potion effects, `always_edible`, `container` returned) |
-| `block/normal` | 3 | first slice |
-| `block/horizontal` | 764 | first slice (facing, rotated shapes) |
-| `block/log` | 22 | next |
-| `block/flower` | 99 | next |
-| `block/slab`, `item/slab` | 220 + 110 | next |
-| `block/stair` | 128 | next |
+| `item_group` | 23 | done: creative tabs |
+| `item/normal` | 186 | done (3 tools have no item model in the content) |
+| `item/food` | 413 | done: hunger, saturation, healing (`almura:heal`), potion effects at their chance, containers handed back |
+| `item/tool_hoe` | 5 | done: hoes of their tier |
+| `item/tool_sickle` | 5 | done as tools; `effective_on` waits for crops (tag `almura:mineable/sickle`) |
+| `block/normal` | 3 | done |
+| `block/horizontal` | 764 | done: facing, shapes turned with it |
+| `block/log` | 22 | done: on their axis |
+| `block/flower` | 99 | done: on earth, no collision |
+| `block/stair` | 128 | done: made of their `block` |
+| `block/slab`, `item/slab` | 220 + 110 | done: one 26.3 slab per single slab, its double state the 1.12 double slab |
 | `block/container` | 69 | later: needs the container feature |
 | `block/crop`, `item/seed` | 85 + 85 | later: growth, hydration, fertilizer |
-| `block/leaf`, `block/log`, `block/sapling`, `tree` | 42 + 22 + 25 + 25 | later: decay, spread, tree growth |
-| `item/tool_hoe`, `item/tool_sickle` | 5 + 5 | later |
+| `block/leaf`, `block/sapling`, `tree` | 42 + 25 + 25 | later: decay, spread, tree growth |
 | `generation`, `grass`, `material`, `block_sound_group` | 27 + 1 + 1 + 1 | later: world generation is datapack based in 26.3 |
-| `flicker`, `drip` (block state options) | 13 + 5 | later: client effects |
+| `flicker`, `drip` (block state options), blockstate `transform`s | 13 + 5 + 121 | later: client effects and item display |
+
+`ContentConversionTest` reads the copied content and checks the pack; `ContentRegistrationTest` and `ContentDataTest` start the game's
+mod loading (no window, no server) and check the registries and that 26.3 reads every recipe and loot table. `./gradlew test` writes
+`build/content-report.txt` with what didn't convert and why.
 
 ## Things that changed underneath
 
