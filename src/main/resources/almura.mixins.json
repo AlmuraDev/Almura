@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "com.almuradev.almura.mixin",
+  "mixins": [],
+  "client": [
+    "client.ConnectScreenAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}

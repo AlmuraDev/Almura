@@ -65,6 +65,10 @@ neoForge {
             client()
             // Not run/: the 1.12.2 dev client lives there in the Almura-3.5 checkout
             gameDirectory = project.file('runs/client')
+            // ./gradlew runClient -PjoinServer=host:port joins a server straight from startup
+            if (project.hasProperty('joinServer')) {
+                programArguments.addAll('--quickPlayMultiplayer', project.property('joinServer').toString())
+            }
         }
         server {
             server()
