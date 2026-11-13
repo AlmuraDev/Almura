@@ -1,0 +1,40 @@
+modLoader = "javafml"
+loaderVersion = "${neoforge_loader_version_range}"
+license = "${mod_license}"
+
+[[mods]]
+modId = "${mod_id}"
+version = "${version}"
+displayName = "${mod_name}"
+authors = "${mod_authors}"
+description = '''${mod_description}'''
+
+[[dependencies.${mod_id}]]
+modId = "neoforge"
+type = "required"
+versionRange = "[${neoforge_version},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "minecraft"
+type = "required"
+versionRange = "${minecraft_version_range}"
+ordering = "NONE"
+side = "BOTH"
+
+# Every Almura screen is a Strata screen; the server does not need it
+[[dependencies.${mod_id}]]
+modId = "strata"
+type = "required"
+versionRange = "[0.1.0-SNAPSHOT,)"
+ordering = "AFTER"
+side = "CLIENT"
+
+# Optional while the port starts up, so the dev runs start without SpongeNeo; required once Sponge features are ported
+[[dependencies.${mod_id}]]
+modId = "spongeapi"
+type = "optional"
+versionRange = "${sponge_api_version_range}"
+ordering = "AFTER"
+side = "BOTH"

@@ -1,0 +1,473 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven {
+            name = 'forge'
+            url = 'https://maven.minecraftforge.net/'
+        }
+        maven {
+            name = 'oss-sonatype-public'
+            url = 'https://oss.sonatype.org/content/repositories/public/'
+        }
+        maven {
+            name = 'sponge'
+            url = 'https://repo.spongepowered.org/maven'
+        }
+        maven {
+            url = 'https://plugins.gradle.org/m2/'
+        }
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
+        classpath "net.minecraftforge.gradle:ForgeGradle:${project.forgeGradleVersion}"
+        classpath "gradle.plugin.net.minecrell:licenser:0.4.1"
+        classpath 'org.spongepowered:mixingradle:0.6+'
+        classpath 'org.spongepowered:spongegradle:0.8.1'
+        classpath 'nu.studer:gradle-jooq-plugin:3.0.2'
+    }
+}
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'net.minecrell.licenser'
+apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'org.spongepowered.gradle'
+apply plugin: 'org.spongepowered.plugin'
+apply plugin: 'nu.studer.jooq'
+
+// Minecraft 1.12 needs Guava 21; SpongeForge's Guice would otherwise pull in 27.1 and crash the dev client
+configurations.all {
+    resolutionStrategy.force 'com.google.guava:guava:21.0'
+}
+
+defaultTasks 'clean', 'licenseFormat', 'sortAccessTransformers', 'sortClassFields', 'build'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+archivesBaseName = project.name.toLowerCase()
+// The build number: the jar's name, mcmod.info and Almura.buildNumber (the window title and About menu) all take it from here
+ext.internalBuild = '126'
+version = "mc[${project.minecraftVersion}]-forge[${project.forgeBuild}]-sf[${project.spongeImplVersion.split("-")[2]}]-b${project.internalBuild}"
+
+minecraft {
+    version = "${project.forgeVersion}"
+    mappings = project.mcpMappings
+    runDir = 'run'
+    useDepAts = true
+    coreMod = project.coreMod
+
+    // We don't use the obfuscated dev jar currently
+    makeObfSourceJar = false
+
+    // Almura.buildNumber, written into the source Gradle compiles (an IntelliJ run compiles it as is, and shows "dev")
+    replace '@internalBuild@', project.internalBuild
+    replaceIn 'Almura.java'
+}
+
+mixin {
+    add sourceSets.main, "mixins.${project.name.toLowerCase()}.refmap.json"
+}
+
+deobfMcMCP { failOnAtError = false }
+deobfMcSRG { failOnAtError = false }
+
+// The Skills project's own build, when it's next to this one (see repositories)
+// (-PpublishedSkills uses the published one anyway)
+ext.localSkillsBuild = !project.hasProperty('publishedSkills') && file('../Skills/build/libs/skills-1.0.0-SNAPSHOT.jar').exists() && file('../Skills/build/libs/skills-1.0.0-SNAPSHOT-api.jar').exists()
+
+repositories {
+    // Skills: when the Skills project sits next to this one and has been built, use its build, so the dev client runs the rules being worked
+    // on (the published snapshot on Sponge's repository is from 2022). ForgeGradle puts Sponge's repository ahead of these, so the local
+    // build is asked for as version 'local', which only this repository has. Still a module, so it stays out of Almura's shaded jar.
+    if (localSkillsBuild) {
+        ivy {
+            name = 'localSkills'
+            url = file('../Skills/build/libs').toURI()
+            layout('pattern') {
+                artifact '[module]-1.0.0-SNAPSHOT(-[classifier]).[ext]'
+            }
+        }
+    }
+	// These three always first!!!
+    mavenLocal()
+    mavenCentral()
+    flatDir {
+        dirs "lib"
+    }
+    // Any maven repo offline can cause the buildscript to fail during AT Extraction!
+    maven {
+        name = 'forge'
+        url = 'https://maven.minecraftforge.net/'
+    }
+    maven {
+        name = 'oss-sonatype-public'
+        url = 'https://oss.sonatype.org/content/groups/public/'
+    }
+    maven {
+        name 'drnaylor-minecraft'
+        url 'https://repo.drnaylor.co.uk/artifactory/list/minecraft'
+    }
+    maven {
+        name = 'sponge'
+        url = 'https://repo.spongepowered.org/maven'
+    }
+    maven {
+        name = 'bstats'
+        url = 'https://repo.codemc.org/repository/maven-public'
+    }
+    maven {
+        url = "https://raw.githubusercontent.com/FabioZumbi12/UltimateChat/mvn-repo"
+    }
+    maven {
+        name = "LuckPerms"
+        url = "https://repo.lucko.me/"
+    }
+    //maven {
+    //    name = 'jitpack'
+    //    url = 'https://jitpack.io'
+    //}
+    maven {
+        name = 'glare'
+        url = 'https://repo.glaremasters.me/repository/bloodshot'
+    }
+    maven {
+        name = 'ic2'
+        url = 'https://maven.ic2.player.to/'
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        force 'com.typesafe:config:1.3.1'
+    }
+}
+
+dependencies {
+    compile ("org.spongepowered:spongeforge:${project.spongeImplVersion}:dev") {
+        exclude module: 'testplugins'
+	    exclude module: 'testmods'
+    }
+    // Almura utilized Kyori libraries for the Content Loader, Binding and Injector system.
+    compile 'net.kyori:indigo:1.0.0-SNAPSHOT'
+    compile 'net.kyori:lunar:1.0.5-SNAPSHOT'
+    compile 'net.kyori:membrane:1.0.5'
+    compile 'net.kyori:violet:1.0.0'
+    compile 'net.kyori:text-api:3.0.4'
+    compile "net.kyori:text-serializer-legacy:3.0.4"
+    compile "net.kyori:event-api:3.0.0"
+    compile "net.kyori:event-api:5.0.0-SNAPSHOT"
+    compile "net.kyori:event-method:3.0.0"
+    // 3 following dependencies libraries are to support GD's API which uses re-located libraries....
+    //compile 'com.griefdefender.lib.kyori:examination-api-gd:1.1.0'
+    //compile 'com.griefdefender.lib.kyori:text-api-gd:3.0.4'
+    //compile 'com.griefdefender.lib.kyori:text-serializer-legacy-gd:3.0.4'
+    // GD's API for GD (Sponge) 2.0.1 (11/5/2021), specifically the shaded version which the plugin uses for its relocated libraries...
+    //compile ("com.github.bloodmc:GriefDefenderAPI-2.0.0-Shaded:2.0.0-20210822.184639-9-shaded")
+    // Remember to update this entry for Nucleus if the API gets behind the currently plugin version being used.
+    compile 'io.github.nucleuspowered:nucleus-api:2.4.0'
+    // Remember to update this entry for LuckPerms if the API gets behind the currently plugin version being used.
+    compile "net.luckperms:api:5.3"
+    deobfProvided ('com.almuradev:malisiscore:1.12.2-6.6.2') {
+        transitive = false
+    }
+    // Attempt to use GD 2.0.3 API change.
+    compile 'com.griefdefender:api:2.1.0-SNAPSHOT'
+    // IndustrialCraft 2 energy API for machines. Optional at runtime: only used when IC2 is installed, so it's neither shaded nor required.
+    compileOnly 'net.industrial-craft:industrialcraft-2:2.8.220-ex112:api'
+    compile "net.kyori:adventure-api:4.9.3"
+    // UltimateChat is a server plugin: compile against it, but don't load it in the dev client (its startup fails without a server).
+    // Almura only uses it when the plugin is installed (see UchatUtil).
+    compileOnly 'br.net.fabiozumbi12.UltimateChat:UltimateChat-Sponge-56-1.9.1'
+    compile 'org.spongepowered:configurate-json:3.5'
+    if (localSkillsBuild) {
+        // The local build has no descriptor, so both of its jars are named on the one dependency
+        compile('org.inspirenxe:skills:local') {
+            artifact { name = 'skills'; type = 'jar'; extension = 'jar' }
+            artifact { name = 'skills'; classifier = 'api'; type = 'jar'; extension = 'jar' }
+        }
+        // The published Skills brings in lunar 1.0.7-SNAPSHOT, which Almura shades in place of the older one it asks for; keep it the same
+        compile 'net.kyori:lunar:1.0.7-SNAPSHOT'
+        // Likewise SpongeAPI 7.2.0-SNAPSHOT, in place of toolbox's 7.0.0 whose old configurate breaks SpongeForge in the dev client
+        compile 'org.spongepowered:spongeapi:7.2.0-SNAPSHOT'
+    } else {
+        compile 'org.inspirenxe:skills:1.0.0-SNAPSHOT:api'
+    }
+    compile 'com.almuradev:toolbox:1.0.0-SNAPSHOT'
+    if (!localSkillsBuild) {
+        compile 'org.inspirenxe:skills:1.0.0-SNAPSHOT'
+    }
+    compile "org.jooq:jooq:${project.jooqVersion}"
+    compile "org.jooq:jooq-meta:${project.jooqVersion}"
+    compile "org.jooq:jooq-codegen:${project.jooqVersion}"
+    jooqRuntime "org.jooq:jooq-meta-extensions:${project.jooqVersion}"
+    testCompile 'junit:junit:4.12'
+}
+
+license {
+    header = project.file('header.txt')
+
+    include 'com/almuradev/'
+    exclude 'com/almuradev/generated'
+
+    tasks {
+        main {
+            files = project.files('src/main/java')
+        }
+    }
+
+    newLine false
+}
+
+idea {
+    module {
+        inheritOutputDirs = true
+    }
+}
+
+if (JavaVersion.current().isJava8Compatible() || JavaVersion.current().isJava9Compatible()) {
+    tasks.withType(Javadoc) {
+        // disable the crazy super-strict doclint tool in Java 8
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
+}
+
+compileJava {
+    options.compilerArgs += [
+            '-Xlint:-processing',
+            '-Xlint:-deprecation',
+    ]
+    options.deprecation = true
+    options.encoding = 'utf8'
+}
+
+processResources {
+    // So a new build number or Minecraft version reprocesses mcmod.info (Gradle otherwise sees nothing changed)
+    inputs.property 'internalBuild', project.internalBuild
+    inputs.property 'minecraftVersion', project.minecraftVersion
+    filesMatching('**/mcmod.info') {
+        filter ReplaceTokens, tokens: [
+            'build': project.internalBuild,
+            'minecraftVersion': project.minecraftVersion
+        ]
+    }
+}
+
+test {
+    testLogging {
+        exceptionFormat = 'full' // Always print full stack trace if something goes wrong in the unit tests
+        showStandardStreams = true
+    }
+}
+
+jar {
+    classifier 'base'
+    exclude 'log4j2-test.xml'
+
+    manifest {
+        attributes(
+                'Built-By': System.properties['user.name'],
+                'Created-By': System.properties['java.vm.version'] + ' (' + System.properties['java.vm.vendor'] + ')',
+                'Implementation-Title': project.name,
+                'Implementation-Version': version,
+                'Implementation-Vendor': url,
+                'FMLAT': "${project.name.toLowerCase()}_at.cfg",
+                'FMLCorePlugin': 'com.almuradev.almura.AlmuraLoadingPlugin',
+                'FMLCorePluginContainsFMLMod': true,
+                'ForceLoadAsMod': true,
+                'MixinConfigs': [
+                        'mixins.almura.core.json',
+                        "mixins.almura.accessors.json",
+                        'mixins.almura.content.json',
+                        'mixins.almura.content.block.json',
+                        'mixins.almura.content.block.horizontal.json',
+                        'mixins.almura.content.blocksoundgroup.json',
+                        'mixins.almura.content.item.food.json',
+                        'mixins.almura.content.item.json',
+                        'mixins.almura.content.item.seed.json',
+                        'mixins.almura.content.itemgroup.json',
+                        'mixins.almura.content.mapcolor.json',
+                        'mixins.almura.content.material.json',
+                        'mixins.almura.feature.animal.json',
+                        'mixins.almura.feature.cache.json',
+                        'mixins.almura.feature.healthbar.json',
+                        'mixins.almura.feature.almanac.json',
+                        'mixins.almura.feature.sign.json',
+                        'mixins.almura.feature.title.json',
+                        'mixins.almura.feature.biome.json',
+                        'mixins.almura.feature.nick.json'
+                ].join(','),
+                'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+                'TweakOrder': 0
+        )
+    }
+}
+
+shadowJar {
+    mainSpec.sourcePaths.clear()
+    dependsOn reobfJar
+    classifier ''
+    exclude 'dummyThing'
+    relocate 'com.typesafe.config', 'configurate.typesafe.config'
+
+    // Relocation of GD libraries here when using GD 2.0.3 (When libraries load in GameConstruct)
+    relocate 'net.kyori.event', 'com.griefdefender.lib.kyori.event'
+    relocate 'net.kyori.adventure', 'com.griefdefender.lib.kyori.adventure'
+    dependencies {
+
+        include dependency('com.almuradev:toolbox')
+        include dependency('com.fasterxml.jackson.core:jackson-core')
+        include dependency('com.google.inject.extensions:guice-assistedinject')
+        include dependency('com.google.inject.extensions:guice-multibindings')
+        include dependency('io.github.nucleuspowered:nucleus-api')
+        include dependency('net.kyori:indigo')
+        include dependency('net.kyori:text-serializer-legacy')
+        include dependency('net.kyori:text-api')
+        include dependency('net.kyori:lunar')
+        include dependency('net.kyori:membrane')
+        include dependency('net.kyori:violet')
+        include dependency('ninja.leaping.configurate:configurate-json')
+        include dependency('io.github.nucleuspowered:nucleus-api')
+        include dependency('org.jooq:jooq')
+        // Shade GD API because normally this doesn't load until PreInit an we need it during GameConstruct.
+        include dependency('com.github.bloodmc:GriefDefenderAPI-2.0.0-Shaded')
+        // The three following includes are shaded & relocated version of libraries used by GD 2.0 API
+        // Found at /config/griefdefender/lib
+        // You have to look at GDAPI's build.gradle file to figure out which version's he currently using
+        // they don't alway match what he's put into the /config/griefdefender/lib folder....
+        //include dependency("com.griefdefender.lib.kyori:examination-api-gd:1.1.0")
+        //include dependency("com.griefdefender.lib.kyori:text-api-gd:3.0.4")
+        //include dependency("com.griefdefender.lib.kyori:text-serializer-legacy-gd:3.0.4")
+    }
+    afterEvaluate {
+        from zipTree(reobfJar.jar)
+    }
+}
+
+artifacts {
+    archives shadowJar
+}
+
+def generatedDir = 'src/main/generated'
+sourceSets {
+    main {
+        java {
+            srcDirs += [generatedDir]
+        }
+    }
+}
+
+task generateDatabaseClasses() {}
+
+task cleanDatabaseClasses() {
+    doLast {
+        project.file(generatedDir).deleteDir()
+    }
+}
+
+jooq {
+    version = project.jooqVersion
+    edition = project.jooqEdition
+    axsDdl(sourceSets.main) {
+        generator {
+            database {
+                name = 'org.jooq.meta.extensions.ddl.DDLDatabase'
+                properties {
+                    property {
+                        key = 'scripts'
+                        value = 'src/main/resources/db/axs/database.sql'
+                    }
+                }
+
+                inputSchema = 'PUBLIC'
+                outputSchemaToDefault = true
+            }
+            generate {
+                relations = true
+                deprecated = false
+                records = true
+                immutablePojos = false
+                fluentSetters = true
+            }
+            target {
+                packageName = 'com.almuradev.generated.axs'
+                directory = generatedDir
+            }
+        }
+    }
+    storeDdl(sourceSets.main) {
+        generator {
+            database {
+                name = 'org.jooq.meta.extensions.ddl.DDLDatabase'
+                properties {
+                    property {
+                        key = 'scripts'
+                        value = 'src/main/resources/db/store/database.sql'
+                    }
+                }
+
+                inputSchema = 'PUBLIC'
+                outputSchemaToDefault = true
+            }
+            generate {
+                relations = true
+                deprecated = false
+                records = true
+                immutablePojos = false
+                fluentSetters = true
+            }
+            target {
+                packageName = 'com.almuradev.generated.store'
+                directory = generatedDir
+            }
+        }
+    }
+    titleDdl(sourceSets.main) {
+        generator {
+            database {
+                name = 'org.jooq.meta.extensions.ddl.DDLDatabase'
+                properties {
+                    property {
+                        key = 'scripts'
+                        value = 'src/main/resources/db/title/database.sql'
+                    }
+                }
+
+                inputSchema = 'PUBLIC'
+                outputSchemaToDefault = true
+            }
+            generate {
+                relations = true
+                deprecated = false
+                records = true
+                immutablePojos = false
+                fluentSetters = true
+            }
+            target {
+                packageName = 'com.almuradev.generated.title'
+                directory = generatedDir
+            }
+        }
+    }
+}
+
+generateDatabaseClasses.dependsOn 'generateAxsDdlJooqSchemaSource'
+
+generateAxsDdlJooqSchemaSource.dependsOn 'cleanDatabaseClasses'
+
+project.tasks.getByName('compileJava').dependsOn -= 'generateAxsDdlJooqSchemaSource'
+
+generateDatabaseClasses.dependsOn 'generateStoreDdlJooqSchemaSource'
+
+generateStoreDdlJooqSchemaSource.dependsOn 'cleanDatabaseClasses'
+
+project.tasks.getByName('compileJava').dependsOn -= 'generateStoreDdlJooqSchemaSource'
+
+generateDatabaseClasses.dependsOn 'generateTitleDdlJooqSchemaSource'
+
+generateTitleDdlJooqSchemaSource.dependsOn 'cleanDatabaseClasses'
+
+project.tasks.getByName('compileJava').dependsOn -= 'generateTitleDdlJooqSchemaSource'
