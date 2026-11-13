@@ -76,6 +76,10 @@ neoForge {
             if (project.hasProperty('joinServer')) {
                 programArguments.addAll('--quickPlayMultiplayer', project.property('joinServer').toString())
             }
+            // ./gradlew runClient -PsampleSkills shows sample skills on the HUD, until skills come from a server
+            if (project.hasProperty('sampleSkills')) {
+                systemProperty('almura.dev.sampleSkills', 'true')
+            }
             // ./gradlew runClient -PjoinWorld=<save folder> opens a single-player world straight from startup (-PjoinWorld= for the latest)
             if (project.hasProperty('joinWorld')) {
                 programArguments.add('--quickPlaySingleplayer')

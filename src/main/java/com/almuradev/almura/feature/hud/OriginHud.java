@@ -8,16 +8,20 @@
 package com.almuradev.almura.feature.hud;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.feature.skills.SkillEntry;
+import com.almuradev.almura.feature.skills.client.ClientSkills;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.server.IntegratedServer;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
 import org.inspirenxe.strata.api.ComponentFactory;
 import org.inspirenxe.strata.api.component.Component;
 import org.inspirenxe.strata.api.control.display.Image;
@@ -33,10 +37,13 @@ import org.inspirenxe.strata.api.screen.Screen;
 import org.inspirenxe.strata.api.text.Text;
 import org.inspirenxe.strata.api.text.TextStyle;
 import org.inspirenxe.strata.api.theme.SpriteId;
+import org.inspirenxe.strata.minecraft.MinecraftText;
 import org.inspirenxe.strata.minecraft.MinecraftVisuals;
 import org.jspecify.annotations.Nullable;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Almura's in-game HUD ("Origin"), as on 1.12: the player in the top left (face, name, level, and bars for experience, health, armour,
@@ -64,10 +71,21 @@ final class OriginHud implements Screen {
     private static final DecimalFormat COORDINATE = new DecimalFormat("0.##"), TPS = new DecimalFormat("0.0");
 
 
-    private @Nullable AnchorPanel userPanel, worldPanel, detailsPanel;
+    // The skills panel's rows: name and level on a line, a thin bar under them; gaps as on 1.12
+    private static final float SKILL_BAR_HEIGHT = 4f, SKILL_ROW_GAP = 3f, SKILL_TEXT_INSET = 2f, SKILL_NAME_GAP = 6f;
+    private static final SpriteId WHITE_SPRITE = SpriteId.of(Almura.ID, "theme/white");
+    private static final int TRACK = 0xB4000000;
+
+    private @Nullable ComponentFactory factory;
+    private @Nullable AnchorPanel userPanel, worldPanel, detailsPanel, skillsPanel;
+    private @Nullable StackPanel skillRows;
+    // The skills the panel shows, and each one's bar and fill
+    private List<SkillEntry> shownSkills = List.of();
+    private final List<AnchorPanel> skillBars = new ArrayList<>();
+    private final List<Image> skillFills = new ArrayList<>();
     private @Nullable Image avatar;
     private @Nullable GameProfile avatarProfile;
-    private @Nullable Label name, level, compass, coordinates, performance, ping;
+    private @Nullable Label name, level, worldName, compass, coordinates, performance, ping;
     private @Nullable HudBar experience, health, armor, hunger, stamina, air, mount;
     private @Nullable Image clock;
 
@@ -103,13 +121,26 @@ final class OriginHud implements Screen {
         this.userPanel.setWidth(USER_WIDTH);
         this.userPanel.setAnchor(Anchor.TOP_LEFT);
 
-        // The compass, at the top middle
+        // The world's name over the compass, at the top middle
+        this.worldName = plain(factory.label(""));
         this.compass = plain(factory.label(""));
-        this.worldPanel = panel(factory, this.compass);
+        final StackPanel world = factory.stackPanel().setSpacing(2f)
+            .add(this.worldName.setAlignment(HorizontalAlignment.CENTER, VerticalAlignment.TOP))
+            .add(this.compass.setAlignment(HorizontalAlignment.CENTER, VerticalAlignment.TOP));
+        this.worldPanel = panel(factory, world);
         // Further in at the sides than the other panels, as on 1.12
-        this.compass.setMargin(PADDING + COMPASS_MARGIN, PADDING, PADDING + COMPASS_MARGIN, PADDING);
+        world.setMargin(PADDING + COMPASS_MARGIN, PADDING, PADDING + COMPASS_MARGIN, PADDING);
         this.worldPanel.setMinSize(COMPASS_MIN_WIDTH, 0f);
         this.worldPanel.setAnchor(Anchor.TOP_CENTER);
+
+        // The skills the player chose to show, in the bottom right
+        this.skillRows = factory.stackPanel().setSpacing(SKILL_ROW_GAP);
+        this.skillsPanel = panel(factory, this.skillRows);
+        this.skillRows.setMargin(PADDING + SKILL_TEXT_INSET, PADDING, PADDING + SKILL_TEXT_INSET, PADDING);
+        this.skillsPanel.setMinSize(USER_WIDTH, 0f);
+        this.skillsPanel.setAnchor(Anchor.BOTTOM_RIGHT);
+        this.skillsPanel.setVisible(false);
+        this.factory = factory;
 
         // Where the player is, the frame rate and the server's speed, with the clock, in the top right
         this.coordinates = factory.label("");
@@ -124,7 +155,8 @@ final class OriginHud implements Screen {
         this.detailsPanel = panel(factory, details);
         this.detailsPanel.setAnchor(Anchor.TOP_RIGHT);
 
-        return factory.anchorPanel().add(this.userPanel).add(this.worldPanel).add(this.detailsPanel).setAnchor(Anchor.FILL);
+        return factory.anchorPanel().add(this.userPanel).add(this.worldPanel).add(this.detailsPanel).add(this.skillsPanel)
+            .setAnchor(Anchor.FILL);
     }
 
     /**
@@ -150,8 +182,87 @@ final class OriginHud implements Screen {
             return;
         }
         this.refreshUser(player);
+        this.refreshWorldName(player);
         this.refreshCompass(player);
         this.refreshDetails();
+        this.refreshSkills();
+    }
+
+    /**
+     * The world's name over the compass. Playing on this computer it's the save's name in the overworld and the dimension's elsewhere; from
+     * a server it needs Almura's server side to send it, so it's left out until that is ported.
+     */
+    private void refreshWorldName(final LocalPlayer player) {
+        final IntegratedServer server = Minecraft.getInstance().getSingleplayerServer();
+        String name = "";
+        if (server != null) {
+            final ResourceKey<Level> dimension = player.level().dimension();
+            name = dimension == Level.OVERWORLD ? server.getWorldData().getLevelName() : worldName(dimension.identifier().getPath());
+        }
+        this.worldName.setVisible(!name.isEmpty());
+        this.worldName.setText(Text.of(name).color(WHITE));
+    }
+
+    // "the_nether" as "The Nether"
+    private static String worldName(final String path) {
+        final StringBuilder name = new StringBuilder();
+        for (final String word : path.split("_")) {
+            if (!word.isEmpty()) {
+                name.append(name.isEmpty() ? "" : " ").append(Character.toUpperCase(word.charAt(0))).append(word.substring(1));
+            }
+        }
+        return name.toString();
+    }
+
+    /**
+     * The skills the player chose to show: the rows are made again only when that list changes, the bars filled every frame.
+     */
+    private void refreshSkills() {
+        final List<SkillEntry> skills = ClientSkills.hudSkills();
+        if (!skills.equals(this.shownSkills)) {
+            this.shownSkills = skills;
+            this.skillRows.clear();
+            this.skillBars.clear();
+            this.skillFills.clear();
+            for (final SkillEntry skill : skills) {
+                this.skillRows.add(this.skillRow(skill));
+            }
+            this.skillsPanel.setVisible(!skills.isEmpty());
+        }
+        for (int i = 0; i < skills.size(); i++) {
+            // The fill's width from the bar's as last laid out
+            final float width = Math.max(0f, this.skillBars.get(i).bounds().width() - 2f);
+            final float filled = width * skills.get(i).levelProgress();
+            this.skillFills.get(i).setWidth(filled).setVisible(filled > 0f);
+        }
+    }
+
+    private Component<?> skillRow(final SkillEntry skill) {
+        final ComponentFactory factory = this.factory;
+        final Label name = factory.label(MinecraftText.of(skill.name()));
+        final Label level = factory.label(Text.concat(Text.of("Lv. " + skill.level()).color(WHITE), Text.of(" / " + skill.maxLevel()).color(GRAY)));
+        // Name and level side by side, at least the gap between them and as much more as the panel is wider
+        final StackPanel line = factory.stackPanel(Orientation.HORIZONTAL)
+            .add(name)
+            .add(factory.spacer(SKILL_NAME_GAP, 0f), 1f)
+            .add(level);
+
+        final Image track = factory.image(WHITE_SPRITE).setTint(TRACK).setScaling(Image.Scaling.STRETCH).setImageSize(1f, 1f);
+        final Image fill = factory.image(WHITE_SPRITE).setTint(0xFF000000 | skill.color()).setScaling(Image.Scaling.STRETCH)
+            .setImageSize(1f, 1f);
+        fill.setHeight(SKILL_BAR_HEIGHT - 2f);
+        final AnchorPanel bar = factory.anchorPanel()
+            .add(track.setAnchor(Anchor.FILL))
+            .add(fill.setAnchor(Anchor.MIDDLE_LEFT).setMargin(1f, 0f, 0f, 0f));
+        bar.setHeight(SKILL_BAR_HEIGHT);
+        this.skillBars.add(bar);
+        this.skillFills.add(fill);
+
+        // Across the whole panel: as wide as the widest row's name and level
+        return factory.stackPanel().setSpacing(1f)
+            .add(line.setAlignment(HorizontalAlignment.STRETCH, VerticalAlignment.TOP))
+            .add(bar.setAlignment(HorizontalAlignment.STRETCH, VerticalAlignment.TOP))
+            .setAlignment(HorizontalAlignment.STRETCH, VerticalAlignment.TOP);
     }
 
     private void refreshUser(final LocalPlayer player) {
