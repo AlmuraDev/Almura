@@ -4,6 +4,7 @@
   "mixins": [],
   "client": [
     "client.ConnectScreenAccessor",
+    "client.DebugScreenOverlayMixin",
     "client.HudAccessor",
     "client.LevelLoadingScreenAccessor"
   ],

@@ -20,6 +20,7 @@ import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -77,11 +78,15 @@ final class OriginHud implements Screen {
     private static final float SKILL_BAR_HEIGHT = 4f, SKILL_ROW_GAP = 3f, SKILL_TEXT_INSET = 2f, SKILL_NAME_GAP = 6f;
     private static final SpriteId WHITE_SPRITE = SpriteId.of(Almura.ID, "theme/white");
     private static final int TRACK = 0xB4000000;
+    // The debug panels' gap from the panels above them, and a row of vanilla's effect icons (24 and a gap)
+    private static final float DEBUG_GAP = 1f, EFFECT_ROW = 26f;
 
     private @Nullable ComponentFactory factory;
     private @Nullable AnchorPanel userPanel, worldPanel, detailsPanel, skillsPanel;
     private @Nullable StackPanel skillRows;
     private @Nullable PlayerListPanel playerList;
+    private @Nullable InformationDebugPanel debugInformation;
+    private @Nullable LookingDebugPanel debugLooking;
     private @Nullable AnchorPanel notificationPanel;
     private @Nullable Label notificationTitle, notificationMessage;
     private @Nullable PopupNotification shownNotification;
@@ -175,7 +180,14 @@ final class OriginHud implements Screen {
         this.notificationPanel.setAnchor(Anchor.TOP_CENTER);
         this.notificationPanel.setOpacity(0f);
 
+        // The debug panels while the debug screen (F3) is open: what is looked at under the player, the game's details under the top right
+        this.debugLooking = new LookingDebugPanel(factory, content -> panel(factory, content));
+        this.debugLooking.component().setAnchor(Anchor.TOP_LEFT);
+        this.debugInformation = new InformationDebugPanel(factory, content -> panel(factory, content));
+        this.debugInformation.component().setAnchor(Anchor.TOP_RIGHT);
+
         return factory.anchorPanel().add(this.userPanel).add(this.worldPanel).add(this.detailsPanel).add(this.skillsPanel)
+            .add(this.debugLooking.component()).add(this.debugInformation.component())
             .add(this.playerList.component()).add(this.notificationPanel)
             .setAnchor(Anchor.FILL);
     }
@@ -209,6 +221,36 @@ final class OriginHud implements Screen {
         this.refreshSkills();
         this.playerList.refresh(Minecraft.getInstance().options.keyPlayerList.isDown(), this.worldPanelBottom() + 1f);
         this.refreshNotification();
+        this.refreshDebug(player);
+    }
+
+    /**
+     * The debug panels, while the debug screen (F3) is open: below the player's panel, and below the top right panel and the effects vanilla
+     * draws under it, as on 1.12.
+     */
+    private void refreshDebug(final LocalPlayer player) {
+        final boolean shown = Minecraft.getInstance().debugEntries.isOverlayVisible();
+        this.debugLooking.refresh(shown);
+        this.debugLooking.component().setMargin(0f, bottom(this.userPanel) + DEBUG_GAP, 0f, 0f);
+        this.debugInformation.refresh(shown);
+        this.debugInformation.component().setMargin(0f, this.detailsPanelBottom() + DEBUG_GAP + effectsHeight(player), 0f, 0f);
+    }
+
+    /**
+     * @return How far down vanilla's effect icons reach below the top right panel: a row of good ones, the bad ones a row lower
+     */
+    private static float effectsHeight(final LocalPlayer player) {
+        boolean beneficial = false, harmful = false;
+        for (final MobEffectInstance effect : player.getActiveEffects()) {
+            if (effect.showIcon()) {
+                if (effect.getEffect().value().isBeneficial()) {
+                    beneficial = true;
+                } else {
+                    harmful = true;
+                }
+            }
+        }
+        return harmful ? EFFECT_ROW * 2f : beneficial ? EFFECT_ROW : 0f;
     }
 
     /**

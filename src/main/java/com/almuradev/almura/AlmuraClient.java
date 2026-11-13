@@ -8,6 +8,7 @@
 package com.almuradev.almura;
 
 import com.almuradev.almura.feature.hud.Huds;
+import com.almuradev.almura.feature.menu.ingame.FeaturesMenu;
 import com.almuradev.almura.feature.menu.MainMenuManager;
 import com.almuradev.almura.feature.menu.ServerStatus;
 import com.almuradev.almura.feature.menu.WorldLoading;
@@ -38,6 +39,7 @@ public final class AlmuraClient {
         NeoForge.EVENT_BUS.register(new WorldLoading());
         NeoForge.EVENT_BUS.register(new FigureSlot.Drawer());
         Huds.register(modBus);
+        FeaturesMenu.register(modBus);
     }
 
     private static void onClientSetup(final FMLClientSetupEvent event) {

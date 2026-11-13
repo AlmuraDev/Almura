@@ -45,8 +45,11 @@ public final class Huds {
     private @Nullable OriginHud hud;
     private @Nullable HudHost host;
 
+    private static @Nullable Huds instance;
+
     public static void register(final IEventBus modBus) {
         final Huds huds = new Huds();
+        Huds.instance = huds;
         modBus.addListener(huds::onRegisterLayers);
         NeoForge.EVENT_BUS.register(huds);
         // Notifications show on the HUD while it shows, otherwise in chat
@@ -107,6 +110,13 @@ public final class Huds {
     private boolean vanillaBarShowsExperience() {
         final Object shown = ((HudAccessor) Minecraft.getInstance().gui.hud).almura$contextualInfoBar().getFirst();
         return shown instanceof final Enum<?> info && info.name().equals("EXPERIENCE");
+    }
+
+    /**
+     * @return Whether Almura's HUD shows, so vanilla's debug text is left out (its debug panels show the debug screen instead, as on 1.12)
+     */
+    public static boolean showing() {
+        return Huds.instance != null && Huds.instance.shows();
     }
 
     /**
