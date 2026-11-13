@@ -80,6 +80,10 @@ neoForge {
             if (project.hasProperty('sampleSkills')) {
                 systemProperty('almura.dev.sampleSkills', 'true')
             }
+            // ./gradlew runClient -PsampleNotifications queues sample notifications on joining a world, until they come from a server
+            if (project.hasProperty('sampleNotifications')) {
+                systemProperty('almura.dev.sampleNotifications', 'true')
+            }
             // ./gradlew runClient -PjoinWorld=<save folder> opens a single-player world straight from startup (-PjoinWorld= for the latest)
             if (project.hasProperty('joinWorld')) {
                 programArguments.add('--quickPlaySingleplayer')

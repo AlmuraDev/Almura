@@ -8,6 +8,8 @@
 package com.almuradev.almura.feature.hud;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.feature.notification.PopupNotification;
+import com.almuradev.almura.feature.notification.client.ClientNotifications;
 import com.almuradev.almura.feature.skills.SkillEntry;
 import com.almuradev.almura.feature.skills.client.ClientSkills;
 import com.mojang.authlib.GameProfile;
@@ -80,6 +82,9 @@ final class OriginHud implements Screen {
     private @Nullable AnchorPanel userPanel, worldPanel, detailsPanel, skillsPanel;
     private @Nullable StackPanel skillRows;
     private @Nullable PlayerListPanel playerList;
+    private @Nullable AnchorPanel notificationPanel;
+    private @Nullable Label notificationTitle, notificationMessage;
+    private @Nullable PopupNotification shownNotification;
     // The skills the panel shows, and each one's bar and fill
     private List<SkillEntry> shownSkills = List.of();
     private final List<AnchorPanel> skillBars = new ArrayList<>();
@@ -159,8 +164,19 @@ final class OriginHud implements Screen {
         // The player list (held Tab), below the panel at the top middle
         this.playerList = PlayerListPanel.create(factory, content -> panel(factory, content));
 
+        // A notification from the server, in place of the world panel while it shows: a red title over the message
+        this.notificationTitle = factory.label("");
+        this.notificationMessage = factory.label("");
+        final StackPanel notification = factory.stackPanel().setSpacing(4f)
+            .add(this.notificationTitle.setAlignment(HorizontalAlignment.CENTER, VerticalAlignment.TOP))
+            .add(this.notificationMessage.setAlignment(HorizontalAlignment.CENTER, VerticalAlignment.TOP));
+        this.notificationPanel = panel(factory, notification);
+        notification.setMargin(PADDING + 5f, PADDING, PADDING + 5f, PADDING);
+        this.notificationPanel.setAnchor(Anchor.TOP_CENTER);
+        this.notificationPanel.setOpacity(0f);
+
         return factory.anchorPanel().add(this.userPanel).add(this.worldPanel).add(this.detailsPanel).add(this.skillsPanel)
-            .add(this.playerList.component())
+            .add(this.playerList.component()).add(this.notificationPanel)
             .setAnchor(Anchor.FILL);
     }
 
@@ -192,6 +208,28 @@ final class OriginHud implements Screen {
         this.refreshDetails();
         this.refreshSkills();
         this.playerList.refresh(Minecraft.getInstance().options.keyPlayerList.isDown(), this.worldPanelBottom() + 1f);
+        this.refreshNotification();
+    }
+
+    /**
+     * Fades a notification in over the world panel while one shows, and back out after, at 1.12's rates (per frame, as 1.12's were).
+     */
+    private void refreshNotification() {
+        final PopupNotification notification = ClientNotifications.current();
+        if (notification != null) {
+            if (notification != this.shownNotification) {
+                this.shownNotification = notification;
+                // Red unless the title says otherwise, white unless the message does
+                this.notificationTitle.setText(MinecraftText.of("§c" + notification.title()));
+                this.notificationMessage.setText(MinecraftText.of("§f" + notification.message()));
+            }
+            this.notificationPanel.setOpacity(Math.min(1f, this.notificationPanel.opacity() + 5f / 255f));
+            this.worldPanel.setOpacity(Math.max(0f, this.worldPanel.opacity() - 20f / 255f));
+        } else {
+            this.notificationPanel.setOpacity(Math.max(0f, this.notificationPanel.opacity() - 2f / 255f));
+            this.worldPanel.setOpacity(Math.min(1f, this.worldPanel.opacity() + 2f / 255f));
+        }
+        this.notificationPanel.setVisible(this.notificationPanel.opacity() > 0f);
     }
 
     /**

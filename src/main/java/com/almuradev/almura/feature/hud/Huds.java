@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.hud;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.feature.notification.client.ClientNotifications;
 import com.almuradev.almura.mixin.client.HudAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
@@ -48,6 +49,9 @@ public final class Huds {
         final Huds huds = new Huds();
         modBus.addListener(huds::onRegisterLayers);
         NeoForge.EVENT_BUS.register(huds);
+        // Notifications show on the HUD while it shows, otherwise in chat
+        ClientNotifications.setHudShows(huds::shows);
+        NeoForge.EVENT_BUS.register(new ClientNotifications.Ticker());
     }
 
     private void onRegisterLayers(final RegisterGuiLayersEvent event) {
