@@ -58,6 +58,23 @@ dependencies {
     compileOnly("org.inspirenxe:strata-spi:${strata_version}")
     compileOnly("org.inspirenxe:strata-core:${strata_version}")
     localRuntime("org.inspirenxe:strata-minecraft-neoforge:${strata_version}")
+
+    // The content loader's reading and converting is tested against the content (runs/client/assets/fs_5) without starting the game
+    testImplementation(platform('org.junit:junit-bom:5.11.4'))
+    testImplementation('org.junit.jupiter:junit-jupiter')
+    testRuntimeOnly('org.junit.platform:junit-platform-launcher')
+    testImplementation('com.google.code.gson:gson:2.11.0')
+}
+
+tasks.named('test', Test) {
+    useJUnitPlatform()
+    // The content to test against, when it has been copied into the dev run
+    systemProperty('almura.test.content', project.file('runs/client/assets/fs_5').absolutePath)
+    testLogging {
+        events 'failed'
+        showStandardStreams = true
+        exceptionFormat = 'full'
+    }
 }
 
 neoForge {
