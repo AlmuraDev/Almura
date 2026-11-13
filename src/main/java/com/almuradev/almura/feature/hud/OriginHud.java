@@ -79,6 +79,7 @@ final class OriginHud implements Screen {
     private @Nullable ComponentFactory factory;
     private @Nullable AnchorPanel userPanel, worldPanel, detailsPanel, skillsPanel;
     private @Nullable StackPanel skillRows;
+    private @Nullable PlayerListPanel playerList;
     // The skills the panel shows, and each one's bar and fill
     private List<SkillEntry> shownSkills = List.of();
     private final List<AnchorPanel> skillBars = new ArrayList<>();
@@ -155,7 +156,11 @@ final class OriginHud implements Screen {
         this.detailsPanel = panel(factory, details);
         this.detailsPanel.setAnchor(Anchor.TOP_RIGHT);
 
+        // The player list (held Tab), below the panel at the top middle
+        this.playerList = PlayerListPanel.create(factory, content -> panel(factory, content));
+
         return factory.anchorPanel().add(this.userPanel).add(this.worldPanel).add(this.detailsPanel).add(this.skillsPanel)
+            .add(this.playerList.component())
             .setAnchor(Anchor.FILL);
     }
 
@@ -186,6 +191,14 @@ final class OriginHud implements Screen {
         this.refreshCompass(player);
         this.refreshDetails();
         this.refreshSkills();
+        this.playerList.refresh(Minecraft.getInstance().options.keyPlayerList.isDown(), this.worldPanelBottom() + 1f);
+    }
+
+    /**
+     * @return Whether the player list took a mouse wheel scroll (it shows and is taller than fits)
+     */
+    boolean scrollPlayerList(final double notches) {
+        return this.playerList != null && this.playerList.scroll(notches);
     }
 
     /**
@@ -194,17 +207,20 @@ final class OriginHud implements Screen {
      */
     private void refreshWorldName(final LocalPlayer player) {
         final IntegratedServer server = Minecraft.getInstance().getSingleplayerServer();
-        String name = "";
-        if (server != null) {
-            final ResourceKey<Level> dimension = player.level().dimension();
-            name = dimension == Level.OVERWORLD ? server.getWorldData().getLevelName() : worldName(dimension.identifier().getPath());
-        }
+        final String name = server == null ? "" : worldName(server, player.level().dimension());
         this.worldName.setVisible(!name.isEmpty());
         this.worldName.setText(Text.of(name).color(WHITE));
     }
 
+    /**
+     * A world's name, playing on this computer: the save's name for the overworld, the dimension's otherwise ("The Nether").
+     */
+    static String worldName(final IntegratedServer server, final ResourceKey<Level> dimension) {
+        return dimension == Level.OVERWORLD ? server.getWorldData().getLevelName() : words(dimension.identifier().getPath());
+    }
+
     // "the_nether" as "The Nether"
-    private static String worldName(final String path) {
+    private static String words(final String path) {
         final StringBuilder name = new StringBuilder();
         for (final String word : path.split("_")) {
             if (!word.isEmpty()) {

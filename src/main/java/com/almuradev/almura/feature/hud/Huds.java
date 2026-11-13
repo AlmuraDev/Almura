@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.gui.GuiLayer;
@@ -25,14 +26,16 @@ import java.util.function.Supplier;
 
 /**
  * Puts Almura's HUD on the game's: a HUD layer that draws it, vanilla's hearts, armour, food, air, mount health and experience hidden (the
- * HUD shows them), and what vanilla draws at the top middle and top right (boss bars, the player list, effects) moved below its panels.
+ * HUD shows them, and its own player list in place of vanilla's), and what vanilla draws at the top middle and top right (boss bars,
+ * effects) moved below its panels.
  */
 public final class Huds {
 
     private static final Identifier LAYER = Identifier.fromNamespaceAndPath(Almura.ID, "origin_hud");
     // Shown by Almura's HUD instead
     private static final Set<Identifier> REPLACED = Set.of(VanillaGuiLayers.PLAYER_HEALTH, VanillaGuiLayers.ARMOR_LEVEL,
-        VanillaGuiLayers.FOOD_LEVEL, VanillaGuiLayers.AIR_LEVEL, VanillaGuiLayers.VEHICLE_HEALTH, VanillaGuiLayers.EXPERIENCE_LEVEL);
+        VanillaGuiLayers.FOOD_LEVEL, VanillaGuiLayers.AIR_LEVEL, VanillaGuiLayers.VEHICLE_HEALTH, VanillaGuiLayers.EXPERIENCE_LEVEL,
+        VanillaGuiLayers.TAB_LIST);
     private static final Set<Identifier> CONTEXTUAL_BAR = Set.of(VanillaGuiLayers.CONTEXTUAL_INFO_BAR_BACKGROUND,
         VanillaGuiLayers.CONTEXTUAL_INFO_BAR);
     private static final float GAP = 1f;
@@ -60,7 +63,6 @@ public final class Huds {
         });
         // Below the panels at the top middle and top right, where vanilla would draw over them
         event.wrapLayer(VanillaGuiLayers.BOSS_OVERLAY, layer -> this.lowered(layer, () -> this.hud == null ? 0f : this.hud.worldPanelBottom()));
-        event.wrapLayer(VanillaGuiLayers.TAB_LIST, layer -> this.lowered(layer, () -> this.hud == null ? 0f : this.hud.worldPanelBottom()));
         event.wrapLayer(VanillaGuiLayers.EFFECTS, layer -> this.lowered(layer, () -> this.hud == null ? 0f : this.hud.detailsPanelBottom()));
     }
 
@@ -84,6 +86,16 @@ public final class Huds {
         }
         if (REPLACED.contains(event.getName())
             || CONTEXTUAL_BAR.contains(event.getName()) && this.vanillaBarShowsExperience()) {
+            event.setCanceled(true);
+        }
+    }
+
+    /**
+     * The mouse wheel scrolls the player list while Tab is held and it's longer than fits, instead of the hotbar, as on 1.12.
+     */
+    @SubscribeEvent
+    public void onMouseScroll(final InputEvent.MouseScrollingEvent event) {
+        if (this.hud != null && this.shows() && Minecraft.getInstance().gui.screen() == null && this.hud.scrollPlayerList(event.getScrollDeltaY())) {
             event.setCanceled(true);
         }
     }
