@@ -46,7 +46,7 @@ final class ContentRegistrationTest {
         final long blocks = 3 + 764 + 22 + 99 + 128 + 110;
         assertEquals(blocks, count("almura", BuiltInRegistries.BLOCK.keySet()), "blocks");
         // Normal and food items, and an item for each block
-        assertEquals(186 + 413 + blocks, count("almura", BuiltInRegistries.ITEM.keySet()), "items");
+        assertEquals(186 + 413 + 5 + 5 + blocks, count("almura", BuiltInRegistries.ITEM.keySet()), "items");
         assertTrue(BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:slab/afledos_slab")) instanceof net.minecraft.world.level.block.SlabBlock,
             "slabs are slabs");
         assertTrue(BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:stair/afledos_stair")) instanceof net.minecraft.world.level.block.StairBlock,

@@ -80,10 +80,18 @@ public final class ContentPackBuilder {
      * @param knownItem whether an item id exists, for recipes: one using an unknown item is left out
      */
     public ContentPack buildData(final List<BlockDef> blocks, final Predicate<String> knownItem) {
+        return this.buildData(blocks, List.of(), knownItem);
+    }
+
+    /**
+     * @param items for the sickles' tag of the blocks they cut quickly
+     */
+    public ContentPack buildData(final List<BlockDef> blocks, final List<ItemDef> items, final Predicate<String> knownItem) {
         for (final BlockDef block : blocks) {
             this.lootTable(block, knownItem);
         }
         this.toolTags(blocks);
+        this.sickleTag(items);
         this.recipes(knownItem);
         return this.pack;
     }
@@ -94,7 +102,7 @@ public final class ContentPackBuilder {
     public ContentPack build(final List<ItemGroupDef> groups, final List<ItemDef> items, final List<BlockDef> blocks,
         final Predicate<String> knownItem) {
         this.buildAssets(groups, items, blocks);
-        return this.buildData(blocks, knownItem);
+        return this.buildData(blocks, items, knownItem);
     }
 
     public List<String> problems() {
@@ -564,6 +572,28 @@ public final class ContentPackBuilder {
         });
     }
 
+    /**
+     * {@code almura:mineable/sickle}: the blocks sickles cut quickly. The crops they name come later, so each is optional.
+     */
+    private void sickleTag(final List<ItemDef> items) {
+        final Set<String> blocks = new TreeSet<>();
+        items.stream().filter(item -> item.kind().equals("tool_sickle")).forEach(item -> blocks.addAll(item.effectiveOn()));
+        if (blocks.isEmpty()) {
+            return;
+        }
+        final JsonArray values = new JsonArray();
+        for (final String block : blocks) {
+            final JsonObject value = new JsonObject();
+            value.addProperty("id", block);
+            value.addProperty("required", false);
+            values.add(value);
+        }
+        final JsonObject json = new JsonObject();
+        json.addProperty("replace", false);
+        json.add("values", values);
+        this.pack.putJson("data/almura/tags/block/mineable/sickle.json", json);
+    }
+
     static @Nullable String toolKind(final String tool) {
         final String path = path(tool);
         for (final String kind : new String[] {"pickaxe", "axe", "shovel", "hoe", "sword", "shears"}) {
@@ -606,7 +636,8 @@ public final class ContentPackBuilder {
                     final int dot = key.lastIndexOf('.');
                     final String name = dot < 0 ? key : key.substring(0, dot);
                     final String suffix = dot < 0 ? "" : key.substring(dot + 1);
-                    final String id = (file.folder() + name).replace('/', '.');
+                    // Content ids are lower case; 1.12 matched "crop_diamond_Sickle.name" to them all the same
+                    final String id = (file.folder() + name).replace('/', '.').toLowerCase(java.util.Locale.ROOT);
                     final String base = type + "." + file.namespace() + "." + id;
                     if (suffix.equals("name") || suffix.isEmpty()) {
                         lang.put(base, entry.getValue());

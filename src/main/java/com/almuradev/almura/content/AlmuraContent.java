@@ -35,7 +35,7 @@ import java.util.Set;
 public final class AlmuraContent {
 
     // The kinds of content loaded so far; the rest follow as they are ported
-    public static final Set<String> ITEM_KINDS = Set.of("normal", "food", "slab");
+    public static final Set<String> ITEM_KINDS = Set.of("normal", "food", "slab", "tool_hoe", "tool_sickle");
     public static final Set<String> BLOCK_KINDS = Set.of("normal", "horizontal", "log", "flower", "stair", "slab");
 
     private AlmuraContent() {
@@ -71,7 +71,7 @@ public final class AlmuraContent {
         }, () -> {
             // Built once the registries are whole, so recipes naming unknown items are left out rather than failing to load
             final ContentPackBuilder builder = new ContentPackBuilder(source);
-            final ContentPack pack = builder.buildData(blocks, id -> BuiltInRegistries.ITEM.containsKey(Identifier.parse(id)));
+            final ContentPack pack = builder.buildData(blocks, items, id -> BuiltInRegistries.ITEM.containsKey(Identifier.parse(id)));
             builder.problems().forEach(problem -> Almura.LOGGER.debug("Content data: {}", problem));
             Almura.LOGGER.info("Built Almura's content data: {} files ({} problems, see the debug log)", pack.paths().size(),
                 builder.problems().size());

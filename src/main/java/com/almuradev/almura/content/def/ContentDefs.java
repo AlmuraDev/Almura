@@ -36,9 +36,11 @@ public final class ContentDefs {
      * @param container the item given back when it's used up (a bowl), if any
      * @param containerDamage damage done to the item instead, when it has durability ({@code container: {damage: 1}})
      * @param food what eating it does, for food
+     * @param tier for a tool, its material ({@code minecraft:iron})
+     * @param effectiveOn for a sickle, the blocks it cuts quickly
      */
     public record ItemDef(String id, String kind, @Nullable String group, int maxStackSize, int durability, @Nullable String container,
-        int containerDamage, @Nullable FoodDef food) {
+        int containerDamage, @Nullable FoodDef food, @Nullable String tier, List<String> effectiveOn) {
     }
 
     /**

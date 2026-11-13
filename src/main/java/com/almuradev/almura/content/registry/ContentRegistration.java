@@ -28,6 +28,8 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ToolMaterial;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.component.Consumable;
 import net.minecraft.world.item.component.Consumables;
 import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
@@ -181,6 +183,19 @@ public final class ContentRegistration {
         if (def.food() != null) {
             properties.food(food(def.food()), consumable(def));
         }
+        if (def.kind().equals("tool_hoe")) {
+            final ToolMaterial material = toolMaterial(def);
+            // Vanilla's hoe of the same material's attack
+            final float[] attack = switch (def.tier() == null ? "" : def.tier()) {
+                case "minecraft:stone" -> new float[] {-1f, -2f};
+                case "minecraft:iron" -> new float[] {-2f, -1f};
+                case "minecraft:diamond" -> new float[] {-3f, 0f};
+                default -> new float[] {0f, -3f};
+            };
+            properties.hoe(material, attack[0], attack[1]);
+        } else if (def.kind().equals("tool_sickle")) {
+            properties.tool(toolMaterial(def), SICKLE_MINEABLE, 1f, -2.5f, 0f);
+        }
         final Identifier containerId = def.container() == null ? null : Identifier.tryParse(def.container());
         if (containerId != null && def.containerDamage() == 0) {
             BuiltInRegistries.ITEM.get(containerId)
@@ -188,6 +203,22 @@ public final class ContentRegistration {
                     () -> Almura.LOGGER.warn("Content item {} is handed back in {}, which doesn't exist", def.id(), def.container()));
         }
         return new Item(properties);
+    }
+
+    /**
+     * The blocks sickles cut quickly (their {@code effective_on}, generated into {@code data/almura/tags/block/mineable/sickle.json}).
+     */
+    public static final TagKey<Block> SICKLE_MINEABLE = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(Almura.ID,
+        "mineable/sickle"));
+
+    private static ToolMaterial toolMaterial(final ItemDef def) {
+        return switch (def.tier() == null ? "" : def.tier()) {
+            case "minecraft:stone" -> ToolMaterial.STONE;
+            case "minecraft:iron" -> ToolMaterial.IRON;
+            case "minecraft:gold" -> ToolMaterial.GOLD;
+            case "minecraft:diamond" -> ToolMaterial.DIAMOND;
+            default -> ToolMaterial.WOOD;
+        };
     }
 
     /**

@@ -107,7 +107,7 @@ final class ContentConversionTest {
     void readsEverything() {
         assertEquals(List.of(), source.problems(), "Content files that couldn't be read");
         assertEquals(23, groups.size(), "item groups");
-        assertEquals(186 + 413 + 110, items.size(), "normal, food and slab items");
+        assertEquals(186 + 413 + 110 + 5 + 5, items.size(), "normal, food, slab, hoe and sickle items");
         assertEquals(3 + 764 + 22 + 99 + 128 + 220, blocks.size(), "normal, horizontal, log, flower, stair and slab blocks (single and double)");
     }
 

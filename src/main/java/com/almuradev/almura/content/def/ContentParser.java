@@ -71,7 +71,7 @@ public final class ContentParser {
                 containerDamage = integer(containerElement.getAsJsonObject(), "damage", 0);
             }
             items.add(new ItemDef(file.id(), kind, string(json, "item_group"), integer(json, "max_stack_size", 0), integer(json, "durability", 0),
-                container, containerDamage, json.has("apply") ? this.food(json) : null));
+                container, containerDamage, json.has("apply") ? this.food(json) : null, string(json, "tier"), strings(json.get("effective_on"))));
         }
         return items;
     }
