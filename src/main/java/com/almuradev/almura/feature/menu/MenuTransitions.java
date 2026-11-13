@@ -73,8 +73,9 @@ public final class MenuTransitions implements Witness {
         final GuiScreen next = event.getGui();
         final GuiScreen current = minecraft.currentScreen;
         if (next == null) {
-            // Into the world, once the terrain screen closes
-            if (isTerrainScreen(current) && this.capture(minecraft.getFramebuffer())) {
+            // Into the world, once the terrain screen closes, from what was shown last: the terrain screen, or the loading screen when the
+            // terrain screen closes before it was ever drawn (the game's framebuffer then still holds the menu from before the loading screen)
+            if (isTerrainScreen(current) && this.capture(this.lastShownFramebuffer(minecraft))) {
                 this.fromCapture = true;
                 this.start(SCREEN_FADE_MILLIS);
             }
@@ -129,6 +130,13 @@ public final class MenuTransitions implements Witness {
             final ScaledResolution resolution = new ScaledResolution(minecraft);
             this.drawFade(resolution.getScaledWidth(), resolution.getScaledHeight());
         }
+    }
+
+    /**
+     * @return The framebuffer holding what is on screen: the loading screen's, when it was drawn after the last game loop frame
+     */
+    private Framebuffer lastShownFramebuffer(final Minecraft minecraft) {
+        return this.loadingDrawnSinceMenu && this.loadingFramebuffer != null ? this.loadingFramebuffer : minecraft.getFramebuffer();
     }
 
     /**
@@ -219,7 +227,9 @@ public final class MenuTransitions implements Witness {
             GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
             GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
             GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
-            GlStateManager.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, null);
+            // No alpha channel: the framebuffer's alpha is 0 wherever a screen drew see-through texels (text, the logo's background), which
+            // would let what comes next show through those spots during the fade. Without one every texel samples as opaque.
+            GlStateManager.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB8, width, height, 0, GL11.GL_RGB, GL11.GL_UNSIGNED_BYTE, null);
         } else {
             GlStateManager.bindTexture(this.captureTexture);
         }
