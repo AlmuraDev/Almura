@@ -13,6 +13,7 @@ import com.almuradev.almura.feature.notification.PopupNotification;
 import com.almuradev.almura.feature.notification.client.ClientNotifications;
 import com.almuradev.almura.feature.skills.SkillEntry;
 import com.almuradev.almura.feature.skills.client.ClientSkills;
+import com.almuradev.almura.shared.WorldNames;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
@@ -306,12 +307,13 @@ final class OriginHud implements Screen {
     }
 
     /**
-     * The world's name over the compass. Playing on this computer it's the save's name in the overworld and the dimension's elsewhere; from
-     * a server it needs Almura's server side to send it, so it's left out until that is ported.
+     * The world's name over the compass, as Almura's server tells it; until it does, playing on this computer, the save's name in the
+     * overworld and the dimension's elsewhere.
      */
     private void refreshWorldName(final LocalPlayer player) {
         final IntegratedServer server = Minecraft.getInstance().getSingleplayerServer();
-        final String name = server == null ? "" : worldName(server, player.level().dimension());
+        final String sent = ServerHudData.worldName();
+        final String name = sent != null ? sent : server == null ? "" : worldName(server, player.level().dimension());
         this.worldName.setVisible(!name.isEmpty());
         this.worldName.setText(Text.of(name).color(WHITE));
     }
@@ -320,19 +322,9 @@ final class OriginHud implements Screen {
      * A world's name, playing on this computer: the save's name for the overworld, the dimension's otherwise ("The Nether").
      */
     static String worldName(final IntegratedServer server, final ResourceKey<Level> dimension) {
-        return dimension == Level.OVERWORLD ? server.getWorldData().getLevelName() : words(dimension.identifier().getPath());
+        return WorldNames.of(server, dimension);
     }
 
-    // "the_nether" as "The Nether"
-    private static String words(final String path) {
-        final StringBuilder name = new StringBuilder();
-        for (final String word : path.split("_")) {
-            if (!word.isEmpty()) {
-                name.append(name.isEmpty() ? "" : " ").append(Character.toUpperCase(word.charAt(0))).append(word.substring(1));
-            }
-        }
-        return name.toString();
-    }
 
     /**
      * The skills the player chose to show: the rows are made again only when that list changes, the bars filled every frame.
@@ -475,11 +467,16 @@ final class OriginHud implements Screen {
      */
     private Text tps() {
         final IntegratedServer server = Minecraft.getInstance().getSingleplayerServer();
-        if (server == null) {
+        final Double sent = ServerHudData.tps();
+        final double tps;
+        if (sent != null) {
+            tps = sent;
+        } else if (server != null) {
+            final float millis = server.getCurrentSmoothedTickTime();
+            tps = millis <= 50f ? 20.0 : 1000.0 / millis;
+        } else {
             return Text.of("--").color(GRAY);
         }
-        final float millis = server.getCurrentSmoothedTickTime();
-        final double tps = millis <= 50f ? 20.0 : 1000.0 / millis;
         return Text.of(TPS.format(tps)).color(tps >= 18.0 ? GREEN : tps >= 15.0 ? YELLOW : RED);
     }
 

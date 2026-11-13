@@ -9,6 +9,8 @@ package com.almuradev.almura;
 
 import com.almuradev.almura.core.client.config.AlmuraClientConfig;
 import com.almuradev.almura.feature.hud.Huds;
+import com.almuradev.almura.feature.hud.ServerHudData;
+import com.almuradev.almura.network.client.ClientPayloads;
 import com.almuradev.almura.feature.menu.ingame.FeaturesMenu;
 import com.almuradev.almura.feature.menu.Disconnected;
 import com.almuradev.almura.feature.menu.GameMenu;
@@ -49,6 +51,9 @@ public final class AlmuraClient {
         NeoForge.EVENT_BUS.register(new WorldLoading());
         NeoForge.EVENT_BUS.register(new FigureSlot.Drawer());
         Huds.register(modBus);
+        // Almura's messages from the server
+        ClientPayloads.register(modBus);
+        NeoForge.EVENT_BUS.register(new ServerHudData.Resetter());
         FeaturesMenu.register(modBus);
     }
 

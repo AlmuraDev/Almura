@@ -198,10 +198,13 @@ final class PlayerListPanel {
     }
 
     /**
-     * Each player's world. Playing on this computer it's read from the game's own server; from a server it needs Almura's server side, so
-     * every world shows "-" until that is ported.
+     * Each player's world, as Almura's server tells them; until it does, playing on this computer, read from the game's own server.
      */
     private static Map<UUID, String> worlds() {
+        final Map<UUID, String> sent = ServerHudData.playerWorlds();
+        if (sent != null) {
+            return sent;
+        }
         final IntegratedServer server = Minecraft.getInstance().getSingleplayerServer();
         final Map<UUID, String> worlds = new HashMap<>();
         if (server != null) {
