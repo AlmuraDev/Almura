@@ -7,6 +7,8 @@
  */
 package com.almuradev.almura.feature.menu.ingame;
 
+import com.almuradev.almura.feature.menu.InGameScreens;
+import com.almuradev.almura.feature.notification.history.NotificationHistoryScreen;
 import com.almuradev.almura.feature.skills.client.ClientSkills;
 import net.minecraft.client.Minecraft;
 import org.inspirenxe.strata.api.ComponentFactory;
@@ -56,7 +58,10 @@ final class FeaturesScreen implements Screen {
         if (!ClientSkills.skills().isEmpty()) {
             column.add(later(factory, "Skills", BUTTON_WIDTH));
         }
-        column.add(later(factory, "Notifications", BUTTON_WIDTH));
+        // What the player was sent, over this menu
+        column.add(centred(factory.button(Text.of("Notifications"))
+            .setSize(BUTTON_WIDTH, BUTTON_HEIGHT)
+            .onEvent(Button.PRESSED, event -> InGameScreens.open(new NotificationHistoryScreen(), Minecraft.getInstance().gui.screen()))));
 
         if (this.admin) {
             column

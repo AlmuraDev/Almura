@@ -8,11 +8,10 @@
 package com.almuradev.almura.feature.menu.ingame;
 
 import com.almuradev.almura.Almura;
-import com.almuradev.almura.feature.menu.AlmuraScreens;
+import com.almuradev.almura.feature.menu.InGameScreens;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -23,7 +22,6 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import org.inspirenxe.strata.minecraft.StrataScreen;
 
 /**
  * The Almura Features menu, opened in game with F12 (a key the player can change, under "Almura Features Menu" in the controls), as on 1.12.
@@ -68,26 +66,6 @@ public final class FeaturesMenu {
             return;
         }
         final boolean admin = player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER);
-        minecraft.gui.setScreen(new Host(new FeaturesScreen(admin)));
-    }
-
-    /**
-     * Holds the menu without pausing the game (on 1.12 pausing stopped Sponge's scheduler too) or darkening the world behind it.
-     */
-    private static final class Host extends StrataScreen {
-
-        Host(final FeaturesScreen screen) {
-            super(Component.literal("Almura Features"), screen, AlmuraScreens.THEME_REF);
-        }
-
-        @Override
-        public boolean isPauseScreen() {
-            return false;
-        }
-
-        @Override
-        public void extractBackground(final GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final float a) {
-            // The world shows as it is, as on 1.12
-        }
+        InGameScreens.open(new FeaturesScreen(admin), null);
     }
 }

@@ -8,6 +8,8 @@
 package com.almuradev.almura.feature.notification.client;
 
 import com.almuradev.almura.feature.notification.PopupNotification;
+import com.almuradev.almura.feature.notification.history.NotificationHistory;
+import com.almuradev.almura.feature.notification.history.NotificationRecord;
 import net.minecraft.client.Minecraft;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
@@ -49,6 +51,8 @@ public final class ClientNotifications {
      * Queues a notification, to show after the ones before it.
      */
     public static void show(final PopupNotification notification) {
+        // Kept in the history (F12, Notifications) as it arrives, as on 1.12
+        NotificationHistory.record(NotificationRecord.TYPE_POPUP, notification.title(), notification.message());
         ClientNotifications.queue.offer(notification);
     }
 
