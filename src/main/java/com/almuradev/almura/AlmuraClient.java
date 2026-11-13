@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura;
 
+import com.almuradev.almura.feature.menu.MainMenuManager;
 import com.almuradev.almura.feature.menu.ServerStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
@@ -25,6 +26,7 @@ public final class AlmuraClient {
 
     public AlmuraClient(final IEventBus modBus) {
         modBus.addListener(AlmuraClient::onClientSetup);
+        NeoForge.EVENT_BUS.register(new MainMenuManager());
         NeoForge.EVENT_BUS.register(new ServerStatus());
     }
 
