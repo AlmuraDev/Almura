@@ -69,10 +69,8 @@ public final class TitleMenuScreen implements Screen {
             .onEvent(Button.PRESSED, event -> open(parent -> new OptionsScreen(parent, Minecraft.getInstance().options)));
         final Button mods = tiny(factory.button(Text.translatable("almura.menu_button.mods")))
             .onEvent(Button.PRESSED, event -> open(ModListScreen::create));
-        // Until the About screen is ported
         final Button about = tiny(factory.button(Text.translatable("almura.menu_button.about")))
-            .setEnabled(false)
-            .setTooltip(Text.translatable("almura.menu_button.about.later"));
+            .onEvent(Button.PRESSED, event -> AlmuraScreens.open(new AboutScreen()));
         final StackPanel middleRow = factory.stackPanel(Orientation.HORIZONTAL).setSpacing(PADDING).add(options).add(mods).add(about);
 
         final Button quit = long_(factory.button(Text.translatable("almura.menu_button.quit").color(QUIT_RED)))
