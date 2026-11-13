@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura;
 
+import com.almuradev.almura.content.client.ContentTooltips;
 import com.almuradev.almura.core.client.config.AlmuraClientConfig;
 import com.almuradev.almura.feature.hud.Huds;
 import com.almuradev.almura.feature.hud.ServerHudData;
@@ -51,6 +52,8 @@ public final class AlmuraClient {
         NeoForge.EVENT_BUS.register(new WorldLoading());
         NeoForge.EVENT_BUS.register(new FigureSlot.Drawer());
         Huds.register(modBus);
+        // The content's item tooltips
+        NeoForge.EVENT_BUS.register(new ContentTooltips());
         // Almura's messages from the server
         ClientPayloads.register(modBus);
         NeoForge.EVENT_BUS.register(new ServerHudData.Resetter());

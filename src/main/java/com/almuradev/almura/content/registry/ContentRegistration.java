@@ -32,6 +32,8 @@ import net.minecraft.world.item.component.Consumable;
 import net.minecraft.world.item.component.Consumables;
 import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
@@ -68,14 +70,24 @@ public final class ContentRegistration {
         event.register(Registries.CONSUME_EFFECT_TYPE, helper -> helper.register(Identifier.fromNamespaceAndPath(Almura.ID, "heal"),
             HealConsumeEffect.TYPE));
         event.register(Registries.BLOCK, helper -> {
-            for (final BlockDef def : this.blocks) {
-                final Block block = ContentBlocks.create(def);
+            // Stairs after the blocks they're made of; double slabs are their single slab's double state in 26.3
+            final List<BlockDef> ordered = new ArrayList<>(this.blocks.stream().filter(def -> !def.kind().equals("stair")).toList());
+            this.blocks.stream().filter(def -> def.kind().equals("stair")).forEach(ordered::add);
+            for (final BlockDef def : ordered) {
+                if (def.isDoubleSlab()) {
+                    continue;
+                }
+                final Block block = ContentBlocks.create(def, this.stairBase(def));
                 helper.register(Identifier.parse(def.id()), block);
                 this.registeredBlocks.put(def.id(), block);
             }
         });
         event.register(Registries.ITEM, helper -> {
             for (final ItemDef def : this.ordered()) {
+                if (def.kind().equals("slab")) {
+                    // A slab's item is its block's
+                    continue;
+                }
                 final Item item = this.item(def);
                 if (item != null) {
                     helper.register(Identifier.parse(def.id()), item);
@@ -91,7 +103,7 @@ public final class ContentRegistration {
                     .setId(ResourceKey.create(Registries.ITEM, Identifier.parse(def.id())))
                     .useBlockDescriptionPrefix());
                 helper.register(Identifier.parse(def.id()), item);
-                this.addToTab(def.group(), item);
+                this.addToTab(def.group() != null ? def.group() : this.slabGroup(def.id()), item);
             }
         });
         event.register(Registries.CREATIVE_MODE_TAB, helper -> {
@@ -104,6 +116,29 @@ public final class ContentRegistration {
                     .build());
             }
         });
+    }
+
+    /**
+     * The state a stair is made of: its {@code block}, or stone when that isn't there.
+     */
+    private BlockState stairBase(final BlockDef def) {
+        if (!def.kind().equals("stair")) {
+            return Blocks.AIR.defaultBlockState();
+        }
+        final Identifier base = def.base() == null ? null : Identifier.tryParse(def.base());
+        final Block block = base == null ? null : BuiltInRegistries.BLOCK.getOptional(base).orElse(null);
+        if (block == null || block == Blocks.AIR) {
+            Almura.LOGGER.warn("Content stair {} is made of {}, which doesn't exist; stone stands in", def.id(), def.base());
+            return Blocks.STONE.defaultBlockState();
+        }
+        return block.defaultBlockState();
+    }
+
+    /**
+     * A slab's creative tab, from its item's file ({@code content/item/slab}).
+     */
+    private String slabGroup(final String id) {
+        return this.items.stream().filter(item -> item.kind().equals("slab") && item.id().equals(id)).map(ItemDef::group).findFirst().orElse(null);
     }
 
     private void addToTab(final String group, final Item item) {

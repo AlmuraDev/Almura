@@ -45,8 +45,8 @@ import java.util.zip.ZipFile;
  */
 final class ContentConversionTest {
 
-    private static final Set<String> ITEM_KINDS = Set.of("normal", "food");
-    private static final Set<String> BLOCK_KINDS = Set.of("normal", "horizontal");
+    private static final Set<String> ITEM_KINDS = AlmuraContent.ITEM_KINDS;
+    private static final Set<String> BLOCK_KINDS = AlmuraContent.BLOCK_KINDS;
 
     private static ContentSource source;
     private static List<ItemGroupDef> groups;
@@ -107,14 +107,17 @@ final class ContentConversionTest {
     void readsEverything() {
         assertEquals(List.of(), source.problems(), "Content files that couldn't be read");
         assertEquals(23, groups.size(), "item groups");
-        assertEquals(186 + 413, items.size(), "normal and food items");
-        assertEquals(3 + 764, blocks.size(), "normal and horizontal blocks");
+        assertEquals(186 + 413 + 110, items.size(), "normal, food and slab items");
+        assertEquals(3 + 764 + 22 + 99 + 128 + 220, blocks.size(), "normal, horizontal, log, flower, stair and slab blocks (single and double)");
     }
 
     @Test
     void everyBlockHasABlockstateAndAnItemModel() {
         final List<String> missing = new ArrayList<>();
         for (final BlockDef block : blocks) {
+            if (block.isDoubleSlab()) {
+                continue;
+            }
             final String path = block.id().replace(":", "/");
             if (!pack.has("assets/" + ns(block.id()) + "/blockstates/" + p(block.id()) + ".json")) {
                 missing.add("blockstate " + block.id());
@@ -208,12 +211,13 @@ final class ContentConversionTest {
         final JsonObject lang = pack.json("assets/almura/lang/en_us.json").getAsJsonObject();
         final List<String> missing = new ArrayList<>();
         for (final ItemDef item : items) {
-            if (!lang.has("item." + ns(item.id()) + "." + p(item.id()).replace('/', '.'))) {
+            // A slab's item is its block's, named with it
+            if (!item.kind().equals("slab") && !lang.has("item." + ns(item.id()) + "." + p(item.id()).replace('/', '.'))) {
                 missing.add("item " + item.id());
             }
         }
         for (final BlockDef block : blocks) {
-            if (!lang.has("block." + ns(block.id()) + "." + p(block.id()).replace('/', '.'))) {
+            if (!block.isDoubleSlab() && !lang.has("block." + ns(block.id()) + "." + p(block.id()).replace('/', '.'))) {
                 missing.add("block " + block.id());
             }
         }

@@ -35,8 +35,8 @@ import java.util.Set;
 public final class AlmuraContent {
 
     // The kinds of content loaded so far; the rest follow as they are ported
-    public static final Set<String> ITEM_KINDS = Set.of("normal", "food");
-    public static final Set<String> BLOCK_KINDS = Set.of("normal", "horizontal");
+    public static final Set<String> ITEM_KINDS = Set.of("normal", "food", "slab");
+    public static final Set<String> BLOCK_KINDS = Set.of("normal", "horizontal", "log", "flower", "stair", "slab");
 
     private AlmuraContent() {
     }

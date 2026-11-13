@@ -17,7 +17,15 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.RotatedPillarBlock;
+import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -33,8 +41,9 @@ import org.jspecify.annotations.Nullable;
 import java.util.Map;
 
 /**
- * Blocks made from content: {@code normal} ones and {@code horizontal} ones (facing the way they were placed from, with their shape turned
- * to match), with 1.12's settings: its materials as the properties they implied, hardness and resistance, light, opacity and shape.
+ * Blocks made from content: {@code normal} ones, {@code horizontal} ones (facing the way they were placed from, with their shape turned
+ * to match), logs, stairs, slabs and flowers, with 1.12's settings: its materials as the properties they implied, hardness and
+ * resistance, light, opacity and shape.
  */
 public final class ContentBlocks {
 
@@ -44,12 +53,22 @@ public final class ContentBlocks {
     private ContentBlocks() {
     }
 
-    public static Block create(final BlockDef def) {
+    /**
+     * @param stairBase for a stair, the state of the block it is made of
+     */
+    public static Block create(final BlockDef def, final BlockState stairBase) {
         final BlockBehaviour.Properties properties = properties(def);
         final StateDef state = def.state();
         final VoxelShape shape = shape(state.shape());
-        final VoxelShape collision = state.collision() != null ? shape(state.collision()) : shape;
-        return def.kind().equals("horizontal") ? new Horizontal(properties, shape, collision) : new Normal(properties, shape, collision);
+        final VoxelShape collision = state.noCollision() ? Shapes.empty() : state.collision() != null ? shape(state.collision()) : shape;
+        return switch (def.kind()) {
+            case "horizontal" -> new Horizontal(properties, shape, collision);
+            case "log" -> new RotatedPillarBlock(properties);
+            case "stair" -> new StairBlock(stairBase, properties);
+            case "slab" -> new SlabBlock(properties);
+            case "flower" -> new Plant(properties.noCollision().pushReaction(PushReaction.POPPED), shape);
+            default -> new Normal(properties, shape, collision);
+        };
     }
 
     static BlockBehaviour.Properties properties(final BlockDef def) {
@@ -68,7 +87,8 @@ public final class ContentBlocks {
             properties.lightLevel(blockState -> light);
         }
         final boolean fullBlock = state.shape() == null || state.shape().isFullBlock();
-        if (Boolean.FALSE.equals(state.opaque()) || !fullBlock || material.equals("ag")) {
+        final boolean shaped = def.kind().equals("normal") || def.kind().equals("horizontal") || def.kind().equals("flower");
+        if (Boolean.FALSE.equals(state.opaque()) || shaped && !fullBlock || material.equals("ag") || def.kind().equals("flower")) {
             properties.noOcclusion();
         }
         // Rock and metal needed the right tool to drop anything, as on 1.12
@@ -130,6 +150,36 @@ public final class ContentBlocks {
 
     private static String path(final String id) {
         return id.contains(":") ? id.substring(id.indexOf(':') + 1) : id;
+    }
+
+    /**
+     * A flower: it stands on earth (what vanilla's plants stand on) and drops when that goes, and nothing collides with it, as 1.12's
+     * flowers did.
+     */
+    static final class Plant extends Block {
+
+        private final VoxelShape shape;
+
+        Plant(final BlockBehaviour.Properties properties, final VoxelShape shape) {
+            super(properties);
+            this.shape = shape;
+        }
+
+        @Override
+        protected VoxelShape getShape(final BlockState state, final BlockGetter level, final BlockPos pos, final CollisionContext context) {
+            return this.shape;
+        }
+
+        @Override
+        protected boolean canSurvive(final BlockState state, final LevelReader level, final BlockPos pos) {
+            return level.getBlockState(pos.below()).is(BlockTags.SUPPORTS_VEGETATION);
+        }
+
+        @Override
+        protected BlockState updateShape(final BlockState state, final LevelReader level, final ScheduledTickAccess ticks, final BlockPos pos,
+            final Direction directionToNeighbour, final BlockPos neighbourPos, final BlockState neighbourState, final RandomSource random) {
+            return directionToNeighbour == Direction.DOWN && !this.canSurvive(state, level, pos) ? Blocks.AIR.defaultBlockState() : state;
+        }
     }
 
     /**

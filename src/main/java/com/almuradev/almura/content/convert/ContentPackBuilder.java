@@ -58,12 +58,17 @@ public final class ContentPackBuilder {
         for (final String namespace : this.source.namespaces()) {
             this.passThrough(namespace);
         }
+        final Map<String, BlockDef> doubleSlabs = new java.util.HashMap<>();
+        blocks.stream().filter(BlockDef::isDoubleSlab).forEach(block -> doubleSlabs.put(block.single(), block));
         for (final BlockDef block : blocks) {
-            this.blockstate(block);
+            this.blockstate(block, doubleSlabs);
             this.blockItemModel(block);
         }
         for (final ItemDef item : items) {
-            this.itemModel(item);
+            // A slab's item is its block's, with the block's item model
+            if (!item.kind().equals("slab")) {
+                this.itemModel(item);
+            }
         }
         this.language(groups);
         return this.pack;
@@ -123,6 +128,9 @@ public final class ContentPackBuilder {
      */
     static JsonObject model(final JsonObject model) {
         final JsonObject copy = model.deepCopy();
+        if (copy.get("parent") instanceof final JsonPrimitive parent && parent.isString()) {
+            copy.addProperty("parent", Legacy.model(parent.getAsString()));
+        }
         if (copy.get("textures") instanceof final JsonObject textures) {
             for (final String key : Set.copyOf(textures.keySet())) {
                 if (textures.get(key).isJsonPrimitive()) {
@@ -134,52 +142,91 @@ public final class ContentPackBuilder {
     }
 
     /**
-     * The block's 26.3 blockstate from its 1.12 Forge one: a variant per facing (horizontal blocks) or the single default variant.
+     * The block's 26.3 blockstate from its 1.12 Forge one, with a variant for each of the block's states: its facing (horizontal blocks),
+     * its axis (logs), its facing, half and shape (stairs, already written out in full), bottom, top and double (slabs, the double from the
+     * double slab's blockstate), or the single default variant.
      */
-    private void blockstate(final BlockDef block) {
-        final String namespace = namespace(block.id()), path = path(block.id());
-        final Path file = this.source.namespace(namespace).resolve("blockstates").resolve(path + ".json");
-        if (!Files.isRegularFile(file)) {
-            this.problems.add(block.id() + ": no blockstate (blockstates/" + path + ".json)");
+    private void blockstate(final BlockDef block, final Map<String, BlockDef> doubleSlabs) {
+        if (block.isDoubleSlab()) {
+            // Part of its single slab in 26.3
             return;
         }
-        final JsonObject forge = this.source.readObject(file);
+        final JsonObject forge = this.forgeBlockstate(block.id());
         if (forge == null) {
             return;
         }
         final JsonObject variants = new JsonObject();
-        if (block.kind().equals("horizontal")) {
-            for (final String facing : FACINGS) {
-                final JsonObject variant = this.variant(block, forge, "facing", facing);
-                if (variant != null) {
-                    variants.add("facing=" + facing, variant);
+        switch (block.kind()) {
+            case "horizontal" -> {
+                for (final String facing : FACINGS) {
+                    this.addVariant(variants, "facing=" + facing, this.variant(block, forge, Map.of("facing", facing), "facing=" + facing));
                 }
             }
-        } else {
-            final JsonObject variant = this.variant(block, forge, null, "normal");
-            if (variant != null) {
-                variants.add("", variant);
+            case "log" -> {
+                for (final String axis : new String[] {"x", "y", "z"}) {
+                    this.addVariant(variants, "axis=" + axis, this.variant(block, forge, Map.of("axis", axis), "axis=" + axis));
+                }
             }
+            case "stair" -> {
+                if (forge.get("variants") instanceof final JsonObject forgeVariants) {
+                    for (final String key : forgeVariants.keySet()) {
+                        if (key.contains("=")) {
+                            this.addVariant(variants, key, this.variant(block, forge, Map.of(), key));
+                        }
+                    }
+                }
+            }
+            case "slab" -> {
+                this.addVariant(variants, "type=bottom", this.variant(block, forge, Map.of(), "half=bottom"));
+                this.addVariant(variants, "type=top", this.variant(block, forge, Map.of(), "half=top"));
+                final BlockDef doubleSlab = doubleSlabs.get(block.id());
+                final JsonObject doubleForge = doubleSlab == null ? null : this.forgeBlockstate(doubleSlab.id());
+                if (doubleForge != null) {
+                    this.addVariant(variants, "type=double", this.variant(doubleSlab, doubleForge, Map.of(), "normal"));
+                } else {
+                    this.problems.add(block.id() + ": no double slab to show when doubled");
+                }
+            }
+            default -> this.addVariant(variants, "", this.variant(block, forge, Map.of(), "normal"));
         }
         final JsonObject blockstate = new JsonObject();
         blockstate.add("variants", variants);
-        this.pack.putJson("assets/" + namespace + "/blockstates/" + path + ".json", blockstate);
+        this.pack.putJson("assets/" + namespace(block.id()) + "/blockstates/" + path(block.id()) + ".json", blockstate);
+    }
+
+    private @Nullable JsonObject forgeBlockstate(final String id) {
+        final String path = path(id);
+        final Path file = this.source.namespace(namespace(id)).resolve("blockstates").resolve(path + ".json");
+        if (!Files.isRegularFile(file)) {
+            this.problems.add(id + ": no blockstate (blockstates/" + path + ".json)");
+            return null;
+        }
+        return this.source.readObject(file);
+    }
+
+    private void addVariant(final JsonObject variants, final String key, final @Nullable JsonObject variant) {
+        if (variant != null) {
+            variants.add(key, variant);
+        }
     }
 
     /**
-     * One variant: Forge's defaults, then the property value's settings ({@code "facing": {"south": {"y": 180}}}), then the full variant's
-     * ({@code "facing=south"} or {@code "normal"}).
+     * One variant: Forge's defaults, then each property value's settings ({@code "facing": {"south": {"y": 180}}}), then the full
+     * variant's ({@code "facing=south"} or {@code "normal"}).
      */
-    private @Nullable JsonObject variant(final BlockDef block, final JsonObject forge, final @Nullable String property, final String value) {
+    private @Nullable JsonObject variant(final BlockDef block, final JsonObject forge, final Map<String, String> properties,
+        final String fullKey) {
         final JsonObject settings = new JsonObject();
         merge(settings, forge.get("defaults"));
         final JsonObject variants = forge.get("variants") instanceof final JsonObject object ? object : new JsonObject();
-        if (property != null && variants.get(property) instanceof final JsonObject values) {
-            merge(settings, values.get(value));
-        }
-        merge(settings, variants.get(property == null ? value : property + "=" + value));
+        properties.forEach((property, value) -> {
+            if (variants.get(property) instanceof final JsonObject values) {
+                merge(settings, values.get(value));
+            }
+        });
+        merge(settings, variants.get(fullKey));
         if (!settings.has("model")) {
-            this.problems.add(block.id() + ": the blockstate names no model");
+            this.problems.add(block.id() + ": the blockstate names no model for " + fullKey);
             return null;
         }
         final String model = this.modelReference(block.id(), settings.get("model").getAsString());
@@ -232,7 +279,7 @@ public final class ContentPackBuilder {
             return this.objWrapper(namespace, objPath);
         }
         if (namespace.equals("minecraft")) {
-            return "minecraft:block/" + path;
+            return Legacy.model("minecraft:block/" + path);
         }
         if (Files.isRegularFile(models.resolve("block").resolve(path + ".json"))) {
             return namespace + ":block/" + path;
@@ -344,15 +391,31 @@ public final class ContentPackBuilder {
     }
 
     /**
-     * A block item's model definition: the model of the block's default (or north facing) variant.
+     * A block item's model definition: its own item model if the content has one ({@code models/item/<path>.json}, as slabs do), else the
+     * model of the block's default variant (north facing, upright, bottom, or the first).
      */
     private void blockItemModel(final BlockDef block) {
+        if (block.isDoubleSlab()) {
+            return;
+        }
         final String namespace = namespace(block.id()), path = path(block.id());
+        if (Files.isRegularFile(this.source.namespace(namespace).resolve("models").resolve("item").resolve(path + ".json"))) {
+            this.itemModelDefinition(namespace, path, namespace + ":item/" + path);
+            return;
+        }
         final JsonElement blockstate = this.pack.json("assets/" + namespace + "/blockstates/" + path + ".json");
         if (blockstate instanceof final JsonObject object && object.get("variants") instanceof final JsonObject variants && !variants.isEmpty()) {
-            final JsonObject first = variants.has("facing=north") ? variants.getAsJsonObject("facing=north")
-                : variants.entrySet().iterator().next().getValue().getAsJsonObject();
-            this.itemModelDefinition(namespace, path, first.get("model").getAsString());
+            JsonObject chosen = null;
+            for (final String key : new String[] {"facing=north", "axis=y", "type=bottom", "facing=east,half=bottom,shape=straight", ""}) {
+                if (variants.get(key) instanceof final JsonObject variant) {
+                    chosen = variant;
+                    break;
+                }
+            }
+            if (chosen == null) {
+                chosen = variants.entrySet().iterator().next().getValue().getAsJsonObject();
+            }
+            this.itemModelDefinition(namespace, path, chosen.get("model").getAsString());
         }
     }
 
@@ -370,7 +433,14 @@ public final class ContentPackBuilder {
      * doesn't exist (a typo in the content; 1.12 dropped nothing) is left out, the block dropping itself if nothing is left.
      */
     private void lootTable(final BlockDef block, final Predicate<String> knownItem) {
+        if (block.isDoubleSlab()) {
+            return;
+        }
         final String namespace = namespace(block.id()), path = path(block.id());
+        if (block.kind().equals("slab")) {
+            this.slabLootTable(block);
+            return;
+        }
         final JsonArray pools = new JsonArray();
         List<DropDef> drops = new ArrayList<>();
         for (final DropDef drop : block.state().drops()) {
@@ -394,6 +464,35 @@ public final class ContentPackBuilder {
         table.add("pools", pools);
         table.addProperty("random_sequence", namespace + ":blocks/" + path);
         this.pack.putJson("data/" + namespace + "/loot_table/blocks/" + path + ".json", table);
+    }
+
+    /**
+     * A slab drops itself, two when doubled, as vanilla's slabs do.
+     */
+    private void slabLootTable(final BlockDef block) {
+        final JsonObject doubled = new JsonObject();
+        doubled.addProperty("block", block.id());
+        final JsonObject type = new JsonObject();
+        type.addProperty("type", "double");
+        doubled.add("properties", type);
+        doubled.addProperty("condition", "minecraft:block_state_property");
+        final JsonArray conditions = new JsonArray();
+        conditions.add(doubled);
+        final JsonObject setCount = new JsonObject();
+        setCount.addProperty("function", "minecraft:set_count");
+        setCount.addProperty("count", 2);
+        setCount.add("conditions", conditions);
+        final JsonObject pool = pool(block.id(), 1, 1, 0);
+        final JsonArray functions = new JsonArray();
+        functions.add(setCount);
+        pool.getAsJsonArray("entries").get(0).getAsJsonObject().add("functions", functions);
+        final JsonArray pools = new JsonArray();
+        pools.add(pool);
+        final JsonObject table = new JsonObject();
+        table.addProperty("type", "minecraft:block");
+        table.add("pools", pools);
+        table.addProperty("random_sequence", namespace(block.id()) + ":blocks/" + path(block.id()));
+        this.pack.putJson("data/" + namespace(block.id()) + "/loot_table/blocks/" + path(block.id()) + ".json", table);
     }
 
     private static JsonObject pool(final String item, final int min, final int max, final int chancePercent) {
@@ -441,6 +540,9 @@ public final class ContentPackBuilder {
     private void toolTags(final List<BlockDef> blocks) {
         final Map<String, Set<String>> tags = new TreeMap<>();
         for (final BlockDef block : blocks) {
+            if (block.isDoubleSlab()) {
+                continue;
+            }
             for (final String tool : block.effectiveTools()) {
                 final String kind = toolKind(tool);
                 if (kind != null) {

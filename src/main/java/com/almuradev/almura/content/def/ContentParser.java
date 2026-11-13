@@ -112,7 +112,8 @@ public final class ContentParser {
                 continue;
             }
             blocks.add(new BlockDef(file.id(), kind, stringOr(json, "material", "minecraft:rock"), string(json, "map_color"), string(json, "sound"),
-                string(json, "item_group"), strings(json.get("effective_tools")), string(json, "render_layer"), this.state(state)));
+                string(json, "item_group"), strings(json.get("effective_tools")), string(json, "render_layer"), this.state(state),
+                string(json, "block"), string(json, "single")));
         }
         return blocks;
     }
@@ -147,10 +148,12 @@ public final class ContentParser {
 
     private StateDef state(final JsonObject json) {
         Box shape = null, collision = null;
+        boolean noCollision = false;
         final JsonObject aabb = object(json, "aabb");
         if (aabb != null) {
             shape = box(aabb.has("shape") ? object(aabb, "shape") : aabb);
             collision = box(object(aabb, "collision"));
+            noCollision = aabb.get("collision") != null && aabb.get("collision").isJsonPrimitive() && number(aabb, "collision", 0) < 0;
         }
         final JsonObject light = object(json, "light");
         final List<DropDef> drops = new ArrayList<>();
@@ -172,7 +175,7 @@ public final class ContentParser {
         }
         return new StateDef((float) number(json, "hardness", Double.NaN), (float) number(json, "resistance", Double.NaN),
             json.has("opaque") ? bool(json, "opaque", true) : null, light == null ? 0f : (float) number(light, "emission", 0), shape, collision,
-            string(json, "block_face_shape"), drops);
+            noCollision, string(json, "block_face_shape"), drops);
     }
 
     private static @Nullable Box box(final @Nullable JsonObject json) {

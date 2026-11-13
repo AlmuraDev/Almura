@@ -131,6 +131,17 @@ public final class Legacy {
 
     private static final int ANY_DATA = 32767;
 
+    // 1.12 vanilla block models 1.13 renamed (without the folder)
+    private static final Map<String, String> MODELS = Map.ofEntries(
+        Map.entry("half_slab", "slab"),
+        Map.entry("upper_slab", "slab_top"),
+        Map.entry("stone_inner_stairs", "stone_stairs_inner"),
+        Map.entry("stone_outer_stairs", "stone_stairs_outer"),
+        Map.entry("stonebrick", "stone_bricks"),
+        Map.entry("stonebrick_cracked", "cracked_stone_bricks"),
+        Map.entry("stonebrick_mossy", "mossy_stone_bricks"),
+        Map.entry("stonebrick_carved", "chiseled_stone_bricks"));
+
     private Legacy() {
     }
 
@@ -163,6 +174,21 @@ public final class Legacy {
             return reference;
         }
         return "minecraft:" + folder + TEXTURES.getOrDefault(name, name);
+    }
+
+    /**
+     * A model reference as 26.3 names it: {@code block/half_slab} as {@code minecraft:block/slab}. Almura's own are left as they are.
+     */
+    public static String model(final String reference) {
+        final boolean vanilla = !reference.contains(":") || reference.startsWith("minecraft:");
+        if (!vanilla) {
+            return reference;
+        }
+        final String path = reference.contains(":") ? reference.substring(reference.indexOf(':') + 1) : reference;
+        final int slash = path.lastIndexOf('/');
+        final String folder = slash < 0 ? "" : path.substring(0, slash + 1), name = path.substring(slash + 1);
+        final String renamed = MODELS.get(name);
+        return renamed == null ? reference : "minecraft:" + folder + renamed;
     }
 
     /**

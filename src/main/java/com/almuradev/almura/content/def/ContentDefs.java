@@ -68,9 +68,15 @@ public final class ContentDefs {
      * @param renderLayer 1.12's layer ({@code cutout_mipped}, {@code translucent}), if set
      * @param state the state that defines it (the default one: {@code normal}, or {@code facing=north} with the other facings its
      *     children)
+     * @param base for a stair, the block it is made of ({@code block})
+     * @param single for a slab, the single slab ({@code single}); a slab is double when this isn't its own id
      */
     public record BlockDef(String id, String kind, String material, @Nullable String mapColor, @Nullable String sound, @Nullable String group,
-        List<String> effectiveTools, @Nullable String renderLayer, StateDef state) {
+        List<String> effectiveTools, @Nullable String renderLayer, StateDef state, @Nullable String base, @Nullable String single) {
+
+        public boolean isDoubleSlab() {
+            return this.single != null && !this.single.equals(this.id);
+        }
     }
 
     /**
@@ -82,10 +88,11 @@ public final class ContentDefs {
      * @param lightEmission 0 to 1
      * @param shape the outline and collision box (0 to 1), north facing, if not a full block
      * @param collision a different collision box, if set
+     * @param noCollision whether things pass through it (1.12's {@code "collision": -1})
      * @param drops what breaking it drops; empty for itself
      */
     public record StateDef(float hardness, float resistance, @Nullable Boolean opaque, float lightEmission, @Nullable Box shape,
-        @Nullable Box collision, @Nullable String blockFaceShape, List<DropDef> drops) {
+        @Nullable Box collision, boolean noCollision, @Nullable String blockFaceShape, List<DropDef> drops) {
     }
 
     public record Box(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {

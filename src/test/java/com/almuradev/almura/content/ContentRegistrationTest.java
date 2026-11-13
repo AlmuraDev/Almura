@@ -42,9 +42,15 @@ final class ContentRegistrationTest {
     void registersTheContent() {
         final String root = System.getProperty("almura.content");
         assumeTrue(root != null && Files.isDirectory(Path.of(root)), "The content isn't in the dev run");
-        assertEquals(3 + 764, count("almura", BuiltInRegistries.BLOCK.keySet()), "blocks");
+        // Normal, horizontal, log, flower, stair and single slab blocks (a double slab is its single's double state)
+        final long blocks = 3 + 764 + 22 + 99 + 128 + 110;
+        assertEquals(blocks, count("almura", BuiltInRegistries.BLOCK.keySet()), "blocks");
         // Normal and food items, and an item for each block
-        assertEquals(186 + 413 + 3 + 764, count("almura", BuiltInRegistries.ITEM.keySet()), "items");
+        assertEquals(186 + 413 + blocks, count("almura", BuiltInRegistries.ITEM.keySet()), "items");
+        assertTrue(BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:slab/afledos_slab")) instanceof net.minecraft.world.level.block.SlabBlock,
+            "slabs are slabs");
+        assertTrue(BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:stair/afledos_stair")) instanceof net.minecraft.world.level.block.StairBlock,
+            "stairs are stairs");
         assertEquals(23, count("almura", BuiltInRegistries.CREATIVE_MODE_TAB.keySet()), "creative tabs");
         assertTrue(BuiltInRegistries.CONSUME_EFFECT_TYPE.containsKey(Identifier.fromNamespaceAndPath("almura", "heal")), "heal effect");
 
