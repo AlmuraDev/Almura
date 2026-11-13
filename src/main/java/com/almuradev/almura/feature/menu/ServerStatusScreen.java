@@ -99,7 +99,8 @@ public final class ServerStatusScreen implements Screen {
             .setResizable(false)
             .setCollapsible(false)
             .setMaximizable(false)
-            .add(column)
+            // Across the whole window, so the column's centred items sit in the window's middle
+            .add(stretched(column))
             .setWidth(WIDTH)
             .setAnchor(Anchor.CENTER);
 

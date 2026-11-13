@@ -12,7 +12,6 @@ import net.minecraft.client.gui.screens.ConnectScreen;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
-import org.inspirenxe.strata.api.Strata;
 
 /**
  * Puts the Server Status screen in place of vanilla's connect screen, and keeps the connection going while it shows.
@@ -32,7 +31,7 @@ public final class ServerStatus {
         minecraft.schedule(() -> {
             // Unless vanilla has already moved on, as it does when the address is unknown
             if (minecraft.gui.screen() == connecting) {
-                Strata.screens().open(new ServerStatusScreen(connecting));
+                AlmuraScreens.open(new ServerStatusScreen(connecting));
             }
         });
     }
