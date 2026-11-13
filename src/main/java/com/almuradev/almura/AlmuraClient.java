@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura;
 
+import com.almuradev.almura.core.client.config.AlmuraClientConfig;
 import com.almuradev.almura.feature.hud.Huds;
 import com.almuradev.almura.feature.menu.ingame.FeaturesMenu;
 import com.almuradev.almura.feature.menu.Disconnected;
@@ -17,10 +18,13 @@ import com.almuradev.almura.feature.menu.WorldLoading;
 import com.almuradev.almura.feature.menu.figure.AlmuraFigureRenderState;
 import com.almuradev.almura.feature.menu.figure.AlmuraFigureRenderer;
 import com.almuradev.almura.feature.menu.figure.FigureSlot;
+import com.almuradev.almura.feature.menu.options.AlmuraOptions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
@@ -33,7 +37,9 @@ import net.neoforged.neoforge.common.NeoForge;
 @Mod(value = Almura.ID, dist = Dist.CLIENT)
 public final class AlmuraClient {
 
-    public AlmuraClient(final IEventBus modBus) {
+    public AlmuraClient(final IEventBus modBus, final ModContainer container) {
+        container.registerConfig(ModConfig.Type.CLIENT, AlmuraClientConfig.SPEC);
+        AlmuraOptions.register(container);
         modBus.addListener(AlmuraClient::onClientSetup);
         modBus.addListener(AlmuraClient::onRegisterPictureInPictureRenderers);
         NeoForge.EVENT_BUS.register(new MainMenuManager());

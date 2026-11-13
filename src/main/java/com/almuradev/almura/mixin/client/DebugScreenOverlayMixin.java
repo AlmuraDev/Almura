@@ -27,7 +27,7 @@ public abstract class DebugScreenOverlayMixin {
     @Inject(method = "extractLines", at = @At("HEAD"), cancellable = true)
     private void almura$hideLines(final GuiGraphicsExtractor graphics, final List<String> lines, final boolean alignLeft, final int width,
         final CallbackInfo ci) {
-        if (Huds.showing()) {
+        if (Huds.showsDebugPanels()) {
             ci.cancel();
         }
     }

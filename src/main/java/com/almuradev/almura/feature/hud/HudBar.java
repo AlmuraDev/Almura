@@ -71,6 +71,13 @@ final class HudBar {
         return icon;
     }
 
+    /**
+     * Shows or hides the number on the bar ("20/20").
+     */
+    void setNumbersVisible(final boolean visible) {
+        this.value.setVisible(visible);
+    }
+
     AnchorPanel component() {
         return this.panel;
     }

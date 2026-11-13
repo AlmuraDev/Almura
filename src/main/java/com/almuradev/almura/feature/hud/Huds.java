@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.hud;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.core.client.config.AlmuraClientConfig;
 import com.almuradev.almura.feature.notification.client.ClientNotifications;
 import com.almuradev.almura.mixin.client.HudAccessor;
 import net.minecraft.client.Minecraft;
@@ -120,9 +121,16 @@ public final class Huds {
     }
 
     /**
-     * @return Whether the HUD shows: in a world, with the HUD on (F1 hides it)
+     * @return Whether Almura's debug panels show the debug screen in place of vanilla's text (its HUD shows and the setting is on)
+     */
+    public static boolean showsDebugPanels() {
+        return showing() && AlmuraClientConfig.get(AlmuraClientConfig.ENHANCED_DEBUG);
+    }
+
+    /**
+     * @return Whether the HUD shows: chosen in the settings, in a world, with the HUD on (F1 hides it)
      */
     private boolean shows() {
-        return Minecraft.getInstance().player != null && Minecraft.getInstance().level != null && !Minecraft.getInstance().gui.hud.isHidden();
+        return AlmuraClientConfig.originHud() && Minecraft.getInstance().player != null && Minecraft.getInstance().level != null && !Minecraft.getInstance().gui.hud.isHidden();
     }
 }

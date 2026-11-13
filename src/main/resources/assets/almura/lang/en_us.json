@@ -21,5 +21,7 @@
   "almura.button.close": "Close",
   "almura.features.later": "Comes in a later 4.0 build",
   "key.almura.features.open": "Open GUI",
-  "key.category.almura.features": "Almura Features Menu"
+  "key.category.almura.features": "Almura Features Menu",
+  "almura.menu_button.options": "Almura - Options",
+  "almura.menu_button.options.open": "Almura..."
 }

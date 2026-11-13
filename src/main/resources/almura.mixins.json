@@ -8,7 +8,8 @@
     "client.DisconnectedScreenAccessor",
     "client.HudAccessor",
     "client.JoinMultiplayerScreenAccessor",
-    "client.LevelLoadingScreenAccessor"
+    "client.LevelLoadingScreenAccessor",
+    "client.OptionsScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

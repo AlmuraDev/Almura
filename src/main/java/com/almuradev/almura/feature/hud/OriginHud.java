@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.hud;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.core.client.config.AlmuraClientConfig;
 import com.almuradev.almura.feature.notification.PopupNotification;
 import com.almuradev.almura.feature.notification.client.ClientNotifications;
 import com.almuradev.almura.feature.skills.SkillEntry;
@@ -94,6 +95,9 @@ final class OriginHud implements Screen {
     private List<SkillEntry> shownSkills = List.of();
     private final List<AnchorPanel> skillBars = new ArrayList<>();
     private final List<Image> skillFills = new ArrayList<>();
+    // Every panel's background, which the opacity setting applies to (the text stays as it is)
+    private final List<Image> backgrounds = new ArrayList<>();
+    private float shownOpacity = -1f;
     private @Nullable Image avatar;
     private @Nullable GameProfile avatarProfile;
     private @Nullable Label name, level, worldName, compass, coordinates, performance, ping;
@@ -195,8 +199,9 @@ final class OriginHud implements Screen {
     /**
      * A HUD panel: the dark tile 1.12's panels had behind its content.
      */
-    private static AnchorPanel panel(final ComponentFactory factory, final Component<?> content) {
+    private AnchorPanel panel(final ComponentFactory factory, final Component<?> content) {
         final Image background = factory.image(PANEL).setImageSize(1f, 1f).setScaling(Image.Scaling.STRETCH);
+        this.backgrounds.add(background);
         return factory.anchorPanel()
             .add(background.setAnchor(Anchor.FILL))
             .add(content.setAlignment(HorizontalAlignment.STRETCH, VerticalAlignment.TOP).setMargin(PADDING));
@@ -214,6 +219,7 @@ final class OriginHud implements Screen {
         if (player == null || this.name == null) {
             return;
         }
+        this.refreshSettings();
         this.refreshUser(player);
         this.refreshWorldName(player);
         this.refreshCompass(player);
@@ -229,7 +235,7 @@ final class OriginHud implements Screen {
      * draws under it, as on 1.12.
      */
     private void refreshDebug(final LocalPlayer player) {
-        final boolean shown = Minecraft.getInstance().debugEntries.isOverlayVisible();
+        final boolean shown = Minecraft.getInstance().debugEntries.isOverlayVisible() && AlmuraClientConfig.get(AlmuraClientConfig.ENHANCED_DEBUG);
         this.debugLooking.refresh(shown);
         this.debugLooking.component().setMargin(0f, bottom(this.userPanel) + DEBUG_GAP, 0f, 0f);
         this.debugInformation.refresh(shown);
@@ -251,6 +257,24 @@ final class OriginHud implements Screen {
             }
         }
         return harmful ? EFFECT_ROW * 2f : beneficial ? EFFECT_ROW : 0f;
+    }
+
+    /**
+     * The player's settings: which panels show, the numbers on the bars, and how opaque the panels are.
+     */
+    private void refreshSettings() {
+        this.worldPanel.setVisible(AlmuraClientConfig.get(AlmuraClientConfig.DISPLAY_WORLD_COMPASS_WIDGET));
+        this.detailsPanel.setVisible(AlmuraClientConfig.get(AlmuraClientConfig.DISPLAY_LOCATION_WIDGET));
+        this.performance.setVisible(AlmuraClientConfig.get(AlmuraClientConfig.DISPLAY_PERFORMANCE_STATS));
+        final boolean numbers = AlmuraClientConfig.get(AlmuraClientConfig.DISPLAY_NUMERIC_HUD_VALUES);
+        for (final HudBar bar : List.of(this.experience, this.health, this.armor, this.hunger, this.stamina, this.air, this.mount)) {
+            bar.setNumbersVisible(numbers);
+        }
+        final float opacity = AlmuraClientConfig.get(AlmuraClientConfig.ORIGIN_HUD_OPACITY) / 255f;
+        if (opacity != this.shownOpacity) {
+            this.shownOpacity = opacity;
+            this.backgrounds.forEach(background -> background.setOpacity(opacity));
+        }
     }
 
     /**
