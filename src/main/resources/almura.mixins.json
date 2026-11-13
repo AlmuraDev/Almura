@@ -3,7 +3,9 @@
   "package": "com.almuradev.almura.mixin",
   "mixins": [],
   "client": [
-    "client.ConnectScreenAccessor"
+    "client.ConnectScreenAccessor",
+    "client.HudAccessor",
+    "client.LevelLoadingScreenAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -7,8 +7,10 @@
  */
 package com.almuradev.almura;
 
+import com.almuradev.almura.feature.hud.Huds;
 import com.almuradev.almura.feature.menu.MainMenuManager;
 import com.almuradev.almura.feature.menu.ServerStatus;
+import com.almuradev.almura.feature.menu.WorldLoading;
 import com.almuradev.almura.feature.menu.figure.AlmuraFigureRenderState;
 import com.almuradev.almura.feature.menu.figure.AlmuraFigureRenderer;
 import com.almuradev.almura.feature.menu.figure.FigureSlot;
@@ -33,7 +35,9 @@ public final class AlmuraClient {
         modBus.addListener(AlmuraClient::onRegisterPictureInPictureRenderers);
         NeoForge.EVENT_BUS.register(new MainMenuManager());
         NeoForge.EVENT_BUS.register(new ServerStatus());
+        NeoForge.EVENT_BUS.register(new WorldLoading());
         NeoForge.EVENT_BUS.register(new FigureSlot.Drawer());
+        Huds.register(modBus);
     }
 
     private static void onClientSetup(final FMLClientSetupEvent event) {

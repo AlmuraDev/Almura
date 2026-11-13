@@ -50,6 +50,13 @@ dependencies {
 
     // Strata is a mod of its own (client side); compile against its API, run with its NeoForge jar
     compileOnly("org.inspirenxe:strata-api:${strata_version}")
+    // The Minecraft adapter too, for screens that need to be a vanilla screen of their own (StrataScreen subclasses)
+    compileOnly("org.inspirenxe:strata-minecraft-neoforge:${strata_version}") {
+        transitive = false
+    }
+    // And Strata's core, for hosting a Strata screen outside of a vanilla screen (the in-game HUD)
+    compileOnly("org.inspirenxe:strata-spi:${strata_version}")
+    compileOnly("org.inspirenxe:strata-core:${strata_version}")
     localRuntime("org.inspirenxe:strata-minecraft-neoforge:${strata_version}")
 }
 
@@ -68,6 +75,13 @@ neoForge {
             // ./gradlew runClient -PjoinServer=host:port joins a server straight from startup
             if (project.hasProperty('joinServer')) {
                 programArguments.addAll('--quickPlayMultiplayer', project.property('joinServer').toString())
+            }
+            // ./gradlew runClient -PjoinWorld=<save folder> opens a single-player world straight from startup (-PjoinWorld= for the latest)
+            if (project.hasProperty('joinWorld')) {
+                programArguments.add('--quickPlaySingleplayer')
+                if (!project.property('joinWorld').toString().isEmpty()) {
+                    programArguments.add(project.property('joinWorld').toString())
+                }
             }
         }
         server {
