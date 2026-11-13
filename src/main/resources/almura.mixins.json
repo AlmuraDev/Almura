@@ -5,7 +5,9 @@
   "client": [
     "client.ConnectScreenAccessor",
     "client.DebugScreenOverlayMixin",
+    "client.DisconnectedScreenAccessor",
     "client.HudAccessor",
+    "client.JoinMultiplayerScreenAccessor",
     "client.LevelLoadingScreenAccessor"
   ],
   "injectors": {

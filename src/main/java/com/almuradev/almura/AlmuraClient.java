@@ -9,6 +9,7 @@ package com.almuradev.almura;
 
 import com.almuradev.almura.feature.hud.Huds;
 import com.almuradev.almura.feature.menu.ingame.FeaturesMenu;
+import com.almuradev.almura.feature.menu.Disconnected;
 import com.almuradev.almura.feature.menu.MainMenuManager;
 import com.almuradev.almura.feature.menu.ServerStatus;
 import com.almuradev.almura.feature.menu.WorldLoading;
@@ -36,6 +37,7 @@ public final class AlmuraClient {
         modBus.addListener(AlmuraClient::onRegisterPictureInPictureRenderers);
         NeoForge.EVENT_BUS.register(new MainMenuManager());
         NeoForge.EVENT_BUS.register(new ServerStatus());
+        NeoForge.EVENT_BUS.register(new Disconnected());
         NeoForge.EVENT_BUS.register(new WorldLoading());
         NeoForge.EVENT_BUS.register(new FigureSlot.Drawer());
         Huds.register(modBus);
