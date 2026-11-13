@@ -146,10 +146,12 @@ public final class SkillsHandbookScreen extends BasicScreen {
         // A tab per skill
         final int skills = Math.max(1, this.entries.size());
         final int tabWidth = (paddedWidth - TAB_GAP * (skills - 1)) / skills;
+        // (the last tab takes what the division leaves over, so it ends at the right edge with the search box below it)
         int tabX = 0;
+        int tabIndex = 0;
         for (final String skill : this.entries.keySet()) {
             final UIButton tab = new UIButtonBuilder()
-                    .width(tabWidth)
+                    .width(tabIndex == skills - 1 ? paddedWidth - tabX : tabWidth)
                     .height(TAB_HEIGHT)
                     .position(tabX, 0)
                     .text(skillName(skill))
@@ -158,6 +160,7 @@ public final class SkillsHandbookScreen extends BasicScreen {
             this.tabs.put(skill, tab);
             form.add(tab);
             tabX += tabWidth + TAB_GAP;
+            tabIndex++;
         }
 
         // A row under the tabs: the player's level in the shown skill, and a search box that filters the list as it's typed in

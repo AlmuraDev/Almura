@@ -65,6 +65,14 @@ public final class ContainerBlockImpl extends BlockContainer implements Containe
         return false;
     }
 
+    // Not a full cube either: the models (barrels) don't fill the block, and as a full cube of a solid material every neighbour counted as
+    // a normal cube for smooth lighting, which shaded the sides seen in the gaps between them black
+    @Deprecated
+    @Override
+    public boolean isFullCube(final IBlockState state) {
+        return false;
+    }
+
     @Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (world.isRemote) {
