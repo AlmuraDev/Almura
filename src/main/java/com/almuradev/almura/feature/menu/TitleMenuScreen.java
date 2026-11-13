@@ -8,10 +8,9 @@
 package com.almuradev.almura.feature.menu;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.feature.menu.multiplayer.ServerListScreen;
 import com.mojang.blaze3d.Blaze3D;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
-import net.minecraft.client.gui.screens.multiplayer.SafetyScreen;
 import net.minecraft.client.gui.screens.options.OptionsScreen;
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
 import net.neoforged.neoforge.client.gui.modlist.ModListScreen;
@@ -40,7 +39,6 @@ import java.util.function.Function;
  */
 public final class TitleMenuScreen implements Screen {
 
-    private static final SpriteId LOGO = SpriteId.of(Almura.ID, "almura_logo");
     private static final SpriteId ICON_FORUMS = SpriteId.of(Almura.ID, "icon/forums");
     private static final SpriteId ICON_ISSUES = SpriteId.of(Almura.ID, "icon/github");
     private static final SpriteId ICON_SHOP = SpriteId.of(Almura.ID, "icon/shop");
@@ -49,8 +47,7 @@ public final class TitleMenuScreen implements Screen {
     private static final String URL_ISSUES = "https://github.com/AlmuraDev/Almura/issues";
     private static final String URL_SHOP = "https://almura.enjin.com/shop";
 
-    // 1.12's sizes: the logo as tall as its figure and text were, long and tiny buttons, square icon buttons, 4 between them all
-    private static final float LOGO_WIDTH = 82f, LOGO_HEIGHT = 135f;
+    // 1.12's sizes: long and tiny buttons, square icon buttons, 4 between them
     private static final float BUTTON_LONG = 200f, BUTTON_TINY = 64f, BUTTON_HEIGHT = 20f, ICON_BUTTON = 24f;
     private static final float PADDING = 4f, LOGO_GAP = 10f;
     private static final int QUIT_RED = 0xFFFF5555, LEGAL_YELLOW = 0xFFFFFF55;
@@ -62,14 +59,11 @@ public final class TitleMenuScreen implements Screen {
 
     @Override
     public Component<?> build(final ComponentFactory factory) {
-        final Image logo = factory.image(LOGO).setImageSize(LOGO_WIDTH, LOGO_HEIGHT).setScaling(Image.Scaling.FIT);
-        logo.setSize(LOGO_WIDTH, LOGO_HEIGHT);
-
         final Button singleplayer = long_(factory.button(Text.translatable("menu.singleplayer")))
             .onEvent(Button.PRESSED, event -> open(SelectWorldScreen::new));
+        // Almura's servers, over this screen; its Other button leads on to vanilla's server list
         final Button multiplayer = long_(factory.button(Text.translatable("menu.multiplayer")))
-            .onEvent(Button.PRESSED, event -> open(parent -> Minecraft.getInstance().options.skipMultiplayerWarning
-                ? new JoinMultiplayerScreen(parent) : new SafetyScreen(parent)));
+            .onEvent(Button.PRESSED, event -> AlmuraScreens.open(new ServerListScreen()));
 
         final Button options = tiny(factory.button(Text.translatable("options.title")))
             .onEvent(Button.PRESSED, event -> open(parent -> new OptionsScreen(parent, Minecraft.getInstance().options)));
@@ -91,10 +85,12 @@ public final class TitleMenuScreen implements Screen {
             .add(middleRow)
             .add(quit);
 
+        // The logo at the top of a column as tall as the server list's, so it stays in place between the two
         final StackPanel middle = factory.stackPanel()
             .setSpacing(LOGO_GAP)
-            .add(centred(logo))
+            .add(centred(AlmuraLogoHeader.create(factory)))
             .add(centred(buttons));
+        middle.setHeight(AlmuraLogoHeader.MENU_HEIGHT);
         middle.setAnchor(Anchor.CENTER);
 
         // The copyright above the trademark, in the bottom left

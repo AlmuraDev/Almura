@@ -9,12 +9,16 @@ package com.almuradev.almura;
 
 import com.almuradev.almura.feature.menu.MainMenuManager;
 import com.almuradev.almura.feature.menu.ServerStatus;
+import com.almuradev.almura.feature.menu.figure.AlmuraFigureRenderState;
+import com.almuradev.almura.feature.menu.figure.AlmuraFigureRenderer;
+import com.almuradev.almura.feature.menu.figure.FigureSlot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
 /**
@@ -26,8 +30,10 @@ public final class AlmuraClient {
 
     public AlmuraClient(final IEventBus modBus) {
         modBus.addListener(AlmuraClient::onClientSetup);
+        modBus.addListener(AlmuraClient::onRegisterPictureInPictureRenderers);
         NeoForge.EVENT_BUS.register(new MainMenuManager());
         NeoForge.EVENT_BUS.register(new ServerStatus());
+        NeoForge.EVENT_BUS.register(new FigureSlot.Drawer());
     }
 
     private static void onClientSetup(final FMLClientSetupEvent event) {
@@ -38,5 +44,10 @@ public final class AlmuraClient {
                 options.onboardingAccessibilityFinished();
             }
         });
+    }
+
+    private static void onRegisterPictureInPictureRenderers(final RegisterPictureInPictureRenderersEvent event) {
+        // The animated Dockter_Almura figure of the title screen
+        event.register(AlmuraFigureRenderState.class, AlmuraFigureRenderer::new);
     }
 }

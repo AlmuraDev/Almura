@@ -1,11 +1,20 @@
 {
   "almura.menu.main.copyright": "Almura Development Studios, Copyright 2012-2027",
   "almura.menu.main.trademark": "Minecraft is a registered trademark of Mojang AB",
+  "almura.menu.server.dev.name": "Development",
+  "almura.menu.server.live.name": "Live",
   "almura.menu_button.about": "About",
   "almura.menu_button.about.later": "The About page comes in a later 4.0 build",
   "almura.menu_button.forums": "Forums",
   "almura.menu_button.issues": "Issues",
+  "almura.menu_button.join": "Join",
   "almura.menu_button.mods": "Mods",
+  "almura.menu_button.other": "Other",
   "almura.menu_button.quit": "Quit",
-  "almura.menu_button.shop": "Shop"
+  "almura.menu_button.shop": "Shop",
+  "almura.multiplayer.status.locked": "Locked",
+  "almura.multiplayer.status.offline": "Offline",
+  "almura.multiplayer.status.online": "Online",
+  "almura.multiplayer.status.restarting": "Restarting",
+  "almura.multiplayer.status.updating": "Updating"
 }
