@@ -10,6 +10,8 @@ package com.almuradev.almura.feature.menu;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
+import com.almuradev.almura.feature.menu.singleplayer.WorldListScreen;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 
@@ -27,6 +29,10 @@ public final class MainMenuManager {
         // Exactly vanilla's: a mod's screen that extends it is left alone
         if (next != null && next.getClass() == TitleScreen.class) {
             replace(next, TitleMenuScreen::new);
+        }
+        // Vanilla's world list, from wherever it's opened (such as backing out of a world that failed to load), as on 1.12
+        if (next != null && next.getClass() == SelectWorldScreen.class) {
+            replace(next, WorldListScreen::new);
         }
     }
 

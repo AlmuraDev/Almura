@@ -9,10 +9,10 @@ package com.almuradev.almura.feature.menu;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.menu.multiplayer.ServerListScreen;
+import com.almuradev.almura.feature.menu.singleplayer.WorldListScreen;
 import com.mojang.blaze3d.Blaze3D;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.options.OptionsScreen;
-import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
 import net.neoforged.neoforge.client.gui.modlist.ModListScreen;
 import org.inspirenxe.strata.api.ComponentFactory;
 import org.inspirenxe.strata.api.component.Component;
@@ -60,7 +60,7 @@ public final class TitleMenuScreen implements Screen {
     @Override
     public Component<?> build(final ComponentFactory factory) {
         final Button singleplayer = long_(factory.button(Text.translatable("menu.singleplayer")))
-            .onEvent(Button.PRESSED, event -> open(SelectWorldScreen::new));
+            .onEvent(Button.PRESSED, event -> AlmuraScreens.open(new WorldListScreen()));
         // Almura's servers, over this screen; its Other button leads on to vanilla's server list
         final Button multiplayer = long_(factory.button(Text.translatable("menu.multiplayer")))
             .onEvent(Button.PRESSED, event -> AlmuraScreens.open(new ServerListScreen()));
