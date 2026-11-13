@@ -113,8 +113,9 @@ public final class ContentRegistration {
     }
 
     private static ItemStack icon(final ItemGroupDef group, final List<Item> items) {
-        if (group.icon() != null) {
-            final Optional<Holder.Reference<Item>> icon = BuiltInRegistries.ITEM.get(Identifier.parse(group.icon()));
+        final Identifier iconId = group.icon() == null ? null : Identifier.tryParse(group.icon());
+        if (iconId != null) {
+            final Optional<Holder.Reference<Item>> icon = BuiltInRegistries.ITEM.get(iconId);
             if (icon.isPresent()) {
                 return new ItemStack(icon.get());
             }
@@ -145,8 +146,9 @@ public final class ContentRegistration {
         if (def.food() != null) {
             properties.food(food(def.food()), consumable(def));
         }
-        if (def.container() != null && def.containerDamage() == 0) {
-            BuiltInRegistries.ITEM.get(Identifier.parse(def.container()))
+        final Identifier containerId = def.container() == null ? null : Identifier.tryParse(def.container());
+        if (containerId != null && def.containerDamage() == 0) {
+            BuiltInRegistries.ITEM.get(containerId)
                 .ifPresentOrElse(container -> properties.usingConvertsTo(container.value()),
                     () -> Almura.LOGGER.warn("Content item {} is handed back in {}, which doesn't exist", def.id(), def.container()));
         }
@@ -174,7 +176,9 @@ public final class ContentRegistration {
         for (final EffectDef effect : food.effects()) {
             final List<MobEffectInstance> instances = new ArrayList<>();
             for (final String id : effect.effects()) {
-                final Optional<Holder.Reference<MobEffect>> holder = BuiltInRegistries.MOB_EFFECT.get(Identifier.parse(id));
+                // 1.12 took "minecraft:STRENGTH"; 26.3's ids are lower case
+                final Identifier effectId = Identifier.tryParse(id.toLowerCase(java.util.Locale.ROOT));
+                final Optional<Holder.Reference<MobEffect>> holder = effectId == null ? Optional.empty() : BuiltInRegistries.MOB_EFFECT.get(effectId);
                 if (holder.isPresent()) {
                     instances.add(new MobEffectInstance(holder.get(), effect.durationTicks(), effect.amplifier(), effect.ambient(),
                         effect.showParticles()));

@@ -80,7 +80,7 @@ final class ContentConversionTest {
         vanillaItems = new HashSet<>();
         vanillaTextures = new HashSet<>();
         vanillaModels = new HashSet<>();
-        final Path artifacts = Path.of("build/moddev/artifacts");
+        final Path artifacts = Path.of(System.getProperty("almura.test.artifacts", "build/moddev/artifacts"));
         assumeTrue(Files.isDirectory(artifacts), "The game jar isn't built");
         try (Stream<Path> files = Files.list(artifacts)) {
             final Path jar = files.filter(path -> path.getFileName().toString().endsWith("-merged.jar")).findFirst().orElse(null);
@@ -248,13 +248,13 @@ final class ContentConversionTest {
             text.append("\n== ").append(title).append(" (").append(lines.size()).append(")\n");
             lines.forEach(line -> text.append("  ").append(line).append('\n'));
         });
-        Files.writeString(Path.of("build/content-report.txt"), text, StandardCharsets.UTF_8);
+        Files.writeString(Path.of(System.getProperty("almura.test.build", "build")).resolve("content-report.txt"), text, StandardCharsets.UTF_8);
         // A few generated files to read, one of each kind
-        final Path samples = Path.of("build/content-samples");
+        final Path samples = Path.of(System.getProperty("almura.test.build", "build")).resolve("content-samples");
         Files.createDirectories(samples);
         for (final String prefix : List.of("assets/almura/blockstates/horizontal/building/afledos_plank", "assets/almura/blockstates/container",
             "assets/almura/models/obj/block/", "assets/almura/items/food/food/pizza_deluxe", "assets/almura/items/horizontal/building/afledos_plank",
-            "data/almura/recipe/item/normal/ingredient/barbecuesauce", "data/almura/recipe/block/horizontal/building/bricks_block_b_supersmooth",
+            "data/almura/recipe/normal/ingredient/barbecuesauce", "data/almura/recipe/horizontal/building/bricks_block_b_supersmooth",
             "data/almura/loot_table/blocks/horizontal/ore/marbleore", "data/minecraft/tags/block/mineable/pickaxe",
             "data/minecraft/tags/block/needs_stone_tool")) {
             pack.paths().stream().filter(path -> path.startsWith(prefix) && path.endsWith(".json")).findFirst().ifPresent(path -> {

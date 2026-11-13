@@ -81,11 +81,8 @@ final class RecipeConverter {
             case "crafting_shapeless" -> {
                 final JsonArray ingredients = new JsonArray();
                 for (final JsonElement ingredient : recipe.getAsJsonArray("ingredients")) {
-                    // 1.12 allowed a count on an ingredient; 26.3 lists it that many times
-                    final int count = ingredient instanceof final JsonObject object && object.has("count") ? object.get("count").getAsInt() : 1;
-                    for (int i = 0; i < Math.max(1, count); i++) {
-                        ingredients.add(ingredient(ingredient));
-                    }
+                    // A count on an ingredient meant nothing to 1.12's reader (vanilla's): one of each
+                    ingredients.add(ingredient(ingredient));
                 }
                 converted.add("ingredients", ingredients);
                 converted.add("result", result(recipe.get("result")));

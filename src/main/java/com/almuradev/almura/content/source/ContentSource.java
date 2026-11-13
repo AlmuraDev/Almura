@@ -132,7 +132,7 @@ public final class ContentSource {
     }
 
     /**
-     * @return Every recipe of a type in every namespace; a recipe's id is its folder's path under the type folder with its name
+     * @return Every recipe of a type in every namespace; a recipe's id is its folder's path under the type folder with its name, as on 1.12
      */
     public List<ContentFile> recipes(final String type) {
         final List<ContentFile> files = new ArrayList<>();
@@ -144,7 +144,8 @@ public final class ContentSource {
                     if (json != null) {
                         final String folderPath = idPath(typeRoot, folder.getParent().resolve("x.json"));
                         final String name = file.getFileName().toString();
-                        files.add(new ContentFile(namespace, type, type + "/" + folderPath.substring(0, folderPath.length() - 1)
+                        // As 1.12 named them: the folder's path under the type folder and the name ("almura:normal/ingredient/pepper")
+                        files.add(new ContentFile(namespace, type, folderPath.substring(0, folderPath.length() - 1)
                             + name.substring(0, name.length() - ".json".length()), file, json));
                     }
                 }

@@ -76,7 +76,7 @@ public final class ContentPackBuilder {
      */
     public ContentPack buildData(final List<BlockDef> blocks, final Predicate<String> knownItem) {
         for (final BlockDef block : blocks) {
-            this.lootTable(block);
+            this.lootTable(block, knownItem);
         }
         this.toolTags(blocks);
         this.recipes(knownItem);
@@ -366,12 +366,23 @@ public final class ContentPackBuilder {
     }
 
     /**
-     * A block's loot table: its drops (with their bonus as a separate chance), or itself when it names none.
+     * A block's loot table: its drops (with their bonus as a separate chance), or itself when it names none. A drop naming an item that
+     * doesn't exist (a typo in the content; 1.12 dropped nothing) is left out, the block dropping itself if nothing is left.
      */
-    private void lootTable(final BlockDef block) {
+    private void lootTable(final BlockDef block, final Predicate<String> knownItem) {
         final String namespace = namespace(block.id()), path = path(block.id());
         final JsonArray pools = new JsonArray();
-        final List<DropDef> drops = block.state().drops().isEmpty() ? List.of(new DropDef(block.id(), 1, 1, 0, 0)) : block.state().drops();
+        List<DropDef> drops = new ArrayList<>();
+        for (final DropDef drop : block.state().drops()) {
+            if (knownItem.test(drop.item())) {
+                drops.add(drop);
+            } else {
+                this.problems.add(block.id() + ": drops " + drop.item() + ", which doesn't exist; it drops itself instead");
+            }
+        }
+        if (drops.isEmpty()) {
+            drops = List.of(new DropDef(block.id(), 1, 1, 0, 0));
+        }
         for (final DropDef drop : drops) {
             pools.add(pool(drop.item(), drop.amountMin(), drop.amountMax(), 0));
             if (drop.bonusAmount() > 0 && drop.bonusChance() > 0) {

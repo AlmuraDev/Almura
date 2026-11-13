@@ -70,6 +70,11 @@ tasks.named('test', Test) {
     useJUnitPlatform()
     // The content to test against, when it has been copied into the dev run
     systemProperty('almura.test.content', project.file('runs/client/assets/fs_5').absolutePath)
+    // Absolute, as the game started in the tests runs elsewhere
+    systemProperty('almura.test.artifacts', project.file('build/moddev/artifacts').absolutePath)
+    systemProperty('almura.test.build', project.file('build').absolutePath)
+    // And for the game started in the tests: load the content from there
+    systemProperty('almura.content', project.file('runs/client/assets/fs_5').absolutePath)
     testLogging {
         events 'failed'
         showStandardStreams = true
@@ -120,6 +125,12 @@ neoForge {
         "${mod_id}" {
             sourceSet sourceSets.main
         }
+    }
+
+    // Tests marked with FML's JUnit extension start the game's mod loading (no window, no server), so registration can be checked
+    unitTest {
+        enable()
+        testedMod = mods."${mod_id}"
     }
 }
 
