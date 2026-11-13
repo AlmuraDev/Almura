@@ -52,25 +52,44 @@ public final class ContentPackBuilder {
     }
 
     /**
-     * @param knownItem whether an item id exists, for recipes: one using an unknown item is left out
+     * Builds the client's half of the pack: textures, models, blockstates, item model definitions and the language file.
      */
-    public ContentPack build(final List<ItemGroupDef> groups, final List<ItemDef> items, final List<BlockDef> blocks,
-        final Predicate<String> knownItem) {
+    public ContentPack buildAssets(final List<ItemGroupDef> groups, final List<ItemDef> items, final List<BlockDef> blocks) {
         for (final String namespace : this.source.namespaces()) {
             this.passThrough(namespace);
         }
         for (final BlockDef block : blocks) {
             this.blockstate(block);
             this.blockItemModel(block);
-            this.lootTable(block);
         }
         for (final ItemDef item : items) {
             this.itemModel(item);
         }
-        this.toolTags(blocks);
         this.language(groups);
+        return this.pack;
+    }
+
+    /**
+     * Builds the server's half of the pack: loot tables, tool tags and recipes.
+     *
+     * @param knownItem whether an item id exists, for recipes: one using an unknown item is left out
+     */
+    public ContentPack buildData(final List<BlockDef> blocks, final Predicate<String> knownItem) {
+        for (final BlockDef block : blocks) {
+            this.lootTable(block);
+        }
+        this.toolTags(blocks);
         this.recipes(knownItem);
         return this.pack;
+    }
+
+    /**
+     * Builds both halves, as tests do.
+     */
+    public ContentPack build(final List<ItemGroupDef> groups, final List<ItemDef> items, final List<BlockDef> blocks,
+        final Predicate<String> knownItem) {
+        this.buildAssets(groups, items, blocks);
+        return this.buildData(blocks, knownItem);
     }
 
     public List<String> problems() {

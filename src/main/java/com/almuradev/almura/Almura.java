@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura;
 
+import com.almuradev.almura.content.AlmuraContent;
 import com.almuradev.almura.feature.hud.server.ServerHud;
 import com.almuradev.almura.feature.notification.server.ServerNotifications;
 import com.almuradev.almura.network.AlmuraNetwork;
@@ -28,6 +29,8 @@ public final class Almura {
 
     public Almura(final IEventBus modBus, final ModContainer container) {
         LOGGER.info("Almura {} starting", container.getModInfo().getVersion());
+        // Blocks, items and creative tabs from the content folders, as on 1.12
+        AlmuraContent.register(modBus);
         AlmuraNetwork.register(modBus);
         // What the server does for Almura's players: the HUD's data, notifications
         NeoForge.EVENT_BUS.register(new ServerHud());
