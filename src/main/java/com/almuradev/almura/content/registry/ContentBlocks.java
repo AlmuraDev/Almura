@@ -8,6 +8,9 @@
 package com.almuradev.almura.content.registry;
 
 import com.almuradev.almura.content.def.ContentDefs.BlockDef;
+import com.almuradev.almura.content.def.ContentDefs.CropDef;
+import com.almuradev.almura.content.def.ContentDefs.CropStageDef;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import com.almuradev.almura.content.def.ContentDefs.Box;
 import com.almuradev.almura.content.def.ContentDefs.StateDef;
 import net.minecraft.core.BlockPos;
@@ -71,6 +74,25 @@ public final class ContentBlocks {
         };
     }
 
+    /**
+     * A crop: nothing collides with it, it ticks to grow, it breaks when pushed, and gives the light its stage gives (the mooncheese
+     * glows when ripe).
+     */
+    public static ContentCrop createCrop(final BlockDef def, final CropDef crop) {
+        final IntegerProperty age = ContentCrop.ageProperty(crop.maxAge());
+        final int[] light = new int[crop.stages().size()];
+        boolean glows = false;
+        for (final CropStageDef stage : crop.stages()) {
+            light[stage.age()] = Math.round(Math.min(1f, Math.max(0f, stage.state().lightEmission())) * 15f);
+            glows |= light[stage.age()] > 0;
+        }
+        final BlockBehaviour.Properties properties = properties(def).noCollision().randomTicks().pushReaction(PushReaction.POPPED);
+        if (glows) {
+            properties.lightLevel(state -> light[Math.min(state.getValue(age), light.length - 1)]);
+        }
+        return ContentCrop.create(crop, properties);
+    }
+
     static BlockBehaviour.Properties properties(final BlockDef def) {
         final StateDef state = def.state();
         final String material = path(def.material());
@@ -90,7 +112,7 @@ public final class ContentBlocks {
         // furniture that doesn't fill its space, like chairs); otherwise only when it doesn't say it isn't
         final boolean modelled = def.kind().equals("normal") || def.kind().equals("horizontal");
         final boolean opaque = modelled ? Boolean.TRUE.equals(state.opaque()) : !Boolean.FALSE.equals(state.opaque());
-        if (!opaque || material.equals("ag") || def.kind().equals("flower")) {
+        if (!opaque || material.equals("ag") || def.kind().equals("flower") || def.kind().equals("crop")) {
             properties.noOcclusion();
         }
         // Rock and metal needed the right tool to drop anything, as on 1.12

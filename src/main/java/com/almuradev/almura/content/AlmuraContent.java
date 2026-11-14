@@ -11,11 +11,14 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.content.convert.ContentPack;
 import com.almuradev.almura.content.convert.ContentPackBuilder;
 import com.almuradev.almura.content.def.ContentDefs.BlockDef;
+import com.almuradev.almura.content.def.ContentDefs.CropDef;
+import com.almuradev.almura.content.def.ContentDefs.SeedDef;
 import com.almuradev.almura.content.def.ContentDefs.ItemDef;
 import com.almuradev.almura.content.def.ContentDefs.ItemGroupDef;
 import com.almuradev.almura.content.def.ContentParser;
 import com.almuradev.almura.content.pack.ContentPacks;
 import com.almuradev.almura.content.registry.ContentRegistration;
+import com.almuradev.almura.content.registry.GrassSeeds;
 import com.almuradev.almura.content.source.ContentSource;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -35,8 +38,8 @@ import java.util.Set;
 public final class AlmuraContent {
 
     // The kinds of content loaded so far; the rest follow as they are ported
-    public static final Set<String> ITEM_KINDS = Set.of("normal", "food", "slab", "tool_hoe", "tool_sickle");
-    public static final Set<String> BLOCK_KINDS = Set.of("normal", "horizontal", "log", "flower", "stair", "slab");
+    public static final Set<String> ITEM_KINDS = Set.of("normal", "food", "slab", "tool_hoe", "tool_sickle", "seed");
+    public static final Set<String> BLOCK_KINDS = Set.of("normal", "horizontal", "log", "flower", "stair", "slab", "crop");
 
     private AlmuraContent() {
     }
@@ -57,20 +60,23 @@ public final class AlmuraContent {
         final List<ItemGroupDef> groups = parser.itemGroups();
         final List<ItemDef> items = parser.items(ITEM_KINDS);
         final List<BlockDef> blocks = parser.blocks(BLOCK_KINDS);
+        final List<SeedDef> seeds = parser.seeds();
+        final List<CropDef> crops = parser.crops(seeds);
         source.problems().forEach(problem -> Almura.LOGGER.warn("Content: {}", problem));
-        Almura.LOGGER.info("Loaded Almura content from {}: {} creative tabs, {} items, {} blocks", root.toAbsolutePath(), groups.size(),
-            items.size(), blocks.size());
+        Almura.LOGGER.info("Loaded Almura content from {}: {} creative tabs, {} items, {} blocks ({} crops)", root.toAbsolutePath(),
+            groups.size(), items.size(), blocks.size(), crops.size());
 
-        modBus.register(new ContentRegistration(groups, items, blocks));
+        modBus.register(new ContentRegistration(groups, items, blocks, crops, seeds));
+        GrassSeeds.register(modBus);
         ContentPacks.register(modBus, () -> {
-            final ContentPackBuilder builder = new ContentPackBuilder(source);
+            final ContentPackBuilder builder = new ContentPackBuilder(source).crops(crops);
             final ContentPack pack = builder.buildAssets(groups, items, blocks);
             builder.problems().forEach(problem -> Almura.LOGGER.debug("Content assets: {}", problem));
             Almura.LOGGER.info("Built Almura's content assets: {} files", pack.paths().size());
             return pack;
         }, () -> {
             // Built once the registries are whole, so recipes naming unknown items are left out rather than failing to load
-            final ContentPackBuilder builder = new ContentPackBuilder(source);
+            final ContentPackBuilder builder = new ContentPackBuilder(source).crops(crops);
             final ContentPack pack = builder.buildData(blocks, items, id -> BuiltInRegistries.ITEM.containsKey(Identifier.parse(id)));
             builder.problems().forEach(problem -> Almura.LOGGER.debug("Content data: {}", problem));
             Almura.LOGGER.info("Built Almura's content data: {} files ({} problems, see the debug log)", pack.paths().size(),

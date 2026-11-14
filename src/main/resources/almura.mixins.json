@@ -1,7 +1,10 @@
 {
   "required": true,
   "package": "com.almuradev.almura.mixin",
-  "mixins": [],
+  "mixins": [
+    "BiomeAccessor",
+    "FarmlandBlockMixin"
+  ],
   "client": [
     "client.ConnectScreenAccessor",
     "client.DebugScreenOverlayMixin",

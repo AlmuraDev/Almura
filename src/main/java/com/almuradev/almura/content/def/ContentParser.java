@@ -8,6 +8,12 @@
 package com.almuradev.almura.content.def;
 
 import com.almuradev.almura.content.def.ContentDefs.BlockDef;
+import com.almuradev.almura.content.def.ContentDefs.CropDef;
+import com.almuradev.almura.content.def.ContentDefs.CropStageDef;
+import com.almuradev.almura.content.def.ContentDefs.HydrationBlockDef;
+import com.almuradev.almura.content.def.ContentDefs.HydrationDef;
+import com.almuradev.almura.content.def.ContentDefs.Range;
+import com.almuradev.almura.content.def.ContentDefs.SeedDef;
 import com.almuradev.almura.content.def.ContentDefs.Box;
 import com.almuradev.almura.content.def.ContentDefs.DropDef;
 import com.almuradev.almura.content.def.ContentDefs.EffectDef;
@@ -24,6 +30,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -119,6 +126,134 @@ public final class ContentParser {
     }
 
     /**
+     * The seeds ({@code content/item/seed}).
+     */
+    public List<SeedDef> seeds() {
+        final List<SeedDef> seeds = new ArrayList<>();
+        for (final ContentFile file : this.source.files("item")) {
+            if (!kind(file).equals("seed")) {
+                continue;
+            }
+            final JsonObject json = file.json();
+            final String crop = string(json, "crop");
+            if (crop == null) {
+                this.source.problem(file.file(), "Seed names no crop");
+                continue;
+            }
+            final JsonObject grass = object(json, "grass");
+            final Range chance = grass == null ? null : firstRange(grass.get("chance"));
+            final Range amount = grass == null ? null : firstRange(grass.get("amount"));
+            seeds.add(new SeedDef(file.id(), crop, stringOr(json, "soil", "minecraft:farmland"), chance,
+                amount == null ? 1 : (int) amount.min(), amount == null ? 1 : (int) amount.max()));
+        }
+        return seeds;
+    }
+
+    /**
+     * The crops ({@code content/block/crop}), each with its stages; a crop whose seed isn't among the seeds is planted on farmland.
+     */
+    public List<CropDef> crops(final List<SeedDef> seeds) {
+        final List<CropDef> crops = new ArrayList<>();
+        for (final ContentFile file : this.source.files("block")) {
+            if (!kind(file).equals("crop")) {
+                continue;
+            }
+            final JsonObject json = file.json();
+            final JsonObject states = object(json, "state");
+            final List<CropStageDef> stages = new ArrayList<>();
+            for (int age = 0; states != null && states.has("age=" + age); age++) {
+                final JsonObject stage = this.resolveState(file, "age=" + age);
+                if (stage == null) {
+                    break;
+                }
+                stages.add(this.cropStage(file, age, stage));
+            }
+            if (stages.size() < 2) {
+                this.source.problem(file.file(), "Crop has fewer than two stages (age=0, age=1...)");
+                continue;
+            }
+            final String seed = stringOr(json, "seed", "");
+            final String soil = seeds.stream().filter(def -> def.id().equals(seed)).map(SeedDef::soil).findFirst().orElse("minecraft:farmland");
+            final JsonObject sack = object(json, "sack_harvest");
+            final JsonElement aquatic = json.get("aquatic");
+            // "aquatic": true was the first spelling, a submerged crop
+            final String aquaticMode = aquatic == null || !aquatic.isJsonPrimitive() ? null
+                : aquatic.getAsJsonPrimitive().isBoolean() ? (aquatic.getAsBoolean() ? "submerged" : null) : aquatic.getAsString();
+            crops.add(new CropDef(file.id(), seed, soil, stages, sack == null ? -1 : integer(sack, "reset_age", -1), aquaticMode));
+        }
+        return crops;
+    }
+
+    private CropStageDef cropStage(final ContentFile file, final int age, final JsonObject json) {
+        final JsonObject growth = object(json, "growth");
+        HydrationDef hydration = null;
+        final JsonObject hydrationJson = object(json, "hydration");
+        if (hydrationJson != null && hydrationJson.get("block") instanceof final JsonArray blocks) {
+            final List<HydrationBlockDef> matches = new ArrayList<>();
+            for (final JsonElement element : blocks) {
+                if (!(element instanceof final JsonObject block) || string(block, "id") == null) {
+                    continue;
+                }
+                final Map<String, Range> properties = new LinkedHashMap<>();
+                final JsonObject state = object(block, "state");
+                if (state != null) {
+                    for (final Map.Entry<String, JsonElement> property : state.entrySet()) {
+                        if (property.getValue() instanceof final JsonObject range) {
+                            properties.put(property.getKey(), new Range(number(range, "min", 0), number(range, "max", number(range, "min", 0))));
+                        } else if (property.getValue().isJsonPrimitive() && property.getValue().getAsJsonPrimitive().isNumber()) {
+                            properties.put(property.getKey(), new Range(property.getValue().getAsDouble(), property.getValue().getAsDouble()));
+                        }
+                    }
+                }
+                matches.add(new HydrationBlockDef(string(block, "id"), properties));
+            }
+            hydration = new HydrationDef(matches, integer(hydrationJson, "max_radius", 0));
+        }
+        Range bonemeal = null;
+        if (json.get("fertilizer") instanceof final JsonArray fertilizers) {
+            for (final JsonElement element : fertilizers) {
+                if (element instanceof final JsonObject fertilizer && isBoneMeal(fertilizer.get("item"))) {
+                    bonemeal = firstRange(fertilizer.get("chance"));
+                } else {
+                    this.source.problem(file.file(), "Only bone meal (minecraft:dye 15) is read as a fertilizer: " + element);
+                }
+            }
+        }
+        return new CropStageDef(age, this.state(json), growth == null ? null : firstRange(growth.get("chance")),
+            growth == null ? null : firstRange(growth.get("light")), growth == null ? null : firstRange(growth.get("temperature_required")),
+            hydration, bonemeal, bool(json, "can_rollback", false));
+    }
+
+    /**
+     * 1.12's bone meal: {@code {"minecraft:dye": {"meta": 15}}}, or 26.3's {@code minecraft:bone_meal}.
+     */
+    private static boolean isBoneMeal(final @Nullable JsonElement item) {
+        if (item instanceof final JsonObject object && object.get("minecraft:dye") instanceof final JsonObject dye) {
+            return integer(dye, "meta", 0) == 15;
+        }
+        return item != null && item.isJsonPrimitive() && item.getAsString().equals("minecraft:bone_meal");
+    }
+
+    /**
+     * The first of 1.12's per-biome ranges ({@code [{"min": 5, "max": 10}]}; the content gives only the default one), or a lone range or
+     * number.
+     */
+    static @Nullable Range firstRange(final @Nullable JsonElement element) {
+        JsonElement first = element;
+        if (element instanceof final JsonArray array) {
+            first = array.isEmpty() ? null : array.get(0);
+        }
+        if (first instanceof final JsonObject object) {
+            final double min = number(object, "min", 0);
+            return new Range(min, number(object, "max", min));
+        }
+        if (first != null && first.isJsonPrimitive() && first.getAsJsonPrimitive().isNumber()) {
+            return new Range(first.getAsDouble(), first.getAsDouble());
+        }
+        return null;
+    }
+
+    /**
      * The state that defines the block, with what it inherits from its parents ({@code parent}: another state's name) filled in.
      */
     private @Nullable JsonObject defaultState(final ContentFile file) {
@@ -126,7 +261,16 @@ public final class ContentParser {
         if (states == null || states.isEmpty()) {
             return new JsonObject();
         }
-        final String name = states.has(DEFAULT_STATE) ? DEFAULT_STATE : states.has(NORTH) ? NORTH : states.keySet().iterator().next();
+        final String name = states.has(DEFAULT_STATE) ? DEFAULT_STATE : states.has(NORTH) ? NORTH : states.has("age=0") ? "age=0"
+            : states.keySet().iterator().next();
+        return this.resolveState(file, name);
+    }
+
+    /**
+     * A state with what it inherits from its parents ({@code parent}: another state's name) filled in.
+     */
+    private @Nullable JsonObject resolveState(final ContentFile file, final String name) {
+        final JsonObject states = file.json().getAsJsonObject("state");
         final JsonObject resolved = new JsonObject();
         final Set<String> seen = new HashSet<>();
         String current = name;

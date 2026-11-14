@@ -1,0 +1,19 @@
+{
+  "type": "almura:grass_seeds",
+  "condition": {
+    "type": "minecraft:all_of",
+    "terms": [
+      {
+        "type": "minecraft:any_of",
+        "terms": [
+          {"type": "minecraft:match_block", "blocks": "minecraft:short_grass"},
+          {"type": "minecraft:match_block", "blocks": "minecraft:fern"}
+        ]
+      },
+      {
+        "type": "minecraft:inverted",
+        "term": {"type": "minecraft:match_tool", "predicate": {"items": "minecraft:shears"}}
+      }
+    ]
+  }
+}

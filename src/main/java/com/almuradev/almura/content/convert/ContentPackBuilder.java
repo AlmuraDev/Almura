@@ -8,6 +8,8 @@
 package com.almuradev.almura.content.convert;
 
 import com.almuradev.almura.content.def.ContentDefs.BlockDef;
+import com.almuradev.almura.content.def.ContentDefs.CropDef;
+import com.almuradev.almura.content.def.ContentDefs.CropStageDef;
 import com.almuradev.almura.content.def.ContentDefs.DropDef;
 import com.almuradev.almura.content.def.ContentDefs.ItemDef;
 import com.almuradev.almura.content.def.ContentDefs.ItemGroupDef;
@@ -54,8 +56,18 @@ public final class ContentPackBuilder {
     private final ContentPack pack = new ContentPack();
     private final List<String> problems = new ArrayList<>();
 
+    private final Map<String, CropDef> crops = new LinkedHashMap<>();
+
     public ContentPackBuilder(final ContentSource source) {
         this.source = source;
+    }
+
+    /**
+     * The crops among the blocks, for their stages: a blockstate variant and loot for each.
+     */
+    public ContentPackBuilder crops(final List<CropDef> crops) {
+        crops.forEach(crop -> this.crops.put(crop.id(), crop));
+        return this;
     }
 
     /**
@@ -97,6 +109,7 @@ public final class ContentPackBuilder {
         for (final BlockDef block : blocks) {
             this.lootTable(block, knownItem);
         }
+        this.cropTags(blocks);
         this.toolTags(blocks);
         this.sickleTag(items);
         this.recipes(knownItem);
@@ -203,6 +216,12 @@ public final class ContentPackBuilder {
             case "horizontal" -> {
                 for (final String facing : FACINGS) {
                     this.addVariant(variants, "facing=" + facing, this.variant(block, forge, Map.of("facing", facing), "facing=" + facing));
+                }
+            }
+            case "crop" -> {
+                final CropDef crop = this.crops.get(block.id());
+                for (int age = 0; crop != null && age <= crop.maxAge(); age++) {
+                    this.addVariant(variants, "age=" + age, this.variant(block, forge, Map.of("age", Integer.toString(age)), "age=" + age));
                 }
             }
             case "log" -> {
@@ -613,7 +632,8 @@ public final class ContentPackBuilder {
      * model of the block's default variant (north facing, upright, bottom, or the first).
      */
     private void blockItemModel(final BlockDef block) {
-        if (block.isDoubleSlab()) {
+        // A crop's item is its seed
+        if (block.isDoubleSlab() || block.kind().equals("crop")) {
             return;
         }
         final String namespace = namespace(block.id()), path = path(block.id());
@@ -754,6 +774,10 @@ public final class ContentPackBuilder {
             this.slabLootTable(block);
             return;
         }
+        if (block.kind().equals("crop")) {
+            this.cropLootTable(block, knownItem);
+            return;
+        }
         final JsonArray pools = new JsonArray();
         List<DropDef> drops = new ArrayList<>();
         for (final DropDef drop : block.state().drops()) {
@@ -780,25 +804,62 @@ public final class ContentPackBuilder {
     }
 
     /**
+     * A crop drops what its stage lists (the produce when ripe) and nothing at a stage that lists nothing, as 3.5's crops did: not even
+     * the seed (seeds come from grass and recipes).
+     */
+    private void cropLootTable(final BlockDef block, final Predicate<String> knownItem) {
+        final CropDef crop = this.crops.get(block.id());
+        final JsonArray pools = new JsonArray();
+        for (final CropStageDef stage : crop == null ? List.<CropStageDef>of() : crop.stages()) {
+            for (final DropDef drop : stage.state().drops()) {
+                if (!knownItem.test(drop.item())) {
+                    this.problems.add(block.id() + ": drops " + drop.item() + " at age " + stage.age() + ", which doesn't exist; left out");
+                    continue;
+                }
+                final JsonObject atAge = matchBlock(block.id(), "age", Integer.toString(stage.age()));
+                pools.add(pool(drop.item(), drop.amountMin(), drop.amountMax(), 0, atAge));
+                if (drop.bonusAmount() > 0 && drop.bonusChance() > 0) {
+                    pools.add(pool(drop.item(), drop.bonusAmount(), drop.bonusAmount(), drop.bonusChance(), atAge.deepCopy()));
+                }
+            }
+        }
+        final JsonObject table = new JsonObject();
+        table.addProperty("type", "minecraft:block");
+        table.add("pools", pools);
+        table.addProperty("random_sequence", namespace(block.id()) + ":blocks/" + path(block.id()));
+        this.pack.putJson("data/" + namespace(block.id()) + "/loot_table/blocks/" + path(block.id()) + ".json", table);
+    }
+
+    /**
+     * Crops keep the farmland under them ({@code minecraft:maintains_farmland}) and are crops to the game ({@code minecraft:crops}: bees,
+     * villagers), as 1.12's {@code BlockCrops} were.
+     */
+    private void cropTags(final List<BlockDef> blocks) {
+        final JsonArray values = new JsonArray();
+        blocks.stream().filter(block -> block.kind().equals("crop") && this.crops.containsKey(block.id())).forEach(block -> values.add(block.id()));
+        if (values.isEmpty()) {
+            return;
+        }
+        for (final String tag : new String[] {"maintains_farmland", "crops"}) {
+            final JsonObject json = new JsonObject();
+            json.addProperty("replace", false);
+            json.add("values", values.deepCopy());
+            this.pack.putJson("data/minecraft/tags/block/" + tag + ".json", json);
+        }
+    }
+
+    /**
      * A slab drops itself, two when doubled, as vanilla's slabs do.
      */
     private void slabLootTable(final BlockDef block) {
-        final JsonObject doubled = new JsonObject();
-        doubled.addProperty("block", block.id());
-        final JsonObject type = new JsonObject();
-        type.addProperty("type", "double");
-        doubled.add("properties", type);
-        doubled.addProperty("condition", "minecraft:block_state_property");
-        final JsonArray conditions = new JsonArray();
-        conditions.add(doubled);
         final JsonObject setCount = new JsonObject();
-        setCount.addProperty("function", "minecraft:set_count");
+        setCount.addProperty("type", "minecraft:set_count");
+        setCount.add("condition", matchBlock(block.id(), "type", "double"));
         setCount.addProperty("count", 2);
-        setCount.add("conditions", conditions);
         final JsonObject pool = pool(block.id(), 1, 1, 0);
-        final JsonArray functions = new JsonArray();
-        functions.add(setCount);
-        pool.getAsJsonArray("entries").get(0).getAsJsonObject().add("functions", functions);
+        final JsonArray modifiers = new JsonArray();
+        modifiers.add(setCount);
+        pool.getAsJsonArray("entries").get(0).getAsJsonObject().add("modifier", modifiers);
         final JsonArray pools = new JsonArray();
         pools.add(pool);
         final JsonObject table = new JsonObject();
@@ -809,11 +870,20 @@ public final class ContentPackBuilder {
     }
 
     private static JsonObject pool(final String item, final int min, final int max, final int chancePercent) {
+        return pool(item, min, max, chancePercent, null);
+    }
+
+    /**
+     * A pool of one item, in 26.3's loot format: a single {@code condition} (several joined with {@code minecraft:all_of}) and the
+     * item's {@code modifier} list. The item survives explosions as 1.12's drops did, drops at its chance, and only when {@code also} holds.
+     */
+    private static JsonObject pool(final String item, final int min, final int max, final int chancePercent, final @Nullable JsonObject also) {
         final JsonObject entry = new JsonObject();
         entry.addProperty("type", "minecraft:item");
         entry.addProperty("name", item);
         if (min != 1 || max != 1) {
             final JsonObject count = new JsonObject();
+            count.addProperty("type", "minecraft:set_count");
             if (min == max) {
                 count.addProperty("count", min);
             } else {
@@ -823,28 +893,50 @@ public final class ContentPackBuilder {
                 range.addProperty("max", max);
                 count.add("count", range);
             }
-            count.addProperty("function", "minecraft:set_count");
-            final JsonArray functions = new JsonArray();
-            functions.add(count);
-            entry.add("functions", functions);
+            final JsonArray modifiers = new JsonArray();
+            modifiers.add(count);
+            entry.add("modifier", modifiers);
         }
         final JsonArray entries = new JsonArray();
         entries.add(entry);
-        final JsonArray conditions = new JsonArray();
+        final JsonArray terms = new JsonArray();
         final JsonObject survives = new JsonObject();
-        survives.addProperty("condition", "minecraft:survives_explosion");
-        conditions.add(survives);
+        survives.addProperty("type", "minecraft:survives_explosion");
+        terms.add(survives);
         if (chancePercent > 0) {
             final JsonObject chance = new JsonObject();
-            chance.addProperty("condition", "minecraft:random_chance");
+            chance.addProperty("type", "minecraft:random_chance");
             chance.addProperty("chance", chancePercent / 100.0);
-            conditions.add(chance);
+            terms.add(chance);
+        }
+        if (also != null) {
+            terms.add(also);
         }
         final JsonObject pool = new JsonObject();
         pool.addProperty("rolls", 1);
         pool.add("entries", entries);
-        pool.add("conditions", conditions);
+        if (terms.size() == 1) {
+            pool.add("condition", terms.get(0));
+        } else {
+            final JsonObject all = new JsonObject();
+            all.addProperty("type", "minecraft:all_of");
+            all.add("terms", terms);
+            pool.add("condition", all);
+        }
         return pool;
+    }
+
+    /**
+     * 26.3's block state condition: the block broken is this one, with the property at the value.
+     */
+    private static JsonObject matchBlock(final String block, final String property, final String value) {
+        final JsonObject state = new JsonObject();
+        state.addProperty(property, value);
+        final JsonObject match = new JsonObject();
+        match.addProperty("type", "minecraft:match_block");
+        match.addProperty("blocks", block);
+        match.add("state", state);
+        return match;
     }
 
     /**

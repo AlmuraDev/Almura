@@ -10,6 +10,7 @@ package com.almuradev.almura.content.def;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * What the content files describe, read from their 1.12 JSON (see {@link ContentParser}), before anything is registered. Ids are
@@ -108,5 +109,63 @@ public final class ContentDefs {
      * A drop: the item and how many (between min and max), and a chance (percent) of some more.
      */
     public record DropDef(String item, int amountMin, int amountMax, int bonusAmount, int bonusChance) {
+    }
+
+    /**
+     * A range of numbers (1.12's {@code {"min": 5, "max": 10}}); a value is drawn evenly from all of it, as 3.5's {@code DoubleRanges.random}
+     * did.
+     */
+    public record Range(double min, double max) {
+
+        public boolean contains(final double value) {
+            return value >= this.min && value <= this.max;
+        }
+
+        public double random(final double unit) {
+            return this.min + unit * (this.max - this.min);
+        }
+    }
+
+    /**
+     * A crop ({@code content/block/crop}): its seed, the soil its seed plants it on, and its stages ({@code age=0} up).
+     *
+     * @param soil the block its seed plants it on ({@code minecraft:farmland})
+     * @param sackResetAge the age a ripe crop is set back to when picked with a harvesting sack, -1 when it can't be
+     * @param aquatic {@code surface} or {@code submerged} for a crop grown in water, else null
+     */
+    public record CropDef(String id, String seed, String soil, List<CropStageDef> stages, int sackResetAge, @Nullable String aquatic) {
+
+        public int maxAge() {
+            return this.stages.size() - 1;
+        }
+    }
+
+    /**
+     * One stage of a crop, with what it inherits from the stages it names as {@code parent} filled in.
+     *
+     * @param growthChance the percent chance of growing on a random tick
+     * @param light the light it grows in
+     * @param temperature the biome temperature it grows in
+     * @param bonemealChance the percent chance bone meal grows it (1.12's {@code fertilizer} of {@code minecraft:dye} 15)
+     * @param canRollback whether it goes back a stage (and dies at the first) when it can't grow
+     */
+    public record CropStageDef(int age, StateDef state, @Nullable Range growthChance, @Nullable Range light, @Nullable Range temperature,
+        @Nullable HydrationDef hydration, @Nullable Range bonemealChance, boolean canRollback) {
+    }
+
+    /**
+     * What keeps a crop's soil watered: one of the blocks, with property values in their ranges, within the radius of the soil (on its
+     * level). A property the block hasn't is ignored, as 3.5 ignored it (the content's farmland {@code level}).
+     */
+    public record HydrationDef(List<HydrationBlockDef> blocks, int radius) {
+    }
+
+    public record HydrationBlockDef(String block, Map<String, Range> properties) {
+    }
+
+    /**
+     * A seed ({@code content/item/seed}): the crop it plants, on what, and its chance (percent) and amount of dropping from grass.
+     */
+    public record SeedDef(String id, String crop, String soil, @Nullable Range grassChance, int grassAmountMin, int grassAmountMax) {
     }
 }

@@ -10,6 +10,8 @@ package com.almuradev.almura.content.registry;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.content.convert.ContentPackBuilder;
 import com.almuradev.almura.content.def.ContentDefs.BlockDef;
+import com.almuradev.almura.content.def.ContentDefs.CropDef;
+import com.almuradev.almura.content.def.ContentDefs.SeedDef;
 import com.almuradev.almura.content.def.ContentDefs.EffectDef;
 import com.almuradev.almura.content.def.ContentDefs.FoodDef;
 import com.almuradev.almura.content.def.ContentDefs.ItemDef;
@@ -57,14 +59,23 @@ public final class ContentRegistration {
     private final List<ItemGroupDef> groups;
     private final List<ItemDef> items;
     private final List<BlockDef> blocks;
+    private final Map<String, CropDef> crops = new HashMap<>();
+    private final Map<String, SeedDef> seeds = new HashMap<>();
     // Each tab's items in the content's order, to fill it with
     private final Map<String, List<Item>> tabItems = new LinkedHashMap<>();
     private final Map<String, Block> registeredBlocks = new HashMap<>();
 
     public ContentRegistration(final List<ItemGroupDef> groups, final List<ItemDef> items, final List<BlockDef> blocks) {
+        this(groups, items, blocks, List.of(), List.of());
+    }
+
+    public ContentRegistration(final List<ItemGroupDef> groups, final List<ItemDef> items, final List<BlockDef> blocks, final List<CropDef> crops,
+        final List<SeedDef> seeds) {
         this.groups = groups;
         this.items = items;
         this.blocks = blocks;
+        crops.forEach(crop -> this.crops.put(crop.id(), crop));
+        seeds.forEach(seed -> this.seeds.put(seed.id(), seed));
     }
 
     @SubscribeEvent
@@ -79,7 +90,12 @@ public final class ContentRegistration {
                 if (def.isDoubleSlab()) {
                     continue;
                 }
-                final Block block = ContentBlocks.create(def, this.stairBase(def));
+                final CropDef crop = def.kind().equals("crop") ? this.crops.get(def.id()) : null;
+                if (def.kind().equals("crop") && crop == null) {
+                    Almura.LOGGER.warn("Content crop {} has no stages (age=0, age=1...); left out", def.id());
+                    continue;
+                }
+                final Block block = crop != null ? ContentBlocks.createCrop(def, crop) : ContentBlocks.create(def, this.stairBase(def));
                 helper.register(Identifier.parse(def.id()), block);
                 this.registeredBlocks.put(def.id(), block);
             }
@@ -90,6 +106,14 @@ public final class ContentRegistration {
                     // A slab's item is its block's
                     continue;
                 }
+                if (def.kind().equals("seed")) {
+                    final Item seed = this.seed(def);
+                    if (seed != null) {
+                        helper.register(Identifier.parse(def.id()), seed);
+                        this.addToTab(def.group(), seed);
+                    }
+                    continue;
+                }
                 final Item item = this.item(def);
                 if (item != null) {
                     helper.register(Identifier.parse(def.id()), item);
@@ -98,7 +122,8 @@ public final class ContentRegistration {
             }
             for (final BlockDef def : this.blocks) {
                 final Block block = this.registeredBlocks.get(def.id());
-                if (block == null) {
+                // A crop's item is its seed
+                if (block == null || def.kind().equals("crop")) {
                     continue;
                 }
                 final Item item = new BlockItem(block, new Item.Properties()
@@ -170,6 +195,26 @@ public final class ContentRegistration {
         this.items.stream().filter(def -> containers.contains(def.id())).forEach(ordered::add);
         this.items.stream().filter(def -> !containers.contains(def.id())).forEach(ordered::add);
         return ordered;
+    }
+
+    /**
+     * A seed: it plants its crop on the crop's soil, and drops from grass ({@link GrassSeeds}).
+     */
+    private @org.jspecify.annotations.Nullable Item seed(final ItemDef def) {
+        final SeedDef seed = this.seeds.get(def.id());
+        final Block crop = seed == null ? null : this.registeredBlocks.get(seed.crop());
+        if (crop == null) {
+            Almura.LOGGER.warn("Content seed {} plants {}, which doesn't exist; left out", def.id(), seed == null ? "nothing" : seed.crop());
+            return null;
+        }
+        final Item.Properties properties = new Item.Properties().setId(ResourceKey.create(Registries.ITEM, Identifier.parse(def.id())))
+            .useItemDescriptionPrefix();
+        if (def.maxStackSize() > 0) {
+            properties.stacksTo(Math.min(99, def.maxStackSize()));
+        }
+        final Item item = new ContentSeed(crop, properties);
+        GrassSeeds.add(item, seed);
+        return item;
     }
 
     private Item item(final ItemDef def) {

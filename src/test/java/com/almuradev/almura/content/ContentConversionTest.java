@@ -14,6 +14,8 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import com.almuradev.almura.content.convert.ContentPack;
 import com.almuradev.almura.content.convert.ContentPackBuilder;
 import com.almuradev.almura.content.def.ContentDefs.BlockDef;
+import com.almuradev.almura.content.def.ContentDefs.CropDef;
+import com.almuradev.almura.content.def.ContentDefs.SeedDef;
 import com.almuradev.almura.content.def.ContentDefs.ItemDef;
 import com.almuradev.almura.content.def.ContentDefs.ItemGroupDef;
 import com.almuradev.almura.content.def.ContentParser;
@@ -53,6 +55,8 @@ final class ContentConversionTest {
     private static List<ItemGroupDef> groups;
     private static List<ItemDef> items;
     private static List<BlockDef> blocks;
+    private static List<SeedDef> seeds;
+    private static List<CropDef> crops;
     private static ContentPack pack;
     private static ContentPackBuilder builder;
     private static Set<String> vanillaItems, vanillaTextures, vanillaModels;
@@ -66,11 +70,13 @@ final class ContentConversionTest {
         groups = parser.itemGroups();
         items = parser.items(ITEM_KINDS);
         blocks = parser.blocks(BLOCK_KINDS);
+        seeds = parser.seeds();
+        crops = parser.crops(seeds);
         readVanilla();
         final Set<String> known = new HashSet<>(vanillaItems);
         items.forEach(item -> known.add(item.id()));
         blocks.forEach(block -> known.add(block.id()));
-        builder = new ContentPackBuilder(source);
+        builder = new ContentPackBuilder(source).crops(crops);
         pack = builder.build(groups, items, blocks, known::contains);
     }
 
@@ -108,8 +114,45 @@ final class ContentConversionTest {
     void readsEverything() {
         assertEquals(List.of(), source.problems(), "Content files that couldn't be read");
         assertEquals(23, groups.size(), "item groups");
-        assertEquals(186 + 413 + 110 + 5 + 5, items.size(), "normal, food, slab, hoe and sickle items");
-        assertEquals(3 + 764 + 22 + 99 + 128 + 220, blocks.size(), "normal, horizontal, log, flower, stair and slab blocks (single and double)");
+        assertEquals(186 + 413 + 110 + 5 + 5 + 85, items.size(), "normal, food, slab, hoe, sickle and seed items");
+        assertEquals(3 + 764 + 22 + 99 + 128 + 220 + 85, blocks.size(),
+            "normal, horizontal, log, flower, stair, slab (single and double) and crop blocks");
+        assertEquals(85, seeds.size(), "seeds");
+        assertEquals(85, crops.size(), "crops");
+    }
+
+    @Test
+    void everyCropHasItsStagesSeedAndLoot() {
+        final List<String> wrong = new ArrayList<>();
+        final Set<String> seedIds = new HashSet<>();
+        seeds.forEach(seed -> seedIds.add(seed.id()));
+        for (final CropDef crop : crops) {
+            if (!seedIds.contains(crop.seed())) {
+                wrong.add(crop.id() + ": seed " + crop.seed() + " isn't a seed");
+            }
+            final JsonElement blockstate = pack.json("assets/" + ns(crop.id()) + "/blockstates/" + p(crop.id()) + ".json");
+            for (int age = 0; age <= crop.maxAge(); age++) {
+                if (!(blockstate instanceof final JsonObject object) || !object.getAsJsonObject("variants").has("age=" + age)) {
+                    wrong.add(crop.id() + ": no model for age " + age);
+                }
+                if (crop.stages().get(age).growthChance() == null && age < crop.maxAge()) {
+                    wrong.add(crop.id() + ": doesn't grow at age " + age);
+                }
+            }
+            if (!pack.has("data/" + ns(crop.id()) + "/loot_table/blocks/" + p(crop.id()) + ".json")) {
+                wrong.add(crop.id() + ": no loot table");
+            }
+            if (crop.stages().getLast().state().drops().isEmpty()) {
+                wrong.add(crop.id() + ": drops nothing when ripe");
+            }
+        }
+        for (final SeedDef seed : seeds) {
+            if (crops.stream().noneMatch(crop -> crop.id().equals(seed.crop()))) {
+                wrong.add(seed.id() + ": plants " + seed.crop() + ", which isn't a crop");
+            }
+        }
+        report("crops and seeds not right", wrong);
+        assertEquals(List.of(), wrong);
     }
 
     @Test
@@ -123,7 +166,8 @@ final class ContentConversionTest {
             if (!pack.has("assets/" + ns(block.id()) + "/blockstates/" + p(block.id()) + ".json")) {
                 missing.add("blockstate " + block.id());
             }
-            if (!pack.has("assets/" + ns(block.id()) + "/items/" + p(block.id()) + ".json")) {
+            // A crop's item is its seed
+            if (!block.kind().equals("crop") && !pack.has("assets/" + ns(block.id()) + "/items/" + p(block.id()) + ".json")) {
                 missing.add("item model " + path);
             }
         }
@@ -304,7 +348,7 @@ final class ContentConversionTest {
         for (final String prefix : List.of("assets/almura/blockstates/horizontal/building/afledos_plank", "assets/almura/blockstates/container",
             "assets/almura/models/obj/block/", "assets/almura/items/food/food/pizza_deluxe", "assets/almura/items/horizontal/building/afledos_plank",
             "data/almura/recipe/normal/ingredient/barbecuesauce", "data/almura/recipe/horizontal/building/bricks_block_b_supersmooth",
-            "data/almura/loot_table/blocks/horizontal/ore/marbleore", "data/minecraft/tags/block/mineable/pickaxe",
+            "data/almura/loot_table/blocks/horizontal/ore/marbleore", "data/almura/loot_table/blocks/crop/blackberry", "data/minecraft/tags/block/mineable/pickaxe",
             "data/minecraft/tags/block/needs_stone_tool")) {
             pack.paths().stream().filter(path -> path.startsWith(prefix) && path.endsWith(".json")).findFirst().ifPresent(path -> {
                 try (var in = pack.open(path)) {
