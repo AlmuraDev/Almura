@@ -67,7 +67,8 @@ Translations are keyed by the file's name in its folder (`aniseseed.name`, `anis
 | `block/container` | 69 | later: needs the container feature |
 | `block/crop`, `item/seed` | 85 + 85 | done: 3.5's growth (chance, light, temperature, heat lamp, hydration, rollback, even fields), bone meal at the content's chance, drops by stage, seeds from grass, 3.5's farmland; aquatic crops and harvesting sacks later |
 | `block/leaf`, `block/sapling`, `tree` | 42 + 25 + 25 | done: leaves decay away from logs (vanilla's distance, 6 blocks; 1.12's was 4) with their decay drops at the biome's chance, fruit spreads into the air beside them, shears and silk touch take the leaf; saplings grow 3.5's trees (normal, big, palm) with fruit leaves at the tree's chance; ranges chosen by biome as 3.5 chose them |
-| `generation`, `grass`, `material`, `block_sound_group` | 27 + 1 + 1 + 1 | later: world generation is datapack based in 26.3 |
+| `generation`, `grass` | 27 + 1 | done: trees, the grass mix (wild flowers and crops) and ores in the overworld, holding vanilla's trees, grass and flowers back where they go, as 3.5 did |
+| `material`, `block_sound_group` | 1 + 1 | later: blocks map 1.12's names to 26.3's materials and sounds; the content's own definitions aren't read |
 | `flicker`, `drip` (block state options), blockstate `transform`s | 13 + 5 + 121 | later: client effects and item display |
 
 `ContentConversionTest` reads the copied content and checks the pack; `ContentRegistrationTest` and `ContentDataTest` start the game's
@@ -98,3 +99,12 @@ mod loading (no window, no server) and check the registries and that 26.3 reads 
 - `flammability` and `fire_spread_speed` (25 leaves set them, at vanilla's 30 and 60) aren't read yet, so content blocks don't catch
   fire from a neighbouring fire.
 - Leaf decay reaches 6 blocks from a log (26.3's leaves), not 1.12's 4; the content's trees are well inside either.
+- World generation (`generation/feature/tree`, `generation/feature/grass`, `grass`, `generation/underground/ore`): done as 3.5 did it on
+  1.12's decoration events. Once a chunk, the first tree generation whose biome chance passes grows its tree and vanilla grows no trees
+  there; twice a chunk (flowers, then grass) the grass mix may be scattered and vanilla then places no flowers (or grass) there; ores
+  are vanilla ore features (marble and salt: 5 veins of 10 a chunk, height 0 to 63, in stone). Overworld biomes only. 1.12's biome
+  names are mapped to 26.3's (`swampland` is `swamp`, `roofed_forest` is `dark_forest`, the hills and "mutated" biomes are what they
+  became). The `terraincontrol` entries match nothing until there is a TerrainControl.
+- Wild crops: the grass mix holds ripe crops. On 1.12 a crop could only stand on farmland, so 3.5 most likely never placed them; 4.0
+  lets a ripe crop stand on grass, so they appear in the wild. Seeds still plant only on their soil.
+- Double grass and double flowers in the grass mix are placed whole (both halves); 1.12 placed only the lower half, which fell.

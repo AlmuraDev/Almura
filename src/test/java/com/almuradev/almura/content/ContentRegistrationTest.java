@@ -64,6 +64,13 @@ final class ContentRegistrationTest {
         assertTrue(com.almuradev.almura.mixin.BiomeAccessor.class.isAssignableFrom(net.minecraft.world.level.biome.Biome.class), "biome accessor");
         assertTrue(java.util.Arrays.stream(net.minecraft.world.level.block.FarmlandBlock.class.getDeclaredMethods())
             .anyMatch(method -> method.getName().contains("irrigationNear")), "farmland mixin");
+        for (final Class<?> held : new Class<?>[] {net.minecraft.world.level.levelgen.feature.TreeFeature.class,
+            net.minecraft.world.level.levelgen.feature.SimpleBlockFeature.class}) {
+            assertTrue(java.util.Arrays.stream(held.getDeclaredMethods()).anyMatch(method -> method.getName().contains("heldBack")),
+                held.getSimpleName() + " held back where Almura generated");
+        }
+        assertTrue(BuiltInRegistries.FEATURE_TYPE.containsKey(Identifier.fromNamespaceAndPath("almura", "content_trees")), "tree generation");
+        assertTrue(BuiltInRegistries.FEATURE_TYPE.containsKey(Identifier.fromNamespaceAndPath("almura", "content_grass")), "grass generation");
         assertTrue(BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:slab/afledos_slab")) instanceof net.minecraft.world.level.block.SlabBlock,
             "slabs are slabs");
         assertTrue(BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:stair/afledos_stair")) instanceof net.minecraft.world.level.block.StairBlock,

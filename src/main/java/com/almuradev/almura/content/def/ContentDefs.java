@@ -233,4 +233,43 @@ public final class ContentDefs {
 
     public record TreeHeightDef(List<String> biomes, int min, int varianceMin, int varianceMax) {
     }
+
+    /**
+     * A block state as the content names it: the block (26.3's id) and some of its properties.
+     */
+    public record StateRef(String block, Map<String, String> properties) {
+    }
+
+    /**
+     * Trees in world generation ({@code content/generation/feature/tree}): the tree, its chance (percent) for the biome, once a chunk, and
+     * the blocks it must stand on (empty for a sapling's soil).
+     */
+    public record TreeGenDef(String id, String tree, List<BiomeRange> chance, List<String> requires) {
+    }
+
+    /**
+     * A grass mix ({@code content/grass}): weighted entries, each one or more block states picked from evenly.
+     */
+    public record GrassDef(String id, List<GrassEntryDef> entries) {
+    }
+
+    public record GrassEntryDef(int weight, List<StateRef> blocks) {
+    }
+
+    /**
+     * A grass mix in world generation ({@code content/generation/feature/grass}): its chance (percent) for the biome, and the blocks it
+     * must stand on.
+     */
+    public record GrassGenDef(String id, String grass, List<BiomeRange> chance, List<String> requires) {
+    }
+
+    /**
+     * Ores in world generation ({@code content/generation/underground/ore/<dimension>.json}): veins of a size, so many a chunk, below
+     * height 64.
+     */
+    public record OreGenDef(String dimension, List<OreDef> ores) {
+    }
+
+    public record OreDef(String block, int size, int count) {
+    }
 }

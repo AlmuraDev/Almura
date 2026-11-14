@@ -40,7 +40,8 @@ final class ContentDataTest {
         assumeTrue(root != null && Files.isDirectory(Path.of(root)), "The content isn't in the dev run");
         final ContentSource source = ContentSource.at(Path.of(root));
         final ContentParser parser = new ContentParser(source);
-        final ContentPack pack = new ContentPackBuilder(source).crops(parser.crops(parser.seeds())).buildData(parser.blocks(AlmuraContent.BLOCK_KINDS),
+        final ContentPack pack = new ContentPackBuilder(source).crops(parser.crops(parser.seeds()))
+            .generation(parser.treeGeneration(), parser.grassGeneration(), parser.oreGeneration()).buildData(parser.blocks(AlmuraContent.BLOCK_KINDS),
             id -> BuiltInRegistries.ITEM.containsKey(Identifier.parse(id)));
         final RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY));
         final List<String> failures = new ArrayList<>();
@@ -56,6 +57,24 @@ final class ContentDataTest {
                     }
                 }).ifSuccess(recipe -> Recipe.DIRECT_CODEC.encodeStart(ops, recipe)
                     .ifSuccess(written -> lost(json, written, path, failures)));
+            } else if (path.contains("/worldgen/feature/")) {
+                tables++;
+                net.minecraft.world.level.levelgen.feature.Feature.DIRECT_CODEC.parse(ops, json).ifError(error -> failures.add(path + ": " + error.message()))
+                    .ifSuccess(read -> net.minecraft.world.level.levelgen.feature.Feature.DIRECT_CODEC.encodeStart(ops, read)
+                        .ifSuccess(written -> lost(json, written, path, failures)));
+            } else if (path.contains("/worldgen/placed_feature/")) {
+                // The feature it names is world data; its placement is checked
+                final JsonElement placement = json.getAsJsonObject().get("placement");
+                net.minecraft.world.level.levelgen.placement.PlacementModifier.CODEC.listOf().parse(ops, placement)
+                    .ifError(error -> failures.add(path + ": " + error.message()))
+                    .ifSuccess(read -> net.minecraft.world.level.levelgen.placement.PlacementModifier.CODEC.listOf().encodeStart(ops, read)
+                        .ifSuccess(written -> lost(placement, written, path, failures)));
+            } else if (path.contains("/neoforge/biome_modifier/")) {
+                final String step = json.getAsJsonObject().get("step").getAsString();
+                if (java.util.Arrays.stream(net.minecraft.world.level.levelgen.GenerationStep.Decoration.values())
+                    .noneMatch(decoration -> decoration.getSerializedName().equals(step))) {
+                    failures.add(path + ": no step " + step);
+                }
             } else if (path.contains("/loot_table/")) {
                 tables++;
                 LootTable.DIRECT_CODEC.parse(ops, json).ifError(error -> failures.add(path + ": " + error.message()))

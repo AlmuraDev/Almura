@@ -62,7 +62,7 @@ final class ContentConversionTest {
     private static List<CropDef> crops;
     private static ContentPack pack;
     private static ContentPackBuilder builder;
-    private static Set<String> vanillaItems, vanillaTextures, vanillaModels;
+    private static Set<String> vanillaItems, vanillaTextures, vanillaModels, vanillaBlocks, vanillaBiomes;
 
     @BeforeAll
     static void build() throws IOException {
@@ -79,7 +79,8 @@ final class ContentConversionTest {
         final Set<String> known = new HashSet<>(vanillaItems);
         items.forEach(item -> known.add(item.id()));
         blocks.forEach(block -> known.add(block.id()));
-        builder = new ContentPackBuilder(source).crops(crops);
+        builder = new ContentPackBuilder(source).crops(crops)
+            .generation(parser.treeGeneration(), parser.grassGeneration(), parser.oreGeneration());
         pack = builder.build(groups, items, blocks, known::contains);
     }
 
@@ -90,6 +91,8 @@ final class ContentConversionTest {
         vanillaItems = new HashSet<>();
         vanillaTextures = new HashSet<>();
         vanillaModels = new HashSet<>();
+        vanillaBlocks = new HashSet<>();
+        vanillaBiomes = new HashSet<>();
         final Path artifacts = Path.of(System.getProperty("almura.test.artifacts", "build/moddev/artifacts"));
         assumeTrue(Files.isDirectory(artifacts), "The game jar isn't built");
         try (Stream<Path> files = Files.list(artifacts)) {
@@ -97,6 +100,11 @@ final class ContentConversionTest {
             assumeTrue(jar != null, "The game jar isn't built");
             try (ZipFile zip = new ZipFile(jar.toFile())) {
                 zip.stream().map(ZipEntry::getName).forEach(name -> {
+                    if (name.startsWith("assets/minecraft/blockstates/") && name.endsWith(".json")) {
+                        vanillaBlocks.add("minecraft:" + strip(name, "assets/minecraft/blockstates/", ".json"));
+                    } else if (name.startsWith("data/minecraft/worldgen/biome/") && name.endsWith(".json")) {
+                        vanillaBiomes.add("minecraft:" + strip(name, "data/minecraft/worldgen/biome/", ".json"));
+                    }
                     if (name.startsWith("assets/minecraft/items/") && name.endsWith(".json")) {
                         vanillaItems.add("minecraft:" + strip(name, "assets/minecraft/items/", ".json"));
                     } else if (name.startsWith("assets/minecraft/textures/") && name.endsWith(".png")) {
@@ -122,6 +130,39 @@ final class ContentConversionTest {
             "normal, horizontal, log, flower, stair, slab (single and double), crop, leaf and sapling blocks");
         assertEquals(85, seeds.size(), "seeds");
         assertEquals(85, crops.size(), "crops");
+    }
+
+    @Test
+    void worldGenerationIsWhole() {
+        final ContentParser parser = new ContentParser(source);
+        final var trees = parser.treeGeneration();
+        final var grasses = parser.grassGeneration();
+        final var mixes = parser.grasses();
+        final var ores = parser.oreGeneration();
+        assertEquals(25, trees.size(), "tree generation");
+        assertEquals(1, grasses.size(), "grass generation");
+        assertEquals(1, ores.size(), "ore generation");
+        final Set<String> blockIds = new HashSet<>(vanillaBlocks);
+        blocks.forEach(block -> blockIds.add(block.id()));
+        final Set<String> treeIds = new HashSet<>();
+        parser.trees().forEach(tree -> treeIds.add(tree.id()));
+        final List<String> wrong = new ArrayList<>();
+        trees.forEach(tree -> {
+            if (!treeIds.contains(tree.tree())) {
+                wrong.add(tree.id() + ": grows " + tree.tree() + ", which isn't a tree");
+            }
+            tree.chance().forEach(range -> range.biomes().stream().filter(biome -> biome.contains(":") && !vanillaBiomes.contains(biome))
+                .forEach(biome -> wrong.add(tree.id() + ": biome " + biome + " isn't 26.3's")));
+            tree.requires().stream().filter(block -> !blockIds.contains(block)).forEach(block -> wrong.add(tree.id() + ": requires " + block));
+        });
+        mixes.forEach(mix -> mix.entries().forEach(entry -> entry.blocks().stream().filter(state -> !blockIds.contains(state.block()))
+            .forEach(state -> wrong.add(mix.id() + ": " + state.block() + " isn't a block"))));
+        ores.forEach(ore -> ore.ores().stream().filter(entry -> !blockIds.contains(entry.block()))
+            .forEach(entry -> wrong.add("ore " + entry.block() + " isn't a block")));
+        report("world generation not whole", wrong);
+        assertEquals(List.of(), wrong);
+        assertTrue(pack.has("data/almura/neoforge/biome_modifier/content_vegetation.json"), "trees and grass in the overworld");
+        assertTrue(pack.has("data/almura/neoforge/biome_modifier/content_ores.json"), "ores in the overworld");
     }
 
     @Test

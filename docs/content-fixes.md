@@ -129,3 +129,9 @@ loader leaves these out; rename or delete them in the content:
 
 - `almura:leaf/kiwi_tree_fruit_leaf`: `block/leaf/_translations/en_us.json` has no `kiwi_tree_fruit_leaf.name` (the other fruit leaves
   have theirs).
+
+## Wild crop ages in the grass mix
+
+`grass/generic_grass.json` names each wild crop at an age meant to be ripe; these aren't (4.0 places every wild crop ripe regardless):
+blueberry 4 (ripe 5), coffee_bean 4 (5), concord_grape 3 (4), corn 4 (5), peanut 4 (ripe 3, no age 4), popcorn 4 (5), soybean 4 (5),
+thyme 4 (5), white_grape 3 (4).

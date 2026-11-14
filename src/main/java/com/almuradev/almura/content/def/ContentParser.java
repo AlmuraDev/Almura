@@ -10,6 +10,13 @@ package com.almuradev.almura.content.def;
 import com.almuradev.almura.content.def.ContentDefs.BiomeRange;
 import com.almuradev.almura.content.def.ContentDefs.BlockDef;
 import com.almuradev.almura.content.def.ContentDefs.DecayDef;
+import com.almuradev.almura.content.def.ContentDefs.GrassDef;
+import com.almuradev.almura.content.def.ContentDefs.GrassEntryDef;
+import com.almuradev.almura.content.def.ContentDefs.GrassGenDef;
+import com.almuradev.almura.content.def.ContentDefs.OreDef;
+import com.almuradev.almura.content.def.ContentDefs.OreGenDef;
+import com.almuradev.almura.content.def.ContentDefs.StateRef;
+import com.almuradev.almura.content.def.ContentDefs.TreeGenDef;
 import com.almuradev.almura.content.def.ContentDefs.LeafDef;
 import com.almuradev.almura.content.def.ContentDefs.SaplingDef;
 import com.almuradev.almura.content.def.ContentDefs.TreeDef;
@@ -210,6 +217,176 @@ public final class ContentParser {
                 fruit == null ? List.of() : biomeRanges(fruit.get("chance")), shape));
         }
         return trees;
+    }
+
+    /**
+     * The trees in world generation ({@code content/generation/feature/tree}), in the content's order.
+     */
+    public List<TreeGenDef> treeGeneration() {
+        final List<TreeGenDef> trees = new ArrayList<>();
+        for (final ContentFile file : this.source.files("generation")) {
+            if (!file.path().startsWith("feature/tree/")) {
+                continue;
+            }
+            final String tree = string(file.json(), "tree");
+            if (tree == null) {
+                this.source.problem(file.file(), "Tree generation names no tree");
+                continue;
+            }
+            trees.add(new TreeGenDef(file.id(), tree, legacyBiomes(biomeRanges(file.json().get("chance"))), legacyBlocks(strings(file.json().get("requires")))));
+        }
+        return trees;
+    }
+
+    /**
+     * The grass mixes in world generation ({@code content/generation/feature/grass}).
+     */
+    public List<GrassGenDef> grassGeneration() {
+        final List<GrassGenDef> grasses = new ArrayList<>();
+        for (final ContentFile file : this.source.files("generation")) {
+            if (!file.path().startsWith("feature/grass/")) {
+                continue;
+            }
+            final String grass = string(file.json(), "grass");
+            if (grass == null) {
+                this.source.problem(file.file(), "Grass generation names no grass");
+                continue;
+            }
+            grasses.add(new GrassGenDef(file.id(), grass, legacyBiomes(biomeRanges(file.json().get("chance"))),
+                legacyBlocks(strings(file.json().get("requires")))));
+        }
+        return grasses;
+    }
+
+    /**
+     * The grass mixes ({@code content/grass}).
+     */
+    public List<GrassDef> grasses() {
+        final List<GrassDef> grasses = new ArrayList<>();
+        for (final ContentFile file : this.source.files("grass")) {
+            final List<GrassEntryDef> entries = new ArrayList<>();
+            if (file.json().get("grasses") instanceof final JsonArray array) {
+                for (final JsonElement element : array) {
+                    if (!(element instanceof final JsonObject entry)) {
+                        continue;
+                    }
+                    final List<StateRef> blocks = new ArrayList<>();
+                    final JsonElement block = entry.get("block");
+                    for (final JsonElement one : block instanceof final JsonArray list ? list : block == null ? new JsonArray() : asArray(block)) {
+                        final StateRef state = stateRef(one);
+                        if (state != null) {
+                            blocks.add(state);
+                        }
+                    }
+                    if (!blocks.isEmpty()) {
+                        entries.add(new GrassEntryDef(integer(entry, "weight", 1), blocks));
+                    }
+                }
+            }
+            grasses.add(new GrassDef(file.id(), entries));
+        }
+        return grasses;
+    }
+
+    /**
+     * The ores in world generation ({@code content/generation/underground/ore/<dimension>.json}).
+     */
+    public List<OreGenDef> oreGeneration() {
+        final List<OreGenDef> ores = new ArrayList<>();
+        for (final ContentFile file : this.source.files("generation")) {
+            if (!file.path().startsWith("underground/ore/")) {
+                continue;
+            }
+            final List<OreDef> entries = new ArrayList<>();
+            if (file.json().get("entries") instanceof final JsonArray array) {
+                for (final JsonElement element : array) {
+                    if (element instanceof final JsonObject entry && string(entry, "block") != null) {
+                        entries.add(new OreDef(string(entry, "block"), integer(entry, "size", 8), integer(entry, "count", 1)));
+                    }
+                }
+            }
+            ores.add(new OreGenDef(file.path().substring("underground/ore/".length()), entries));
+        }
+        return ores;
+    }
+
+    /**
+     * A block state: {@code "almura:flower/amaryllis"} or {@code {"id": "minecraft:tallgrass", "state": {"type": "tall_grass"}}}, in 26.3's
+     * names (1.12's tall grass is 26.3's short grass, its double grass 26.3's tall grass).
+     */
+    static @Nullable StateRef stateRef(final JsonElement element) {
+        if (element.isJsonPrimitive()) {
+            return new StateRef(element.getAsString(), Map.of());
+        }
+        if (!(element instanceof final JsonObject object) || string(object, "id") == null) {
+            return null;
+        }
+        final Map<String, String> properties = new LinkedHashMap<>();
+        final JsonObject state = object(object, "state");
+        if (state != null) {
+            state.entrySet().forEach(entry -> properties.put(entry.getKey(), entry.getValue().getAsString()));
+        }
+        final String id = string(object, "id");
+        if (id.equals("minecraft:tallgrass")) {
+            return new StateRef("fern".equals(properties.get("type")) ? "minecraft:fern" : "minecraft:short_grass", Map.of());
+        }
+        if (id.equals("minecraft:double_plant")) {
+            final String variant = properties.getOrDefault("variant", "double_grass");
+            return new StateRef(switch (variant) {
+                case "double_fern" -> "minecraft:large_fern";
+                case "sunflower" -> "minecraft:sunflower";
+                case "syringa" -> "minecraft:lilac";
+                case "double_rose" -> "minecraft:rose_bush";
+                case "paeonia" -> "minecraft:peony";
+                default -> "minecraft:tall_grass";
+            }, Map.of());
+        }
+        return new StateRef(id, properties);
+    }
+
+    private static List<BiomeRange> legacyBiomes(final List<BiomeRange> ranges) {
+        final List<BiomeRange> mapped = new ArrayList<>();
+        for (final BiomeRange range : ranges) {
+            final Set<String> biomes = new java.util.LinkedHashSet<>();
+            range.biomes().forEach(biome -> biomes.add(legacyBiome(biome)));
+            mapped.add(new BiomeRange(List.copyOf(biomes), range.range()));
+        }
+        return mapped;
+    }
+
+    /**
+     * 1.12's biome ids as 26.3's: renamed ones renamed, ones folded into others (the hills, the "mutated" variants) as what they became.
+     */
+    static String legacyBiome(final String biome) {
+        return switch (biome) {
+            case "minecraft:swampland" -> "minecraft:swamp";
+            case "minecraft:roofed_forest" -> "minecraft:dark_forest";
+            case "minecraft:beaches" -> "minecraft:beach";
+            case "minecraft:mesa" -> "minecraft:badlands";
+            case "minecraft:mesa_rock" -> "minecraft:wooded_badlands";
+            case "minecraft:savanna_rock" -> "minecraft:savanna_plateau";
+            case "minecraft:jungle_edge", "minecraft:mutated_jungle_edge" -> "minecraft:sparse_jungle";
+            case "minecraft:forest_hills" -> "minecraft:forest";
+            case "minecraft:jungle_hills", "minecraft:mutated_jungle" -> "minecraft:jungle";
+            case "minecraft:birch_forest_hills" -> "minecraft:birch_forest";
+            case "minecraft:taiga_hills" -> "minecraft:taiga";
+            case "minecraft:desert_hills" -> "minecraft:desert";
+            case "minecraft:extreme_hills" -> "minecraft:windswept_hills";
+            case "minecraft:ice_flats" -> "minecraft:snowy_plains";
+            case "minecraft:mushroom_island", "minecraft:mushroom_island_shore" -> "minecraft:mushroom_fields";
+            case "minecraft:stone_beach" -> "minecraft:stony_shore";
+            case "minecraft:cold_beach" -> "minecraft:snowy_beach";
+            case "minecraft:mutated_forest" -> "minecraft:flower_forest";
+            case "minecraft:mutated_plains" -> "minecraft:sunflower_plains";
+            default -> biome;
+        };
+    }
+
+    private static List<String> legacyBlocks(final List<String> blocks) {
+        return blocks.stream().map(block -> switch (block) {
+            case "minecraft:grass" -> "minecraft:grass_block";
+            default -> block;
+        }).toList();
     }
 
     private static JsonArray asArray(final JsonElement element) {

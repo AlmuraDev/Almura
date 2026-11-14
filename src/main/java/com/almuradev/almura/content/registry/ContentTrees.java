@@ -16,6 +16,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -57,7 +59,18 @@ public final class ContentTrees {
      * @return Whether it grew; when not, nothing was changed
      */
     public static boolean grow(final ServerLevel level, final BlockPos origin, final TreeDef tree, final RandomSource random) {
-        final Grower grower = new Grower(level, tree, biome(level, origin));
+        return grow(level, origin, tree, random, List.of(), Block.UPDATE_ALL);
+    }
+
+    /**
+     * Grows the tree at the position: from a sapling (every block updating its neighbours, as 1.12's saplings did) or in world generation
+     * (only telling clients, as 1.12's world generation did).
+     *
+     * @param requires the blocks the tree must stand on; empty for a sapling's soil
+     */
+    public static boolean grow(final WorldGenLevel level, final BlockPos origin, final TreeDef tree, final RandomSource random,
+        final List<String> requires, final int flags) {
+        final Grower grower = new Grower(level, tree, biome(level, origin), requires, flags);
         final boolean grew = switch (tree.shape()) {
             case "big" -> new BigTree(grower, origin, random).generate();
             case "palm" -> grower.palm(origin, random);
@@ -70,7 +83,7 @@ public final class ContentTrees {
         return grew;
     }
 
-    static String biome(final ServerLevel level, final BlockPos pos) {
+    static String biome(final LevelReader level, final BlockPos pos) {
         return level.getBiome(pos).unwrapKey().map(key -> key.identifier().toString()).orElse("minecraft:plains");
     }
 
@@ -100,15 +113,19 @@ public final class ContentTrees {
      */
     private static final class Grower {
 
-        final ServerLevel level;
+        final WorldGenLevel level;
         final TreeDef tree;
         final String biome;
+        final List<String> requires;
+        final int flags;
         final List<BlockPos> placedLeaves = new ArrayList<>();
 
-        Grower(final ServerLevel level, final TreeDef tree, final String biome) {
+        Grower(final WorldGenLevel level, final TreeDef tree, final String biome, final List<String> requires, final int flags) {
             this.level = level;
             this.tree = tree;
             this.biome = biome;
+            this.requires = requires;
+            this.flags = flags;
         }
 
         static BlockState state(final String id) {
@@ -143,7 +160,7 @@ public final class ContentTrees {
                 placed = placed.setValue(LeavesBlock.DISTANCE, 1);
                 this.placedLeaves.add(pos.immutable());
             }
-            this.level.setBlock(pos, placed, Block.UPDATE_ALL);
+            this.level.setBlock(pos, placed, this.flags);
         }
 
         /**
@@ -171,7 +188,11 @@ public final class ContentTrees {
          * A sapling's soil, and 1.12's {@code onPlantGrow}: grass or farmland under the trunk becomes dirt.
          */
         boolean soil(final BlockPos origin) {
-            return this.level.getBlockState(origin.below()).is(BlockTags.SUPPORTS_VEGETATION);
+            final BlockState soil = this.level.getBlockState(origin.below());
+            if (!this.requires.isEmpty()) {
+                return this.requires.contains(BuiltInRegistries.BLOCK.getKey(soil.getBlock()).toString());
+            }
+            return soil.is(BlockTags.SUPPORTS_VEGETATION);
         }
 
         void plantGrow(final BlockPos origin) {

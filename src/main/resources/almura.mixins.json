@@ -3,7 +3,9 @@
   "package": "com.almuradev.almura.mixin",
   "mixins": [
     "BiomeAccessor",
-    "FarmlandBlockMixin"
+    "FarmlandBlockMixin",
+    "SimpleBlockFeatureMixin",
+    "TreeFeatureMixin"
   ],
   "client": [
     "client.ConnectScreenAccessor",

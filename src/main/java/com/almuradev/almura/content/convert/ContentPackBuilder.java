@@ -10,6 +10,10 @@ package com.almuradev.almura.content.convert;
 import com.almuradev.almura.content.def.ContentDefs.BlockDef;
 import com.almuradev.almura.content.def.ContentDefs.CropDef;
 import com.almuradev.almura.content.def.ContentDefs.CropStageDef;
+import com.almuradev.almura.content.def.ContentDefs.GrassGenDef;
+import com.almuradev.almura.content.def.ContentDefs.OreDef;
+import com.almuradev.almura.content.def.ContentDefs.OreGenDef;
+import com.almuradev.almura.content.def.ContentDefs.TreeGenDef;
 import com.almuradev.almura.content.def.ContentDefs.DropDef;
 import com.almuradev.almura.content.def.ContentDefs.ItemDef;
 import com.almuradev.almura.content.def.ContentDefs.ItemGroupDef;
@@ -57,6 +61,9 @@ public final class ContentPackBuilder {
     private final List<String> problems = new ArrayList<>();
 
     private final Map<String, CropDef> crops = new LinkedHashMap<>();
+    private List<TreeGenDef> treeGeneration = List.of();
+    private List<GrassGenDef> grassGeneration = List.of();
+    private List<OreGenDef> oreGeneration = List.of();
 
     public ContentPackBuilder(final ContentSource source) {
         this.source = source;
@@ -67,6 +74,16 @@ public final class ContentPackBuilder {
      */
     public ContentPackBuilder crops(final List<CropDef> crops) {
         crops.forEach(crop -> this.crops.put(crop.id(), crop));
+        return this;
+    }
+
+    /**
+     * The world generation: its features and the biome modifier adding them to the overworld's biomes.
+     */
+    public ContentPackBuilder generation(final List<TreeGenDef> trees, final List<GrassGenDef> grasses, final List<OreGenDef> ores) {
+        this.treeGeneration = trees;
+        this.grassGeneration = grasses;
+        this.oreGeneration = ores;
         return this;
     }
 
@@ -111,6 +128,7 @@ public final class ContentPackBuilder {
         }
         this.cropTags(blocks);
         this.treeTags(blocks);
+        this.worldGeneration(knownBlock(blocks));
         this.toolTags(blocks);
         this.sickleTag(items);
         this.recipes(knownItem);
@@ -890,6 +908,115 @@ public final class ContentPackBuilder {
                 this.pack.putJson("data/minecraft/tags/item/" + tag + ".json", json.deepCopy());
             }
         });
+    }
+
+    private static Predicate<String> knownBlock(final List<BlockDef> blocks) {
+        final Set<String> ids = new TreeSet<>();
+        blocks.forEach(block -> ids.add(block.id()));
+        return ids::contains;
+    }
+
+    /**
+     * World generation: Almura's trees and grass ({@code almura:content_trees}, {@code almura:content_grass}, code features, see
+     * {@code ContentGeneration}) in the step before vanilla's vegetation, so they go first and can hold vanilla's back; the ores as
+     * vanilla ore features, each a count of veins of a size a chunk, evenly from height 0 to 63 (1.12's {@code WorldGenMinable} in
+     * stone). All for the overworld's biomes ({@code data/almura/neoforge/biome_modifier/}).
+     */
+    private void worldGeneration(final Predicate<String> knownBlock) {
+        final List<String> early = new ArrayList<>();
+        if (!this.treeGeneration.isEmpty()) {
+            early.add(this.codeFeature("content_trees"));
+        }
+        if (!this.grassGeneration.isEmpty()) {
+            early.add(this.codeFeature("content_grass"));
+        }
+        if (!early.isEmpty()) {
+            this.biomeModifier("content_vegetation", early, "fluid_springs");
+        }
+        final List<String> ores = new ArrayList<>();
+        for (final OreGenDef generation : this.oreGeneration) {
+            if (!generation.dimension().equals("overworld")) {
+                this.problems.add("ore generation for " + generation.dimension() + ": only the overworld's is placed");
+                continue;
+            }
+            for (final OreDef ore : generation.ores()) {
+                if (!knownBlock.test(ore.block())) {
+                    this.problems.add("ore generation: " + ore.block() + " isn't a block; left out");
+                    continue;
+                }
+                final String name = "ore_" + path(ore.block()).replace('/', '_');
+                final JsonObject target = new JsonObject();
+                target.addProperty("predicate_type", "minecraft:tag_match");
+                target.addProperty("tag", "minecraft:stone_ore_replaceables");
+                final JsonObject entry = new JsonObject();
+                entry.addProperty("state", ore.block());
+                entry.add("target", target);
+                final JsonArray targets = new JsonArray();
+                targets.add(entry);
+                final JsonObject feature = new JsonObject();
+                feature.addProperty("type", "minecraft:ore");
+                feature.addProperty("size", ore.size());
+                feature.addProperty("discard_chance_on_air_exposure", 0.0);
+                feature.add("targets", targets);
+                this.pack.putJson("data/almura/worldgen/feature/" + name + ".json", feature);
+                final JsonArray placement = new JsonArray();
+                final JsonObject count = new JsonObject();
+                count.addProperty("type", "minecraft:count");
+                count.addProperty("count", ore.count());
+                placement.add(count);
+                final JsonObject square = new JsonObject();
+                square.addProperty("type", "minecraft:in_square");
+                placement.add(square);
+                final JsonObject height = new JsonObject();
+                height.addProperty("type", "minecraft:height_range");
+                final JsonObject uniform = new JsonObject();
+                uniform.addProperty("type", "minecraft:uniform");
+                final JsonObject min = new JsonObject();
+                min.addProperty("absolute", 0);
+                final JsonObject max = new JsonObject();
+                max.addProperty("absolute", 63);
+                uniform.add("min_inclusive", min);
+                uniform.add("max_inclusive", max);
+                height.add("height", uniform);
+                placement.add(height);
+                final JsonObject biome = new JsonObject();
+                biome.addProperty("type", "minecraft:biome");
+                placement.add(biome);
+                final JsonObject placed = new JsonObject();
+                placed.addProperty("feature", "almura:" + name);
+                placed.add("placement", placement);
+                this.pack.putJson("data/almura/worldgen/placed_feature/" + name + ".json", placed);
+                ores.add("almura:" + name);
+            }
+        }
+        if (!ores.isEmpty()) {
+            this.biomeModifier("content_ores", ores, "underground_ores");
+        }
+    }
+
+    /**
+     * A code feature that places itself once a chunk, from the chunk's corner.
+     */
+    private String codeFeature(final String name) {
+        final JsonObject feature = new JsonObject();
+        feature.addProperty("type", "almura:" + name);
+        this.pack.putJson("data/almura/worldgen/feature/" + name + ".json", feature);
+        final JsonObject placed = new JsonObject();
+        placed.addProperty("feature", "almura:" + name);
+        placed.add("placement", new JsonArray());
+        this.pack.putJson("data/almura/worldgen/placed_feature/" + name + ".json", placed);
+        return "almura:" + name;
+    }
+
+    private void biomeModifier(final String name, final List<String> features, final String step) {
+        final JsonObject modifier = new JsonObject();
+        modifier.addProperty("type", "neoforge:add_features");
+        modifier.addProperty("biomes", "#minecraft:is_overworld");
+        final JsonArray list = new JsonArray();
+        features.forEach(list::add);
+        modifier.add("features", list);
+        modifier.addProperty("step", step);
+        this.pack.putJson("data/almura/neoforge/biome_modifier/" + name + ".json", modifier);
     }
 
     /**

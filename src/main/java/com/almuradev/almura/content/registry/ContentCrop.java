@@ -147,6 +147,18 @@ public final class ContentCrop extends CropBlock {
         return BuiltInRegistries.BLOCK.getKey(state.getBlock()).equals(this.soilId);
     }
 
+    /**
+     * A ripe crop stands on grass too: world generation scatters them in the wild (the content's grass mix). A seed still plants only on
+     * its soil.
+     */
+    @Override
+    protected boolean canSurvive(final BlockState state, final LevelReader level, final BlockPos pos) {
+        if (this.isMaxAge(state) && level.getBlockState(pos.below()).is(Blocks.GRASS_BLOCK)) {
+            return true;
+        }
+        return super.canSurvive(state, level, pos);
+    }
+
     @Override
     protected ItemLike getBaseSeedId() {
         if (this.seed == null) {

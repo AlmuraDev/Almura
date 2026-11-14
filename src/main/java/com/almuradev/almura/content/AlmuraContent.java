@@ -12,6 +12,10 @@ import com.almuradev.almura.content.convert.ContentPack;
 import com.almuradev.almura.content.convert.ContentPackBuilder;
 import com.almuradev.almura.content.def.ContentDefs.BlockDef;
 import com.almuradev.almura.content.def.ContentDefs.CropDef;
+import com.almuradev.almura.content.def.ContentDefs.GrassDef;
+import com.almuradev.almura.content.def.ContentDefs.GrassGenDef;
+import com.almuradev.almura.content.def.ContentDefs.OreGenDef;
+import com.almuradev.almura.content.def.ContentDefs.TreeGenDef;
 import com.almuradev.almura.content.def.ContentDefs.LeafDef;
 import com.almuradev.almura.content.def.ContentDefs.SaplingDef;
 import com.almuradev.almura.content.def.ContentDefs.TreeDef;
@@ -20,6 +24,7 @@ import com.almuradev.almura.content.def.ContentDefs.ItemDef;
 import com.almuradev.almura.content.def.ContentDefs.ItemGroupDef;
 import com.almuradev.almura.content.def.ContentParser;
 import com.almuradev.almura.content.pack.ContentPacks;
+import com.almuradev.almura.content.registry.ContentGeneration;
 import com.almuradev.almura.content.registry.ContentRegistration;
 import com.almuradev.almura.content.registry.GrassSeeds;
 import com.almuradev.almura.content.source.ContentSource;
@@ -68,12 +73,17 @@ public final class AlmuraContent {
         final List<LeafDef> leaves = parser.leaves();
         final List<SaplingDef> saplings = parser.saplings();
         final List<TreeDef> trees = parser.trees();
+        final List<TreeGenDef> treeGeneration = parser.treeGeneration();
+        final List<GrassGenDef> grassGeneration = parser.grassGeneration();
+        final List<GrassDef> grasses = parser.grasses();
+        final List<OreGenDef> oreGeneration = parser.oreGeneration();
         source.problems().forEach(problem -> Almura.LOGGER.warn("Content: {}", problem));
         Almura.LOGGER.info("Loaded Almura content from {}: {} creative tabs, {} items, {} blocks ({} crops, {} leaves, {} saplings), {} trees",
             root.toAbsolutePath(), groups.size(), items.size(), blocks.size(), crops.size(), leaves.size(), saplings.size(), trees.size());
 
         modBus.register(new ContentRegistration(groups, items, blocks, crops, seeds).trees(leaves, saplings, trees));
         GrassSeeds.register(modBus);
+        ContentGeneration.register(modBus, treeGeneration, grassGeneration, grasses);
         ContentPacks.register(modBus, () -> {
             final ContentPackBuilder builder = new ContentPackBuilder(source).crops(crops);
             final ContentPack pack = builder.buildAssets(groups, items, blocks);
@@ -82,7 +92,7 @@ public final class AlmuraContent {
             return pack;
         }, () -> {
             // Built once the registries are whole, so recipes naming unknown items are left out rather than failing to load
-            final ContentPackBuilder builder = new ContentPackBuilder(source).crops(crops);
+            final ContentPackBuilder builder = new ContentPackBuilder(source).crops(crops).generation(treeGeneration, grassGeneration, oreGeneration);
             final ContentPack pack = builder.buildData(blocks, items, id -> BuiltInRegistries.ITEM.containsKey(Identifier.parse(id)));
             builder.problems().forEach(problem -> Almura.LOGGER.debug("Content data: {}", problem));
             Almura.LOGGER.info("Built Almura's content data: {} files ({} problems, see the debug log)", pack.paths().size(),
