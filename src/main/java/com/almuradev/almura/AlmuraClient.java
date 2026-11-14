@@ -45,13 +45,22 @@ public final class AlmuraClient {
         AlmuraOptions.register(container);
         modBus.addListener(AlmuraClient::onClientSetup);
         modBus.addListener(AlmuraClient::onRegisterPictureInPictureRenderers);
+        // Almura's lettering, above any resource pack's
+        com.almuradev.almura.core.client.AlmuraFontPack.register(modBus);
+        // The storage barrel's label
+        modBus.addListener((final net.neoforged.neoforge.client.event.EntityRenderersEvent.RegisterRenderers event) -> {
+            if (com.almuradev.almura.content.registry.ContentContainers.blockEntityType() != null) {
+                event.registerBlockEntityRenderer(com.almuradev.almura.content.registry.ContentContainers.blockEntityType(),
+                    com.almuradev.almura.content.client.StorageBarrelRenderer::new);
+            }
+        });
         // The content's containers show a chest's screen
         modBus.addListener((final net.neoforged.neoforge.client.event.RegisterMenuScreensEvent event) -> {
             if (com.almuradev.almura.content.registry.ContentContainers.menuType() != null) {
                 event.register(com.almuradev.almura.content.registry.ContentContainers.menuType(),
                     net.minecraft.client.gui.screens.inventory.ContainerScreen::new);
                 event.register(com.almuradev.almura.content.registry.ContentContainers.storageBarrelMenuType(),
-                    net.minecraft.client.gui.screens.inventory.ContainerScreen::new);
+                    com.almuradev.almura.content.client.StorageBarrelScreen::new);
             }
         });
         NeoForge.EVENT_BUS.register(new MainMenuManager());

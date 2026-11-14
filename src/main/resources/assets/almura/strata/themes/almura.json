@@ -12,6 +12,7 @@
   },
   "insets": {
     "window.title.padding": [4, 3, 4, 3],
-    "window.padding": [3, 4, 3, 3]
+    "window.padding": [3, 4, 3, 3],
+    "button.padding": [8, 5, 8, 6]
   }
 }

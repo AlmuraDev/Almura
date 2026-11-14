@@ -81,6 +81,10 @@ public final class ContentContainers {
     private ContentContainers() {
     }
 
+    public static @Nullable BlockEntityType<ContainerBlockEntity> blockEntityType() {
+        return blockEntityType;
+    }
+
     public static MenuType<ChestMenu> menuType() {
         return menuType;
     }
@@ -226,7 +230,10 @@ public final class ContentContainers {
      */
     public static final class ContainerBlockEntity extends BaseContainerBlockEntity {
 
+        private static final String LABEL = "Label";
         private NonNullList<ItemStack> items;
+        // A storage barrel's label: one of what its first slot holds (the client's, sent by the server; the server's, what it last sent)
+        private ItemStack label = ItemStack.EMPTY;
 
         public ContainerBlockEntity(final BlockPos pos, final BlockState state) {
             super(blockEntityType, pos, state);
@@ -281,6 +288,54 @@ public final class ContentContainers {
             super.loadAdditional(input);
             this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
             ContainerHelper.loadAllItems(input, this.items);
+            // The label comes only in the server's updates to clients (it isn't saved): on the server this is nothing, so its first
+            // change is sent
+            this.label = input.read(LABEL, ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
+        }
+
+        /**
+         * What a storage barrel's label shows: one of what its first slot holds, or nothing.
+         */
+        public ItemStack label() {
+            return this.label;
+        }
+
+        private ItemStack firstAsLabel() {
+            return this.items.isEmpty() || this.items.getFirst().isEmpty() ? ItemStack.EMPTY : this.items.getFirst().copyWithCount(1);
+        }
+
+        /**
+         * A storage barrel tells the players around it what's in its first slot, for its label: when its chunk is sent (the update tag) and
+         * whenever that changes.
+         */
+        @Override
+        public net.minecraft.nbt.CompoundTag getUpdateTag(final net.minecraft.core.HolderLookup.Provider registries) {
+            if (!isStorageBarrel(this.getBlockState().getBlock())) {
+                return super.getUpdateTag(registries);
+            }
+            final net.minecraft.world.level.storage.TagValueOutput output = net.minecraft.world.level.storage.TagValueOutput.createWithContext(
+                net.minecraft.util.ProblemReporter.DISCARDING, registries);
+            output.store(LABEL, ItemStack.OPTIONAL_CODEC, this.firstAsLabel());
+            return output.buildResult();
+        }
+
+        @Override
+        public net.minecraft.network.protocol.@Nullable Packet<net.minecraft.network.protocol.game.ClientGamePacketListener> getUpdatePacket() {
+            return isStorageBarrel(this.getBlockState().getBlock())
+                ? net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket.create(this) : null;
+        }
+
+        @Override
+        public void setChanged() {
+            super.setChanged();
+            // A storage barrel whose first slot now holds something else updates its label for the players around it
+            if (this.level instanceof final ServerLevel serverLevel && isStorageBarrel(this.getBlockState().getBlock())) {
+                final ItemStack now = this.firstAsLabel();
+                if (!ItemStack.matches(now, this.label)) {
+                    this.label = now;
+                    serverLevel.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), Block.UPDATE_CLIENTS);
+                }
+            }
         }
 
         @Override
