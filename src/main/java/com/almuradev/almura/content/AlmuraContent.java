@@ -47,7 +47,7 @@ public final class AlmuraContent {
 
     // The kinds of content loaded so far; the rest follow as they are ported
     public static final Set<String> ITEM_KINDS = Set.of("normal", "food", "slab", "tool_hoe", "tool_sickle", "seed");
-    public static final Set<String> BLOCK_KINDS = Set.of("normal", "horizontal", "log", "flower", "stair", "slab", "crop", "leaf", "sapling");
+    public static final Set<String> BLOCK_KINDS = Set.of("normal", "horizontal", "log", "flower", "stair", "slab", "crop", "leaf", "sapling", "container");
 
     private AlmuraContent() {
     }
@@ -81,7 +81,8 @@ public final class AlmuraContent {
         Almura.LOGGER.info("Loaded Almura content from {}: {} creative tabs, {} items, {} blocks ({} crops, {} leaves, {} saplings), {} trees",
             root.toAbsolutePath(), groups.size(), items.size(), blocks.size(), crops.size(), leaves.size(), saplings.size(), trees.size());
 
-        modBus.register(new ContentRegistration(groups, items, blocks, crops, seeds).trees(leaves, saplings, trees));
+        modBus.register(new ContentRegistration(groups, items, blocks, crops, seeds).trees(leaves, saplings, trees)
+            .containers(parser.containers()));
         GrassSeeds.register(modBus);
         ContentGeneration.register(modBus, treeGeneration, grassGeneration, grasses);
         ContentPacks.register(modBus, () -> {

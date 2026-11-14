@@ -158,11 +158,6 @@ public final class ContentPackBuilder {
             if (file.startsWith("blockstates/")) {
                 continue;
             }
-            if (!Identifier.isValidPath(file)) {
-                // 26.3 refuses the whole resource reload over one such name (capitals, spaces), so it is left out
-                this.problems.add(namespace + ":" + file + ": not a valid 26.3 file name (lower case a-z, 0-9, / . _ - only); left out");
-                continue;
-            }
             final String path = "assets/" + namespace + "/" + file;
             if (file.startsWith("models/") && file.endsWith(".json")) {
                 final JsonObject model = this.source.readObject(folder.resolve(file));
@@ -177,27 +172,12 @@ public final class ContentPackBuilder {
 
     /**
      * A 1.12 JSON model as 26.3 reads it: vanilla textures renamed ({@code blocks/dirt} as {@code block/dirt}); a block model with no parent
-     * given {@code block/block}'s display (Forge's {@code forge:default-block}, which every such blockstate names); elements given with
-     * {@code from} past {@code to} put the right way round, or 26.3 turns their faces inward (the flags' cloth).
+     * given {@code block/block}'s display (Forge's {@code forge:default-block}, which every such blockstate names).
      */
     static JsonObject model(final JsonObject model, final boolean block) {
         final JsonObject copy = model.deepCopy();
         if (block && !copy.has("parent") && copy.has("elements")) {
             copy.addProperty("parent", "minecraft:block/block");
-        }
-        if (copy.get("elements") instanceof final JsonArray elements) {
-            for (final JsonElement element : elements) {
-                if (element instanceof final JsonObject object && object.get("from") instanceof final JsonArray from
-                    && object.get("to") instanceof final JsonArray to && from.size() == 3 && to.size() == 3) {
-                    for (int axis = 0; axis < 3; axis++) {
-                        final double a = from.get(axis).getAsDouble(), b = to.get(axis).getAsDouble();
-                        if (a > b) {
-                            from.set(axis, new JsonPrimitive(b));
-                            to.set(axis, new JsonPrimitive(a));
-                        }
-                    }
-                }
-            }
         }
         if (copy.get("parent") instanceof final JsonPrimitive parent && parent.isString()) {
             copy.addProperty("parent", Legacy.model(parent.getAsString()));
@@ -208,10 +188,6 @@ public final class ContentPackBuilder {
                     textures.addProperty(key, Legacy.texture(textures.get(key).getAsString()));
                 }
             }
-        }
-        // A model with its own elements and no particle texture (the flags) shows the missing texture when broken; 1.12 did too
-        if (copy.has("elements") && copy.get("textures") instanceof final JsonObject textures && !textures.has("particle")) {
-            textures.keySet().stream().findFirst().ifPresent(first -> textures.add("particle", textures.get(first).deepCopy()));
         }
         return copy;
     }
@@ -232,7 +208,7 @@ public final class ContentPackBuilder {
         }
         final JsonObject variants = new JsonObject();
         switch (block.kind()) {
-            case "horizontal" -> {
+            case "horizontal", "container" -> {
                 for (final String facing : FACINGS) {
                     this.addVariant(variants, "facing=" + facing, this.variant(block, forge, Map.of("facing", facing), "facing=" + facing));
                 }
@@ -373,9 +349,9 @@ public final class ContentPackBuilder {
     }
 
     /**
-     * A model loading an OBJ with NeoForge's loader ({@code models/obj/...}), its material library's textures resolved as 1.12's Forge did:
-     * a texture named without a folder is in the model's folder ({@code almura:alfalfa.png} beside {@code models/block/x.obj} is
-     * {@code almura:block/alfalfa}).
+     * A model loading an OBJ with NeoForge's loader ({@code models/obj/...}). The 4.0 content's OBJs are as NeoForge reads them: the
+     * material library named by its full path ({@code mtllib almura:models/block/x.mtl}), texture coordinates the right way up, the
+     * library's textures named by id ({@code map_Kd almura:block/x}), each of which is a texture slot of the same name here.
      *
      * @param objPath the OBJ's path under {@code models/}
      * @return The wrapper's id
@@ -387,26 +363,20 @@ public final class ContentPackBuilder {
         if (this.pack.has(file)) {
             return id;
         }
-        final Path models = this.source.namespace(namespace).resolve("models");
-        final String folder = objPath.contains("/") ? objPath.substring(0, objPath.lastIndexOf('/') + 1) : "";
-        // The material library, found as 1.12's Forge found it ("mtllib almura:x.mtl" beside the model); NeoForge would look for
-        // assets/almura/x.mtl, so the wrapper names it outright
-        final String mtl = this.materialLibrary(models, objPath, folder);
+        final Path mtl = this.materialLibrary(id, namespace, objPath);
         final JsonObject textures = new JsonObject();
         String particle = null;
-        for (final String map : this.materialTextures(mtl == null ? models.resolve(base + ".mtl") : models.resolve(mtl))) {
-            final String texture = this.textureOf(namespace, folder, map);
-            if (texture != null) {
-                textures.addProperty(map, texture);
-                if (particle == null) {
-                    particle = texture;
-                }
-            } else {
-                this.problems.add(id + ": no texture for '" + map + "'");
+        for (final String texture : mtl == null ? List.<String>of() : this.materialTextures(mtl)) {
+            if (!this.textureExists(texture)) {
+                this.problems.add(id + ": texture " + texture + " isn't there");
+            }
+            textures.addProperty(texture, texture);
+            if (particle == null) {
+                particle = texture;
             }
         }
         // As 3.5's OBJ reader did: the particles show the part of the sheet the model's last face uses, not the whole sheet
-        final String cut = this.objParticle(namespace, folder, objPath, base, mtl == null ? models.resolve(base + ".mtl") : models.resolve(mtl));
+        final String cut = mtl == null ? null : this.objParticle(namespace, objPath, base, mtl);
         if (cut != null) {
             particle = cut;
         }
@@ -417,55 +387,39 @@ public final class ContentPackBuilder {
         wrapper.addProperty("parent", "minecraft:block/block");
         wrapper.addProperty("loader", "neoforge:obj");
         wrapper.addProperty("model", namespace + ":models/" + objPath);
-        // 3.5's OBJ reader flipped V (v = 1 - v), as the content was made for; NeoForge only does that when asked
-        wrapper.addProperty("flip_v", true);
-        if (mtl != null) {
-            wrapper.addProperty("mtl_override", namespace + ":models/" + mtl);
-        } else {
-            this.problems.add(id + ": no material library found for models/" + objPath);
-        }
         wrapper.add("textures", textures);
         this.pack.putJson(file, wrapper);
         return id;
     }
 
     /**
-     * The OBJ's material library ({@code mtllib}), as 1.12's Forge read it: a name without a folder is beside the model, one with a folder
-     * is under {@code models/block/} or {@code models/}; failing those, the model's own name with {@code .mtl}.
-     *
-     * @return The library's path under {@code models/}, or null if there's none
+     * The OBJ's material library: the file its {@code mtllib} names ({@code almura:models/block/x.mtl}), or null (a problem) when it names
+     * none or one that isn't there.
      */
-    private @Nullable String materialLibrary(final Path models, final String objPath, final String folder) {
-        String named = null;
+    private @Nullable Path materialLibrary(final String owner, final String namespace, final String objPath) {
         try {
-            for (final String line : Files.readAllLines(models.resolve(objPath), StandardCharsets.UTF_8)) {
+            for (final String line : Files.readAllLines(this.source.namespace(namespace).resolve("models").resolve(objPath), StandardCharsets.UTF_8)) {
                 final String trimmed = line.trim();
                 if (trimmed.startsWith("mtllib ")) {
-                    named = trimmed.substring("mtllib ".length()).trim();
-                    break;
+                    final String named = trimmed.substring("mtllib ".length()).trim();
+                    final Path library = named.contains(":") ? this.source.namespace(namespace(named)).resolve(path(named)) : null;
+                    if (library == null || !Files.isRegularFile(library)) {
+                        this.problems.add(owner + ": material library " + named + " isn't there");
+                        return null;
+                    }
+                    return library;
                 }
             }
         } catch (final IOException e) {
-            this.problems.add(objPath + ": couldn't read: " + e.getMessage());
+            this.problems.add(owner + ": couldn't read: " + e.getMessage());
+            return null;
         }
-        final List<String> candidates = new ArrayList<>();
-        if (named != null) {
-            String path = named.contains(":") ? named.substring(named.indexOf(':') + 1) : named;
-            while (path.startsWith("/")) {
-                path = path.substring(1);
-            }
-            final String name = path.contains("/") ? path.substring(path.lastIndexOf('/') + 1) : path;
-            candidates.add(folder + name);
-            candidates.add("block/" + path);
-            candidates.add(path);
-        }
-        candidates.add(objPath.substring(0, objPath.length() - ".obj".length()) + ".mtl");
-        for (final String candidate : candidates) {
-            if (Files.isRegularFile(models.resolve(candidate))) {
-                return candidate;
-            }
-        }
+        this.problems.add(owner + ": names no material library");
         return null;
+    }
+
+    private boolean textureExists(final String texture) {
+        return texture.contains(":") && Files.isRegularFile(this.source.namespace(namespace(texture)).resolve("textures").resolve(path(texture) + ".png"));
     }
 
     /**
@@ -474,8 +428,7 @@ public final class ContentPackBuilder {
      *
      * @return The texture's id, or null if the face or its texture can't be found
      */
-    private @Nullable String objParticle(final String namespace, final String folder, final String objPath, final String base,
-        final Path mtl) {
+    private @Nullable String objParticle(final String namespace, final String objPath, final String base, final Path mtl) {
         final Path models = this.source.namespace(namespace).resolve("models");
         final List<float[]> uvs = new ArrayList<>();
         String material = null, faceMaterial = null;
@@ -506,9 +459,8 @@ public final class ContentPackBuilder {
             return null;
         }
         final float[] first = uv(uvs, face[1]), third = uv(uvs, face[3]);
-        final String map = this.materialMap(mtl, faceMaterial);
-        final String texture = map == null ? null : this.textureOf(namespace, folder, map);
-        if (first == null || third == null || texture == null) {
+        final String texture = this.materialMap(mtl, faceMaterial);
+        if (first == null || third == null || texture == null || !this.textureExists(texture)) {
             return null;
         }
         final Path image = this.source.namespace(namespace(texture)).resolve("textures").resolve(path(texture) + ".png");
@@ -554,8 +506,8 @@ public final class ContentPackBuilder {
     }
 
     /**
-     * Cuts the part of an image between two UVs (V flipped, as the OBJs were made for) and scales it to 16x16, a size that keeps the block
-     * atlas's mipmaps; an animated texture's first frame is used.
+     * Cuts the part of an image between two UVs and scales it to 16x16, a size that keeps the block atlas's mipmaps; an animated texture's
+     * first frame is used.
      */
     private static byte @Nullable [] cut(final Path image, final float[] a, final float[] b) {
         try {
@@ -569,8 +521,8 @@ public final class ContentPackBuilder {
                 : sheet.getHeight();
             final int x1 = clamp(Math.round(Math.min(a[0], b[0]) * width), width - 1);
             final int x2 = clamp(Math.round(Math.max(a[0], b[0]) * width), width);
-            final int y1 = clamp(Math.round(Math.min(1 - a[1], 1 - b[1]) * height), height - 1);
-            final int y2 = clamp(Math.round(Math.max(1 - a[1], 1 - b[1]) * height), height);
+            final int y1 = clamp(Math.round(Math.min(a[1], b[1]) * height), height - 1);
+            final int y2 = clamp(Math.round(Math.max(a[1], b[1]) * height), height);
             final BufferedImage region = sheet.getSubimage(x1, y1, Math.max(1, x2 - x1), Math.max(1, y2 - y1));
             final BufferedImage scaled = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
             final Graphics2D graphics = scaled.createGraphics();
@@ -589,6 +541,7 @@ public final class ContentPackBuilder {
         return Math.max(0, Math.min(max, value));
     }
 
+    /** The textures ({@code map_Kd}) of a material library. */
     private List<String> materialTextures(final Path mtl) {
         final Set<String> maps = new TreeSet<>();
         if (!Files.isRegularFile(mtl)) {
@@ -605,28 +558,6 @@ public final class ContentPackBuilder {
             this.problems.add(mtl + ": couldn't read: " + e.getMessage());
         }
         return List.copyOf(maps);
-    }
-
-    /**
-     * 1.12 Forge's reading of a material texture: {@code ns:path.png}, a path without a folder being in the model's folder; the texture as a
-     * 26.3 id, if it exists.
-     */
-    private @Nullable String textureOf(final String modelNamespace, final String modelFolder, final String map) {
-        String namespace = modelNamespace, path = map;
-        if (map.contains(":")) {
-            namespace = namespace(map);
-            path = path(map);
-        }
-        if (path.endsWith(".png")) {
-            path = path.substring(0, path.length() - ".png".length());
-        }
-        final Path textures = this.source.namespace(namespace).resolve("textures");
-        for (final String candidate : path.contains("/") ? List.of(path, modelFolder + path) : List.of(modelFolder + path, "block/" + path, path)) {
-            if (Files.isRegularFile(textures.resolve(candidate + ".png"))) {
-                return namespace + ":" + candidate;
-            }
-        }
-        return namespace.equals("minecraft") ? Legacy.texture("minecraft:" + path) : null;
     }
 
     /**
@@ -782,7 +713,7 @@ public final class ContentPackBuilder {
 
     /**
      * A block's loot table: its drops (with their bonus as a separate chance), or itself when it names none. A drop naming an item that
-     * doesn't exist (a typo in the content; 1.12 dropped nothing) is left out, the block dropping itself if nothing is left.
+     * doesn't exist is a mistake in the content: left out, and a problem the tests fail on.
      */
     private void lootTable(final BlockDef block, final Predicate<String> knownItem) {
         if (block.isDoubleSlab()) {
@@ -801,16 +732,21 @@ public final class ContentPackBuilder {
             this.leafLootTable(block, knownItem);
             return;
         }
+        if (block.kind().equals("container")) {
+            this.containerLootTable(block);
+            return;
+        }
         final JsonArray pools = new JsonArray();
         List<DropDef> drops = new ArrayList<>();
         for (final DropDef drop : block.state().drops()) {
             if (knownItem.test(drop.item())) {
                 drops.add(drop);
             } else {
-                this.problems.add(block.id() + ": drops " + drop.item() + ", which doesn't exist; it drops itself instead");
+                this.problems.add(block.id() + ": drops " + drop.item() + ", which doesn't exist; left out");
             }
         }
-        if (drops.isEmpty()) {
+        // A block that lists no drops drops itself, as on 1.12
+        if (block.state().drops().isEmpty()) {
             drops = List.of(new DropDef(block.id(), 1, 1, 0, 0));
         }
         for (final DropDef drop : drops) {
@@ -883,6 +819,31 @@ public final class ContentPackBuilder {
                 pools.add(pool(drop.item(), drop.bonusAmount(), drop.bonusAmount(), drop.bonusChance(), otherwise.deepCopy()));
             }
         }
+        final JsonObject table = new JsonObject();
+        table.addProperty("type", "minecraft:block");
+        table.add("pools", pools);
+        table.addProperty("random_sequence", namespace(block.id()) + ":blocks/" + path(block.id()));
+        this.pack.putJson("data/" + namespace(block.id()) + "/loot_table/blocks/" + path(block.id()) + ".json", table);
+    }
+
+    /**
+     * A container drops itself holding what it held (and its name), as a shulker box does; broken while sneaking it spilled first
+     * ({@code ContentContainers}).
+     */
+    private void containerLootTable(final BlockDef block) {
+        final JsonObject copy = new JsonObject();
+        copy.addProperty("type", "minecraft:copy_components");
+        copy.addProperty("source", "block_entity");
+        final JsonArray include = new JsonArray();
+        include.add("minecraft:custom_name");
+        include.add("minecraft:container");
+        copy.add("include", include);
+        final JsonObject pool = pool(block.id(), 1, 1, 0);
+        final JsonArray modifiers = new JsonArray();
+        modifiers.add(copy);
+        pool.getAsJsonArray("entries").get(0).getAsJsonObject().add("modifier", modifiers);
+        final JsonArray pools = new JsonArray();
+        pools.add(pool);
         final JsonObject table = new JsonObject();
         table.addProperty("type", "minecraft:block");
         table.add("pools", pools);
@@ -1222,8 +1183,7 @@ public final class ContentPackBuilder {
                     final int dot = key.lastIndexOf('.');
                     final String name = dot < 0 ? key : key.substring(0, dot);
                     final String suffix = dot < 0 ? "" : key.substring(dot + 1);
-                    // Content ids are lower case; 1.12 matched "crop_diamond_Sickle.name" to them all the same
-                    final String id = (file.folder() + name).replace('/', '.').toLowerCase(java.util.Locale.ROOT);
+                    final String id = (file.folder() + name).replace('/', '.');
                     final String base = type + "." + file.namespace() + "." + id;
                     if (suffix.equals("name") || suffix.isEmpty()) {
                         lang.put(base, entry.getValue());

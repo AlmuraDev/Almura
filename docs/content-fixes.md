@@ -1,4 +1,18 @@
-# Content fixes found by the 4.0 loader
+# Content fixes
+
+Almura 4.0 reads its own content: the 3.0 content with its mistakes fixed by `tools/content-4.0/fix_content.py` (which writes
+`FIXES.md` beside the content it makes, listing every change). The loader repairs nothing; the tests fail on a mistake in the content.
+
+Still to decide (the script reports these and leaves them):
+
+- The tv's material library (`models/block/tv.mtl`) names `block/letter/seedbarrels.png`, which isn't in the content.
+- The prismarine stairs are made of `minecraft:stonebrick`: prismarine, prismarine bricks or dark prismarine?
+- `normal/tool/grief_prevention_inspector`, `grief_prevention_selector` and `world_edit_selector` have no item models.
+- Crop hydration asked farmland for `level` (its property is `moisture`); 1.12 ignored it, so any farmland watered the crops. Decided:
+  keep that (the script removes the property). To make crops need wet farmland, give them `moisture` instead.
+
+The notes below were written before the script; it fixes each of them.
+
 
 Things in the content repository (`H:\Almura 3.0\ContentLoader\3.0\fs_2`) that 4.0 reports. 4.0 copes with each as noted; fixing them in the content makes it right on both.
 

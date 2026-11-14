@@ -21,6 +21,7 @@ import com.almuradev.almura.content.def.ContentDefs.LeafDef;
 import com.almuradev.almura.content.def.ContentDefs.SaplingDef;
 import com.almuradev.almura.content.def.ContentDefs.TreeDef;
 import com.almuradev.almura.content.def.ContentDefs.TreeHeightDef;
+import com.almuradev.almura.content.def.ContentDefs.ContainerDef;
 import com.almuradev.almura.content.def.ContentDefs.CropDef;
 import com.almuradev.almura.content.def.ContentDefs.CropStageDef;
 import com.almuradev.almura.content.def.ContentDefs.HydrationBlockDef;
@@ -136,6 +137,19 @@ public final class ContentParser {
                 string(json, "block"), string(json, "single")));
         }
         return blocks;
+    }
+
+    /**
+     * The containers ({@code content/block/container}).
+     */
+    public List<ContainerDef> containers() {
+        final List<ContainerDef> containers = new ArrayList<>();
+        for (final ContentFile file : this.source.files("block")) {
+            if (kind(file).equals("container")) {
+                containers.add(new ContainerDef(file.id(), integer(file.json(), "slots", 54), integer(file.json(), "limit", 64)));
+            }
+        }
+        return containers;
     }
 
     /**

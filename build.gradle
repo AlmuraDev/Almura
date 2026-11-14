@@ -59,22 +59,25 @@ dependencies {
     compileOnly("org.inspirenxe:strata-core:${strata_version}")
     localRuntime("org.inspirenxe:strata-minecraft-neoforge:${strata_version}")
 
-    // The content loader's reading and converting is tested against the content (runs/client/assets/fs_5) without starting the game
+    // The content loader's reading and converting is tested against the 4.0 content (runs/content-4.0) without starting the game
     testImplementation(platform('org.junit:junit-bom:5.11.4'))
     testImplementation('org.junit.jupiter:junit-jupiter')
     testRuntimeOnly('org.junit.platform:junit-platform-launcher')
     testImplementation('com.google.code.gson:gson:2.11.0')
 }
 
+// Almura's 4.0 content: the 3.0 content with its mistakes fixed (tools/content-4.0/fix_content.py makes it), or -PalmuraContent=<folder>
+def almuraContent = project.file(project.findProperty('almuraContent') ?: 'runs/content-4.0').absolutePath
+
 tasks.named('test', Test) {
     useJUnitPlatform()
     // The content to test against, when it has been copied into the dev run
-    systemProperty('almura.test.content', project.file('runs/client/assets/fs_5').absolutePath)
+    systemProperty('almura.test.content', almuraContent)
     // Absolute, as the game started in the tests runs elsewhere
     systemProperty('almura.test.artifacts', project.file('build/moddev/artifacts').absolutePath)
     systemProperty('almura.test.build', project.file('build').absolutePath)
     // And for the game started in the tests: load the content from there
-    systemProperty('almura.content', project.file('runs/client/assets/fs_5').absolutePath)
+    systemProperty('almura.content', almuraContent)
     testLogging {
         events 'failed'
         showStandardStreams = true
@@ -91,6 +94,8 @@ neoForge {
             logLevel = org.slf4j.event.Level.INFO
             // As the 1.12 dev runs had (-Xincgc is gone since Java 9; coremods are gone too: NeoForge loads the mixins from the jar)
             jvmArguments.addAll('-Xms1024M', '-Xmx4096M')
+            // The 4.0 content
+            systemProperty('almura.content', almuraContent)
         }
         client {
             client()

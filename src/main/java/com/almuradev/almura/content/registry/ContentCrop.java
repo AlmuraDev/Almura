@@ -269,8 +269,7 @@ public final class ContentCrop extends CropBlock {
             boolean all = true;
             for (final Map.Entry<String, Range> property : block.properties().entrySet()) {
                 final Property<?> found = state.getBlock().getStateDefinition().getProperty(property.getKey());
-                // A property the block hasn't is ignored, as 3.5 ignored it (the content asks farmland for "level")
-                if (found != null && !(state.getValue(found) instanceof final Integer value && property.getValue().contains(value))) {
+                if (found == null || !(state.getValue(found) instanceof final Integer value && property.getValue().contains(value))) {
                     all = false;
                     break;
                 }

@@ -8,6 +8,7 @@
 package com.almuradev.almura.content.registry;
 
 import com.almuradev.almura.content.def.ContentDefs.BlockDef;
+import com.almuradev.almura.content.def.ContentDefs.ContainerDef;
 import com.almuradev.almura.content.def.ContentDefs.CropDef;
 import com.almuradev.almura.content.def.ContentDefs.CropStageDef;
 import com.almuradev.almura.content.def.ContentDefs.LeafDef;
@@ -109,6 +110,13 @@ public final class ContentBlocks {
     }
 
     /**
+     * A container: faces whoever placed it, holds its slots (see {@link ContentContainers}).
+     */
+    public static ContentContainers.ContainerBlock createContainer(final BlockDef def, final ContainerDef container) {
+        return new ContentContainers.ContainerBlock(properties(def), shape(def.state().shape()), container.slots(), container.limit());
+    }
+
+    /**
      * A sapling: nothing collides with it and it ticks to grow.
      */
     public static ContentSapling createSapling(final BlockDef def, final SaplingDef sapling) {
@@ -135,7 +143,7 @@ public final class ContentBlocks {
         final boolean modelled = def.kind().equals("normal") || def.kind().equals("horizontal");
         final boolean opaque = modelled ? Boolean.TRUE.equals(state.opaque()) : !Boolean.FALSE.equals(state.opaque());
         if (!opaque || material.equals("ag") || def.kind().equals("flower") || def.kind().equals("crop")
-            || def.kind().equals("leaf") || def.kind().equals("sapling")) {
+            || def.kind().equals("leaf") || def.kind().equals("sapling") || def.kind().equals("container")) {
             properties.noOcclusion();
         }
         // Rock and metal needed the right tool to drop anything, as on 1.12

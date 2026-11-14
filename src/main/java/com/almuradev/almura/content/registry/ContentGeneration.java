@@ -263,10 +263,6 @@ public final class ContentGeneration {
             return null;
         }
         BlockState state = block.get().defaultBlockState();
-        if (block.get() instanceof final ContentCrop crop) {
-            // A wild crop is a ripe one: the content names an age for each, nine of them a stage short of ripe (or past it)
-            return crop.getStateForAge(crop.getMaxAge());
-        }
         for (final Map.Entry<String, String> property : ref.properties().entrySet()) {
             state = withValue(state, block.get().getStateDefinition().getProperty(property.getKey()), property.getValue());
         }

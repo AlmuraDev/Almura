@@ -43,7 +43,7 @@ final class ContentRegistrationTest {
         final String root = System.getProperty("almura.content");
         assumeTrue(root != null && Files.isDirectory(Path.of(root)), "The content isn't in the dev run");
         // Normal, horizontal, log, flower, stair and single slab blocks (a double slab is its single's double state), and crops
-        final long blocks = 3 + 764 + 22 + 99 + 128 + 110 + 42 + 25;
+        final long blocks = 3 + 764 + 22 + 99 + 128 + 110 + 42 + 25 + 69;
         final long crops = 85;
         assertEquals(blocks + crops, count("almura", BuiltInRegistries.BLOCK.keySet()), "blocks");
         // Normal, food, hoe, sickle and seed items, and an item for each block but the crops (their item is their seed)
@@ -60,6 +60,32 @@ final class ContentRegistrationTest {
         assertTrue(BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:sapling/cherry_tree_sapling"))
             instanceof com.almuradev.almura.content.registry.ContentSapling, "saplings are saplings");
         assertTrue(com.almuradev.almura.content.registry.ContentTrees.tree("almura:cherry_tree") != null, "saplings know their trees");
+        final Block storageBarrel = BuiltInRegistries.BLOCK.getValue(com.almuradev.almura.content.registry.ContentContainers.STORAGE_BARREL);
+        assertTrue(storageBarrel instanceof com.almuradev.almura.content.registry.ContentContainers.ContainerBlock, "the storage barrel is a container");
+        assertTrue(com.almuradev.almura.content.registry.ContentContainers.storageBarrelAccepts("almura:seed/barley_seed"), "the storage barrel takes seeds");
+        assertTrue(com.almuradev.almura.content.registry.ContentContainers.storageBarrelAccepts("almura:normal/ingredient/barley"),
+            "the storage barrel takes crops");
+        assertTrue(!com.almuradev.almura.content.registry.ContentContainers.storageBarrelAccepts("minecraft:dirt"), "the storage barrel takes no dirt");
+        assertTrue(BuiltInRegistries.BLOCK_ENTITY_TYPE.containsKey(Identifier.fromNamespaceAndPath("almura", "container")), "container block entity");
+        assertTrue(BuiltInRegistries.MENU.containsKey(Identifier.fromNamespaceAndPath("almura", "storage_barrel")), "storage barrel menu");
+        // Every crop's hydration names blocks and properties that are there
+        final var parser = new com.almuradev.almura.content.def.ContentParser(
+            com.almuradev.almura.content.source.ContentSource.at(Path.of(root)));
+        final java.util.List<String> wrongHydration = new java.util.ArrayList<>();
+        parser.crops(parser.seeds()).forEach(crop -> crop.stages().forEach(stage -> {
+            if (stage.hydration() != null) {
+                stage.hydration().blocks().forEach(block -> {
+                    final Block hydrating = BuiltInRegistries.BLOCK.getOptional(Identifier.parse(block.block())).orElse(null);
+                    if (hydrating == null) {
+                        wrongHydration.add(crop.id() + ": " + block.block());
+                    } else {
+                        block.properties().keySet().stream().filter(name -> hydrating.getStateDefinition().getProperty(name) == null)
+                            .forEach(name -> wrongHydration.add(crop.id() + ": " + block.block() + " has no " + name));
+                    }
+                });
+            }
+        }));
+        assertEquals(java.util.List.of(), wrongHydration, "crop hydration");
         // The farmland rules and the biome temperature crops read are mixed in
         assertTrue(com.almuradev.almura.mixin.BiomeAccessor.class.isAssignableFrom(net.minecraft.world.level.biome.Biome.class), "biome accessor");
         assertTrue(java.util.Arrays.stream(net.minecraft.world.level.block.FarmlandBlock.class.getDeclaredMethods())

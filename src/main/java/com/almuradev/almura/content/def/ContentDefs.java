@@ -155,7 +155,7 @@ public final class ContentDefs {
 
     /**
      * What keeps a crop's soil watered: one of the blocks, with property values in their ranges, within the radius of the soil (on its
-     * level). A property the block hasn't is ignored, as 3.5 ignored it (the content's farmland {@code level}).
+     * level).
      */
     public record HydrationDef(List<HydrationBlockDef> blocks, int radius) {
     }
@@ -271,5 +271,11 @@ public final class ContentDefs {
     }
 
     public record OreDef(String block, int size, int count) {
+    }
+
+    /**
+     * A container ({@code content/block/container}): its slots and how many of an item each holds.
+     */
+    public record ContainerDef(String id, int slots, int limit) {
     }
 }

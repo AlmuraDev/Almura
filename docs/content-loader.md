@@ -1,5 +1,10 @@
 # Content loader on 4.0
 
+4.0 reads the 4.0 content: the 3.0 content with its mistakes fixed and its OBJs in NeoForge's conventions, made by
+`tools/content-4.0/fix_content.py` (`--source` the 3.0 content, `--out` the 4.0 content). Dev runs and tests read `runs/content-4.0`
+(`-PalmuraContent=<folder>` for another); its home is `H:\Almura 3.0\ContentLoader\4.0`. The loader converts 1.12's formats (Forge
+blockstates, 1.12 names, recipes and loot) but repairs nothing: `docs/content-fixes.md` lists what's still to decide.
+
 How Almura 4.0 (Minecraft 26.3, NeoForge) loads the content Almura 3.x loaded on 1.12.2: the blocks, items, creative tabs, recipes,
 translations, models and textures in the content repository (`H:\Almura 3.0\ContentLoader\3.0\fs_2`, copied to
 `<game>/assets/fs_5` on clients and servers, as on 1.12).
@@ -64,7 +69,7 @@ Translations are keyed by the file's name in its folder (`aniseseed.name`, `anis
 | `block/flower` | 99 | done: on earth, no collision |
 | `block/stair` | 128 | done: made of their `block` |
 | `block/slab`, `item/slab` | 220 + 110 | done: one 26.3 slab per single slab, its double state the 1.12 double slab |
-| `block/container` | 69 | later: needs the container feature |
+| `block/container` | 69 | done: a chest's screen of their slots, contents kept in the dropped item (spilled when broken sneaking), the crop barrels take their seed and become the storage barrel when opened, the storage barrel takes seeds, crops and tree fruit and is named for what it holds; its label on the barrel later |
 | `block/crop`, `item/seed` | 85 + 85 | done: 3.5's growth (chance, light, temperature, heat lamp, hydration, rollback, even fields), bone meal at the content's chance, drops by stage, seeds from grass, 3.5's farmland; aquatic crops and harvesting sacks later |
 | `block/leaf`, `block/sapling`, `tree` | 42 + 25 + 25 | done: leaves decay away from logs (vanilla's distance, 6 blocks; 1.12's was 4) with their decay drops at the biome's chance, fruit spreads into the air beside them, shears and silk touch take the leaf; saplings grow 3.5's trees (normal, big, palm) with fruit leaves at the tree's chance; ranges chosen by biome as 3.5 chose them |
 | `generation`, `grass` | 27 + 1 | done: trees, the grass mix (wild flowers and crops) and ores in the overworld, holding vanilla's trees, grass and flowers back where they go, as 3.5 did |
@@ -108,3 +113,5 @@ mod loading (no window, no server) and check the registries and that 26.3 reads 
 - Wild crops: the grass mix holds ripe crops. On 1.12 a crop could only stand on farmland, so 3.5 most likely never placed them; 4.0
   lets a ripe crop stand on grass, so they appear in the wild. Seeds still plant only on their soil.
 - Double grass and double flowers in the grass mix are placed whole (both halves); 1.12 placed only the lower half, which fell.
+- The storage barrel's label (3.5 drew the first slot's item on paper on the barrel's sides) isn't drawn yet.
+- A container broken in creative drops nothing, so what it held is lost, as on 3.5.

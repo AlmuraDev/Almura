@@ -10,6 +10,7 @@ package com.almuradev.almura.content.registry;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.content.convert.ContentPackBuilder;
 import com.almuradev.almura.content.def.ContentDefs.BlockDef;
+import com.almuradev.almura.content.def.ContentDefs.ContainerDef;
 import com.almuradev.almura.content.def.ContentDefs.CropDef;
 import com.almuradev.almura.content.def.ContentDefs.LeafDef;
 import com.almuradev.almura.content.def.ContentDefs.SaplingDef;
@@ -66,6 +67,7 @@ public final class ContentRegistration {
     private final Map<String, SeedDef> seeds = new HashMap<>();
     private final Map<String, LeafDef> leaves = new HashMap<>();
     private final Map<String, SaplingDef> saplings = new HashMap<>();
+    private final Map<String, ContainerDef> containers = new HashMap<>();
     // Each tab's items in the content's order, to fill it with
     private final Map<String, List<Item>> tabItems = new LinkedHashMap<>();
     private final Map<String, Block> registeredBlocks = new HashMap<>();
@@ -86,6 +88,14 @@ public final class ContentRegistration {
     /**
      * The leaves, saplings and the trees the saplings grow.
      */
+    /**
+     * The containers.
+     */
+    public ContentRegistration containers(final List<ContainerDef> containers) {
+        containers.forEach(container -> this.containers.put(container.id(), container));
+        return this;
+    }
+
     public ContentRegistration trees(final List<LeafDef> leaves, final List<SaplingDef> saplings, final List<TreeDef> trees) {
         leaves.forEach(leaf -> this.leaves.put(leaf.id(), leaf));
         saplings.forEach(sapling -> this.saplings.put(sapling.id(), sapling));
@@ -112,8 +122,10 @@ public final class ContentRegistration {
                 }
                 final LeafDef leaf = def.kind().equals("leaf") ? this.leaves.get(def.id()) : null;
                 final SaplingDef sapling = def.kind().equals("sapling") ? this.saplings.get(def.id()) : null;
+                final ContainerDef container = def.kind().equals("container") ? this.containers.get(def.id()) : null;
                 final Block block = crop != null ? ContentBlocks.createCrop(def, crop) : leaf != null ? ContentBlocks.createLeaves(def, leaf)
-                    : sapling != null ? ContentBlocks.createSapling(def, sapling) : ContentBlocks.create(def, this.stairBase(def));
+                    : sapling != null ? ContentBlocks.createSapling(def, sapling) : container != null ? ContentBlocks.createContainer(def, container)
+                    : ContentBlocks.create(def, this.stairBase(def));
                 helper.register(Identifier.parse(def.id()), block);
                 this.registeredBlocks.put(def.id(), block);
             }
@@ -151,6 +163,20 @@ public final class ContentRegistration {
                 this.addToTab(def.group() != null ? def.group() : this.slabGroup(def.id()), item);
             }
         });
+        event.register(Registries.BLOCK_ENTITY_TYPE, helper -> {
+            final java.util.Set<Block> containerBlocks = new java.util.HashSet<>();
+            this.registeredBlocks.values().stream().filter(block -> block instanceof ContentContainers.ContainerBlock).forEach(containerBlocks::add);
+            ContentContainers.blockEntityType = new net.minecraft.world.level.block.entity.BlockEntityType<>(
+                ContentContainers.ContainerBlockEntity::new, containerBlocks);
+            helper.register(Identifier.fromNamespaceAndPath(Almura.ID, "container"), ContentContainers.blockEntityType);
+        });
+        event.register(Registries.MENU, helper -> {
+            ContentContainers.menuType = ContentContainers.newMenuType(false);
+            ContentContainers.storageBarrelMenuType = ContentContainers.newMenuType(true);
+            helper.register(Identifier.fromNamespaceAndPath(Almura.ID, "container"), ContentContainers.menuType);
+            helper.register(Identifier.fromNamespaceAndPath(Almura.ID, "storage_barrel"), ContentContainers.storageBarrelMenuType);
+            this.storageBarrelItems();
+        });
         event.register(Registries.CREATIVE_MODE_TAB, helper -> {
             for (final ItemGroupDef group : this.groups) {
                 final List<Item> tabItems = this.tabItems.getOrDefault(group.id(), List.of());
@@ -164,13 +190,26 @@ public final class ContentRegistration {
     }
 
     /**
-     * The state a stair is made of: its {@code block}, or stone when that isn't there.
+     * What the storage barrel takes: the seeds, what the crops drop, and what the fruit trees' fruit leaves drop, as 3.5's did.
+     */
+    private void storageBarrelItems() {
+        final java.util.Set<String> items = new java.util.HashSet<>(this.seeds.keySet());
+        this.crops.values().forEach(crop -> crop.stages().forEach(stage -> stage.state().drops().forEach(drop -> items.add(drop.item()))));
+        this.blocks.stream().filter(block -> block.kind().equals("leaf") && block.id().endsWith("_fruit_leaf"))
+            .forEach(leaf -> leaf.state().drops().forEach(drop -> items.add(drop.item())));
+        ContentContainers.acceptInStorageBarrel(items);
+    }
+
+    /**
+     * The state a stair is made of: its {@code block} (1.12's name, as 26.3 names it: {@code minecraft:stonebrick} is
+     * {@code minecraft:stone_bricks}), or stone when that isn't there.
      */
     private BlockState stairBase(final BlockDef def) {
         if (!def.kind().equals("stair")) {
             return Blocks.AIR.defaultBlockState();
         }
-        final Identifier base = def.base() == null ? null : Identifier.tryParse(def.base());
+        final String named = def.base() == null ? null : com.almuradev.almura.content.convert.Legacy.item(def.base(), 0);
+        final Identifier base = named == null ? null : Identifier.tryParse(named);
         final Block block = base == null ? null : BuiltInRegistries.BLOCK.getOptional(base).orElse(null);
         if (block == null || block == Blocks.AIR) {
             Almura.LOGGER.warn("Content stair {} is made of {}, which doesn't exist; stone stands in", def.id(), def.base());
@@ -305,8 +344,7 @@ public final class ContentRegistration {
         for (final EffectDef effect : food.effects()) {
             final List<MobEffectInstance> instances = new ArrayList<>();
             for (final String id : effect.effects()) {
-                // 1.12 took "minecraft:STRENGTH"; 26.3's ids are lower case
-                final Identifier effectId = Identifier.tryParse(id.toLowerCase(java.util.Locale.ROOT));
+                final Identifier effectId = Identifier.tryParse(id);
                 final Optional<Holder.Reference<MobEffect>> holder = effectId == null ? Optional.empty() : BuiltInRegistries.MOB_EFFECT.get(effectId);
                 if (holder.isPresent()) {
                     instances.add(new MobEffectInstance(holder.get(), effect.durationTicks(), effect.amplifier(), effect.ambient(),

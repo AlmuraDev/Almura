@@ -126,8 +126,8 @@ final class ContentConversionTest {
         assertEquals(List.of(), source.problems(), "Content files that couldn't be read");
         assertEquals(23, groups.size(), "item groups");
         assertEquals(186 + 413 + 110 + 5 + 5 + 85, items.size(), "normal, food, slab, hoe, sickle and seed items");
-        assertEquals(3 + 764 + 22 + 99 + 128 + 220 + 85 + 42 + 25, blocks.size(),
-            "normal, horizontal, log, flower, stair, slab (single and double), crop, leaf and sapling blocks");
+        assertEquals(3 + 764 + 22 + 99 + 128 + 220 + 85 + 42 + 25 + 69, blocks.size(),
+            "normal, horizontal, log, flower, stair, slab (single and double), crop, leaf, sapling and container blocks");
         assertEquals(85, seeds.size(), "seeds");
         assertEquals(85, crops.size(), "crops");
     }
@@ -256,7 +256,8 @@ final class ContentConversionTest {
             }
         }
         report("missing", missing);
-        assertTrue(missing.size() <= blocks.size() / 50, "Too many blocks or items without models: " + missing.size());
+        assertEquals(List.of(), missing.stream().filter(line -> !AWAITING_DECISION.stream().anyMatch(line::contains)).toList(),
+            "blocks or items without models");
     }
 
     /**
@@ -276,7 +277,7 @@ final class ContentConversionTest {
             }
         }
         report("unresolved models and textures", missing);
-        assertTrue(missing.size() < 25, "Too many missing models or textures: " + missing.size());
+        assertEquals(List.of(), missing, "missing models or textures");
     }
 
     private void checkModel(final String model, final List<String> missing, final Set<String> checked) {
@@ -302,13 +303,17 @@ final class ContentConversionTest {
             if (!pack.has("assets/" + ns(obj) + "/" + p(obj))) {
                 missing.add("OBJ " + obj + " for " + model);
             }
-            // NeoForge reads the material library from here; without it the OBJ doesn't load at all
-            if (!object.has("mtl_override")) {
-                missing.add("material library for " + model);
-            } else {
-                final String mtl = object.get("mtl_override").getAsString();
-                if (!pack.has("assets/" + ns(mtl) + "/" + p(mtl))) {
-                    missing.add("material library " + mtl + " for " + model);
+            // NeoForge reads the material library the OBJ names (mtllib almura:models/...); without it the OBJ doesn't load at all
+            final Path objFile = pack.file("assets/" + ns(obj) + "/" + p(obj));
+            if (objFile != null) {
+                try {
+                    final String mtl = Files.readAllLines(objFile).stream().map(String::trim).filter(line -> line.startsWith("mtllib "))
+                        .map(line -> line.substring("mtllib ".length()).trim()).findFirst().orElse(null);
+                    if (mtl == null || !pack.has("assets/" + ns(mtl) + "/" + p(mtl))) {
+                        missing.add("material library " + mtl + " for " + model);
+                    }
+                } catch (final IOException e) {
+                    missing.add("OBJ " + obj + " unreadable: " + e.getMessage());
                 }
             }
         }
@@ -360,7 +365,7 @@ final class ContentConversionTest {
             }
         }
         report("without a name", missing);
-        assertTrue(missing.size() <= (items.size() + blocks.size()) / 20, "Too many unnamed: " + missing.size());
+        assertEquals(List.of(), missing, "without a name");
     }
 
     @Test
@@ -396,6 +401,117 @@ final class ContentConversionTest {
         report("OBJ particles cut", List.of(cut + " of " + objModels + " OBJ models"));
         assertTrue(cut >= objModels * 9 / 10, "Only " + cut + " OBJ particles for " + objModels + " OBJ models");
         assertTrue(failed.isEmpty(), "OBJ particles not cut: " + failed);
+    }
+
+    /**
+     * What's known to be wrong in the 4.0 content and waits on someone to decide (tools/content-4.0's FIXES.md), and the items of 3.5
+     * features 4.0 hasn't yet: the only problems the content may have.
+     */
+    private static final List<String> AWAITING_DECISION = List.of(
+        "grief_prevention_inspector", "grief_prevention_selector", "world_edit_selector",
+        "texture almura:block/letter/seedbarrels");
+    private static final List<String> NOT_YET_PORTED = List.of(
+        "unknown item almura:normal/ingredient/glass_cruet", "unknown item almura:normal/ingredient/glass_milk_cruet",
+        "unknown item almura:normal/ingredient/glass_water_cruet", "unknown item almura:normal/tool/skills_handbook",
+        "unknown item almura:normal/tool/harvesting_sack", "unknown item almura:normal/tool/farmers_almanac", "unknown item mocreatures:");
+
+    /**
+     * The 4.0 content is right as it is: the loader repairs nothing, so anything it had to leave out is a mistake in the content (fix it in
+     * tools/content-4.0/fix_content.py, or in the content).
+     */
+    @Test
+    void theContentNeedsNoRepair() {
+        final List<String> wrong = builder.problems().stream()
+            .filter(problem -> AWAITING_DECISION.stream().noneMatch(problem::contains) && NOT_YET_PORTED.stream().noneMatch(problem::contains))
+            .toList();
+        report("mistakes in the content", wrong);
+        assertEquals(List.of(), wrong);
+    }
+
+    /**
+     * Block models as 26.3 draws them: every element's corners the right way round (26.3 turns the faces of one given backwards inward),
+     * and a particle texture for one that draws its own elements.
+     */
+    @Test
+    void blockModelsAreWhole() {
+        final List<String> wrong = new ArrayList<>();
+        for (final String path : pack.paths()) {
+            if (!path.startsWith("assets/almura/models/block/") || !path.endsWith(".json")) {
+                continue;
+            }
+            final JsonObject model = pack.json(path).getAsJsonObject();
+            if (model.get("elements") instanceof final com.google.gson.JsonArray elements && !elements.isEmpty()) {
+                if (!(model.get("textures") instanceof final JsonObject textures) || !textures.has("particle")) {
+                    wrong.add(path + ": no particle texture");
+                }
+                for (final JsonElement element : elements) {
+                    final var from = element.getAsJsonObject().getAsJsonArray("from");
+                    final var to = element.getAsJsonObject().getAsJsonArray("to");
+                    for (int axis = 0; axis < 3; axis++) {
+                        if (from.get(axis).getAsDouble() > to.get(axis).getAsDouble()) {
+                            wrong.add(path + ": an element's corners are the wrong way round");
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        report("block models not whole", wrong);
+        assertEquals(List.of(), wrong);
+    }
+
+    /**
+     * The OBJs as NeoForge reads them: each names its material library by its full path, which names its textures by id.
+     */
+    @Test
+    void objsAreAsNeoForgeReadsThem() throws IOException {
+        final List<String> wrong = new ArrayList<>();
+        final Path models = source.namespace("almura").resolve("models");
+        try (Stream<Path> files = Files.walk(models)) {
+            for (final Path obj : files.filter(path -> path.toString().endsWith(".obj")).toList()) {
+                final String mtllib = Files.readAllLines(obj).stream().map(String::trim).filter(line -> line.startsWith("mtllib ")).findFirst()
+                    .orElse(null);
+                if (mtllib == null || !mtllib.startsWith("mtllib almura:models/")) {
+                    wrong.add(models.relativize(obj) + ": " + (mtllib == null ? "no mtllib" : mtllib));
+                }
+            }
+        }
+        try (Stream<Path> files = Files.walk(models)) {
+            for (final Path mtl : files.filter(path -> path.toString().endsWith(".mtl")).toList()) {
+                for (final String line : Files.readAllLines(mtl)) {
+                    final String[] parts = line.trim().split("\\s+");
+                    if (parts.length >= 2 && parts[0].startsWith("map_") && (!parts[1].contains(":") || parts[1].endsWith(".png"))) {
+                        wrong.add(models.relativize(mtl) + ": " + line.trim());
+                    }
+                }
+            }
+        }
+        report("OBJs not as NeoForge reads them", wrong);
+        // The tv's texture isn't in the content at all (awaiting a decision)
+        assertEquals(List.of(), wrong.stream().filter(line -> !line.contains("letter/seedbarrels")).toList());
+    }
+
+    /**
+     * Wild crops in the grass mixes are ripe (only a ripe crop stands on grass), and every potion effect named is a 26.3 id.
+     */
+    @Test
+    void wildCropsAndEffectsAreRight() {
+        final ContentParser parser = new ContentParser(source);
+        final java.util.Map<String, Integer> ripe = new java.util.HashMap<>();
+        crops.forEach(crop -> ripe.put(crop.id(), crop.maxAge()));
+        final List<String> wrong = new ArrayList<>();
+        parser.grasses().forEach(mix -> mix.entries().forEach(entry -> entry.blocks().forEach(state -> {
+            if (ripe.containsKey(state.block()) && !String.valueOf(ripe.get(state.block())).equals(state.properties().get("age"))) {
+                wrong.add(mix.id() + ": " + state.block() + " at age " + state.properties().get("age") + ", ripe is " + ripe.get(state.block()));
+            }
+        })));
+        items.stream().filter(item -> item.food() != null).forEach(item -> item.food().effects().forEach(effect -> effect.effects().forEach(id -> {
+            if (net.minecraft.resources.Identifier.tryParse(id) == null) {
+                wrong.add(item.id() + ": effect " + id + " isn't an id");
+            }
+        })));
+        report("wild crops and effects not right", wrong);
+        assertEquals(List.of(), wrong);
     }
 
     @Test
