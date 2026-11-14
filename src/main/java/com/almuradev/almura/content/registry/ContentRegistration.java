@@ -131,6 +131,8 @@ public final class ContentRegistration {
             }
         });
         event.register(Registries.ITEM, helper -> {
+            // Almura's cruets: content items are handed back in them
+            com.almuradev.almura.feature.cruet.Cruets.register(helper, this::addToTab);
             for (final ItemDef def : this.ordered()) {
                 if (def.kind().equals("slab")) {
                     // A slab's item is its block's

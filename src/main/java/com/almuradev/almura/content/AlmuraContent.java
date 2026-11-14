@@ -84,6 +84,7 @@ public final class AlmuraContent {
         modBus.register(new ContentRegistration(groups, items, blocks, crops, seeds).trees(leaves, saplings, trees)
             .containers(parser.containers()));
         GrassSeeds.register(modBus);
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.register(new com.almuradev.almura.feature.cruet.Cruets());
         ContentGeneration.register(modBus, treeGeneration, grassGeneration, grasses);
         ContentPacks.register(modBus, () -> {
             final ContentPackBuilder builder = new ContentPackBuilder(source).crops(crops);

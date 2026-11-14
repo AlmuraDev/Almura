@@ -1,0 +1,22 @@
+{
+  "neoforge:conditions": [
+    { "type": "neoforge:registered", "value": "almura:food/food/pie_pumpkin" },
+    { "type": "neoforge:registered", "value": "almura:normal/ingredient/dough" },
+    { "type": "neoforge:registered", "value": "almura:normal/ingredient/cinnamon" },
+    { "type": "neoforge:registered", "value": "almura:normal/ingredient/nutmeg" }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "almura:normal/ingredient/dough",
+    "minecraft:pumpkin",
+    "minecraft:sugar",
+    "minecraft:egg",
+    "almura:normal/ingredient/glass_milk_cruet",
+    "almura:normal/ingredient/cinnamon",
+    "almura:normal/ingredient/nutmeg"
+  ],
+  "result": {
+    "id": "almura:food/food/pie_pumpkin"
+  }
+}

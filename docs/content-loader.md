@@ -115,3 +115,7 @@ mod loading (no window, no server) and check the registries and that 26.3 reads 
 - Double grass and double flowers in the grass mix are placed whole (both halves); 1.12 placed only the lower half, which fell.
 - The storage barrel's label (3.5 drew the first slot's item on paper on the barrel's sides) isn't drawn yet.
 - A container broken in creative drops nothing, so what it held is lost, as on 3.5.
+- Cruets (`almura:normal/ingredient/glass_cruet`, `glass_water_cruet`, `glass_milk_cruet`): Almura's own items (`feature/cruet`), as
+  3.5's; their models and the recipes using them are the content's. The glass cruet takes up water as a bucket does and is filled with
+  milk from a cow; the water cruet pours; recipes hand the glass cruet back. Almura's pumpkin pie (with a milk cruet) replaces vanilla's
+  (`data/minecraft/recipe/pumpkin_pie.json`). 3.5's fluid handler (pipes and tanks filling and emptying cruets) isn't ported.

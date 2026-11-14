@@ -55,5 +55,11 @@
   "almura.menu.about.person.zidane.titles.1": "Lead developer and Co-Owner of Almura Development Studios",
   "almura.menu.about.person.zidane.titles.2": "Former Spoutcraft/Spout developer",
   "almura.menu.about.titles": "Titles",
-  "almura.menu.singleplayer.empty": "No worlds yet. Create one to start playing!"
+  "almura.menu.singleplayer.empty": "No worlds yet. Create one to start playing!",
+  "item.almura.normal.ingredient.glass_cruet": "Glass Cruet",
+  "item.almura.normal.ingredient.glass_water_cruet": "Water Filled Cruet",
+  "item.almura.normal.ingredient.glass_milk_cruet": "Milk Filled Cruet",
+  "item.almura.normal.ingredient.glass_cruet.tooltip": "Container",
+  "item.almura.normal.ingredient.glass_water_cruet.tooltip": "Water Filled Container",
+  "item.almura.normal.ingredient.glass_milk_cruet.tooltip": "Milk Filled Container"
 }

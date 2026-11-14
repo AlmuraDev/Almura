@@ -79,6 +79,8 @@ final class ContentConversionTest {
         final Set<String> known = new HashSet<>(vanillaItems);
         items.forEach(item -> known.add(item.id()));
         blocks.forEach(block -> known.add(block.id()));
+        // Almura's own items the content uses (the cruets)
+        known.addAll(ContentPackBuilder.OWN_ITEMS_WITH_CONTENT_MODELS);
         builder = new ContentPackBuilder(source).crops(crops)
             .generation(parser.treeGeneration(), parser.grassGeneration(), parser.oreGeneration());
         pack = builder.build(groups, items, blocks, known::contains);
@@ -411,8 +413,7 @@ final class ContentConversionTest {
         "grief_prevention_inspector", "grief_prevention_selector", "world_edit_selector",
         "texture almura:block/letter/seedbarrels");
     private static final List<String> NOT_YET_PORTED = List.of(
-        "unknown item almura:normal/ingredient/glass_cruet", "unknown item almura:normal/ingredient/glass_milk_cruet",
-        "unknown item almura:normal/ingredient/glass_water_cruet", "unknown item almura:normal/tool/skills_handbook",
+        "unknown item almura:normal/tool/skills_handbook",
         "unknown item almura:normal/tool/harvesting_sack", "unknown item almura:normal/tool/farmers_almanac", "unknown item mocreatures:");
 
     /**
