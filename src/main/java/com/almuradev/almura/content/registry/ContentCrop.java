@@ -14,17 +14,22 @@ import com.almuradev.almura.content.def.ContentDefs.HydrationDef;
 import com.almuradev.almura.content.def.ContentDefs.Range;
 import com.almuradev.almura.mixin.BiomeAccessor;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -38,6 +43,9 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.CommonHooks;
@@ -57,6 +65,12 @@ import java.util.Map;
  *     sky for want of light.</li>
  * </ul>
  * Bone meal grows it a stage at its stage's bone meal chance. Breaking it drops what its stage lists (the loot table), nothing otherwise.
+ * <p>
+ * An {@code aquatic} crop grows in water, as on 3.5. Both kinds are planted on a bed (sand, gravel, dirt, farmland or clay) into still
+ * water and are always watered there; a {@code submerged} one (seaweed) needs water above it and is always water, a {@code surface} one
+ * (rice, wasabi) needs to stick out of it and is waterlogged while it is in water (the wild ones world generation scatters on grass are
+ * dry). A crop in water holds a water source, which 26.3 draws around it and which is left behind when the crop goes; buckets can't take
+ * it (it is no {@code BucketPickup}).
  */
 public final class ContentCrop extends CropBlock {
 
@@ -64,21 +78,25 @@ public final class ContentCrop extends CropBlock {
     private static final String HEAT_LAMP_ID = "almura:horizontal/lighting/plant_light";
     // createBlockStateDefinition runs in the super constructor, before this crop's fields are set
     private static final ThreadLocal<IntegerProperty> BUILDING_AGE = new ThreadLocal<>();
+    private static final ThreadLocal<Aquatic> BUILDING_AQUATIC = new ThreadLocal<>();
     private static @Nullable Block heatLamp;
     private static boolean heatLampResolved;
 
     private final CropDef def;
     private final IntegerProperty age;
+    private final Aquatic aquatic;
     private final VoxelShape[] shapes;
     private final Identifier seedId, soilId;
     private @Nullable Item seed;
 
     static ContentCrop create(final CropDef def, final BlockBehaviour.Properties properties) {
         BUILDING_AGE.set(ageProperty(def.maxAge()));
+        BUILDING_AQUATIC.set(Aquatic.of(def.aquatic()));
         try {
             return new ContentCrop(def, properties);
         } finally {
             BUILDING_AGE.remove();
+            BUILDING_AQUATIC.remove();
         }
     }
 
@@ -86,6 +104,10 @@ public final class ContentCrop extends CropBlock {
         super(properties);
         this.def = def;
         this.age = BUILDING_AGE.get();
+        this.aquatic = BUILDING_AQUATIC.get();
+        if (this.aquatic == Aquatic.SURFACE) {
+            this.registerDefaultState(this.defaultBlockState().setValue(BlockStateProperties.WATERLOGGED, false));
+        }
         this.shapes = new VoxelShape[def.stages().size()];
         for (final CropStageDef stage : def.stages()) {
             this.shapes[stage.age()] = ContentBlocks.shape(stage.state().shape());
@@ -128,6 +150,9 @@ public final class ContentCrop extends CropBlock {
     @Override
     protected void createBlockStateDefinition(final StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(BUILDING_AGE.get());
+        if (BUILDING_AQUATIC.get() == Aquatic.SURFACE) {
+            builder.add(BlockStateProperties.WATERLOGGED);
+        }
     }
 
     private CropStageDef stage(final BlockState state) {
@@ -140,11 +165,77 @@ public final class ContentCrop extends CropBlock {
     }
 
     /**
-     * Planted on its seed's soil: farmland, or the sand or gravel a few seeds name.
+     * Planted on its seed's soil: farmland, or the sand or gravel a few seeds name; an aquatic crop on a bed.
      */
     @Override
     protected boolean mayPlaceOn(final BlockState state, final BlockGetter level, final BlockPos pos) {
+        if (this.aquatic != Aquatic.NONE) {
+            return isBed(state);
+        }
         return BuiltInRegistries.BLOCK.getKey(state.getBlock()).equals(this.soilId);
+    }
+
+    /**
+     * What an aquatic crop grows on under water, as 3.5's sand, ground and clay materials: sand and gravel, dirt and farmland, clay.
+     */
+    private static boolean isBed(final BlockState state) {
+        return state.is(BlockTags.SAND) || state.is(Blocks.GRAVEL) || state.is(BlockTags.DIRT) || state.is(Blocks.FARMLAND)
+            || state.is(Blocks.CLAY);
+    }
+
+    /**
+     * Whether the state is in water: every state of a submerged crop, the waterlogged ones of a surface crop.
+     */
+    public boolean isInWater(final BlockState state) {
+        return this.aquatic == Aquatic.SUBMERGED
+            || this.aquatic == Aquatic.SURFACE && state.is(this) && state.getValue(BlockStateProperties.WATERLOGGED);
+    }
+
+    @Override
+    protected FluidState getFluidState(final BlockState state) {
+        return this.isInWater(state) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
+    }
+
+    /**
+     * An aquatic crop only goes into still water on a bed: a submerged one with water above, a surface one with air above. A seed aimed
+     * through the water at the bed lands in the water on it.
+     */
+    @Override
+    public @Nullable BlockState getStateForPlacement(final BlockPlaceContext context) {
+        if (this.aquatic == Aquatic.NONE) {
+            return super.getStateForPlacement(context);
+        }
+        final LevelReader level = context.getLevel();
+        final BlockPos pos = context.getClickedPos();
+        final FluidState water = level.getFluidState(pos);
+        if (!water.is(Fluids.WATER) || !water.isSource() || !isBed(level.getBlockState(pos.below()))) {
+            return null;
+        }
+        return switch (this.aquatic) {
+            case SUBMERGED -> level.getFluidState(pos.above()).is(FluidTags.WATER) ? this.defaultBlockState() : null;
+            case SURFACE -> level.isEmptyBlock(pos.above()) ? this.defaultBlockState().setValue(BlockStateProperties.WATERLOGGED, true) : null;
+            case NONE -> null;
+        };
+    }
+
+    /**
+     * Water keeps flowing around a crop in water; one that can't stay is destroyed (dropping its loot) and leaves its water behind.
+     */
+    @Override
+    protected BlockState updateShape(final BlockState state, final LevelReader level, final ScheduledTickAccess ticks, final BlockPos pos,
+        final Direction direction, final BlockPos neighbourPos, final BlockState neighbour, final RandomSource random) {
+        if (this.isInWater(state)) {
+            ticks.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+        }
+        return super.updateShape(state, level, ticks, pos, direction, neighbourPos, neighbour, random);
+    }
+
+    /**
+     * Water poured onto a crop in water doesn't wash it away (it is water already).
+     */
+    @Override
+    protected boolean canBeReplaced(final BlockState state, final Fluid fluid) {
+        return !this.isInWater(state) && super.canBeReplaced(state, fluid);
     }
 
     /**
@@ -153,6 +244,11 @@ public final class ContentCrop extends CropBlock {
      */
     @Override
     protected boolean canSurvive(final BlockState state, final LevelReader level, final BlockPos pos) {
+        // In water: on a bed, submerged under water, a surface crop sticking out of it (light underwater is the growth rule's business)
+        if (this.isInWater(state)) {
+            final boolean waterAbove = level.getFluidState(pos.above()).is(FluidTags.WATER);
+            return isBed(level.getBlockState(pos.below())) && (this.aquatic == Aquatic.SUBMERGED) == waterAbove;
+        }
         if (this.isMaxAge(state) && level.getBlockState(pos.below()).is(Blocks.GRASS_BLOCK)) {
             return true;
         }
@@ -175,7 +271,8 @@ public final class ContentCrop extends CropBlock {
             return;
         }
         final CropStageDef stage = this.stage(state);
-        boolean rollback = !this.isFertile(level, pos.below(), stage);
+        // A crop in water is always watered: the hydration check is for land crops
+        boolean rollback = !this.isInWater(state) && !this.isFertile(level, pos.below(), stage);
         // The heat lamp scan reads 75 blocks: run it at most once, and only when its answer matters
         Boolean heatLampNear = null;
         if (!rollback && (stage.growthChance() != null || stage.light() != null || stage.temperature() != null)) {
@@ -234,8 +331,8 @@ public final class ContentCrop extends CropBlock {
             if (age > 0) {
                 level.setBlock(pos, state.setValue(this.age, age - 1), Block.UPDATE_CLIENTS);
             } else {
-                // Let it roll back from its first stage and it's lost
-                level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+                // Let it roll back from its first stage and it's lost, leaving its water if it grew in it
+                level.setBlock(pos, state.getFluidState().createLegacyBlock(), Block.UPDATE_CLIENTS);
             }
         }
     }
@@ -347,5 +444,23 @@ public final class ContentCrop extends CropBlock {
     public void performBonemeal(final ServerLevel level, final RandomSource random, final BlockPos pos, final BlockState state,
         final BonemealSource source) {
         level.setBlock(pos, state.setValue(this.age, Math.min(this.getMaxAge(), this.getAge(state) + 1)), Block.UPDATE_CLIENTS);
+    }
+
+    /**
+     * How a crop grows in water ({@code aquatic}): not at all, fully under water, or sticking out of it.
+     */
+    enum Aquatic {
+        NONE, SUBMERGED, SURFACE;
+
+        static Aquatic of(final @Nullable String aquatic) {
+            if (aquatic == null) {
+                return NONE;
+            }
+            return switch (aquatic) {
+                case "submerged" -> SUBMERGED;
+                case "surface" -> SURFACE;
+                default -> throw new IllegalArgumentException("Unknown aquatic mode: " + aquatic);
+            };
+        }
     }
 }

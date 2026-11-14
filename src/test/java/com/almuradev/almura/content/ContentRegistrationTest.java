@@ -61,6 +61,18 @@ final class ContentRegistrationTest {
         assertTrue(barleySeed instanceof BlockItem seedItem && seedItem.getBlock() == barley, "barley seed plants barley");
         assertEquals("item.almura.seed.barley_seed", barleySeed.getDescriptionId());
         assertTrue(barley.defaultBlockState().isRandomlyTicking(), "crops grow");
+        // Aquatic crops: seaweed is always water, rice is waterlogged in water and dry in the wild, barley is a land crop
+        final net.minecraft.world.level.block.state.properties.BooleanProperty waterlogged =
+            net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
+        final Block seaweed = BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:crop/seaweed"));
+        assertTrue(seaweed.defaultBlockState().getFluidState().isSource(), "seaweed holds water");
+        final Block rice = BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:crop/rice"));
+        assertTrue(rice.defaultBlockState().getFluidState().isEmpty(), "wild rice is dry");
+        assertTrue(rice.defaultBlockState().setValue(waterlogged, true).getFluidState().isSource(), "paddy rice holds water");
+        assertTrue(BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:crop/wasabi")).defaultBlockState().hasProperty(waterlogged),
+            "wasabi grows out of water");
+        assertTrue(barley.defaultBlockState().getFluidState().isEmpty() && !barley.defaultBlockState().hasProperty(waterlogged),
+            "barley is a land crop");
         assertTrue(BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:leaf/cherry_tree_leaf"))
             instanceof com.almuradev.almura.content.registry.ContentLeaves, "leaves are leaves");
         assertTrue(BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:sapling/cherry_tree_sapling"))
