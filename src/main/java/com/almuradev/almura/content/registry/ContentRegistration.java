@@ -135,6 +135,9 @@ public final class ContentRegistration {
             com.almuradev.almura.feature.cruet.Cruets.register(helper, this::addToTab);
             // Almura's harvesting sack: picks the content's sack_harvest crops
             com.almuradev.almura.feature.harvestsack.HarvestingSack.register(helper, this::addToTab);
+            // Almura's Farmer's Almanac and Skills Handbook
+            com.almuradev.almura.feature.almanac.FarmersAlmanac.register(helper, this::addToTab);
+            com.almuradev.almura.feature.handbook.SkillsHandbook.register(helper, this::addToTab);
             for (final ItemDef def : this.ordered()) {
                 if (def.kind().equals("slab")) {
                     // A slab's item is its block's

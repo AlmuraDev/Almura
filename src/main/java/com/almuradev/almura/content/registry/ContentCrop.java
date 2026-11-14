@@ -162,7 +162,10 @@ public final class ContentCrop extends CropBlock {
         }
     }
 
-    private CropStageDef stage(final BlockState state) {
+    /**
+     * The content's rules for the state's stage (what the Farmer's Almanac shows).
+     */
+    public CropStageDef stage(final BlockState state) {
         return this.def.stages().get(Math.min(this.getAge(state), this.def.maxAge()));
     }
 
@@ -364,7 +367,10 @@ public final class ContentCrop extends CropBlock {
         return false;
     }
 
-    private static boolean matches(final HydrationDef hydration, final BlockState state) {
+    /**
+     * Whether the state is one of the hydration's blocks, with its properties in range.
+     */
+    public static boolean matches(final HydrationDef hydration, final BlockState state) {
         final Identifier id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
         for (final HydrationBlockDef block : hydration.blocks()) {
             if (!id.toString().equals(block.block())) {
@@ -388,7 +394,7 @@ public final class ContentCrop extends CropBlock {
     /**
      * The biome's temperature here, adjusted for height as 1.12's {@code Biome.getTemperature(pos)} was.
      */
-    private static float temperature(final ServerLevel level, final BlockPos pos) {
+    public static float temperature(final Level level, final BlockPos pos) {
         final Biome biome = level.getBiome(pos).value();
         return ((BiomeAccessor) (Object) biome).almura$getTemperature(pos, level.getSeaLevel());
     }
@@ -396,7 +402,7 @@ public final class ContentCrop extends CropBlock {
     /**
      * Whether a heat lamp ({@code plant_light}) hangs over the crop: 2 around, 1 to 3 above.
      */
-    private static boolean heatLampNear(final Level level, final BlockPos pos) {
+    public static boolean heatLampNear(final Level level, final BlockPos pos) {
         if (!heatLampResolved) {
             heatLamp = BuiltInRegistries.BLOCK.getOptional(Identifier.parse(HEAT_LAMP_ID)).orElse(null);
             heatLampResolved = true;

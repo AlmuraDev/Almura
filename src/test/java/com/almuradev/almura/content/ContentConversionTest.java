@@ -79,8 +79,10 @@ final class ContentConversionTest {
         final Set<String> known = new HashSet<>(vanillaItems);
         items.forEach(item -> known.add(item.id()));
         blocks.forEach(block -> known.add(block.id()));
-        // Almura's own items the content uses (the cruets)
+        // Almura's own items the content uses (the cruets, the harvesting sack, the Farmer's Almanac and the Skills Handbook)
         known.addAll(ContentPackBuilder.OWN_ITEMS_WITH_CONTENT_MODELS);
+        known.add("almura:normal/tool/farmers_almanac");
+        known.add("almura:normal/tool/skills_handbook");
         builder = new ContentPackBuilder(source).crops(crops)
             .generation(parser.treeGeneration(), parser.grassGeneration(), parser.oreGeneration());
         pack = builder.build(groups, items, blocks, known::contains);
@@ -412,9 +414,7 @@ final class ContentConversionTest {
     private static final List<String> AWAITING_DECISION = List.of(
         "grief_prevention_inspector", "grief_prevention_selector", "world_edit_selector",
         "texture almura:block/letter/seedbarrels");
-    private static final List<String> NOT_YET_PORTED = List.of(
-        "unknown item almura:normal/tool/skills_handbook",
-        "unknown item almura:normal/tool/farmers_almanac", "unknown item mocreatures:");
+    private static final List<String> NOT_YET_PORTED = List.of("unknown item mocreatures:");
 
     /**
      * The 4.0 content is right as it is: the loader repairs nothing, so anything it had to leave out is a mistake in the content (fix it in

@@ -124,6 +124,12 @@ mod loading (no window, no server) and check the registries and that 26.3 reads 
   it), its drops into the sack, the crop back at its `reset_age` (in its water for an aquatic one). Right click anything but a crop,
   the ground or a plant to open it: a single chest of 27 slots taking only what those crops drop, kept on the sack
   (`minecraft:container`). 3.5 also posted Sponge's drop event for Skills' XP; Skills isn't on 4.0 yet.
+- The Farmer's Almanac and Skills Handbook (`almura:normal/tool/farmers_almanac`, `skills_handbook`; `feature/almanac`,
+  `feature/handbook`): Almura's own items, with 3.5's models and textures in the jar (the content has none); their recipes are
+  the content's. The almanac (permission `almura.item.farmers_almanac`, everyone's by default) shows a field spot's needs and
+  conditions on farmland, a crop or a pipe, and the list of every crop otherwise, as 3.5's. Not yet: the Skills farming levels
+  (no Skills on 4.0) and a crop's growth stages drawn as 3D models (Strata has no block model visual yet). The handbook reads the
+  Skills plugin, so on 4.0 it says the server has no skills, as 3.5 did on a server without it.
 - Cruets (`almura:normal/ingredient/glass_cruet`, `glass_water_cruet`, `glass_milk_cruet`): Almura's own items (`feature/cruet`), as
   3.5's; their models and the recipes using them are the content's. The glass cruet takes up water as a bucket does and is filled with
   milk from a cow; the water cruet pours; recipes hand the glass cruet back. Almura's pumpkin pie (with a milk cruet) replaces vanilla's

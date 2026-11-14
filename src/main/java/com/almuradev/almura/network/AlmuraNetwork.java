@@ -48,5 +48,9 @@ public final class AlmuraNetwork {
         registrar.playToClient(ClientboundWorldName.TYPE, ClientboundWorldName.CODEC);
         registrar.playToClient(ClientboundServerTps.TYPE, ClientboundServerTps.CODEC);
         registrar.playToClient(ClientboundPlayerWorlds.TYPE, ClientboundPlayerWorlds.CODEC);
+        registrar.playToClient(com.almuradev.almura.feature.almanac.network.ClientboundAlmanacField.TYPE,
+            com.almuradev.almura.feature.almanac.network.ClientboundAlmanacField.CODEC);
+        registrar.playToClient(com.almuradev.almura.feature.almanac.network.ClientboundAlmanacCrops.TYPE,
+            com.almuradev.almura.feature.almanac.network.ClientboundAlmanacCrops.CODEC);
     }
 }

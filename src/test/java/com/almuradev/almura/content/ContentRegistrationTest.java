@@ -47,8 +47,8 @@ final class ContentRegistrationTest {
         final long crops = 85;
         assertEquals(blocks + crops, count("almura", BuiltInRegistries.BLOCK.keySet()), "blocks");
         // Normal, food, hoe, sickle and seed items, and an item for each block but the crops (their item is their seed)
-        // and Almura's three cruets and harvesting sack
-        assertEquals(186 + 413 + 5 + 5 + 85 + blocks + 3 + 1,count("almura", BuiltInRegistries.ITEM.keySet()), "items");
+        // and Almura's three cruets, harvesting sack, Farmer's Almanac and Skills Handbook
+        assertEquals(186 + 413 + 5 + 5 + 85 + blocks + 3 + 3, count("almura", BuiltInRegistries.ITEM.keySet()), "items");
         final Item cruet = BuiltInRegistries.ITEM.getValue(com.almuradev.almura.feature.cruet.Cruets.EMPTY);
         for (final Identifier filled : new Identifier[] {com.almuradev.almura.feature.cruet.Cruets.WATER, com.almuradev.almura.feature.cruet.Cruets.MILK}) {
             final var remainder = BuiltInRegistries.ITEM.getValue(filled).getCraftingRemainder();

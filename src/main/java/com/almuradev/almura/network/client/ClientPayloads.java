@@ -36,5 +36,9 @@ public final class ClientPayloads {
         event.register(ClientboundWorldName.TYPE, (payload, context) -> ServerHudData.setWorldName(payload.name()));
         event.register(ClientboundServerTps.TYPE, (payload, context) -> ServerHudData.setTps(payload.tps()));
         event.register(ClientboundPlayerWorlds.TYPE, (payload, context) -> ServerHudData.updatePlayerWorlds(payload.replace(), payload.worlds()));
+        event.register(com.almuradev.almura.feature.almanac.network.ClientboundAlmanacField.TYPE,
+            (payload, context) -> com.almuradev.almura.feature.almanac.client.AlmanacScreens.openField(payload));
+        event.register(com.almuradev.almura.feature.almanac.network.ClientboundAlmanacCrops.TYPE,
+            (payload, context) -> com.almuradev.almura.feature.almanac.client.AlmanacScreens.openCrops(payload));
     }
 }

@@ -63,5 +63,9 @@
   "item.almura.normal.ingredient.glass_water_cruet.tooltip": "Water Filled Container",
   "item.almura.normal.ingredient.glass_milk_cruet.tooltip": "Milk Filled Container",
   "item.almura.normal.tool.harvesting_sack": "Harvesting Sack",
-  "item.almura.normal.tool.harvesting_sack.tooltip": "Right click ripe berries and other pickable crops to harvest them"
+  "item.almura.normal.tool.harvesting_sack.tooltip": "Right click ripe berries and other pickable crops to harvest them",
+  "item.almura.normal.tool.farmers_almanac": "Farmer's Almanac",
+  "item.almura.normal.tool.farmers_almanac.tooltip": "Displays useful information on farming",
+  "item.almura.normal.tool.skills_handbook": "Skills Handbook",
+  "item.almura.normal.tool.skills_handbook.tooltip": "Shows what each skill needs and rewards"
 }
