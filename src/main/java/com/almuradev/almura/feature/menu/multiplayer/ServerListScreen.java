@@ -49,8 +49,8 @@ public final class ServerListScreen implements Screen {
 
     // Almura's servers; Development is left out of the list while it is offline
     private static final List<Server> SERVERS = List.of(
-        new Server("almura.menu.server.live.name", "srv1.almuramc.com", 25566, false),
-        new Server("almura.menu.server.dev.name", "dev.almuramc.com", 25566, true));
+        new Server("almura.menu.server.live.name", "srv1.almuramc.com", 25565, false),
+        new Server("almura.menu.server.dev.name", "dev.almuramc.com", 25565, true));
 
     private static final SpriteId WHITE = SpriteId.of(Almura.ID, "theme/white");
     private static final long QUERY_EVERY_MILLIS = 3000L;
