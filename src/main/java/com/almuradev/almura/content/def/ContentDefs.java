@@ -168,4 +168,69 @@ public final class ContentDefs {
      */
     public record SeedDef(String id, String crop, String soil, @Nullable Range grassChance, int grassAmountMin, int grassAmountMax) {
     }
+
+    /**
+     * A range for some biomes: {@code biomes} names biome ids ({@code minecraft:plains}) or whole namespaces ({@code minecraft},
+     * {@code terraincontrol}); empty for the default range.
+     */
+    public record BiomeRange(List<String> biomes, Range range) {
+
+        public static boolean matches(final List<String> biomes, final String biome) {
+            if (biomes.isEmpty()) {
+                return true;
+            }
+            for (final String name : biomes) {
+                if (name.contains(":") ? name.equals(biome) : biome.startsWith(name + ":")) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /**
+         * The range for a biome, as 3.5 chose it: a range naming the biome (or its namespace), else the default, else the first.
+         */
+        public static @Nullable Range pick(final List<BiomeRange> ranges, final String biome) {
+            BiomeRange fallback = null;
+            for (final BiomeRange range : ranges) {
+                if (!range.biomes().isEmpty() && matches(range.biomes(), biome)) {
+                    return range.range();
+                }
+                if (range.biomes().isEmpty() && fallback == null) {
+                    fallback = range;
+                }
+            }
+            return fallback != null ? fallback.range() : ranges.isEmpty() ? null : ranges.getFirst().range();
+        }
+    }
+
+    /**
+     * Leaves ({@code content/block/leaf}): the fruit leaf they grow into the air beside them ({@code spread}) at their chance, and what
+     * they drop when they decay. What they drop when broken is their state's drops.
+     */
+    public record LeafDef(String id, @Nullable String spreadBlock, List<BiomeRange> spreadChance, List<DecayDef> decay) {
+    }
+
+    /**
+     * Drops on decay, at a chance (percent) for the biome.
+     */
+    public record DecayDef(List<BiomeRange> chance, List<DropDef> drops) {
+    }
+
+    /**
+     * A sapling ({@code content/block/sapling}) and the tree it grows ({@code content/tree}).
+     */
+    public record SaplingDef(String id, String tree) {
+    }
+
+    /**
+     * A tree ({@code content/tree}): its trunk height for the biome (a minimum plus a variance), its log, leaves and fruit leaves (which
+     * replace leaves at their chance), and its shape: {@code normal}, {@code big} (1.12's big oak) or {@code palm}.
+     */
+    public record TreeDef(String id, List<TreeHeightDef> heights, String log, String leaves, @Nullable String fruit, List<BiomeRange> fruitChance,
+        String shape) {
+    }
+
+    public record TreeHeightDef(List<String> biomes, int min, int varianceMin, int varianceMax) {
+    }
 }

@@ -66,7 +66,7 @@ Translations are keyed by the file's name in its folder (`aniseseed.name`, `anis
 | `block/slab`, `item/slab` | 220 + 110 | done: one 26.3 slab per single slab, its double state the 1.12 double slab |
 | `block/container` | 69 | later: needs the container feature |
 | `block/crop`, `item/seed` | 85 + 85 | done: 3.5's growth (chance, light, temperature, heat lamp, hydration, rollback, even fields), bone meal at the content's chance, drops by stage, seeds from grass, 3.5's farmland; aquatic crops and harvesting sacks later |
-| `block/leaf`, `block/sapling`, `tree` | 42 + 25 + 25 | later: decay, spread, tree growth |
+| `block/leaf`, `block/sapling`, `tree` | 42 + 25 + 25 | done: leaves decay away from logs (vanilla's distance, 6 blocks; 1.12's was 4) with their decay drops at the biome's chance, fruit spreads into the air beside them, shears and silk touch take the leaf; saplings grow 3.5's trees (normal, big, palm) with fruit leaves at the tree's chance; ranges chosen by biome as 3.5 chose them |
 | `generation`, `grass`, `material`, `block_sound_group` | 27 + 1 + 1 + 1 | later: world generation is datapack based in 26.3 |
 | `flicker`, `drip` (block state options), blockstate `transform`s | 13 + 5 + 121 | later: client effects and item display |
 
@@ -95,3 +95,6 @@ mod loading (no window, no server) and check the registries and that 26.3 reads 
 - Seeds from grass: 3.5's hook asked Forge for a grass seed first, and Forge's list always held wheat, so its Almura seed roll never
   ran. 4.0 does what that code meant: one break in eight, when vanilla's wheat seed didn't drop, picks a random Almura seed and drops
   it at its `grass` chance (`GrassSeeds`). Say if the live server should keep 3.5's actual behaviour (no Almura seeds from grass).
+- `flammability` and `fire_spread_speed` (25 leaves set them, at vanilla's 30 and 60) aren't read yet, so content blocks don't catch
+  fire from a neighbouring fire.
+- Leaf decay reaches 6 blocks from a log (26.3's leaves), not 1.12's 4; the content's trees are well inside either.

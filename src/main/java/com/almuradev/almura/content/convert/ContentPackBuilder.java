@@ -110,6 +110,7 @@ public final class ContentPackBuilder {
             this.lootTable(block, knownItem);
         }
         this.cropTags(blocks);
+        this.treeTags(blocks);
         this.toolTags(blocks);
         this.sickleTag(items);
         this.recipes(knownItem);
@@ -778,6 +779,10 @@ public final class ContentPackBuilder {
             this.cropLootTable(block, knownItem);
             return;
         }
+        if (block.kind().equals("leaf")) {
+            this.leafLootTable(block, knownItem);
+            return;
+        }
         final JsonArray pools = new JsonArray();
         List<DropDef> drops = new ArrayList<>();
         for (final DropDef drop : block.state().drops()) {
@@ -828,6 +833,63 @@ public final class ContentPackBuilder {
         table.add("pools", pools);
         table.addProperty("random_sequence", namespace(block.id()) + ":blocks/" + path(block.id()));
         this.pack.putJson("data/" + namespace(block.id()) + "/loot_table/blocks/" + path(block.id()) + ".json", table);
+    }
+
+    /**
+     * Leaves give themselves to shears or silk touch, as 1.12's did; otherwise what the content lists (a sapling at a chance, fruit),
+     * and nothing when it lists nothing. Their decay drops are {@code ContentLeaves}'s.
+     */
+    private void leafLootTable(final BlockDef block, final Predicate<String> knownItem) {
+        final JsonArray pools = new JsonArray();
+        final JsonObject shearsOrSilk = new JsonObject();
+        shearsOrSilk.addProperty("type", "minecraft:any_of");
+        final JsonArray tools = new JsonArray();
+        tools.add("minecraft:tool/can_shear");
+        tools.add("minecraft:tool/can_silk_touch");
+        shearsOrSilk.add("terms", tools);
+        final JsonObject itself = pool(block.id(), 1, 1, 0, shearsOrSilk);
+        pools.add(itself);
+        final JsonObject otherwise = new JsonObject();
+        otherwise.addProperty("type", "minecraft:inverted");
+        otherwise.add("term", shearsOrSilk.deepCopy());
+        for (final DropDef drop : block.state().drops()) {
+            if (!knownItem.test(drop.item())) {
+                this.problems.add(block.id() + ": drops " + drop.item() + ", which doesn't exist; left out");
+                continue;
+            }
+            // "amount": 0 with a bonus is a chance of the bonus alone (a sapling a quarter of the time)
+            if (drop.amountMax() > 0) {
+                pools.add(pool(drop.item(), drop.amountMin(), drop.amountMax(), 0, otherwise.deepCopy()));
+            }
+            if (drop.bonusAmount() > 0 && drop.bonusChance() > 0) {
+                pools.add(pool(drop.item(), drop.bonusAmount(), drop.bonusAmount(), drop.bonusChance(), otherwise.deepCopy()));
+            }
+        }
+        final JsonObject table = new JsonObject();
+        table.addProperty("type", "minecraft:block");
+        table.add("pools", pools);
+        table.addProperty("random_sequence", namespace(block.id()) + ":blocks/" + path(block.id()));
+        this.pack.putJson("data/" + namespace(block.id()) + "/loot_table/blocks/" + path(block.id()) + ".json", table);
+    }
+
+    /**
+     * The content's logs are logs to the game ({@code minecraft:logs_that_burn}, so {@code minecraft:logs}: what keeps leaves from
+     * decaying), its leaves leaves (shears and hoes cut them quickly), its saplings saplings.
+     */
+    private void treeTags(final List<BlockDef> blocks) {
+        final Map<String, String> tags = Map.of("log", "logs_that_burn", "leaf", "leaves", "sapling", "saplings");
+        tags.forEach((kind, tag) -> {
+            final JsonArray values = new JsonArray();
+            blocks.stream().filter(block -> block.kind().equals(kind)).forEach(block -> values.add(block.id()));
+            if (!values.isEmpty()) {
+                final JsonObject json = new JsonObject();
+                json.addProperty("replace", false);
+                json.add("values", values);
+                this.pack.putJson("data/minecraft/tags/block/" + tag + ".json", json);
+                // The items too, for recipes and fuel
+                this.pack.putJson("data/minecraft/tags/item/" + tag + ".json", json.deepCopy());
+            }
+        });
     }
 
     /**

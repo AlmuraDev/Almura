@@ -46,7 +46,7 @@ final class ContentDataTest {
         final List<String> failures = new ArrayList<>();
         int recipes = 0, tables = 0;
         for (final String path : pack.paths()) {
-            final JsonElement json = pack.json(path);
+            final JsonElement json = withoutNamedPredicates(pack.json(path));
             if (path.contains("/recipe/")) {
                 recipes++;
                 // Tags load with a world's data, so this test has none; a recipe naming one ("#c:dyes") is right in the game
@@ -81,6 +81,46 @@ final class ContentDataTest {
      * 26.3 ignores fields it doesn't know (1.20's "conditions" and "functions" in a loot table read as nothing, so every drop dropped
      * always): what 26.3 writes back from what it read must still hold everything that was given.
      */
+    /**
+     * Named predicates ({@code minecraft:tool/can_shear}, as vanilla's leaves use) are world data, which this test hasn't: each stands in
+     * as a condition it has, so the rest of the table is still checked.
+     */
+    private static JsonElement withoutNamedPredicates(final JsonElement json) {
+        if (json == null) {
+            return null;
+        }
+        final JsonElement copy = json.deepCopy();
+        replaceNamed(copy);
+        return copy;
+    }
+
+    private static void replaceNamed(final JsonElement json) {
+        if (json instanceof final com.google.gson.JsonObject object) {
+            for (final String key : java.util.Set.copyOf(object.keySet())) {
+                final JsonElement value = object.get(key);
+                if ((key.equals("term") || key.equals("condition")) && value.isJsonPrimitive() && value.getAsString().startsWith("minecraft:tool/")) {
+                    object.add(key, standIn());
+                } else {
+                    replaceNamed(value);
+                }
+            }
+        } else if (json instanceof final com.google.gson.JsonArray array) {
+            for (int i = 0; i < array.size(); i++) {
+                if (array.get(i).isJsonPrimitive() && array.get(i).getAsString().startsWith("minecraft:tool/")) {
+                    array.set(i, standIn());
+                } else {
+                    replaceNamed(array.get(i));
+                }
+            }
+        }
+    }
+
+    private static com.google.gson.JsonObject standIn() {
+        final com.google.gson.JsonObject condition = new com.google.gson.JsonObject();
+        condition.addProperty("type", "minecraft:survives_explosion");
+        return condition;
+    }
+
     private static boolean isDefault(final JsonElement value) {
         if (value.isJsonPrimitive()) {
             final var primitive = value.getAsJsonPrimitive();

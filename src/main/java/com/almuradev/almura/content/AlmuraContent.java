@@ -12,6 +12,9 @@ import com.almuradev.almura.content.convert.ContentPack;
 import com.almuradev.almura.content.convert.ContentPackBuilder;
 import com.almuradev.almura.content.def.ContentDefs.BlockDef;
 import com.almuradev.almura.content.def.ContentDefs.CropDef;
+import com.almuradev.almura.content.def.ContentDefs.LeafDef;
+import com.almuradev.almura.content.def.ContentDefs.SaplingDef;
+import com.almuradev.almura.content.def.ContentDefs.TreeDef;
 import com.almuradev.almura.content.def.ContentDefs.SeedDef;
 import com.almuradev.almura.content.def.ContentDefs.ItemDef;
 import com.almuradev.almura.content.def.ContentDefs.ItemGroupDef;
@@ -39,7 +42,7 @@ public final class AlmuraContent {
 
     // The kinds of content loaded so far; the rest follow as they are ported
     public static final Set<String> ITEM_KINDS = Set.of("normal", "food", "slab", "tool_hoe", "tool_sickle", "seed");
-    public static final Set<String> BLOCK_KINDS = Set.of("normal", "horizontal", "log", "flower", "stair", "slab", "crop");
+    public static final Set<String> BLOCK_KINDS = Set.of("normal", "horizontal", "log", "flower", "stair", "slab", "crop", "leaf", "sapling");
 
     private AlmuraContent() {
     }
@@ -62,11 +65,14 @@ public final class AlmuraContent {
         final List<BlockDef> blocks = parser.blocks(BLOCK_KINDS);
         final List<SeedDef> seeds = parser.seeds();
         final List<CropDef> crops = parser.crops(seeds);
+        final List<LeafDef> leaves = parser.leaves();
+        final List<SaplingDef> saplings = parser.saplings();
+        final List<TreeDef> trees = parser.trees();
         source.problems().forEach(problem -> Almura.LOGGER.warn("Content: {}", problem));
-        Almura.LOGGER.info("Loaded Almura content from {}: {} creative tabs, {} items, {} blocks ({} crops)", root.toAbsolutePath(),
-            groups.size(), items.size(), blocks.size(), crops.size());
+        Almura.LOGGER.info("Loaded Almura content from {}: {} creative tabs, {} items, {} blocks ({} crops, {} leaves, {} saplings), {} trees",
+            root.toAbsolutePath(), groups.size(), items.size(), blocks.size(), crops.size(), leaves.size(), saplings.size(), trees.size());
 
-        modBus.register(new ContentRegistration(groups, items, blocks, crops, seeds));
+        modBus.register(new ContentRegistration(groups, items, blocks, crops, seeds).trees(leaves, saplings, trees));
         GrassSeeds.register(modBus);
         ContentPacks.register(modBus, () -> {
             final ContentPackBuilder builder = new ContentPackBuilder(source).crops(crops);

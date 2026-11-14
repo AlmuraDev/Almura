@@ -10,6 +10,8 @@ package com.almuradev.almura.content.registry;
 import com.almuradev.almura.content.def.ContentDefs.BlockDef;
 import com.almuradev.almura.content.def.ContentDefs.CropDef;
 import com.almuradev.almura.content.def.ContentDefs.CropStageDef;
+import com.almuradev.almura.content.def.ContentDefs.LeafDef;
+import com.almuradev.almura.content.def.ContentDefs.SaplingDef;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import com.almuradev.almura.content.def.ContentDefs.Box;
 import com.almuradev.almura.content.def.ContentDefs.StateDef;
@@ -93,6 +95,26 @@ public final class ContentBlocks {
         return ContentCrop.create(crop, properties);
     }
 
+    /**
+     * Leaves: vanilla's leaves' properties (they tick, don't suffocate, break when pushed), 1.12's leaf hardness of 0.2 unless the content
+     * gives one.
+     */
+    public static ContentLeaves createLeaves(final BlockDef def, final LeafDef leaf) {
+        final BlockBehaviour.Properties properties = properties(def).randomTicks().noOcclusion().isSuffocating((state, level, pos) -> false)
+            .isRedstoneConductor((state, level, pos) -> false).pushReaction(PushReaction.POPPED);
+        if (Float.isNaN(def.state().hardness())) {
+            properties.strength(0.2f, Float.isNaN(def.state().resistance()) ? 0.2f : def.state().resistance() * RESISTANCE_SCALE);
+        }
+        return new ContentLeaves(leaf, properties);
+    }
+
+    /**
+     * A sapling: nothing collides with it and it ticks to grow.
+     */
+    public static ContentSapling createSapling(final BlockDef def, final SaplingDef sapling) {
+        return new ContentSapling(sapling, properties(def).noCollision().randomTicks().pushReaction(PushReaction.POPPED));
+    }
+
     static BlockBehaviour.Properties properties(final BlockDef def) {
         final StateDef state = def.state();
         final String material = path(def.material());
@@ -112,7 +134,8 @@ public final class ContentBlocks {
         // furniture that doesn't fill its space, like chairs); otherwise only when it doesn't say it isn't
         final boolean modelled = def.kind().equals("normal") || def.kind().equals("horizontal");
         final boolean opaque = modelled ? Boolean.TRUE.equals(state.opaque()) : !Boolean.FALSE.equals(state.opaque());
-        if (!opaque || material.equals("ag") || def.kind().equals("flower") || def.kind().equals("crop")) {
+        if (!opaque || material.equals("ag") || def.kind().equals("flower") || def.kind().equals("crop")
+            || def.kind().equals("leaf") || def.kind().equals("sapling")) {
             properties.noOcclusion();
         }
         // Rock and metal needed the right tool to drop anything, as on 1.12

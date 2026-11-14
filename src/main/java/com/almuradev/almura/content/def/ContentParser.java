@@ -7,7 +7,13 @@
  */
 package com.almuradev.almura.content.def;
 
+import com.almuradev.almura.content.def.ContentDefs.BiomeRange;
 import com.almuradev.almura.content.def.ContentDefs.BlockDef;
+import com.almuradev.almura.content.def.ContentDefs.DecayDef;
+import com.almuradev.almura.content.def.ContentDefs.LeafDef;
+import com.almuradev.almura.content.def.ContentDefs.SaplingDef;
+import com.almuradev.almura.content.def.ContentDefs.TreeDef;
+import com.almuradev.almura.content.def.ContentDefs.TreeHeightDef;
 import com.almuradev.almura.content.def.ContentDefs.CropDef;
 import com.almuradev.almura.content.def.ContentDefs.CropStageDef;
 import com.almuradev.almura.content.def.ContentDefs.HydrationBlockDef;
@@ -123,6 +129,130 @@ public final class ContentParser {
                 string(json, "block"), string(json, "single")));
         }
         return blocks;
+    }
+
+    /**
+     * The leaves ({@code content/block/leaf}): their fruit spread and decay drops.
+     */
+    public List<LeafDef> leaves() {
+        final List<LeafDef> leaves = new ArrayList<>();
+        for (final ContentFile file : this.source.files("block")) {
+            if (!kind(file).equals("leaf")) {
+                continue;
+            }
+            final JsonObject state = this.resolveState(file, ContentParser.DEFAULT_STATE);
+            if (state == null) {
+                continue;
+            }
+            final JsonObject spread = object(state, "spread");
+            final List<DecayDef> decay = new ArrayList<>();
+            final JsonObject action = object(state, "action");
+            if (action != null && action.get("decay") instanceof final JsonArray decays) {
+                for (final JsonElement element : decays) {
+                    if (element instanceof final JsonObject entry) {
+                        decay.add(new DecayDef(biomeRanges(entry.get("chance")), drops(entry.get("drop"))));
+                    }
+                }
+            }
+            leaves.add(new LeafDef(file.id(), spread == null ? null : string(spread, "block"),
+                spread == null ? List.of() : biomeRanges(spread.get("chance")), decay));
+        }
+        return leaves;
+    }
+
+    /**
+     * The saplings ({@code content/block/sapling}) and the trees they grow.
+     */
+    public List<SaplingDef> saplings() {
+        final List<SaplingDef> saplings = new ArrayList<>();
+        for (final ContentFile file : this.source.files("block")) {
+            if (!kind(file).equals("sapling")) {
+                continue;
+            }
+            final JsonObject state = this.resolveState(file, ContentParser.DEFAULT_STATE);
+            final String tree = state == null ? null : string(state, "tree");
+            if (tree == null) {
+                this.source.problem(file.file(), "Sapling names no tree");
+                continue;
+            }
+            saplings.add(new SaplingDef(file.id(), tree));
+        }
+        return saplings;
+    }
+
+    /**
+     * The trees ({@code content/tree}).
+     */
+    public List<TreeDef> trees() {
+        final List<TreeDef> trees = new ArrayList<>();
+        for (final ContentFile file : this.source.files("tree")) {
+            final JsonObject json = file.json();
+            final String log = string(json, "log"), leaves = string(json, "leaves");
+            if (log == null || leaves == null) {
+                this.source.problem(file.file(), "Tree names no log or leaves");
+                continue;
+            }
+            final List<TreeHeightDef> heights = new ArrayList<>();
+            final JsonElement height = json.get("height");
+            for (final JsonElement element : height instanceof final JsonArray array ? array : height == null ? new JsonArray() : asArray(height)) {
+                if (element instanceof final JsonObject entry) {
+                    final JsonObject variance = object(entry, "variance");
+                    heights.add(new TreeHeightDef(strings(entry.get("biome")), integer(entry, "min", 4),
+                        variance == null ? 0 : integer(variance, "min", 0), variance == null ? 0 : integer(variance, "max", 0)));
+                }
+            }
+            if (heights.isEmpty()) {
+                heights.add(new TreeHeightDef(List.of(), 4, 0, 0));
+            }
+            final JsonObject fruit = object(json, "fruit");
+            final String shape = bool(json, "palm", false) ? "palm" : bool(json, "big", false) ? "big" : "normal";
+            trees.add(new TreeDef(file.id(), heights, log, leaves, fruit == null ? null : string(fruit, "block"),
+                fruit == null ? List.of() : biomeRanges(fruit.get("chance")), shape));
+        }
+        return trees;
+    }
+
+    private static JsonArray asArray(final JsonElement element) {
+        final JsonArray array = new JsonArray();
+        array.add(element);
+        return array;
+    }
+
+    /**
+     * 1.12's chance list ({@code [{"biome": ["minecraft"], "min": 0, "max": 10}, {"min": 0, "max": 10}]}), or a lone range.
+     */
+    static List<BiomeRange> biomeRanges(final @Nullable JsonElement element) {
+        final List<BiomeRange> ranges = new ArrayList<>();
+        if (element == null) {
+            return ranges;
+        }
+        for (final JsonElement entry : element instanceof final JsonArray array ? array : asArray(element)) {
+            if (entry instanceof final JsonObject object) {
+                final double min = number(object, "min", 0);
+                ranges.add(new BiomeRange(strings(object.get("biome")), new Range(min, number(object, "max", min))));
+            } else if (entry.isJsonPrimitive() && entry.getAsJsonPrimitive().isNumber()) {
+                ranges.add(new BiomeRange(List.of(), new Range(entry.getAsDouble(), entry.getAsDouble())));
+            }
+        }
+        return ranges;
+    }
+
+    /**
+     * Drops ({@code [{"item": ..., "amount": 1, "bonus": {"amount": 1, "chance": 10}}]}).
+     */
+    static List<DropDef> drops(final @Nullable JsonElement element) {
+        final List<DropDef> drops = new ArrayList<>();
+        if (element instanceof final JsonArray array) {
+            for (final JsonElement drop : array) {
+                if (drop instanceof final JsonObject dropJson && string(dropJson, "item") != null) {
+                    final int[] amount = range(dropJson.get("amount"), 1);
+                    final JsonObject bonus = object(dropJson, "bonus");
+                    drops.add(new DropDef(string(dropJson, "item"), amount[0], amount[1], bonus == null ? 0 : integer(bonus, "amount", 0),
+                        bonus == null ? 0 : integer(bonus, "chance", 0)));
+                }
+            }
+        }
+        return drops;
     }
 
     /**

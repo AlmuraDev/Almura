@@ -15,6 +15,9 @@ import com.almuradev.almura.content.convert.ContentPack;
 import com.almuradev.almura.content.convert.ContentPackBuilder;
 import com.almuradev.almura.content.def.ContentDefs.BlockDef;
 import com.almuradev.almura.content.def.ContentDefs.CropDef;
+import com.almuradev.almura.content.def.ContentDefs.LeafDef;
+import com.almuradev.almura.content.def.ContentDefs.SaplingDef;
+import com.almuradev.almura.content.def.ContentDefs.TreeDef;
 import com.almuradev.almura.content.def.ContentDefs.SeedDef;
 import com.almuradev.almura.content.def.ContentDefs.ItemDef;
 import com.almuradev.almura.content.def.ContentDefs.ItemGroupDef;
@@ -115,10 +118,45 @@ final class ContentConversionTest {
         assertEquals(List.of(), source.problems(), "Content files that couldn't be read");
         assertEquals(23, groups.size(), "item groups");
         assertEquals(186 + 413 + 110 + 5 + 5 + 85, items.size(), "normal, food, slab, hoe, sickle and seed items");
-        assertEquals(3 + 764 + 22 + 99 + 128 + 220 + 85, blocks.size(),
-            "normal, horizontal, log, flower, stair, slab (single and double) and crop blocks");
+        assertEquals(3 + 764 + 22 + 99 + 128 + 220 + 85 + 42 + 25, blocks.size(),
+            "normal, horizontal, log, flower, stair, slab (single and double), crop, leaf and sapling blocks");
         assertEquals(85, seeds.size(), "seeds");
         assertEquals(85, crops.size(), "crops");
+    }
+
+    @Test
+    void everyTreeIsWhole() {
+        final ContentParser parser = new ContentParser(source);
+        final List<LeafDef> leaves = parser.leaves();
+        final List<SaplingDef> saplings = parser.saplings();
+        final List<TreeDef> trees = parser.trees();
+        assertEquals(42, leaves.size(), "leaves");
+        assertEquals(25, saplings.size(), "saplings");
+        assertEquals(25, trees.size(), "trees");
+        final Set<String> blockIds = new HashSet<>();
+        blocks.forEach(block -> blockIds.add(block.id()));
+        final Set<String> treeIds = new HashSet<>();
+        trees.forEach(tree -> treeIds.add(tree.id()));
+        final List<String> wrong = new ArrayList<>();
+        for (final SaplingDef sapling : saplings) {
+            if (!treeIds.contains(sapling.tree())) {
+                wrong.add(sapling.id() + ": grows " + sapling.tree() + ", which isn't a tree");
+            }
+        }
+        for (final TreeDef tree : trees) {
+            for (final String block : new String[] {tree.log(), tree.leaves(), tree.fruit()}) {
+                if (block != null && !blockIds.contains(block)) {
+                    wrong.add(tree.id() + ": is made of " + block + ", which isn't a block");
+                }
+            }
+        }
+        for (final LeafDef leaf : leaves) {
+            if (leaf.spreadBlock() != null && !blockIds.contains(leaf.spreadBlock())) {
+                wrong.add(leaf.id() + ": spreads " + leaf.spreadBlock() + ", which isn't a block");
+            }
+        }
+        report("trees not whole", wrong);
+        assertEquals(List.of(), wrong);
     }
 
     @Test

@@ -124,3 +124,8 @@ loader leaves these out; rename or delete them in the content:
 - assets/almura/textures/block/crop/Untitled-1.png (looks like a leftover)
 - assets/almura/textures/item/food/drink/drinkTabIcon.png (nothing refers to it)
 - assets/almura/textures/item/food/food/Thumbs.db (Windows thumbnail cache, delete)
+
+## Blocks without a name
+
+- `almura:leaf/kiwi_tree_fruit_leaf`: `block/leaf/_translations/en_us.json` has no `kiwi_tree_fruit_leaf.name` (the other fruit leaves
+  have theirs).

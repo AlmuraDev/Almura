@@ -11,6 +11,9 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.content.convert.ContentPackBuilder;
 import com.almuradev.almura.content.def.ContentDefs.BlockDef;
 import com.almuradev.almura.content.def.ContentDefs.CropDef;
+import com.almuradev.almura.content.def.ContentDefs.LeafDef;
+import com.almuradev.almura.content.def.ContentDefs.SaplingDef;
+import com.almuradev.almura.content.def.ContentDefs.TreeDef;
 import com.almuradev.almura.content.def.ContentDefs.SeedDef;
 import com.almuradev.almura.content.def.ContentDefs.EffectDef;
 import com.almuradev.almura.content.def.ContentDefs.FoodDef;
@@ -61,6 +64,8 @@ public final class ContentRegistration {
     private final List<BlockDef> blocks;
     private final Map<String, CropDef> crops = new HashMap<>();
     private final Map<String, SeedDef> seeds = new HashMap<>();
+    private final Map<String, LeafDef> leaves = new HashMap<>();
+    private final Map<String, SaplingDef> saplings = new HashMap<>();
     // Each tab's items in the content's order, to fill it with
     private final Map<String, List<Item>> tabItems = new LinkedHashMap<>();
     private final Map<String, Block> registeredBlocks = new HashMap<>();
@@ -76,6 +81,16 @@ public final class ContentRegistration {
         this.blocks = blocks;
         crops.forEach(crop -> this.crops.put(crop.id(), crop));
         seeds.forEach(seed -> this.seeds.put(seed.id(), seed));
+    }
+
+    /**
+     * The leaves, saplings and the trees the saplings grow.
+     */
+    public ContentRegistration trees(final List<LeafDef> leaves, final List<SaplingDef> saplings, final List<TreeDef> trees) {
+        leaves.forEach(leaf -> this.leaves.put(leaf.id(), leaf));
+        saplings.forEach(sapling -> this.saplings.put(sapling.id(), sapling));
+        ContentTrees.register(trees);
+        return this;
     }
 
     @SubscribeEvent
@@ -95,7 +110,10 @@ public final class ContentRegistration {
                     Almura.LOGGER.warn("Content crop {} has no stages (age=0, age=1...); left out", def.id());
                     continue;
                 }
-                final Block block = crop != null ? ContentBlocks.createCrop(def, crop) : ContentBlocks.create(def, this.stairBase(def));
+                final LeafDef leaf = def.kind().equals("leaf") ? this.leaves.get(def.id()) : null;
+                final SaplingDef sapling = def.kind().equals("sapling") ? this.saplings.get(def.id()) : null;
+                final Block block = crop != null ? ContentBlocks.createCrop(def, crop) : leaf != null ? ContentBlocks.createLeaves(def, leaf)
+                    : sapling != null ? ContentBlocks.createSapling(def, sapling) : ContentBlocks.create(def, this.stairBase(def));
                 helper.register(Identifier.parse(def.id()), block);
                 this.registeredBlocks.put(def.id(), block);
             }
