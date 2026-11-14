@@ -30,8 +30,12 @@ public final class ContentTooltips {
         }
         final String key = stack.getItem().getDescriptionId() + ".tooltip";
         if (Language.getInstance().has(key)) {
-            // Under the name
-            event.getToolTip().add(Math.min(1, event.getToolTip().size()), Component.translatable(key).withStyle(ChatFormatting.GRAY));
+            // Under the name, a tooltip line for each of its lines: 1.12 split the content's "\n"s, 26.3 draws them as a glyph
+            final String[] lines = Language.getInstance().getOrDefault(key).split("\n");
+            final int at = Math.min(1, event.getToolTip().size());
+            for (int i = 0; i < lines.length; i++) {
+                event.getToolTip().add(at + i, Component.literal(lines[i]).withStyle(ChatFormatting.GRAY));
+            }
         }
     }
 }
