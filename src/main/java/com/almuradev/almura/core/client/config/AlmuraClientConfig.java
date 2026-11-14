@@ -31,6 +31,7 @@ public final class AlmuraClientConfig {
     public static final ModConfigSpec.BooleanValue DISPLAY_PERFORMANCE_STATS;
     public static final ModConfigSpec.BooleanValue DISPLAY_NUMERIC_HUD_VALUES;
     public static final ModConfigSpec.BooleanValue ENHANCED_DEBUG;
+    public static final ModConfigSpec.BooleanValue DISPLAY_GUIDE_ON_LOGIN;
 
     static {
         final ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -48,6 +49,10 @@ public final class AlmuraClientConfig {
             .define("display-numeric-hud-values", true);
         ENHANCED_DEBUG = builder.comment("Shows Almura's debug panels in place of vanilla's debug text while the debug screen (F3) is open")
             .define("enhanced-debug", true);
+        builder.pop();
+        builder.push("guide");
+        DISPLAY_GUIDE_ON_LOGIN = builder.comment("Opens the guide a few seconds after joining a server that opens it then")
+            .define("display-guide-on-login", true);
         builder.pop();
         SPEC = builder.build();
     }

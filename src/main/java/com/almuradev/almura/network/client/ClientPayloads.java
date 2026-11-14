@@ -40,5 +40,9 @@ public final class ClientPayloads {
             (payload, context) -> com.almuradev.almura.feature.almanac.client.AlmanacScreens.openField(payload));
         event.register(com.almuradev.almura.feature.almanac.network.ClientboundAlmanacCrops.TYPE,
             (payload, context) -> com.almuradev.almura.feature.almanac.client.AlmanacScreens.openCrops(payload));
+        event.register(com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundListing.TYPE,
+            (payload, context) -> com.almuradev.almura.feature.guide.client.ClientGuide.onListing(payload));
+        event.register(com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundPage.TYPE,
+            (payload, context) -> com.almuradev.almura.feature.guide.client.ClientGuide.onPage(payload));
     }
 }

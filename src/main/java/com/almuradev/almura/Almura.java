@@ -35,5 +35,6 @@ public final class Almura {
         // What the server does for Almura's players: the HUD's data, notifications
         NeoForge.EVENT_BUS.register(new ServerHud());
         NeoForge.EVENT_BUS.register(new ServerNotifications());
+        NeoForge.EVENT_BUS.register(new com.almuradev.almura.feature.guide.server.ServerGuide());
     }
 }

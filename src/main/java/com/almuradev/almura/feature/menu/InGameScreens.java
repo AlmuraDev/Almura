@@ -30,12 +30,21 @@ public final class InGameScreens {
         Minecraft.getInstance().gui.setScreen(new Host(screen, parent));
     }
 
+    /**
+     * Whether the window is the screen shown.
+     */
+    public static boolean isShowing(final Screen screen) {
+        return Minecraft.getInstance().gui.screen() instanceof final Host host && host.window == screen;
+    }
+
     private static final class Host extends StrataScreen {
 
+        private final Screen window;
         private final net.minecraft.client.gui.screens.@Nullable Screen parent;
 
         Host(final Screen screen, final net.minecraft.client.gui.screens.@Nullable Screen parent) {
             super(Component.empty(), screen, AlmuraScreens.THEME_REF);
+            this.window = screen;
             this.parent = parent;
         }
 

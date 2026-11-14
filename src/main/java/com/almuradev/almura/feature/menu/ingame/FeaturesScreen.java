@@ -47,7 +47,9 @@ final class FeaturesScreen implements Screen {
     @Override
     public Component<?> build(final ComponentFactory factory) {
         final StackPanel column = factory.stackPanel().setSpacing(BUTTON_GAP)
-            .add(later(factory, "Guide", BUTTON_WIDTH))
+            .add(centred(factory.button(Text.of("Guide"))
+                .setSize(BUTTON_WIDTH, BUTTON_HEIGHT)
+                .onEvent(Button.PRESSED, event -> com.almuradev.almura.feature.guide.client.ClientGuide.requestOpen())))
             .add(later(factory, "Claim Management", BUTTON_WIDTH))
             .add(later(factory, "Nicknames", BUTTON_WIDTH))
             .add(later(factory, "Titles", BUTTON_WIDTH))
