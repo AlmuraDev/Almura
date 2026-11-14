@@ -89,11 +89,15 @@ neoForge {
         configureEach {
             ideName = "Almura ${it.name.capitalize()}"
             logLevel = org.slf4j.event.Level.INFO
+            // As the 1.12 dev runs had (-Xincgc is gone since Java 9; coremods are gone too: NeoForge loads the mixins from the jar)
+            jvmArguments.addAll('-Xms1024M', '-Xmx4096M')
         }
         client {
             client()
             // Not run/: the 1.12.2 dev client lives there in the Almura-3.5 checkout
             gameDirectory = project.file('runs/client')
+            // The dev player's name: Dev, or -PdevUsername=<name> (or devUsername=<name> in ~/.gradle/gradle.properties)
+            programArguments.addAll('--username', (project.findProperty('devUsername') ?: 'Dev').toString())
             // ./gradlew runClient -PjoinServer=host:port joins a server straight from startup
             if (project.hasProperty('joinServer')) {
                 programArguments.addAll('--quickPlayMultiplayer', project.property('joinServer').toString())
