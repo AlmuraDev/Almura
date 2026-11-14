@@ -95,6 +95,16 @@ final class ContentRegistrationTest {
         // Every crop's hydration names blocks and properties that are there
         final var parser = new com.almuradev.almura.content.def.ContentParser(
             com.almuradev.almura.content.source.ContentSource.at(Path.of(root)));
+        // The pipes turn to connect when placed against a block's side, and the ceiling ones drip, as on 3.5
+        final java.util.Map<String, com.almuradev.almura.content.def.ContentDefs.StateDef> pipes = new java.util.HashMap<>();
+        parser.blocks(com.almuradev.almura.content.AlmuraContent.BLOCK_KINDS).stream()
+            .filter(block -> block.id().startsWith("almura:horizontal/agriculture/"))
+            .forEach(block -> pipes.put(block.id().substring("almura:horizontal/agriculture/".length()), block.state()));
+        assertEquals("across", pipes.get("pipe").rotatePlacement(), "a straight pipe continues out from the block");
+        assertEquals("toward", pipes.get("t_pipe").rotatePlacement(), "a T pipe points its branch into the block");
+        assertEquals("corner", pipes.get("corner_pipe").rotatePlacement(), "a corner puts an arm into the block");
+        assertEquals(null, pipes.get("four_way_pipe").rotatePlacement(), "a four way pipe faces the player");
+        assertTrue(pipes.get("ceiling_pipe").drip() && !pipes.get("pipe").drip(), "ceiling pipes drip, floor ones don't");
         final java.util.List<String> wrongHydration = new java.util.ArrayList<>();
         parser.crops(parser.seeds()).forEach(crop -> crop.stages().forEach(stage -> {
             if (stage.hydration() != null) {

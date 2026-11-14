@@ -94,8 +94,14 @@ public final class ContentDefs {
      * @param noCollision whether things pass through it (1.12's {@code "collision": -1})
      * @param drops what breaking it drops; empty for itself
      */
+    /**
+     * @param rotatePlacement how a horizontal block placed against the side of another block turns ({@code rotate_placement}, as 3.5's
+     *     pipes): {@code across}, {@code toward} or {@code corner}; null to face whoever placed it
+     * @param drip whether water drips from the bottom of the block, as from water above stone (3.5's ceiling pipes)
+     */
     public record StateDef(float hardness, float resistance, @Nullable Boolean opaque, float lightEmission, @Nullable Box shape,
-        @Nullable Box collision, boolean noCollision, @Nullable String blockFaceShape, List<DropDef> drops) {
+        @Nullable Box collision, boolean noCollision, @Nullable String blockFaceShape, List<DropDef> drops, @Nullable String rotatePlacement,
+        boolean drip) {
     }
 
     public record Box(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {

@@ -640,7 +640,20 @@ public final class ContentParser {
         }
         return new StateDef((float) number(json, "hardness", Double.NaN), (float) number(json, "resistance", Double.NaN),
             json.has("opaque") ? bool(json, "opaque", true) : null, light == null ? 0f : (float) number(light, "emission", 0), shape, collision,
-            noCollision, string(json, "block_face_shape"), drops);
+            noCollision, string(json, "block_face_shape"), drops, rotatePlacement(json.get("rotate_placement")), bool(json, "drip", false));
+    }
+
+    /**
+     * {@code rotate_placement}: {@code true} is {@code across}, as on 3.5.
+     */
+    private static @Nullable String rotatePlacement(final @Nullable JsonElement value) {
+        if (value == null || !value.isJsonPrimitive()) {
+            return null;
+        }
+        if (value.getAsJsonPrimitive().isBoolean()) {
+            return value.getAsBoolean() ? "across" : null;
+        }
+        return value.getAsString().toLowerCase(java.util.Locale.ROOT);
     }
 
     private static @Nullable Box box(final @Nullable JsonObject json) {

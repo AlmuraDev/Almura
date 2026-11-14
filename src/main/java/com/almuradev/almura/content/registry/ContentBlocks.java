@@ -68,7 +68,7 @@ public final class ContentBlocks {
         final VoxelShape shape = shape(state.shape());
         final VoxelShape collision = state.noCollision() ? Shapes.empty() : state.collision() != null ? shape(state.collision()) : shape;
         return switch (def.kind()) {
-            case "horizontal" -> new Horizontal(properties, shape, collision);
+            case "horizontal" -> new Horizontal(properties, shape, collision, state.rotatePlacement(), state.drip());
             case "log" -> new RotatedPillarBlock(properties);
             case "stair" -> new StairBlock(stairBase, properties);
             case "slab" -> new SlabBlock(properties);
@@ -263,15 +263,23 @@ public final class ContentBlocks {
 
     /**
      * A block that faces toward whoever placed it, as 1.12's horizontal blocks did; its shape, given facing north, turned with it.
+     * <p>
+     * As 3.5's pipes: one with {@code rotate_placement} placed against the side of a block (such as the end of another pipe) turns to
+     * connect to it instead (on a floor or ceiling it faces the player as usual), and one with {@code drip} drips water from its underside.
      */
     static final class Horizontal extends HorizontalDirectionalBlock {
 
         private final Map<Direction, VoxelShape> shapes, collisions;
+        private final @Nullable String rotatePlacement;
+        private final boolean drip;
 
-        Horizontal(final BlockBehaviour.Properties properties, final VoxelShape north, final VoxelShape collisionNorth) {
+        Horizontal(final BlockBehaviour.Properties properties, final VoxelShape north, final VoxelShape collisionNorth,
+            final @Nullable String rotatePlacement, final boolean drip) {
             super(properties);
             this.shapes = Shapes.rotateHorizontal(north);
             this.collisions = Shapes.rotateHorizontal(collisionNorth);
+            this.rotatePlacement = rotatePlacement;
+            this.drip = drip;
             this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
         }
 
@@ -282,7 +290,59 @@ public final class ContentBlocks {
 
         @Override
         public BlockState getStateForPlacement(final BlockPlaceContext context) {
-            return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+            Direction placed = context.getHorizontalDirection().getOpposite();
+            final Direction clicked = context.getClickedFace();
+            if (clicked.getAxis().isHorizontal() && this.rotatePlacement != null) {
+                placed = switch (this.rotatePlacement) {
+                    // A straight pipe, whose model runs across its facing, continues out from the block
+                    case "across" -> clicked.getClockWise();
+                    // A T pipe points its branch into the block
+                    case "toward" -> clicked.getOpposite();
+                    // A corner puts one arm into the block
+                    case "corner" -> cornerFacing(clicked, context);
+                    default -> placed;
+                };
+            }
+            return this.defaultBlockState().setValue(FACING, placed);
+        }
+
+        /**
+         * The facing of a corner (arms west and south when facing north) placed against a block's side: one arm into that block, the
+         * other toward the side the player stands on, or looks toward when standing in line with it.
+         */
+        private static Direction cornerFacing(final Direction clicked, final BlockPlaceContext context) {
+            // Right of the arm into the clicked block
+            final Direction right = clicked.getOpposite().getClockWise();
+            final net.minecraft.world.entity.player.Player player = context.getPlayer();
+            if (player == null) {
+                return clicked;
+            }
+            final BlockPos pos = context.getClickedPos();
+            double side = (player.getX() - (pos.getX() + 0.5)) * right.getStepX() + (player.getZ() - (pos.getZ() + 0.5)) * right.getStepZ();
+            if (Math.abs(side) < 0.5) {
+                final net.minecraft.world.phys.Vec3 look = player.getLookAngle();
+                side = look.x * right.getStepX() + look.z * right.getStepZ();
+            }
+            // Facing the clicked face, the arms point into the clicked block and to its right; facing right, into it and to its left
+            return side >= 0 ? clicked : right;
+        }
+
+        /**
+         * Water drips from the underside of the block's shape, near its middle where the pipe runs, at the odds of water dripping through
+         * the block below it.
+         */
+        @Override
+        public void animateTick(final BlockState state, final net.minecraft.world.level.Level level, final BlockPos pos,
+            final net.minecraft.util.RandomSource random) {
+            if (!this.drip || random.nextInt(10) != 0) {
+                return;
+            }
+            final VoxelShape shape = this.shapes.get(state.getValue(FACING));
+            final double bottom = shape.isEmpty() ? 0 : shape.min(Direction.Axis.Y);
+            final double x = pos.getX() + 0.35 + random.nextDouble() * 0.3;
+            final double y = pos.getY() + bottom - 0.05;
+            final double z = pos.getZ() + 0.35 + random.nextDouble() * 0.3;
+            level.addParticle(net.minecraft.core.particles.ParticleTypes.DRIPPING_WATER, x, y, z, 0, 0, 0);
         }
 
         @Override

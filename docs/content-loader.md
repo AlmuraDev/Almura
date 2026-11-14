@@ -130,6 +130,11 @@ mod loading (no window, no server) and check the registries and that 26.3 reads 
   conditions on farmland, a crop or a pipe, and the list of every crop otherwise, as 3.5's. Not yet: the Skills farming levels
   (no Skills on 4.0) and a crop's growth stages drawn as 3D models (Strata has no block model visual yet). The handbook reads the
   Skills plugin, so on 4.0 it says the server has no skills, as 3.5 did on a server without it.
+- Agriculture pipes (`horizontal/agriculture`, 10): as 3.5's. `rotate_placement` turns one placed against the side of a block
+  (the end of another pipe) to connect: `true`/`across` continues out from it (straight pipes, end caps), `toward` points the
+  branch into it (T pipes), `corner` puts one arm into it and the other toward the player's side; on a floor or ceiling it faces
+  the player. `drip` drips water from the underside (the ceiling pipes). Any agriculture block keeps farmland 6 around and 1 to 6
+  below it wet (`FarmlandBlockMixin`), and the Farmer's Almanac shows a pipe's range and whether a field is in range.
 - Cruets (`almura:normal/ingredient/glass_cruet`, `glass_water_cruet`, `glass_milk_cruet`): Almura's own items (`feature/cruet`), as
   3.5's; their models and the recipes using them are the content's. The glass cruet takes up water as a bucket does and is filled with
   milk from a cow; the water cruet pours; recipes hand the glass cruet back. Almura's pumpkin pie (with a milk cruet) replaces vanilla's
