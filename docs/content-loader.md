@@ -82,3 +82,11 @@ mod loading (no window, no server) and check the registries and that 26.3 reads 
   so on), kept in `convert/LegacyItems`.
 * 1.12 texture names (`minecraft:blocks/planks_oak`) were renamed (`minecraft:block/oak_planks`); `convert/LegacyTextures` maps them.
 * The Forge `forge:default-block` transform no longer exists; vanilla's block display is used.
+
+## To clean up later
+
+- OBJ break particles. Each OBJ block's particle is cut from its texture sheet as 3.5 chose it: the patch under the first and
+  third corners of the model's last face, scaled to 16x16 (`ContentPackBuilder.objParticle`). That's better than the whole sheet,
+  but the last face is often a detail (the Tile Topped Bar corner breaks yellow). Pick a face that shows what the block is made of,
+  such as the largest face or the top, or let the content name its particle texture.
+- The Agriculture tab icon (an OBJ tool) shows tiny in its slot; OBJ items need slot and hand positions of their own.

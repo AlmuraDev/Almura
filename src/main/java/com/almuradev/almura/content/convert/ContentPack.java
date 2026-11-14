@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.NavigableSet;
 import java.util.TreeMap;
+import java.util.function.Supplier;
 
 /**
  * The files of Almura's content pack, by their path in the pack ({@code assets/almura/models/...}, {@code data/almura/recipe/...}): generated
@@ -39,6 +40,13 @@ public final class ContentPack {
 
     void putFile(final String path, final Path file) {
         this.files.put(path, file);
+    }
+
+    /**
+     * A file made when it is first read (a texture cut from another), or left out if it can't be made.
+     */
+    void putGenerated(final String path, final Supplier<byte @Nullable []> contents) {
+        this.files.put(path, new Generated(contents));
     }
 
     public boolean has(final String path) {
@@ -77,6 +85,29 @@ public final class ContentPack {
         if (file instanceof final Path source) {
             return Files.newInputStream(source);
         }
+        if (file instanceof final Generated generated) {
+            final byte[] bytes = generated.get();
+            return bytes == null ? null : new ByteArrayInputStream(bytes);
+        }
         return null;
+    }
+
+    private static final class Generated {
+
+        private final Supplier<byte @Nullable []> contents;
+        private byte @Nullable [] bytes;
+        private boolean made;
+
+        Generated(final Supplier<byte @Nullable []> contents) {
+            this.contents = contents;
+        }
+
+        synchronized byte @Nullable [] get() {
+            if (!this.made) {
+                this.bytes = this.contents.get();
+                this.made = true;
+            }
+            return this.bytes;
+        }
     }
 }

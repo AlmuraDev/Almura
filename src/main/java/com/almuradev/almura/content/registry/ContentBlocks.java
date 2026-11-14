@@ -86,9 +86,11 @@ public final class ContentBlocks {
             final int light = Math.round(Math.min(1f, state.lightEmission()) * 15f);
             properties.lightLevel(blockState -> light);
         }
-        final boolean fullBlock = state.shape() == null || state.shape().isFullBlock();
-        final boolean shaped = def.kind().equals("normal") || def.kind().equals("horizontal") || def.kind().equals("flower");
-        if (Boolean.FALSE.equals(state.opaque()) || shaped && !fullBlock || material.equals("ag") || def.kind().equals("flower")) {
+        // As on 1.12: a normal or horizontal block hides the faces beside it only when the content says it's opaque (most are OBJ
+        // furniture that doesn't fill its space, like chairs); otherwise only when it doesn't say it isn't
+        final boolean modelled = def.kind().equals("normal") || def.kind().equals("horizontal");
+        final boolean opaque = modelled ? Boolean.TRUE.equals(state.opaque()) : !Boolean.FALSE.equals(state.opaque());
+        if (!opaque || material.equals("ag") || def.kind().equals("flower")) {
             properties.noOcclusion();
         }
         // Rock and metal needed the right tool to drop anything, as on 1.12

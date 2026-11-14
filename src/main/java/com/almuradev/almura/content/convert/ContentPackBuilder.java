@@ -18,8 +18,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.Nullable;
 
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -32,6 +37,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.Predicate;
+
+import javax.imageio.ImageIO;
 
 /**
  * Builds the pack that carries the content into 26.3 ({@link ContentPack}): the content folders' textures, OBJ models and material libraries
@@ -119,11 +126,16 @@ public final class ContentPackBuilder {
             if (file.startsWith("blockstates/")) {
                 continue;
             }
+            if (!Identifier.isValidPath(file)) {
+                // 26.3 refuses the whole resource reload over one such name (capitals, spaces), so it is left out
+                this.problems.add(namespace + ":" + file + ": not a valid 26.3 file name (lower case a-z, 0-9, / . _ - only); left out");
+                continue;
+            }
             final String path = "assets/" + namespace + "/" + file;
             if (file.startsWith("models/") && file.endsWith(".json")) {
                 final JsonObject model = this.source.readObject(folder.resolve(file));
                 if (model != null) {
-                    this.pack.putJson(path, model(model));
+                    this.pack.putJson(path, model(model, file.startsWith("models/block/")));
                 }
             } else {
                 this.pack.putFile(path, folder.resolve(file));
@@ -132,10 +144,29 @@ public final class ContentPackBuilder {
     }
 
     /**
-     * A 1.12 JSON model as 26.3 reads it: vanilla textures renamed ({@code blocks/dirt} as {@code block/dirt}).
+     * A 1.12 JSON model as 26.3 reads it: vanilla textures renamed ({@code blocks/dirt} as {@code block/dirt}); a block model with no parent
+     * given {@code block/block}'s display (Forge's {@code forge:default-block}, which every such blockstate names); elements given with
+     * {@code from} past {@code to} put the right way round, or 26.3 turns their faces inward (the flags' cloth).
      */
-    static JsonObject model(final JsonObject model) {
+    static JsonObject model(final JsonObject model, final boolean block) {
         final JsonObject copy = model.deepCopy();
+        if (block && !copy.has("parent") && copy.has("elements")) {
+            copy.addProperty("parent", "minecraft:block/block");
+        }
+        if (copy.get("elements") instanceof final JsonArray elements) {
+            for (final JsonElement element : elements) {
+                if (element instanceof final JsonObject object && object.get("from") instanceof final JsonArray from
+                    && object.get("to") instanceof final JsonArray to && from.size() == 3 && to.size() == 3) {
+                    for (int axis = 0; axis < 3; axis++) {
+                        final double a = from.get(axis).getAsDouble(), b = to.get(axis).getAsDouble();
+                        if (a > b) {
+                            from.set(axis, new JsonPrimitive(b));
+                            to.set(axis, new JsonPrimitive(a));
+                        }
+                    }
+                }
+            }
+        }
         if (copy.get("parent") instanceof final JsonPrimitive parent && parent.isString()) {
             copy.addProperty("parent", Legacy.model(parent.getAsString()));
         }
@@ -145,6 +176,10 @@ public final class ContentPackBuilder {
                     textures.addProperty(key, Legacy.texture(textures.get(key).getAsString()));
                 }
             }
+        }
+        // A model with its own elements and no particle texture (the flags) shows the missing texture when broken; 1.12 did too
+        if (copy.has("elements") && copy.get("textures") instanceof final JsonObject textures && !textures.has("particle")) {
+            textures.keySet().stream().findFirst().ifPresent(first -> textures.add("particle", textures.get(first).deepCopy()));
         }
         return copy;
     }
@@ -316,9 +351,12 @@ public final class ContentPackBuilder {
         }
         final Path models = this.source.namespace(namespace).resolve("models");
         final String folder = objPath.contains("/") ? objPath.substring(0, objPath.lastIndexOf('/') + 1) : "";
+        // The material library, found as 1.12's Forge found it ("mtllib almura:x.mtl" beside the model); NeoForge would look for
+        // assets/almura/x.mtl, so the wrapper names it outright
+        final String mtl = this.materialLibrary(models, objPath, folder);
         final JsonObject textures = new JsonObject();
         String particle = null;
-        for (final String map : this.materialTextures(models.resolve(base + ".mtl"))) {
+        for (final String map : this.materialTextures(mtl == null ? models.resolve(base + ".mtl") : models.resolve(mtl))) {
             final String texture = this.textureOf(namespace, folder, map);
             if (texture != null) {
                 textures.addProperty(map, texture);
@@ -329,6 +367,11 @@ public final class ContentPackBuilder {
                 this.problems.add(id + ": no texture for '" + map + "'");
             }
         }
+        // As 3.5's OBJ reader did: the particles show the part of the sheet the model's last face uses, not the whole sheet
+        final String cut = this.objParticle(namespace, folder, objPath, base, mtl == null ? models.resolve(base + ".mtl") : models.resolve(mtl));
+        if (cut != null) {
+            particle = cut;
+        }
         if (particle != null) {
             textures.addProperty("particle", particle);
         }
@@ -336,9 +379,176 @@ public final class ContentPackBuilder {
         wrapper.addProperty("parent", "minecraft:block/block");
         wrapper.addProperty("loader", "neoforge:obj");
         wrapper.addProperty("model", namespace + ":models/" + objPath);
+        // 3.5's OBJ reader flipped V (v = 1 - v), as the content was made for; NeoForge only does that when asked
+        wrapper.addProperty("flip_v", true);
+        if (mtl != null) {
+            wrapper.addProperty("mtl_override", namespace + ":models/" + mtl);
+        } else {
+            this.problems.add(id + ": no material library found for models/" + objPath);
+        }
         wrapper.add("textures", textures);
         this.pack.putJson(file, wrapper);
         return id;
+    }
+
+    /**
+     * The OBJ's material library ({@code mtllib}), as 1.12's Forge read it: a name without a folder is beside the model, one with a folder
+     * is under {@code models/block/} or {@code models/}; failing those, the model's own name with {@code .mtl}.
+     *
+     * @return The library's path under {@code models/}, or null if there's none
+     */
+    private @Nullable String materialLibrary(final Path models, final String objPath, final String folder) {
+        String named = null;
+        try {
+            for (final String line : Files.readAllLines(models.resolve(objPath), StandardCharsets.UTF_8)) {
+                final String trimmed = line.trim();
+                if (trimmed.startsWith("mtllib ")) {
+                    named = trimmed.substring("mtllib ".length()).trim();
+                    break;
+                }
+            }
+        } catch (final IOException e) {
+            this.problems.add(objPath + ": couldn't read: " + e.getMessage());
+        }
+        final List<String> candidates = new ArrayList<>();
+        if (named != null) {
+            String path = named.contains(":") ? named.substring(named.indexOf(':') + 1) : named;
+            while (path.startsWith("/")) {
+                path = path.substring(1);
+            }
+            final String name = path.contains("/") ? path.substring(path.lastIndexOf('/') + 1) : path;
+            candidates.add(folder + name);
+            candidates.add("block/" + path);
+            candidates.add(path);
+        }
+        candidates.add(objPath.substring(0, objPath.length() - ".obj".length()) + ".mtl");
+        for (final String candidate : candidates) {
+            if (Files.isRegularFile(models.resolve(candidate))) {
+                return candidate;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * The OBJ's particle texture, as 3.5's OBJ reader made it: the part of its texture sheet between the UVs of the first and third corners
+     * of its last face, here cut out and scaled to 16x16 ({@code textures/block/obj_particle/...}).
+     *
+     * @return The texture's id, or null if the face or its texture can't be found
+     */
+    private @Nullable String objParticle(final String namespace, final String folder, final String objPath, final String base,
+        final Path mtl) {
+        final Path models = this.source.namespace(namespace).resolve("models");
+        final List<float[]> uvs = new ArrayList<>();
+        String material = null, faceMaterial = null;
+        String[] face = null;
+        try {
+            for (final String line : Files.readAllLines(models.resolve(objPath), StandardCharsets.UTF_8)) {
+                final String[] parts = line.trim().split("\\s+");
+                switch (parts[0]) {
+                    case "vt" -> {
+                        if (parts.length >= 3) {
+                            uvs.add(new float[] {Float.parseFloat(parts[1]), Float.parseFloat(parts[2])});
+                        }
+                    }
+                    case "usemtl" -> material = parts.length >= 2 ? parts[1] : null;
+                    case "f" -> {
+                        if (parts.length >= 4) {
+                            face = parts;
+                            faceMaterial = material;
+                        }
+                    }
+                    default -> { }
+                }
+            }
+        } catch (final IOException | NumberFormatException e) {
+            return null;
+        }
+        if (face == null || faceMaterial == null) {
+            return null;
+        }
+        final float[] first = uv(uvs, face[1]), third = uv(uvs, face[3]);
+        final String map = this.materialMap(mtl, faceMaterial);
+        final String texture = map == null ? null : this.textureOf(namespace, folder, map);
+        if (first == null || third == null || texture == null) {
+            return null;
+        }
+        final Path image = this.source.namespace(namespace(texture)).resolve("textures").resolve(path(texture) + ".png");
+        final String id = namespace + ":block/obj_particle/" + base;
+        this.pack.putGenerated("assets/" + namespace + "/textures/block/obj_particle/" + base + ".png", () -> cut(image, first, third));
+        return id;
+    }
+
+    /** The UV of a face corner ({@code v/vt/vn}, the vt counted from 1, or back from the end when negative). */
+    private static float @Nullable [] uv(final List<float[]> uvs, final String corner) {
+        final String[] indices = corner.split("/");
+        if (indices.length < 2 || indices[1].isEmpty()) {
+            return null;
+        }
+        try {
+            final int index = Integer.parseInt(indices[1]);
+            final int at = index < 0 ? uvs.size() + index : index - 1;
+            return at >= 0 && at < uvs.size() ? uvs.get(at) : null;
+        } catch (final NumberFormatException e) {
+            return null;
+        }
+    }
+
+    /** The texture ({@code map_Kd}) of one material of a material library. */
+    private @Nullable String materialMap(final Path mtl, final String material) {
+        if (!Files.isRegularFile(mtl)) {
+            return null;
+        }
+        try {
+            String current = null;
+            for (final String line : Files.readAllLines(mtl, StandardCharsets.UTF_8)) {
+                final String[] parts = line.trim().split("\\s+");
+                if (parts[0].equals("newmtl") && parts.length >= 2) {
+                    current = parts[1];
+                } else if (parts[0].equals("map_Kd") && parts.length >= 2 && material.equals(current)) {
+                    return parts[parts.length - 1];
+                }
+            }
+        } catch (final IOException e) {
+            return null;
+        }
+        return null;
+    }
+
+    /**
+     * Cuts the part of an image between two UVs (V flipped, as the OBJs were made for) and scales it to 16x16, a size that keeps the block
+     * atlas's mipmaps; an animated texture's first frame is used.
+     */
+    private static byte @Nullable [] cut(final Path image, final float[] a, final float[] b) {
+        try {
+            final BufferedImage sheet = ImageIO.read(image.toFile());
+            if (sheet == null) {
+                return null;
+            }
+            final int width = sheet.getWidth();
+            // An animation's frames are stacked; its first is square
+            final int height = Files.isRegularFile(image.resolveSibling(image.getFileName() + ".mcmeta")) ? Math.min(width, sheet.getHeight())
+                : sheet.getHeight();
+            final int x1 = clamp(Math.round(Math.min(a[0], b[0]) * width), width - 1);
+            final int x2 = clamp(Math.round(Math.max(a[0], b[0]) * width), width);
+            final int y1 = clamp(Math.round(Math.min(1 - a[1], 1 - b[1]) * height), height - 1);
+            final int y2 = clamp(Math.round(Math.max(1 - a[1], 1 - b[1]) * height), height);
+            final BufferedImage region = sheet.getSubimage(x1, y1, Math.max(1, x2 - x1), Math.max(1, y2 - y1));
+            final BufferedImage scaled = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+            final Graphics2D graphics = scaled.createGraphics();
+            graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+            graphics.drawImage(region, 0, 0, 16, 16, null);
+            graphics.dispose();
+            final ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ImageIO.write(scaled, "png", out);
+            return out.toByteArray();
+        } catch (final IOException | RuntimeException e) {
+            return null;
+        }
+    }
+
+    private static int clamp(final int value, final int max) {
+        return Math.max(0, Math.min(max, value));
     }
 
     private List<String> materialTextures(final Path mtl) {
@@ -423,8 +633,103 @@ public final class ContentPackBuilder {
             if (chosen == null) {
                 chosen = variants.entrySet().iterator().next().getValue().getAsJsonObject();
             }
-            this.itemModelDefinition(namespace, path, chosen.get("model").getAsString());
+            final String model = chosen.get("model").getAsString();
+            final JsonObject display = this.inventoryDisplay(block);
+            if (display == null) {
+                this.itemModelDefinition(namespace, path, model);
+            } else {
+                // The 1.12 blockstate placed the item its own way (flags, smaller in the slot and the hand)
+                final JsonObject itemModel = new JsonObject();
+                itemModel.addProperty("parent", model);
+                itemModel.add("display", display);
+                this.pack.putJson("assets/" + namespace + "/models/block_item/" + path + ".json", itemModel);
+                this.itemModelDefinition(namespace, path, namespace + ":block_item/" + path);
+            }
         }
+    }
+
+    /**
+     * The display a 1.12 blockstate gave its block's item ({@code "inventory": [{"transform": {"gui": {...}, ...}}]}) as 26.3 model
+     * display, or null when it named Forge's {@code forge:default-block} (the block model's own) or nothing. Forge's rotations are a list of
+     * single-axis turns, applied in order; its translations are in blocks, 26.3's in sixteenths.
+     */
+    private @Nullable JsonObject inventoryDisplay(final BlockDef block) {
+        final JsonObject forge = this.forgeBlockstate(block.id());
+        if (forge == null) {
+            return null;
+        }
+        final JsonObject settings = new JsonObject();
+        merge(settings, forge.get("defaults"));
+        if (forge.get("variants") instanceof final JsonObject variants) {
+            merge(settings, variants.get("inventory"));
+        }
+        if (!(settings.get("transform") instanceof final JsonObject transform)) {
+            return null;
+        }
+        final JsonObject display = new JsonObject();
+        for (final Map.Entry<String, JsonElement> entry : transform.entrySet()) {
+            final String context = switch (entry.getKey()) {
+                case "thirdperson" -> "thirdperson_righthand";
+                case "firstperson" -> "firstperson_righthand";
+                default -> entry.getKey();
+            };
+            if (!(entry.getValue() instanceof final JsonObject forgeTransform)) {
+                continue;
+            }
+            final JsonObject converted = new JsonObject();
+            final JsonArray rotation = this.forgeRotation(block.id(), forgeTransform.get("rotation"));
+            if (rotation != null) {
+                converted.add("rotation", rotation);
+            }
+            if (forgeTransform.get("translation") instanceof final JsonArray translation && translation.size() == 3) {
+                final JsonArray sixteenths = new JsonArray();
+                translation.forEach(value -> sixteenths.add(value.getAsDouble() * 16.0));
+                converted.add("translation", sixteenths);
+            }
+            if (forgeTransform.get("scale") instanceof final JsonPrimitive uniform && uniform.isNumber()) {
+                final JsonArray scales = new JsonArray();
+                for (int i = 0; i < 3; i++) {
+                    scales.add(uniform.getAsDouble());
+                }
+                converted.add("scale", scales);
+            } else if (forgeTransform.get("scale") instanceof final JsonArray scales && scales.size() == 3) {
+                converted.add("scale", scales.deepCopy());
+            }
+            display.add(context, converted);
+        }
+        return display.isEmpty() ? null : display;
+    }
+
+    /** Forge's rotation ({@code [{"x": 30}, {"y": 225}, {"z": 0}]} or {@code [x, y, z]}) as 26.3's {@code [x, y, z]}. */
+    private @Nullable JsonArray forgeRotation(final String owner, final @Nullable JsonElement rotation) {
+        if (!(rotation instanceof final JsonArray list)) {
+            return null;
+        }
+        if (list.size() == 3 && list.get(0).isJsonPrimitive()) {
+            return list.deepCopy();
+        }
+        final double[] xyz = new double[3];
+        int last = -1;
+        for (final JsonElement turn : list) {
+            if (!(turn instanceof final JsonObject object) || object.size() != 1) {
+                this.problems.add(owner + ": inventory rotation not understood: " + rotation);
+                return null;
+            }
+            final String axis = object.keySet().iterator().next();
+            final int index = "xyz".indexOf(axis);
+            // 26.3 turns about x, then y, then z; a list in another order can't be written that way
+            if (index < 0 || index <= last && object.get(axis).getAsDouble() != 0) {
+                this.problems.add(owner + ": inventory rotation not in x, y, z order: " + rotation);
+                return null;
+            }
+            xyz[index] = object.get(axis).getAsDouble();
+            last = Math.max(last, index);
+        }
+        final JsonArray converted = new JsonArray();
+        for (final double value : xyz) {
+            converted.add(value);
+        }
+        return converted;
     }
 
     private void itemModelDefinition(final String namespace, final String path, final String model) {

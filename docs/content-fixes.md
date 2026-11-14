@@ -115,3 +115,12 @@ Things in the content repository (`H:\Almura 3.0\ContentLoader\3.0\fs_2`) that 4
 - almura:food/food/sub_turkey uses mocreatures:turkeycooked
 - almura:food/food/sub_turkey_cheese uses mocreatures:turkeycooked
 - almura:food/food/sub_turkey_works uses mocreatures:turkeycooked
+
+## File names 26.3 can't load
+
+26.3 only accepts lower case a-z, 0-9 and `/ . _ -` in resource names, and one bad name throws out every resource pack. The
+loader leaves these out; rename or delete them in the content:
+
+- assets/almura/textures/block/crop/Untitled-1.png (looks like a leftover)
+- assets/almura/textures/item/food/drink/drinkTabIcon.png (nothing refers to it)
+- assets/almura/textures/item/food/food/Thumbs.db (Windows thumbnail cache, delete)

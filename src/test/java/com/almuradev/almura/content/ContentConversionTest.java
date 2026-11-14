@@ -20,6 +20,7 @@ import com.almuradev.almura.content.def.ContentParser;
 import com.almuradev.almura.content.source.ContentSource;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.resources.Identifier;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -178,6 +179,15 @@ final class ContentConversionTest {
             if (!pack.has("assets/" + ns(obj) + "/" + p(obj))) {
                 missing.add("OBJ " + obj + " for " + model);
             }
+            // NeoForge reads the material library from here; without it the OBJ doesn't load at all
+            if (!object.has("mtl_override")) {
+                missing.add("material library for " + model);
+            } else {
+                final String mtl = object.get("mtl_override").getAsString();
+                if (!pack.has("assets/" + ns(mtl) + "/" + p(mtl))) {
+                    missing.add("material library " + mtl + " for " + model);
+                }
+            }
         }
         if (object.get("textures") instanceof final JsonObject textures) {
             for (final Map.Entry<String, JsonElement> entry : textures.entrySet()) {
@@ -231,6 +241,41 @@ final class ContentConversionTest {
     }
 
     @Test
+    void everyPathIsAValidIdentifier() {
+        // One invalid name (capitals, spaces) makes 26.3 throw out every resource pack on reload
+        final List<String> invalid = new ArrayList<>();
+        for (final String path : pack.paths()) {
+            final String[] parts = path.split("/", 3);
+            if (parts.length < 3 || !Identifier.isValidNamespace(parts[1]) || !Identifier.isValidPath(parts[2])) {
+                invalid.add(path);
+            }
+        }
+        report("not valid 26.3 resource names", invalid);
+        assertTrue(invalid.isEmpty(), "Invalid resource names: " + invalid);
+    }
+
+    @Test
+    void everyObjParticleIsCut() throws IOException {
+        // Each OBJ's particle is cut from its texture sheet when first read; one that can't be is served as nothing
+        final List<String> failed = new ArrayList<>();
+        int cut = 0;
+        for (final String path : pack.under("assets/almura/textures/block/obj_particle/").keySet()) {
+            try (var in = pack.open(path)) {
+                if (in == null || in.readAllBytes().length == 0) {
+                    failed.add(path);
+                } else {
+                    cut++;
+                }
+            }
+        }
+        report("OBJ particles not cut", failed);
+        final long objModels = pack.under("assets/almura/models/obj/").size();
+        report("OBJ particles cut", List.of(cut + " of " + objModels + " OBJ models"));
+        assertTrue(cut >= objModels * 9 / 10, "Only " + cut + " OBJ particles for " + objModels + " OBJ models");
+        assertTrue(failed.isEmpty(), "OBJ particles not cut: " + failed);
+    }
+
+    @Test
     void countsThePack() {
         final Map<String, Integer> counts = new TreeMap<>();
         for (final String path : pack.paths()) {
@@ -268,6 +313,15 @@ final class ContentConversionTest {
                     throw new java.io.UncheckedIOException(e);
                 }
             });
+        }
+        for (final String path : pack.under("assets/almura/textures/block/obj_particle/").keySet()) {
+            if (path.contains("cep_innkeeper_bar")) {
+                try (var in = pack.open(path)) {
+                    if (in != null) {
+                        Files.write(samples.resolve(path.replace('/', '_')), in.readAllBytes());
+                    }
+                }
+            }
         }
     }
 

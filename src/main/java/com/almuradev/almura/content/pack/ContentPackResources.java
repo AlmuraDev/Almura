@@ -58,7 +58,10 @@ final class ContentPackResources implements PackResources {
         final ContentPack pack = this.pack.get();
         for (final Map.Entry<String, Object> entry : pack.under(prefix + directory + "/").entrySet()) {
             final String path = entry.getKey();
-            output.accept(Identifier.fromNamespaceAndPath(namespace, path.substring(prefix.length())), () -> pack.open(path));
+            final Identifier id = Identifier.tryBuild(namespace, path.substring(prefix.length()));
+            if (id != null) { // An invalid name would fail the whole reload
+                output.accept(id, () -> pack.open(path));
+            }
         }
     }
 
