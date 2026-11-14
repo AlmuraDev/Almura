@@ -133,6 +133,8 @@ public final class ContentRegistration {
         event.register(Registries.ITEM, helper -> {
             // Almura's cruets: content items are handed back in them
             com.almuradev.almura.feature.cruet.Cruets.register(helper, this::addToTab);
+            // Almura's harvesting sack: picks the content's sack_harvest crops
+            com.almuradev.almura.feature.harvestsack.HarvestingSack.register(helper, this::addToTab);
             for (final ItemDef def : this.ordered()) {
                 if (def.kind().equals("slab")) {
                     // A slab's item is its block's
@@ -177,6 +179,7 @@ public final class ContentRegistration {
             ContentContainers.storageBarrelMenuType = ContentContainers.newMenuType(true);
             helper.register(Identifier.fromNamespaceAndPath(Almura.ID, "container"), ContentContainers.menuType);
             helper.register(Identifier.fromNamespaceAndPath(Almura.ID, "storage_barrel"), ContentContainers.storageBarrelMenuType);
+            com.almuradev.almura.feature.harvestsack.HarvestingSack.registerMenu(helper);
             this.storageBarrelItems();
         });
         event.register(Registries.CREATIVE_MODE_TAB, helper -> {

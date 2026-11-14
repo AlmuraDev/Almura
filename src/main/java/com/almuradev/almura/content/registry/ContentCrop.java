@@ -137,6 +137,13 @@ public final class ContentCrop extends CropBlock {
         return this.def;
     }
 
+    /**
+     * The state at another age, keeping the rest (a surface crop's water).
+     */
+    public BlockState aged(final BlockState state, final int age) {
+        return state.setValue(this.age, Math.max(0, Math.min(age, this.getMaxAge())));
+    }
+
     @Override
     protected IntegerProperty getAgeProperty() {
         return this.age != null ? this.age : BUILDING_AGE.get();

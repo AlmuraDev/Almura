@@ -414,7 +414,7 @@ final class ContentConversionTest {
         "texture almura:block/letter/seedbarrels");
     private static final List<String> NOT_YET_PORTED = List.of(
         "unknown item almura:normal/tool/skills_handbook",
-        "unknown item almura:normal/tool/harvesting_sack", "unknown item almura:normal/tool/farmers_almanac", "unknown item mocreatures:");
+        "unknown item almura:normal/tool/farmers_almanac", "unknown item mocreatures:");
 
     /**
      * The 4.0 content is right as it is: the loader repairs nothing, so anything it had to leave out is a mistake in the content (fix it in

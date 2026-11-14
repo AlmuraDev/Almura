@@ -64,7 +64,8 @@ public final class ContentPackBuilder {
      * Almura's own items (not the content's) whose item models are in the content.
      */
     public static final List<String> OWN_ITEMS_WITH_CONTENT_MODELS = List.of("almura:normal/ingredient/glass_cruet",
-        "almura:normal/ingredient/glass_water_cruet", "almura:normal/ingredient/glass_milk_cruet");
+        "almura:normal/ingredient/glass_water_cruet", "almura:normal/ingredient/glass_milk_cruet",
+        "almura:normal/tool/harvesting_sack");
 
     private final Map<String, CropDef> crops = new LinkedHashMap<>();
     private List<TreeGenDef> treeGeneration = List.of();
@@ -112,7 +113,7 @@ public final class ContentPackBuilder {
                 this.itemModel(item);
             }
         }
-        // Almura's own items whose models are the content's (the cruets)
+        // Almura's own items whose models are the content's (the cruets, the harvesting sack)
         for (final String id : OWN_ITEMS_WITH_CONTENT_MODELS) {
             this.itemModelDefinition(namespace(id), path(id), namespace(id) + ":item/" + path(id));
         }

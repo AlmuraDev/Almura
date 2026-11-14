@@ -61,5 +61,7 @@
   "item.almura.normal.ingredient.glass_milk_cruet": "Milk Filled Cruet",
   "item.almura.normal.ingredient.glass_cruet.tooltip": "Container",
   "item.almura.normal.ingredient.glass_water_cruet.tooltip": "Water Filled Container",
-  "item.almura.normal.ingredient.glass_milk_cruet.tooltip": "Milk Filled Container"
+  "item.almura.normal.ingredient.glass_milk_cruet.tooltip": "Milk Filled Container",
+  "item.almura.normal.tool.harvesting_sack": "Harvesting Sack",
+  "item.almura.normal.tool.harvesting_sack.tooltip": "Right click ripe berries and other pickable crops to harvest them"
 }

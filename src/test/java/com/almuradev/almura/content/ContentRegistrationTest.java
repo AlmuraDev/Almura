@@ -47,8 +47,8 @@ final class ContentRegistrationTest {
         final long crops = 85;
         assertEquals(blocks + crops, count("almura", BuiltInRegistries.BLOCK.keySet()), "blocks");
         // Normal, food, hoe, sickle and seed items, and an item for each block but the crops (their item is their seed)
-        // and Almura's three cruets
-        assertEquals(186 + 413 + 5 + 5 + 85 + blocks + 3, count("almura", BuiltInRegistries.ITEM.keySet()), "items");
+        // and Almura's three cruets and harvesting sack
+        assertEquals(186 + 413 + 5 + 5 + 85 + blocks + 3 + 1,count("almura", BuiltInRegistries.ITEM.keySet()), "items");
         final Item cruet = BuiltInRegistries.ITEM.getValue(com.almuradev.almura.feature.cruet.Cruets.EMPTY);
         for (final Identifier filled : new Identifier[] {com.almuradev.almura.feature.cruet.Cruets.WATER, com.almuradev.almura.feature.cruet.Cruets.MILK}) {
             final var remainder = BuiltInRegistries.ITEM.getValue(filled).getCraftingRemainder();
@@ -61,6 +61,12 @@ final class ContentRegistrationTest {
         assertTrue(barleySeed instanceof BlockItem seedItem && seedItem.getBlock() == barley, "barley seed plants barley");
         assertEquals("item.almura.seed.barley_seed", barleySeed.getDescriptionId());
         assertTrue(barley.defaultBlockState().isRandomlyTicking(), "crops grow");
+        // The harvesting sack picks the content's sack_harvest crops and holds what they drop (components aren't bound here, so its stack
+        // size of 1 can't be read)
+        final Item sack = BuiltInRegistries.ITEM.getValue(com.almuradev.almura.feature.harvestsack.HarvestingSack.ID);
+        assertTrue(sack instanceof com.almuradev.almura.feature.harvestsack.HarvestingSack.SackItem, "the harvesting sack is there");
+        assertTrue(BuiltInRegistries.BLOCK.stream().filter(block -> block instanceof com.almuradev.almura.content.registry.ContentCrop crop
+            && crop.def().sackResetAge() >= 0).count() == 11, "11 crops are picked with the sack");
         // Aquatic crops: seaweed is always water, rice is waterlogged in water and dry in the wild, barley is a land crop
         final net.minecraft.world.level.block.state.properties.BooleanProperty waterlogged =
             net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;

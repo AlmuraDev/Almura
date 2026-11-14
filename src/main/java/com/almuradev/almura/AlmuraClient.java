@@ -61,6 +61,11 @@ public final class AlmuraClient {
                     net.minecraft.client.gui.screens.inventory.ContainerScreen::new);
                 event.register(com.almuradev.almura.content.registry.ContentContainers.storageBarrelMenuType(),
                     com.almuradev.almura.content.client.StorageBarrelScreen::new);
+                // The harvesting sack shows a single chest's
+                if (com.almuradev.almura.feature.harvestsack.HarvestingSack.menuType() != null) {
+                    event.register(com.almuradev.almura.feature.harvestsack.HarvestingSack.menuType(),
+                        net.minecraft.client.gui.screens.inventory.ContainerScreen::new);
+                }
             }
         });
         NeoForge.EVENT_BUS.register(new MainMenuManager());
