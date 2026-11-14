@@ -45,6 +45,15 @@ public final class AlmuraClient {
         AlmuraOptions.register(container);
         modBus.addListener(AlmuraClient::onClientSetup);
         modBus.addListener(AlmuraClient::onRegisterPictureInPictureRenderers);
+        // The content's containers show a chest's screen
+        modBus.addListener((final net.neoforged.neoforge.client.event.RegisterMenuScreensEvent event) -> {
+            if (com.almuradev.almura.content.registry.ContentContainers.menuType() != null) {
+                event.register(com.almuradev.almura.content.registry.ContentContainers.menuType(),
+                    net.minecraft.client.gui.screens.inventory.ContainerScreen::new);
+                event.register(com.almuradev.almura.content.registry.ContentContainers.storageBarrelMenuType(),
+                    net.minecraft.client.gui.screens.inventory.ContainerScreen::new);
+            }
+        });
         NeoForge.EVENT_BUS.register(new MainMenuManager());
         NeoForge.EVENT_BUS.register(new ServerStatus());
         NeoForge.EVENT_BUS.register(new Disconnected());
