@@ -48,4 +48,24 @@ class GuidePageTest {
         assertEquals(0, page.index());
         assertEquals("hi", page.content());
     }
+
+    @Test
+    void savesAPageAs35DidAndReadsItBack() {
+        final UUID dockter = UUID.fromString("bcbce24c-20fc-4914-8f49-5aaed0cd3696");
+        final ServerGuide.Page page = new ServerGuide.Page("rules", 4, "§9Welcome - Rules", "§aBe §lnice§r.\nSee [the map](http://x.y).",
+            dockter, Instant.parse("2019-01-02T03:04:05Z"), dockter, Instant.parse("2020-05-06T07:08:09Z"));
+        final String written = ServerGuide.write(page);
+        // 3.5 saved & colour codes
+        org.junit.jupiter.api.Assertions.assertTrue(written.contains("&aBe &lnice&r.") && !written.contains("§"), written);
+        assertEquals(page, ServerGuide.read("rules", written));
+    }
+
+    @Test
+    void namesAPlayersGuideFromItsName() {
+        final UUID owner = UUID.fromString("bcbce24c-20fc-4914-8f49-5aaed0cd3696");
+        // As 3.5: every character but a-z and 0-9 is a _, those at the ends dropped
+        assertEquals("player/" + owner + "/my_farm__notes", ServerGuide.playerGuideId(owner, "§aMy Farm: Notes!"));
+        assertEquals("player/" + owner + "/guide", ServerGuide.playerGuideId(owner, "§a!!!"));
+        assertEquals(32, ServerGuide.playerGuideId(owner, "a".repeat(40)).length() - ("player/" + owner + "/").length());
+    }
 }

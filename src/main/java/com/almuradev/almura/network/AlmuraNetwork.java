@@ -54,11 +54,17 @@ public final class AlmuraNetwork {
             com.almuradev.almura.feature.almanac.network.ClientboundAlmanacCrops.CODEC);
         registrar.playToClient(com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundListing.TYPE, com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundListing.CODEC);
         registrar.playToClient(com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundPage.TYPE, com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundPage.CODEC);
+        registrar.playToClient(com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundChangeResult.TYPE, com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundChangeResult.CODEC);
         // To the server
         registrar.playToServer(com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundOpen.TYPE, com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundOpen.CODEC, (payload, context) ->
             com.almuradev.almura.feature.guide.server.ServerGuide.open((net.minecraft.server.level.ServerPlayer) context.player()));
         registrar.playToServer(com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundPage.TYPE, com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundPage.CODEC, (payload, context) ->
             com.almuradev.almura.feature.guide.server.ServerGuide.openPage((net.minecraft.server.level.ServerPlayer) context.player(),
                 payload.id()));
+        registrar.playToServer(com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundChange.TYPE, com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundChange.CODEC, (payload, context) ->
+            com.almuradev.almura.feature.guide.server.ServerGuide.change((net.minecraft.server.level.ServerPlayer) context.player(), payload));
+        registrar.playToServer(com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundMove.TYPE, com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundMove.CODEC, (payload, context) ->
+            com.almuradev.almura.feature.guide.server.ServerGuide.move((net.minecraft.server.level.ServerPlayer) context.player(), payload.id(),
+                payload.up()));
     }
 }

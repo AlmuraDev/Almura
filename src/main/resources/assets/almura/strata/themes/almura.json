@@ -5,14 +5,21 @@
     "window.title": { "nine_slice": "almura:theme/window_title", "border": 1 },
     "window.title.inactive": { "nine_slice": "almura:theme/window_title", "border": 1 },
     "separator": "#80FFFFFF",
-    "separator.shadow": "none"
+    "separator.shadow": "none",
+    "button.normal": { "nine_slice": "almura:theme/button", "border": 3 },
+    "button.hovered": { "nine_slice": "almura:theme/button_highlighted", "border": 3 },
+    "button.pressed": { "nine_slice": "almura:theme/button_highlighted", "border": 3 },
+    "button.disabled": { "nine_slice": "almura:theme/button_disabled", "border": 1 },
+    "button.default": { "nine_slice": "almura:theme/button", "border": 3 },
+    "button.selected": { "nine_slice": "almura:theme/button", "border": 3, "tint": "#FFA0A0A0" },
+    "button.selected.hovered": { "nine_slice": "almura:theme/button_highlighted", "border": 3, "tint": "#FFC0C0C0" },
+    "button.selected.disabled": { "nine_slice": "almura:theme/button_disabled", "border": 1 }
   },
   "text": {
     "window.title.text": { "color": "#FFFFFFFF", "shadow": false, "bold": false }
   },
   "insets": {
     "window.title.padding": [4, 3, 4, 3],
-    "window.padding": [3, 4, 3, 3],
-    "button.padding": [8, 5, 8, 6]
+    "window.padding": [3, 4, 3, 3]
   }
 }

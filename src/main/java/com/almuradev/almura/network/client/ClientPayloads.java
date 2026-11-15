@@ -44,5 +44,7 @@ public final class ClientPayloads {
             (payload, context) -> com.almuradev.almura.feature.guide.client.ClientGuide.onListing(payload));
         event.register(com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundPage.TYPE,
             (payload, context) -> com.almuradev.almura.feature.guide.client.ClientGuide.onPage(payload));
+        event.register(com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundChangeResult.TYPE,
+            (payload, context) -> com.almuradev.almura.feature.guide.client.ClientGuide.onChangeResult(payload));
     }
 }

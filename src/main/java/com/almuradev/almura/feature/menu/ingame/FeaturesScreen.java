@@ -81,7 +81,6 @@ final class FeaturesScreen implements Screen {
         column.add(close.setAlignment(HorizontalAlignment.RIGHT, VerticalAlignment.TOP).setMargin(0f, SECTION_GAP, 0f, 0f));
 
         final Window window = factory.window(this.title())
-            .setClosable(false)
             .setMovable(false)
             .setResizable(false)
             .setCollapsible(false)
@@ -89,6 +88,8 @@ final class FeaturesScreen implements Screen {
             .add(stretched(column))
             .setWidth(WIDTH)
             .setAnchor(Anchor.CENTER);
+        // Its x closes the menu, as Close does
+        com.almuradev.almura.feature.menu.InGameScreens.closesScreen(window);
         return factory.anchorPanel().add(window).setAnchor(Anchor.FILL);
     }
 

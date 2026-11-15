@@ -69,6 +69,8 @@ final class OriginHud implements Screen {
     private static final SpriteId AIR = SpriteId.of("minecraft", "hud/air");
     private static final SpriteId MOUNT = SpriteId.of("minecraft", "hud/heart/vehicle_full");
 
+    // The top right panel's lines: 1 apart (10 from line to line), and its text 2 further in from the sides, as on 1.12
+    private static final float DETAILS_LINE_GAP = 1f, DETAILS_INSET = 2f;
     private static final float USER_WIDTH = 124f, PADDING = 3f, AVATAR = 16f, COMPASS_MIN_WIDTH = 50f, COMPASS_MARGIN = 7f;
     private static final int WHITE = 0xFFFFFFFF, GOLD = 0xFFFFAA00, GRAY = 0xFFAAAAAA, DARK_GRAY = 0xFF555555, GREEN = 0xFF55FF55,
         YELLOW = 0xFFFFFF55, RED = 0xFFFF5555;
@@ -101,7 +103,7 @@ final class OriginHud implements Screen {
     private float shownOpacity = -1f;
     private @Nullable Image avatar;
     private @Nullable GameProfile avatarProfile;
-    private @Nullable Label name, level, worldName, compass, coordinates, performance, ping;
+    private @Nullable Label name, level, worldName, compass, x, y, z, performance, ping;
     private @Nullable HudBar experience, health, armor, hunger, stamina, air, mount;
     private @Nullable Image clock;
 
@@ -158,17 +160,23 @@ final class OriginHud implements Screen {
         this.skillsPanel.setVisible(false);
         this.factory = factory;
 
-        // Where the player is, the frame rate and the server's speed, with the clock, in the top right
-        this.coordinates = factory.label("");
-        this.performance = factory.label("");
-        this.ping = factory.label("");
-        final StackPanel lines = factory.stackPanel().add(this.coordinates).add(this.performance).add(this.ping);
+        // Where the player is, the frame rate and the server's speed, with the clock, in the top right: as 1.12 drew them, without a
+        // shadow, a line each, 10 apart
+        this.x = plain(factory.label(""));
+        this.y = plain(factory.label(""));
+        this.z = plain(factory.label(""));
+        this.performance = plain(factory.label(""));
+        this.ping = plain(factory.label(""));
+        final StackPanel lines = factory.stackPanel().setSpacing(DETAILS_LINE_GAP)
+            .add(this.x).add(this.y).add(this.z).add(this.performance).add(this.ping);
         this.clock = factory.image();
         this.clock.setImageSize(16f, 16f).setSize(16f, 16f);
         final StackPanel details = factory.stackPanel(Orientation.HORIZONTAL).setSpacing(6f)
             .add(lines)
             .add(this.clock.setAlignment(HorizontalAlignment.RIGHT, VerticalAlignment.TOP));
         this.detailsPanel = panel(factory, details);
+        // Further in than the other panels, as on 1.12
+        details.setMargin(PADDING + DETAILS_INSET, PADDING + 1f, PADDING + DETAILS_INSET, PADDING + 1f);
         this.detailsPanel.setAnchor(Anchor.TOP_RIGHT);
 
         // The player list (held Tab), below the panel at the top middle
@@ -436,8 +444,9 @@ final class OriginHud implements Screen {
 
     private void refreshDetails() {
         final Entity view = Minecraft.getInstance().getCameraEntity() != null ? Minecraft.getInstance().getCameraEntity() : Minecraft.getInstance().player;
-        this.coordinates.setText(Text.concat(
-            coordinate("X", view.getX()), Text.of("\n"), coordinate("Y", view.getY()), Text.of("\n"), coordinate("Z", view.getZ())));
+        this.x.setText(coordinate("X", view.getX()));
+        this.y.setText(coordinate("Y", view.getY()));
+        this.z.setText(coordinate("Z", view.getZ()));
 
         this.performance.setText(Text.concat(
             Text.of("FPS: ").color(GOLD), Text.of(Minecraft.getInstance().getFps() + "  ").color(WHITE), Text.of("TPS: ").color(GOLD), this.tps()));

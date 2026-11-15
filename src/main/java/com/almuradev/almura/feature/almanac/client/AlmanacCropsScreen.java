@@ -122,6 +122,8 @@ final class AlmanacCropsScreen implements Screen {
             .add(page.setAnchor(Anchor.FILL))
             .setSize(WIDTH, HEIGHT)
             .setAnchor(Anchor.CENTER);
+        // Its x closes the almanac, as Close does
+        com.almuradev.almura.feature.menu.InGameScreens.closesScreen(window);
         return factory.anchorPanel().add(window).setAnchor(Anchor.FILL);
     }
 

@@ -31,6 +31,28 @@ public final class InGameScreens {
     }
 
     /**
+     * Makes a screen's main window's close button (its x) close the screen, as Close does: by itself it would close only the window,
+     * leaving an empty screen.
+     *
+     * @param close what Close does, such as asking about unsaved changes first
+     */
+    public static org.inspirenxe.strata.api.control.window.Window closesScreen(final org.inspirenxe.strata.api.control.window.Window window,
+        final Runnable close) {
+        window.onEvent(org.inspirenxe.strata.api.control.attribute.popup.Closable.CLOSE, event -> {
+            event.cancel();
+            close.run();
+        });
+        return window;
+    }
+
+    /**
+     * Makes a screen's main window's close button close the screen.
+     */
+    public static org.inspirenxe.strata.api.control.window.Window closesScreen(final org.inspirenxe.strata.api.control.window.Window window) {
+        return closesScreen(window, () -> Minecraft.getInstance().gui.screen().onClose());
+    }
+
+    /**
      * Whether the window is the screen shown.
      */
     public static boolean isShowing(final Screen screen) {

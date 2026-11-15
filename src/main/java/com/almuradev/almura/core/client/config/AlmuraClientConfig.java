@@ -32,6 +32,8 @@ public final class AlmuraClientConfig {
     public static final ModConfigSpec.BooleanValue DISPLAY_NUMERIC_HUD_VALUES;
     public static final ModConfigSpec.BooleanValue ENHANCED_DEBUG;
     public static final ModConfigSpec.BooleanValue DISPLAY_GUIDE_ON_LOGIN;
+    public static final ModConfigSpec.BooleanValue DISPLAY_OTHER_PLAYER_GUIDES;
+    public static final ModConfigSpec.BooleanValue HIDE_GUIDE_FORMATTER_BAR;
 
     static {
         final ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -53,6 +55,10 @@ public final class AlmuraClientConfig {
         builder.push("guide");
         DISPLAY_GUIDE_ON_LOGIN = builder.comment("Opens the guide a few seconds after joining a server that opens it then")
             .define("display-guide-on-login", true);
+        DISPLAY_OTHER_PLAYER_GUIDES = builder.comment("Lists other players' guides in the guide, for its administrators")
+            .define("display-other-player-guides", false);
+        HIDE_GUIDE_FORMATTER_BAR = builder.comment("Hides the guide's formatter bar for those who may change its pages")
+            .define("hide-formatter-bar", false);
         builder.pop();
         SPEC = builder.build();
     }

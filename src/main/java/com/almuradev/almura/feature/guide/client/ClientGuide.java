@@ -8,12 +8,16 @@
 package com.almuradev.almura.feature.guide.client;
 
 import com.almuradev.almura.core.client.config.AlmuraClientConfig;
+import com.almuradev.almura.feature.guide.network.GuideMessages.Abilities;
+import com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundChangeResult;
 import com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundListing;
 import com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundPage;
 import com.almuradev.almura.feature.guide.network.GuideMessages.Entry;
 import com.almuradev.almura.feature.guide.network.GuideMessages.OpenType;
 import com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundOpen;
 import com.almuradev.almura.feature.menu.InGameScreens;
+import com.almuradev.almura.feature.notification.PopupNotification;
+import com.almuradev.almura.feature.notification.client.ClientNotifications;
 import net.minecraft.client.Minecraft;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.jspecify.annotations.Nullable;
@@ -26,6 +30,7 @@ import java.util.List;
 public final class ClientGuide {
 
     private static List<Entry> entries = List.of();
+    private static Abilities abilities = Abilities.NONE;
     private static @Nullable String wanted;
     private static @Nullable GuideScreen open;
 
@@ -43,6 +48,10 @@ public final class ClientGuide {
         return entries;
     }
 
+    static Abilities abilities() {
+        return abilities;
+    }
+
     static @Nullable String wanted() {
         return wanted;
     }
@@ -52,12 +61,13 @@ public final class ClientGuide {
      */
     public static void onListing(final ClientboundListing listing) {
         entries = List.copyOf(listing.entries());
+        abilities = listing.abilities();
         wanted = listing.show().isEmpty() ? null : listing.show();
         final Minecraft minecraft = Minecraft.getInstance();
         final GuideScreen screen = shownScreen();
         if (listing.open() == OpenType.REFRESH) {
             if (screen != null) {
-                screen.showEntries(entries, wanted);
+                screen.showEntries(entries, abilities, wanted);
             }
             return;
         }
@@ -69,7 +79,7 @@ public final class ClientGuide {
             }
         }
         if (screen != null) {
-            screen.showEntries(entries, wanted);
+            screen.showEntries(entries, abilities, wanted);
             return;
         }
         open = new GuideScreen();
@@ -83,6 +93,20 @@ public final class ClientGuide {
         final GuideScreen screen = shownScreen();
         if (screen != null) {
             screen.showPage(page);
+        }
+    }
+
+    /**
+     * How a change went: a failure pops up, as 3.5's did.
+     */
+    public static void onChangeResult(final ClientboundChangeResult result) {
+        if (!result.success()) {
+            ClientNotifications.show(new PopupNotification("Guide", result.message(), 5));
+            return;
+        }
+        final GuideScreen screen = shownScreen();
+        if (screen != null) {
+            screen.changed(result.change(), result.id());
         }
     }
 

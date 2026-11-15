@@ -45,7 +45,25 @@ final class GuideText {
      * can be clicked.
      */
     static StackPanel build(final ComponentFactory factory, final String content) {
+        return build(factory, content, (label, index, address) -> {
+        });
+    }
+
+    /**
+     * A link in the page, to give a right click menu: its label, which link of the page it is (from 0) and its address.
+     */
+    @FunctionalInterface
+    interface LinkMenus {
+
+        void give(org.inspirenxe.strata.api.control.display.Label label, int index, String address);
+    }
+
+    /**
+     * The page's text, each link given its right click menu.
+     */
+    static StackPanel build(final ComponentFactory factory, final String content, final LinkMenus menus) {
         final StackPanel lines = factory.stackPanel().setSpacing(0f);
+        int link = 0;
         String format = "";
         for (final String line : content.replace("\r", "").split("\n", -1)) {
             if (line.isEmpty()) {
@@ -64,7 +82,7 @@ final class GuideText {
             int at = 0;
             while (links.find()) {
                 format = addWords(factory, words, format, line.substring(at, links.start()));
-                words.add(link(factory, links.group(1), links.group(2)));
+                words.add(link(factory, links.group(1), links.group(2), link++, menus));
                 at = links.end();
             }
             format = addWords(factory, words, format, line.substring(at));
@@ -89,10 +107,17 @@ final class GuideText {
         return current;
     }
 
-    private static Component<?> link(final ComponentFactory factory, final String text, final String address) {
+    private static Component<?> link(final ComponentFactory factory, final String text, final String address, final int index,
+        final LinkMenus menus) {
         final org.inspirenxe.strata.api.control.display.Label label = factory.label(Text.of(stripped(text)).color(LINK_COLOR).underline());
         label.setTooltip(Text.of(address));
-        label.onEvent(InputEvents.CLICK, event -> open(address));
+        // A left click opens it; a right click is its menu's
+        label.onEvent(InputEvents.CLICK, event -> {
+            if (event.button() == org.inspirenxe.strata.api.input.MouseButton.LEFT) {
+                open(address);
+            }
+        });
+        menus.give(label, index, address);
         return label;
     }
 
