@@ -76,7 +76,7 @@ Translations are keyed by the file's name in its folder (`aniseseed.name`, `anis
 | `material`, `block_sound_group` | 1 + 1 | done: a block naming one of the content's own materials takes its solidity (not solid lets liquids in, which wash it away, as on 1.12), map colour and push reaction (`almura:ag`: the 10 pipes); one naming its own sound group takes its volume, pitch and sounds (1.12's names, renamed where 26.3 did: `block.cloth.*` is `block.wool.*`). No block names `almura:barrel` as its sound yet; 1.12's own materials and sounds map to 26.3's |
 | `flicker`, `drip` (block state options) | 13 + 5 | done: flickering lights flicker on the client as 3.5's (the room's light and the fixture's blink; steady on the server), ceiling pipes drip |
 | `flammability`, `fire_spread_speed` (block state options) | 25 | done: as 3.5 gave them to Forge |
-| blockstate `transform`s | 121 | later: item display |
+| blockstate `transform`s | 121 + 2 | done: an `inventory` transform (121: flags, lights and the like held and shown in slots their own way) becomes the block item model's `display`; a variant that moves its model (the top halves of 2 OBJ slabs, half a block up) gets a model with NeoForge's root `transform`, as 26.3's blockstates only turn models |
 
 `ContentConversionTest` reads the copied content and checks the pack; `ContentRegistrationTest` and `ContentDataTest` start the game's
 mod loading (no window, no server) and check the registries and that 26.3 reads every recipe and loot table. `./gradlew test` writes

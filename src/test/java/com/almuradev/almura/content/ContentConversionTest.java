@@ -238,6 +238,24 @@ final class ContentConversionTest {
         assertEquals(List.of(), wrong);
     }
 
+    /**
+     * A Forge blockstate variant that moves its model (the top half of the OBJ slabs, half a block up) gets a model with NeoForge's root
+     * transform, as 26.3's blockstates only turn models.
+     */
+    @Test
+    void movedVariantsKeepTheirMove() {
+        for (final String slab : List.of("almura:slab/cep_gladiator_floorgrate_slab", "almura:slab/cep_battlecraftww2_sandbags_slab")) {
+            final JsonObject variants = pack.json("assets/almura/blockstates/" + p(slab) + ".json").getAsJsonObject()
+                .getAsJsonObject("variants");
+            final String top = variants.getAsJsonObject("type=top").get("model").getAsString();
+            final String bottom = variants.getAsJsonObject("type=bottom").get("model").getAsString();
+            assertTrue(!top.equals(bottom), slab + ": the top half has its own model");
+            final JsonObject model = pack.json("assets/" + ns(top) + "/models/" + p(top) + ".json").getAsJsonObject();
+            assertEquals("[0,0.5,0]", model.getAsJsonObject("transform").get("translation").toString(), slab + ": moved half a block up");
+            assertEquals("neoforge:obj", model.get("loader").getAsString(), slab + ": still the OBJ model");
+        }
+    }
+
     @Test
     void everyBlockHasABlockstateAndAnItemModel() {
         final List<String> missing = new ArrayList<>();

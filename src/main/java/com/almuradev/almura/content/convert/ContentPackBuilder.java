@@ -245,8 +245,8 @@ public final class ContentPackBuilder {
                 }
             }
             case "slab" -> {
-                this.addVariant(variants, "type=bottom", this.variant(block, forge, Map.of(), "half=bottom"));
-                this.addVariant(variants, "type=top", this.variant(block, forge, Map.of(), "half=top"));
+                this.addVariant(variants, "type=bottom", this.variant(block, forge, Map.of("half", "bottom"), "half=bottom"));
+                this.addVariant(variants, "type=top", this.variant(block, forge, Map.of("half", "top"), "half=top"));
                 final BlockDef doubleSlab = doubleSlabs.get(block.id());
                 final JsonObject doubleForge = doubleSlab == null ? null : this.forgeBlockstate(doubleSlab.id());
                 if (doubleForge != null) {
@@ -297,9 +297,14 @@ public final class ContentPackBuilder {
             this.problems.add(block.id() + ": the blockstate names no model for " + fullKey);
             return null;
         }
-        final String model = this.modelReference(block.id(), settings.get("model").getAsString());
+        String model = this.modelReference(block.id(), settings.get("model").getAsString());
         if (model == null) {
             return null;
+        }
+        // A variant Forge moved (the top half of an OBJ slab: "transform": {"translation": [0, 0.5, 0]}): 26.3's blockstates only turn a
+        // model, so the model is given NeoForge's root transform instead
+        if (settings.get("transform") instanceof final JsonObject transform && !transform.isEmpty()) {
+            model = this.transformedModel(block.id(), model, fullKey, transform);
         }
         final JsonObject variant = new JsonObject();
         variant.addProperty("model", model);
@@ -312,6 +317,48 @@ public final class ContentPackBuilder {
             variant.addProperty("uvlock", true);
         }
         return variant;
+    }
+
+    /**
+     * The model moved, turned or scaled as a Forge blockstate transform says, as NeoForge's root {@code transform} (in blocks, as Forge's
+     * was): a copy of an OBJ wrapper (whose loader reads it), or a child of a JSON model.
+     */
+    private String transformedModel(final String owner, final String model, final String variantKey, final JsonObject forgeTransform) {
+        final JsonObject transform = new JsonObject();
+        if (forgeTransform.get("translation") instanceof final JsonArray translation && translation.size() == 3) {
+            transform.add("translation", translation.deepCopy());
+        }
+        final JsonArray rotation = this.forgeRotation(owner, forgeTransform.get("rotation"));
+        if (rotation != null) {
+            final JsonObject turn = new JsonObject();
+            for (int i = 0; i < 3; i++) {
+                if (rotation.get(i).getAsDouble() != 0) {
+                    turn.addProperty("xyz".substring(i, i + 1), rotation.get(i).getAsDouble());
+                }
+            }
+            transform.add("rotation", turn);
+        }
+        if (forgeTransform.get("scale") instanceof final JsonPrimitive uniform && uniform.isNumber()) {
+            transform.addProperty("scale", uniform.getAsDouble());
+        } else if (forgeTransform.get("scale") instanceof final JsonArray scales && scales.size() == 3) {
+            transform.add("scale", scales.deepCopy());
+        }
+        if (transform.isEmpty()) {
+            return model;
+        }
+        final String namespace = namespace(model), path = path(model);
+        final String moved = path + "_" + variantKey.replaceAll("[^a-z0-9_]", "_");
+        final JsonElement wrapper = this.pack.json("assets/" + namespace + "/models/" + path + ".json");
+        final JsonObject movedModel;
+        if (wrapper instanceof final JsonObject object && object.has("loader")) {
+            movedModel = object.deepCopy();
+        } else {
+            movedModel = new JsonObject();
+            movedModel.addProperty("parent", model);
+        }
+        movedModel.add("transform", transform);
+        this.pack.putJson("assets/" + namespace + "/models/" + moved + ".json", movedModel);
+        return namespace + ":" + moved;
     }
 
     private static void merge(final JsonObject into, final @Nullable JsonElement from) {
