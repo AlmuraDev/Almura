@@ -7,12 +7,14 @@
  */
 package com.almuradev.almura.feature.hud;
 
+import com.almuradev.almura.feature.skills.client.ClientSkills;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import org.jspecify.annotations.Nullable;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -103,11 +105,14 @@ public final class ServerHudData {
         @SubscribeEvent
         public void onLoggingIn(final ClientPlayerNetworkEvent.LoggingIn event) {
             forget();
+            // The last server's skills, as 3.5 forgot them on connecting
+            ClientSkills.setSkills(List.of());
         }
 
         @SubscribeEvent
         public void onLoggingOut(final ClientPlayerNetworkEvent.LoggingOut event) {
             forget();
+            ClientSkills.setSkills(List.of());
         }
     }
 }

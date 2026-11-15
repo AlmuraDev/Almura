@@ -16,6 +16,7 @@ import com.almuradev.almura.feature.guide.server.ServerGuide;
 import com.almuradev.almura.feature.hud.server.ServerHud;
 import com.almuradev.almura.feature.menu.ingame.server.ServerFeatures;
 import com.almuradev.almura.feature.notification.server.ServerNotifications;
+import com.almuradev.almura.feature.skills.server.ServerSkills;
 import com.almuradev.almura.feature.store.server.ServerStore;
 import com.almuradev.almura.network.AlmuraNetwork;
 import net.neoforged.bus.api.IEventBus;
@@ -51,6 +52,8 @@ public final class Almura {
         // The bank, on Almura's database (config/almura/server.toml) and the server's economy
         container.registerConfig(ModConfig.Type.LOCAL, AlmuraServerConfig.SPEC, AlmuraServerConfig.FILE);
         NeoForge.EVENT_BUS.register(new ServerBank());
+        // The server's Skills plugin, for the HUD and the Features menu's Skills, when it has one
+        ServerSkills.install();
         // Exchanges and stores, on the same database and economy
         NeoForge.EVENT_BUS.register(new ServerExchange());
         NeoForge.EVENT_BUS.register(new ServerStore());

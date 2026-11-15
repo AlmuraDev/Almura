@@ -9,6 +9,8 @@ package com.almuradev.almura.core.client.config;
 
 import net.neoforged.neoforge.common.ModConfigSpec;
 
+import java.util.List;
+
 /**
  * Almura's client settings, in {@code config/almura-client.toml}, changed in game from the Almura options screen (Options, then
  * "Almura..."). The settings of features not yet ported to 4.0 join them as those features are.
@@ -35,6 +37,7 @@ public final class AlmuraClientConfig {
     public static final ModConfigSpec.BooleanValue DISPLAY_OTHER_PLAYER_GUIDES;
     public static final ModConfigSpec.BooleanValue HIDE_GUIDE_FORMATTER_BAR;
     public static final ModConfigSpec.BooleanValue FLICKERING_LIGHTS;
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> HUD_SKILLS;
 
     static {
         final ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -52,6 +55,8 @@ public final class AlmuraClientConfig {
             .define("display-numeric-hud-values", true);
         ENHANCED_DEBUG = builder.comment("Shows Almura's debug panels in place of vanilla's debug text while the debug screen (F3) is open")
             .define("enhanced-debug", true);
+        HUD_SKILLS = builder.comment("The skills shown in the bottom right of the Origin HUD (chosen in the Features menu's Skills), as 3.5's")
+            .defineList("hud-skills", List.of(), () -> "", value -> value instanceof String);
         builder.pop();
         builder.push("guide");
         DISPLAY_GUIDE_ON_LOGIN = builder.comment("Opens the guide a few seconds after joining a server that opens it then")
@@ -83,6 +88,13 @@ public final class AlmuraClientConfig {
      */
     public static boolean get(final ModConfigSpec.BooleanValue value) {
         return SPEC.isLoaded() ? value.get() : value.getDefault();
+    }
+
+    /**
+     * @return the skills shown on the HUD, or none before the file has loaded
+     */
+    public static List<String> hudSkills() {
+        return SPEC.isLoaded() ? List.copyOf(HUD_SKILLS.get()) : List.of();
     }
 
     public static int get(final ModConfigSpec.IntValue value) {

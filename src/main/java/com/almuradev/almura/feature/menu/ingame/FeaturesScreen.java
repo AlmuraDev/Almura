@@ -13,6 +13,7 @@ import com.almuradev.almura.feature.guide.client.ClientGuide;
 import com.almuradev.almura.feature.menu.InGameScreens;
 import com.almuradev.almura.feature.notification.history.NotificationHistoryScreen;
 import com.almuradev.almura.feature.skills.client.ClientSkills;
+import com.almuradev.almura.feature.skills.client.SkillsScreen;
 import com.almuradev.almura.feature.store.client.ClientStore;
 import net.minecraft.client.Minecraft;
 import org.inspirenxe.strata.api.ComponentFactory;
@@ -64,7 +65,9 @@ final class FeaturesScreen implements Screen {
                 .onEvent(Button.PRESSED, event -> ClientBank.requestOpen())));
         // The server only sends skills when it runs the Skills plugin
         if (!ClientSkills.skills().isEmpty()) {
-            column.add(later(factory, "Skills", BUTTON_WIDTH));
+            column.add(centred(factory.button(Text.of("Skills"))
+                .setSize(BUTTON_WIDTH, BUTTON_HEIGHT)
+                .onEvent(Button.PRESSED, event -> InGameScreens.open(new SkillsScreen(), Minecraft.getInstance().gui.screen()))));
         }
         // What the player was sent, over this menu
         column.add(centred(factory.button(Text.of("Notifications"))

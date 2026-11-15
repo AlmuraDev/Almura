@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.store.client;
 
+import com.almuradev.almura.feature.menu.AlmuraScreens;
 import com.almuradev.almura.feature.menu.InGameScreens;
 import com.almuradev.almura.feature.store.network.StoreMessages.ModifyType;
 import com.almuradev.almura.feature.store.network.StoreMessages.ServerboundModifyStore;
@@ -50,7 +51,7 @@ final class StoreManagementScreen implements Screen {
 
     // 3.5's sizes
     private static final float WIDTH = 375f, HEIGHT = 215f, LIST_WIDTH = 120f, DETAILS_WIDTH = 244f, FIELD_WIDTH = 140f;
-    private static final float BUTTON_HEIGHT = 16f, SMALL_WIDTH = 12f, SMALL_HEIGHT = 15f, ROW_HEIGHT = 20f, MARGIN = 10f;
+    private static final float BUTTON_HEIGHT = 16f, SMALL_WIDTH = 12f, SMALL_HEIGHT = 16f, ROW_HEIGHT = 20f, MARGIN = 10f;
     private static final int WHITE = 0xFFFFFFFF, GREEN = 0xFF55FF55, RED = 0xFFFF5555;
     private static final Border BOX_BORDER = Border.of(0xD7FFFFFF, 1f);
     private static final DateTimeFormatter DATE = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withZone(ZoneId.systemDefault());
@@ -97,7 +98,7 @@ final class StoreManagementScreen implements Screen {
         this.creatorNameLabel = label(factory, "almura.feature.common.text.creator_name");
         this.creatorIdLabel = label(factory, "almura.feature.common.text.creator_uuid");
         this.createdLabel = label(factory, "almura.feature.common.text.created");
-        this.hidden = factory.checkBox(Text.translatable("almura.feature.common.text.hidden").color(WHITE));
+        this.hidden = factory.checkBox(Text.translatable("almura.feature.common.text.hidden").color(WHITE)).setBoxSize(AlmuraScreens.CHECKBOX_SIZE);
         this.hidden.onEvent(CheckBox.CHANGED, event -> this.updateButtons());
         this.open = button(factory, Text.translatable("almura.button.open"), 40f, this::openStore);
         this.save = button(factory, Text.translatable("almura.button.save"), 40f, this::save);
@@ -308,7 +309,7 @@ final class StoreManagementScreen implements Screen {
      * As 3.5's + and -: narrow, one coloured character (as the Guide's).
      */
     private static Button small(final ComponentFactory factory, final String label, final int colour, final Runnable press) {
-        final Button button = factory.button(Text.of(label).color(colour)).setTextPadding(2f, 4f, 2f, 2f);
+        final Button button = factory.button(Text.of(label).color(colour)).setTextPadding(2f, 3f, 2f, 3f);
         button.setMinSize(0f, 0f);
         button.setSize(SMALL_WIDTH, SMALL_HEIGHT);
         return button.onEvent(Button.PRESSED, event -> press.run());

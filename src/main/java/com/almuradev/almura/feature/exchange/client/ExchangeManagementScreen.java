@@ -10,6 +10,7 @@ package com.almuradev.almura.feature.exchange.client;
 import com.almuradev.almura.feature.exchange.ExchangeModifyType;
 import com.almuradev.almura.feature.exchange.network.ExchangeMessages.ExchangeInfo;
 import com.almuradev.almura.feature.exchange.network.ExchangeMessages.ServerboundModify;
+import com.almuradev.almura.feature.menu.AlmuraScreens;
 import com.almuradev.almura.feature.menu.InGameScreens;
 import net.minecraft.client.Minecraft;
 import org.inspirenxe.strata.api.ComponentFactory;
@@ -91,7 +92,7 @@ final class ExchangeManagementScreen implements Screen {
         this.creatorNameLabel = label(factory, "almura.feature.common.text.creator_name");
         this.creatorIdLabel = label(factory, "almura.feature.common.text.creator_uuid");
         this.createdLabel = label(factory, "almura.feature.common.text.created");
-        this.hidden = factory.checkBox(Text.translatable("almura.feature.common.text.hidden").color(WHITE));
+        this.hidden = factory.checkBox(Text.translatable("almura.feature.common.text.hidden").color(WHITE)).setBoxSize(AlmuraScreens.CHECKBOX_SIZE);
         this.hidden.onEvent(CheckBox.CHANGED, event -> this.updateControls());
         this.save = ExchangeScreen.button(factory, Text.translatable("almura.button.save"), 40f, this::confirmSave);
         this.open = ExchangeScreen.button(factory, Text.translatable("almura.button.open"), 40f, this::openSelected);
@@ -269,7 +270,7 @@ final class ExchangeManagementScreen implements Screen {
     }
 
     private static Button small(final ComponentFactory factory, final String text, final int colour, final Runnable press) {
-        final Button button = factory.button(Text.of(text).color(colour)).setTextPadding(2f, 4f, 2f, 2f);
+        final Button button = factory.button(Text.of(text).color(colour)).setTextPadding(2f, 3f, 2f, 3f);
         button.setMinSize(0f, 0f);
         button.setSize(15f, BUTTON_HEIGHT);
         return button.onEvent(Button.PRESSED, event -> press.run());

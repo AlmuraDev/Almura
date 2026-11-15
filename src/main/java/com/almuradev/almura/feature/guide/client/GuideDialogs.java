@@ -7,11 +7,12 @@
  */
 package com.almuradev.almura.feature.guide.client;
 
+import com.almuradev.almura.feature.guide.network.GuideMessages;
 import com.almuradev.almura.feature.guide.network.GuideMessages.Abilities;
 import com.almuradev.almura.feature.guide.network.GuideMessages.ChangeType;
 import com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundPage;
 import com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundChange;
-import com.almuradev.almura.feature.guide.network.GuideMessages;
+import com.almuradev.almura.feature.menu.AlmuraScreens;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.inspirenxe.strata.api.ComponentFactory;
 import org.inspirenxe.strata.api.component.Component;
@@ -65,7 +66,7 @@ final class GuideDialogs {
         final TextBox index = filtered(factory.textBox(), "[^0-9]", 9, false).setText("0");
         final TextBox name = factory.textBox().setMaxLength(GuideMessages.MAX_NAME);
         final Label idLabel = factory.label("ID"), indexLabel = factory.label("Index");
-        final CheckBox player = factory.checkBox("Player guide");
+        final CheckBox player = factory.checkBox("Player guide").setBoxSize(AlmuraScreens.CHECKBOX_SIZE);
         player.setTooltip(Text.of("Only you and guide admins will see it"));
         final boolean choose = abilities.add() && abilities.addPlayer();
         player.setVisible(choose);

@@ -8,9 +8,9 @@
 package com.almuradev.almura.feature.store.client;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.feature.menu.AlmuraScreens;
 import com.almuradev.almura.feature.menu.InGameScreens;
-import com.almuradev.almura.feature.store.StoreNumbers;
-import com.almuradev.almura.feature.store.StoreSide;
+import com.almuradev.almura.feature.menu.ListRows;
 import com.almuradev.almura.feature.store.client.StoreItems.Finder;
 import com.almuradev.almura.feature.store.network.StoreMessages.ItemView;
 import com.almuradev.almura.feature.store.network.StoreMessages.ModifyCandidate;
@@ -18,7 +18,8 @@ import com.almuradev.almura.feature.store.network.StoreMessages.ServerboundDelis
 import com.almuradev.almura.feature.store.network.StoreMessages.ServerboundModifyItems;
 import com.almuradev.almura.feature.store.network.StoreMessages.ServerboundTransaction;
 import com.almuradev.almura.feature.store.network.StoreMessages.StoreInfo;
-import com.almuradev.almura.feature.menu.ListRows;
+import com.almuradev.almura.feature.store.StoreNumbers;
+import com.almuradev.almura.feature.store.StoreSide;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 import org.inspirenxe.strata.api.ComponentFactory;
@@ -238,10 +239,8 @@ final class StoreScreen implements Screen {
         final AnchorPanel root = factory.anchorPanel().add(window).setAnchor(Anchor.FILL);
         if (this.admin) {
             // Edit mode, at the left of the title bar: off shows the store as players see it
-            final CheckBox editMode = factory.checkBox(Text.translatable("almura.feature.store.checkbox.edit_mode"))
+            final CheckBox editMode = factory.checkBox(Text.translatable("almura.feature.store.checkbox.edit_mode")).setBoxSize(AlmuraScreens.CHECKBOX_SIZE)
                 .setState(ClientStore.editMode() ? CheckState.CHECKED : CheckState.UNCHECKED);
-            // A box as tall as its text (Strata's is the text's height plus 8), so it sits inside the title bar as 3.5's small one did
-            editMode.setBoxSize(9f);
             editMode.setTooltip(Text.translatable("almura.feature.store.checkbox.edit_mode.tooltip"));
             editMode.onEvent(CheckBox.CHANGED, event -> this.setEditMode(event.value() == CheckState.CHECKED));
             this.editModeBox = editMode;

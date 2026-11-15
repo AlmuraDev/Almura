@@ -10,11 +10,12 @@ package com.almuradev.almura.feature.bank.client;
 import com.almuradev.almura.feature.bank.BankAction;
 import com.almuradev.almura.feature.bank.BankMoney;
 import com.almuradev.almura.feature.bank.BankTransactionType;
+import com.almuradev.almura.feature.bank.network.BankMessages;
 import com.almuradev.almura.feature.bank.network.BankMessages.AccountView;
 import com.almuradev.almura.feature.bank.network.BankMessages.HistoryEntry;
 import com.almuradev.almura.feature.bank.network.BankMessages.Member;
 import com.almuradev.almura.feature.bank.network.BankMessages.ServerboundAction;
-import com.almuradev.almura.feature.bank.network.BankMessages;
+import com.almuradev.almura.feature.menu.AlmuraScreens;
 import com.almuradev.almura.feature.menu.InGameScreens;
 import net.minecraft.client.Minecraft;
 import org.inspirenxe.strata.api.ComponentFactory;
@@ -438,7 +439,7 @@ final class BankScreen implements Screen {
             final TextBox name = factory.textBox().setMaxLength(16);
             name.setTooltip(Text.translatable("almura.feature.bank.tooltip.member_name"));
             name.setSize(100f, BUTTON_HEIGHT);
-            final CheckBox canWithdraw = factory.checkBox(Text.translatable("almura.feature.bank.checkbox.can_withdraw"));
+            final CheckBox canWithdraw = factory.checkBox(Text.translatable("almura.feature.bank.checkbox.can_withdraw")).setBoxSize(AlmuraScreens.CHECKBOX_SIZE);
             final Runnable add = () -> {
                 if (!name.text().isBlank()) {
                     ClientBank.request(new ServerboundAction(BankAction.ADD_MEMBER, account, name.text().trim(), "0", "",

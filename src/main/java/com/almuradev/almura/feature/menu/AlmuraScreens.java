@@ -23,6 +23,10 @@ public final class AlmuraScreens {
     public static final ThemeId THEME = ThemeId.of(Almura.ID, "almura");
     public static final ThemeRef THEME_REF = ThemeRef.of(THEME);
     /**
+     * The size of a checkbox's box: as tall as its text, as 3.5's small ones (Strata's is the text's height plus 8).
+     */
+    public static final float CHECKBOX_SIZE = 9f;
+    /**
      * The in-game windows' theme ({@code assets/almura/strata/themes/in_game.json}): Almura's, with list rows as wide as their list, as
      * 3.5's were (vanilla's centres them, at most 220 wide, as its server and world lists).
      */

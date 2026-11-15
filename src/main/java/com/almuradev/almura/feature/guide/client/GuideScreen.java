@@ -9,6 +9,7 @@ package com.almuradev.almura.feature.guide.client;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.core.client.config.AlmuraClientConfig;
+import com.almuradev.almura.feature.guide.network.GuideMessages;
 import com.almuradev.almura.feature.guide.network.GuideMessages.Abilities;
 import com.almuradev.almura.feature.guide.network.GuideMessages.ChangeType;
 import com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundPage;
@@ -16,7 +17,7 @@ import com.almuradev.almura.feature.guide.network.GuideMessages.Entry;
 import com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundChange;
 import com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundMove;
 import com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundPage;
-import com.almuradev.almura.feature.guide.network.GuideMessages;
+import com.almuradev.almura.feature.menu.AlmuraScreens;
 import com.almuradev.almura.feature.menu.InGameScreens;
 import com.almuradev.almura.feature.menu.ListRows;
 import net.minecraft.client.Minecraft;
@@ -256,7 +257,7 @@ final class GuideScreen implements Screen {
 
     private static CheckBox setting(final ComponentFactory factory, final String text,
         final ModConfigSpec.BooleanValue value) {
-        final CheckBox box = factory.checkBox(text).setState(AlmuraClientConfig.get(value) ? CheckState.CHECKED : CheckState.UNCHECKED);
+        final CheckBox box = factory.checkBox(text).setBoxSize(AlmuraScreens.CHECKBOX_SIZE).setState(AlmuraClientConfig.get(value) ? CheckState.CHECKED : CheckState.UNCHECKED);
         box.onEvent(CheckBox.CHANGED, event -> AlmuraClientConfig.set(value, event.value() == CheckState.CHECKED));
         return box;
     }

@@ -7,32 +7,26 @@
  */
 package com.almuradev.almura.feature.skills.client;
 
+import com.almuradev.almura.core.client.config.AlmuraClientConfig;
 import com.almuradev.almura.feature.skills.SkillEntry;
 
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
- * The player's skills on the client, and which of them the player shows on the HUD.
- *
- * <p>Nothing fills it yet: on 1.12 the server sent the skills from the Skills plugin, which has no 26.3 version, and the player chose the
- * HUD's skills on the Skills screen, which isn't ported. A dev run started with {@code -PsampleSkills} fills it with sample skills.</p>
+ * The player's skills on the client, as 3.5's {@code ClientSkillsManager}: sent by the server from its Skills plugin, and which of them the
+ * player shows on the HUD (chosen on the Features menu's Skills, kept in {@code hud-skills} of the client config).
+ * <p>
+ * A dev run started with {@code -PsampleSkills} shows sample skills until the server sends real ones.
  */
 public final class ClientSkills {
 
-    // Set with -PsampleSkills (see build.gradle), to see the HUD's skills panel before skills come from a server
+    // Set with -PsampleSkills (see build.gradle), to see the HUD's skills panel without a server with Skills
     private static final boolean SAMPLE = Boolean.getBoolean("almura.dev.sampleSkills");
 
     private static volatile List<SkillEntry> skills = SAMPLE ? sample() : List.of();
-    // The skills shown on the HUD, in the order chosen; none until chosen, as on 1.12
-    private static final Set<String> shownOnHud = new LinkedHashSet<>();
-
-    static {
-        if (SAMPLE) {
-            skills.forEach(skill -> shownOnHud.add(skill.id()));
-        }
-    }
+    // Changes whenever new skills arrive, so an open Skills screen knows to refresh
+    private static volatile int revision;
 
     private ClientSkills() {
     }
@@ -42,26 +36,47 @@ public final class ClientSkills {
     }
 
     public static void setSkills(final List<SkillEntry> skills) {
-        ClientSkills.skills = List.copyOf(skills);
+        ClientSkills.skills = skills.isEmpty() && SAMPLE ? sample() : List.copyOf(skills);
+        ClientSkills.revision++;
+    }
+
+    static int revision() {
+        return ClientSkills.revision;
+    }
+
+    static int totalLevel() {
+        return ClientSkills.skills.stream().mapToInt(SkillEntry::level).sum();
+    }
+
+    static int totalMaxLevel() {
+        return ClientSkills.skills.stream().mapToInt(SkillEntry::maxLevel).sum();
     }
 
     public static boolean isShownOnHud(final String id) {
-        return ClientSkills.shownOnHud.contains(id);
+        return AlmuraClientConfig.hudSkills().contains(id) || SAMPLE && AlmuraClientConfig.hudSkills().isEmpty();
     }
 
+    /**
+     * Shows or hides a skill on the HUD, saved in the client config.
+     */
     public static void setShownOnHud(final String id, final boolean shown) {
-        if (shown) {
-            ClientSkills.shownOnHud.add(id);
-        } else {
-            ClientSkills.shownOnHud.remove(id);
+        final List<String> chosen = new ArrayList<>(AlmuraClientConfig.hudSkills());
+        if (shown == chosen.contains(id)) {
+            return;
         }
+        if (shown) {
+            chosen.add(id);
+        } else {
+            chosen.remove(id);
+        }
+        AlmuraClientConfig.set(AlmuraClientConfig.HUD_SKILLS, chosen);
     }
 
     /**
      * @return The skills the player shows on the HUD, in the skills' order
      */
     public static List<SkillEntry> hudSkills() {
-        return ClientSkills.skills.stream().filter(skill -> ClientSkills.shownOnHud.contains(skill.id())).toList();
+        return ClientSkills.skills.stream().filter(skill -> isShownOnHud(skill.id())).toList();
     }
 
     private static List<SkillEntry> sample() {

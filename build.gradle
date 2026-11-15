@@ -59,6 +59,10 @@ dependencies {
     compileOnly("org.inspirenxe:strata-core:${strata_version}")
     localRuntime("org.inspirenxe:strata-minecraft-neoforge:${strata_version}")
 
+    // The Skills plugin's API (its 2.0 for SpongeAPI 21: org.inspirenxe.skills.api, taken from its jar, as it isn't published); the
+    // plugin brings it at run time
+    compileOnly(files('libs/skills-api-2.0.0.jar'))
+
     // LuckPerms' API, for permissions only known while the server runs (a store's, an exchange's); LuckPerms brings it at run time
     compileOnly("net.luckperms:api:${luckperms_api_version}")
 

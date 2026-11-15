@@ -12,6 +12,7 @@ import com.almuradev.almura.feature.exchange.ListStatusType;
 import com.almuradev.almura.feature.exchange.network.ExchangeMessages.ForSaleView;
 import com.almuradev.almura.feature.exchange.network.ExchangeMessages.ServerboundBuy;
 import com.almuradev.almura.feature.exchange.network.ExchangeMessages.ServerboundListStatus;
+import com.almuradev.almura.feature.menu.AlmuraScreens;
 import org.inspirenxe.strata.api.ComponentFactory;
 import org.inspirenxe.strata.api.component.Component;
 import org.inspirenxe.strata.api.control.attribute.popup.Closable;
@@ -128,7 +129,7 @@ final class ExchangeDialogs {
      * Close.
      */
     static void options(final ComponentFactory factory, final ExchangeScreen screen) {
-        final CheckBox hideOwn = factory.checkBox("Hide my listed items in search")
+        final CheckBox hideOwn = factory.checkBox("Hide my listed items in search").setBoxSize(AlmuraScreens.CHECKBOX_SIZE)
             .setState(ExchangeOptions.hideOwnListings() ? CheckState.CHECKED : CheckState.UNCHECKED);
         final ComboBox<String> sort = factory.comboBox(value -> SORT_ORDERS.getOrDefault(value, value));
         sort.setItems(List.of(ExchangeOptions.ITEM_NAME, ExchangeOptions.PRICE, ExchangeOptions.SELLER));

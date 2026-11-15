@@ -7,8 +7,9 @@
  */
 package com.almuradev.almura.feature.menu.options;
 
-import com.almuradev.almura.core.client.config.AlmuraClientConfig.HudType;
 import com.almuradev.almura.core.client.config.AlmuraClientConfig;
+import com.almuradev.almura.core.client.config.AlmuraClientConfig.HudType;
+import com.almuradev.almura.feature.menu.AlmuraScreens;
 import net.minecraft.client.Minecraft;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.inspirenxe.strata.api.ComponentFactory;
@@ -131,7 +132,7 @@ final class AlmuraOptionsScreen implements Screen {
     }
 
     private static CheckBox check(final ComponentFactory factory, final String text, final ModConfigSpec.BooleanValue setting) {
-        final CheckBox box = factory.checkBox(text).setState(AlmuraClientConfig.get(setting) ? CheckState.CHECKED : CheckState.UNCHECKED);
+        final CheckBox box = factory.checkBox(text).setBoxSize(AlmuraScreens.CHECKBOX_SIZE).setState(AlmuraClientConfig.get(setting) ? CheckState.CHECKED : CheckState.UNCHECKED);
         box.onEvent(CheckBox.CHANGED, event -> AlmuraClientConfig.set(setting, event.value() == CheckState.CHECKED));
         return box;
     }
@@ -139,7 +140,7 @@ final class AlmuraOptionsScreen implements Screen {
     // A setting of a feature not yet ported: greyed out, at 1.12's default
     private static CheckBox laterCheck(final ComponentFactory factory, final String text, final boolean checked) {
         // Grey text, as the theme draws a disabled check box's label like an enabled one's
-        return later(factory.checkBox(Text.of(text).color(LATER_GRAY)).setState(checked ? CheckState.CHECKED : CheckState.UNCHECKED));
+        return later(factory.checkBox(Text.of(text).color(LATER_GRAY)).setBoxSize(AlmuraScreens.CHECKBOX_SIZE).setState(checked ? CheckState.CHECKED : CheckState.UNCHECKED));
     }
 
     private static Slider laterDistance(final ComponentFactory factory, final String name, final int blocks) {

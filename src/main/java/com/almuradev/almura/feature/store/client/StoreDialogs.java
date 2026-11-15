@@ -7,14 +7,15 @@
  */
 package com.almuradev.almura.feature.store.client;
 
-import com.almuradev.almura.feature.store.StoreNumbers;
-import com.almuradev.almura.feature.store.StoreSide;
+import com.almuradev.almura.feature.menu.AlmuraScreens;
 import com.almuradev.almura.feature.store.network.StoreMessages.ItemView;
 import com.almuradev.almura.feature.store.network.StoreMessages.ModifyCandidate;
 import com.almuradev.almura.feature.store.network.StoreMessages.ServerboundDelistItems;
 import com.almuradev.almura.feature.store.network.StoreMessages.ServerboundListItem;
 import com.almuradev.almura.feature.store.network.StoreMessages.ServerboundModifyItems;
 import com.almuradev.almura.feature.store.network.StoreMessages.ServerboundTransaction;
+import com.almuradev.almura.feature.store.StoreNumbers;
+import com.almuradev.almura.feature.store.StoreSide;
 import net.minecraft.world.item.ItemStack;
 import org.inspirenxe.strata.api.ComponentFactory;
 import org.inspirenxe.strata.api.control.attribute.text.TextInput;
@@ -72,7 +73,7 @@ final class StoreDialogs {
             this.quantity.setSize(FIELD_WIDTH, BUTTON_HEIGHT);
             this.quantity.onEvent(TextInput.EDIT, event -> event.setValue(StoreNumbers.filterNumber(event.value(), 0, this.infinite())));
             this.quantity.onEvent(TextInput.EDITED, event -> changed.run());
-            this.infinite = factory.checkBox(Text.translatable("almura.feature.common.text.infinite").color(WHITE));
+            this.infinite = factory.checkBox(Text.translatable("almura.feature.common.text.infinite").color(WHITE)).setBoxSize(AlmuraScreens.CHECKBOX_SIZE);
             this.infinite.onEvent(CheckBox.CHANGED, event -> {
                 final boolean on = event.value() == CheckState.CHECKED;
                 this.quantity.setReadOnly(on);

@@ -23,6 +23,7 @@ import com.almuradev.almura.feature.hud.network.ClientboundWorldName;
 import com.almuradev.almura.feature.menu.ingame.network.FeaturesMessages;
 import com.almuradev.almura.feature.menu.ingame.server.ServerFeatures;
 import com.almuradev.almura.feature.notification.network.ClientboundPopupNotification;
+import com.almuradev.almura.feature.skills.network.ClientboundSkills;
 import com.almuradev.almura.feature.store.network.StoreMessages;
 import com.almuradev.almura.feature.store.server.ServerStore;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -80,6 +81,7 @@ public final class AlmuraNetwork {
         registrar.playToClient(StoreMessages.ClientboundOpen.TYPE, StoreMessages.ClientboundOpen.CODEC);
         registrar.playToClient(StoreMessages.ClientboundItems.TYPE, StoreMessages.ClientboundItems.CODEC);
         registrar.playToClient(FeaturesMessages.ClientboundOpen.TYPE, FeaturesMessages.ClientboundOpen.CODEC);
+        registrar.playToClient(ClientboundSkills.TYPE, ClientboundSkills.CODEC);
         // To the server
         registrar.playToServer(GuideMessages.ServerboundOpen.TYPE, GuideMessages.ServerboundOpen.CODEC, (payload, context) ->
             ServerGuide.open((ServerPlayer) context.player()));
