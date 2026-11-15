@@ -1,0 +1,9 @@
+{
+  "parent": "almura:almura",
+  "metrics": {
+    "list.row.width": 0
+  },
+  "insets": {
+    "textbox.padding": [4, 4, 4, 3]
+  }
+}

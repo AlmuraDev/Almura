@@ -22,6 +22,11 @@ public final class AlmuraScreens {
 
     public static final ThemeId THEME = ThemeId.of(Almura.ID, "almura");
     public static final ThemeRef THEME_REF = ThemeRef.of(THEME);
+    /**
+     * The in-game windows' theme ({@code assets/almura/strata/themes/in_game.json}): Almura's, with list rows as wide as their list, as
+     * 3.5's were (vanilla's centres them, at most 220 wide, as its server and world lists).
+     */
+    public static final ThemeRef IN_GAME_THEME_REF = ThemeRef.of(ThemeId.of(Almura.ID, "in_game"));
 
     private AlmuraScreens() {
     }

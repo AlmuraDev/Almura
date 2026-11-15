@@ -12,6 +12,8 @@ import com.almuradev.almura.feature.almanac.network.ClientboundAlmanacCrops;
 import com.almuradev.almura.feature.almanac.network.ClientboundAlmanacField;
 import com.almuradev.almura.feature.bank.client.ClientBank;
 import com.almuradev.almura.feature.bank.network.BankMessages;
+import com.almuradev.almura.feature.exchange.client.ClientExchange;
+import com.almuradev.almura.feature.exchange.network.ExchangeMessages;
 import com.almuradev.almura.feature.guide.client.ClientGuide;
 import com.almuradev.almura.feature.guide.network.GuideMessages;
 import com.almuradev.almura.feature.hud.ServerHudData;
@@ -19,9 +21,13 @@ import com.almuradev.almura.feature.hud.network.ClientboundPlayerMoney;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerWorlds;
 import com.almuradev.almura.feature.hud.network.ClientboundServerTps;
 import com.almuradev.almura.feature.hud.network.ClientboundWorldName;
+import com.almuradev.almura.feature.menu.ingame.FeaturesMenu;
+import com.almuradev.almura.feature.menu.ingame.network.FeaturesMessages;
 import com.almuradev.almura.feature.notification.PopupNotification;
 import com.almuradev.almura.feature.notification.client.ClientNotifications;
 import com.almuradev.almura.feature.notification.network.ClientboundPopupNotification;
+import com.almuradev.almura.feature.store.client.ClientStore;
+import com.almuradev.almura.feature.store.network.StoreMessages;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 
@@ -51,6 +57,16 @@ public final class ClientPayloads {
         event.register(GuideMessages.ClientboundPage.TYPE, (payload, context) -> ClientGuide.onPage(payload));
         event.register(GuideMessages.ClientboundChangeResult.TYPE, (payload, context) -> ClientGuide.onChangeResult(payload));
         event.register(BankMessages.ClientboundState.TYPE, (payload, context) -> ClientBank.onState(payload));
+        event.register(FeaturesMessages.ClientboundOpen.TYPE, (payload, context) -> FeaturesMenu.onOpen(payload));
         event.register(BankMessages.ClientboundHistory.TYPE, (payload, context) -> ClientBank.onHistory(payload));
+        event.register(ExchangeMessages.ClientboundRegistry.TYPE, (payload, context) -> ClientExchange.onRegistry(payload));
+        event.register(ExchangeMessages.ClientboundOpen.TYPE, (payload, context) -> ClientExchange.onOpen(payload));
+        event.register(ExchangeMessages.ClientboundListItems.TYPE, (payload, context) -> ClientExchange.onListItems(payload));
+        event.register(ExchangeMessages.ClientboundForSale.TYPE, (payload, context) -> ClientExchange.onForSale(payload));
+        event.register(ExchangeMessages.ClientboundRefresh.TYPE, (payload, context) -> ClientExchange.onRefresh(payload));
+        event.register(ExchangeMessages.ClientboundTransactionComplete.TYPE, (payload, context) -> ClientExchange.onTransactionComplete());
+        event.register(StoreMessages.ClientboundRegistry.TYPE, (payload, context) -> ClientStore.onRegistry(payload));
+        event.register(StoreMessages.ClientboundOpen.TYPE, (payload, context) -> ClientStore.onOpen(payload));
+        event.register(StoreMessages.ClientboundItems.TYPE, (payload, context) -> ClientStore.onItems(payload));
     }
 }

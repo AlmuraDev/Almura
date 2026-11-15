@@ -420,7 +420,6 @@ public final class ServerBank {
         for (final int slot : coinSlots) {
             inventory.setItem(slot, ItemStack.EMPTY);
         }
-        player.inventoryMenu.broadcastChanges();
         if (account != null) {
             log(account, player, BankTransactionType.COIN_DEPOSIT, amount);
             refreshViewers(account, player);

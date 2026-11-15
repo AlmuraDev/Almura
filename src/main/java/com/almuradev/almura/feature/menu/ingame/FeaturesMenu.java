@@ -9,18 +9,20 @@ package com.almuradev.almura.feature.menu.ingame;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.menu.InGameScreens;
+import com.almuradev.almura.feature.menu.ingame.network.FeaturesMessages.ClientboundOpen;
+import com.almuradev.almura.feature.menu.ingame.network.FeaturesMessages.ServerboundOpen;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.permissions.Permissions;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.common.NeoForge;
 
 /**
@@ -65,7 +67,18 @@ public final class FeaturesMenu {
             minecraft.gui.hud.getChat().addClientSystemMessage(Component.literal("This is only available on the Almura server, not in singleplayer."));
             return;
         }
-        final boolean admin = player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER);
-        InGameScreens.open(new FeaturesScreen(admin), null);
+        // As 3.5: the server says whether the player may open it (almura.feature.base) and sees its administrator buttons
+        // (almura.feature.admin)
+        ClientPacketDistributor.sendToServer(new ServerboundOpen());
+    }
+
+    /**
+     * The server's answer to F12: the menu, with the administrator buttons or not.
+     */
+    public static void onOpen(final ClientboundOpen message) {
+        final Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.player != null && minecraft.gui.screen() == null) {
+            InGameScreens.open(new FeaturesScreen(message.admin()), null);
+        }
     }
 }

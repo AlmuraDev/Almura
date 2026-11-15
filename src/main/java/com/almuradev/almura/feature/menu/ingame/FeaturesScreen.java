@@ -8,10 +8,12 @@
 package com.almuradev.almura.feature.menu.ingame;
 
 import com.almuradev.almura.feature.bank.client.ClientBank;
+import com.almuradev.almura.feature.exchange.client.ClientExchange;
 import com.almuradev.almura.feature.guide.client.ClientGuide;
 import com.almuradev.almura.feature.menu.InGameScreens;
 import com.almuradev.almura.feature.notification.history.NotificationHistoryScreen;
 import com.almuradev.almura.feature.skills.client.ClientSkills;
+import com.almuradev.almura.feature.store.client.ClientStore;
 import net.minecraft.client.Minecraft;
 import org.inspirenxe.strata.api.ComponentFactory;
 import org.inspirenxe.strata.api.component.Component;
@@ -74,8 +76,10 @@ final class FeaturesScreen implements Screen {
                 .add(stretched(factory.separator()).setMargin(0f, SECTION_GAP, 0f, 0f))
                 .add(centred(factory.label("Administrator").setTextScale(1.1f)))
                 .add(stretched(factory.separator()))
-                .add(later(factory, "Manage Exchanges", ADMIN_BUTTON_WIDTH).setMargin(0f, SECTION_GAP, 0f, 0f))
-                .add(later(factory, "Manage Stores", ADMIN_BUTTON_WIDTH));
+                .add(centred(factory.button(Text.of("Manage Exchanges")).setSize(ADMIN_BUTTON_WIDTH, BUTTON_HEIGHT)
+                    .onEvent(Button.PRESSED, event -> ClientExchange.requestManage())).setMargin(0f, SECTION_GAP, 0f, 0f))
+                .add(centred(factory.button(Text.of("Manage Stores")).setSize(ADMIN_BUTTON_WIDTH, BUTTON_HEIGHT)
+                    .onEvent(Button.PRESSED, event -> ClientStore.requestManage())));
         }
 
         final Button close = factory.button(Text.translatable("almura.button.close"))

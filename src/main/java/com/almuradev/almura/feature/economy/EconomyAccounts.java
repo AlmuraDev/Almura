@@ -50,4 +50,11 @@ public interface EconomyAccounts {
      * @return whether it went in
      */
     boolean deposit(Account to, BigDecimal amount);
+
+    /**
+     * Takes money out of an account, out of the economy (bought from a store).
+     *
+     * @return whether it came out (not if the account doesn't have that much)
+     */
+    boolean withdraw(Account from, BigDecimal amount);
 }

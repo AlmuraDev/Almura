@@ -11,9 +11,12 @@ import com.almuradev.almura.content.AlmuraContent;
 import com.almuradev.almura.core.database.AlmuraServerConfig;
 import com.almuradev.almura.feature.bank.server.ServerBank;
 import com.almuradev.almura.feature.economy.Economy;
+import com.almuradev.almura.feature.exchange.server.ServerExchange;
 import com.almuradev.almura.feature.guide.server.ServerGuide;
 import com.almuradev.almura.feature.hud.server.ServerHud;
+import com.almuradev.almura.feature.menu.ingame.server.ServerFeatures;
 import com.almuradev.almura.feature.notification.server.ServerNotifications;
+import com.almuradev.almura.feature.store.server.ServerStore;
 import com.almuradev.almura.network.AlmuraNetwork;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -42,9 +45,14 @@ public final class Almura {
         // The server's economy (Sponge's, such as EconomyLite's) for the HUD's money, when there is one
         Economy.install();
         NeoForge.EVENT_BUS.register(new ServerNotifications());
+        // Who may open the Features menu (F12) and see its administrator buttons
+        NeoForge.EVENT_BUS.register(new ServerFeatures());
         NeoForge.EVENT_BUS.register(new ServerGuide());
         // The bank, on Almura's database (config/almura/server.toml) and the server's economy
         container.registerConfig(ModConfig.Type.LOCAL, AlmuraServerConfig.SPEC, AlmuraServerConfig.FILE);
         NeoForge.EVENT_BUS.register(new ServerBank());
+        // Exchanges and stores, on the same database and economy
+        NeoForge.EVENT_BUS.register(new ServerExchange());
+        NeoForge.EVENT_BUS.register(new ServerStore());
     }
 }

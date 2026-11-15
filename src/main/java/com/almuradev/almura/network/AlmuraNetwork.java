@@ -12,13 +12,19 @@ import com.almuradev.almura.feature.almanac.network.ClientboundAlmanacCrops;
 import com.almuradev.almura.feature.almanac.network.ClientboundAlmanacField;
 import com.almuradev.almura.feature.bank.network.BankMessages;
 import com.almuradev.almura.feature.bank.server.ServerBank;
+import com.almuradev.almura.feature.exchange.network.ExchangeMessages;
+import com.almuradev.almura.feature.exchange.server.ServerExchange;
 import com.almuradev.almura.feature.guide.network.GuideMessages;
 import com.almuradev.almura.feature.guide.server.ServerGuide;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerMoney;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerWorlds;
 import com.almuradev.almura.feature.hud.network.ClientboundServerTps;
 import com.almuradev.almura.feature.hud.network.ClientboundWorldName;
+import com.almuradev.almura.feature.menu.ingame.network.FeaturesMessages;
+import com.almuradev.almura.feature.menu.ingame.server.ServerFeatures;
 import com.almuradev.almura.feature.notification.network.ClientboundPopupNotification;
+import com.almuradev.almura.feature.store.network.StoreMessages;
+import com.almuradev.almura.feature.store.server.ServerStore;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
@@ -64,6 +70,16 @@ public final class AlmuraNetwork {
         registrar.playToClient(GuideMessages.ClientboundChangeResult.TYPE, GuideMessages.ClientboundChangeResult.CODEC);
         registrar.playToClient(BankMessages.ClientboundState.TYPE, BankMessages.ClientboundState.CODEC);
         registrar.playToClient(BankMessages.ClientboundHistory.TYPE, BankMessages.ClientboundHistory.CODEC);
+        registrar.playToClient(ExchangeMessages.ClientboundRegistry.TYPE, ExchangeMessages.ClientboundRegistry.CODEC);
+        registrar.playToClient(ExchangeMessages.ClientboundOpen.TYPE, ExchangeMessages.ClientboundOpen.CODEC);
+        registrar.playToClient(ExchangeMessages.ClientboundListItems.TYPE, ExchangeMessages.ClientboundListItems.CODEC);
+        registrar.playToClient(ExchangeMessages.ClientboundForSale.TYPE, ExchangeMessages.ClientboundForSale.CODEC);
+        registrar.playToClient(ExchangeMessages.ClientboundRefresh.TYPE, ExchangeMessages.ClientboundRefresh.CODEC);
+        registrar.playToClient(ExchangeMessages.ClientboundTransactionComplete.TYPE, ExchangeMessages.ClientboundTransactionComplete.CODEC);
+        registrar.playToClient(StoreMessages.ClientboundRegistry.TYPE, StoreMessages.ClientboundRegistry.CODEC);
+        registrar.playToClient(StoreMessages.ClientboundOpen.TYPE, StoreMessages.ClientboundOpen.CODEC);
+        registrar.playToClient(StoreMessages.ClientboundItems.TYPE, StoreMessages.ClientboundItems.CODEC);
+        registrar.playToClient(FeaturesMessages.ClientboundOpen.TYPE, FeaturesMessages.ClientboundOpen.CODEC);
         // To the server
         registrar.playToServer(GuideMessages.ServerboundOpen.TYPE, GuideMessages.ServerboundOpen.CODEC, (payload, context) ->
             ServerGuide.open((ServerPlayer) context.player()));
@@ -75,5 +91,33 @@ public final class AlmuraNetwork {
             ServerGuide.move((ServerPlayer) context.player(), payload.id(), payload.up()));
         registrar.playToServer(BankMessages.ServerboundAction.TYPE, BankMessages.ServerboundAction.CODEC, (payload, context) ->
             ServerBank.handle((ServerPlayer) context.player(), payload));
+        registrar.playToServer(ExchangeMessages.ServerboundOpen.TYPE, ExchangeMessages.ServerboundOpen.CODEC, (payload, context) ->
+            ServerExchange.open((ServerPlayer) context.player(), payload.id()));
+        registrar.playToServer(ExchangeMessages.ServerboundOfferRequest.TYPE, ExchangeMessages.ServerboundOfferRequest.CODEC, (payload, context) ->
+            ServerExchange.openOffer((ServerPlayer) context.player(), payload.id()));
+        registrar.playToServer(ExchangeMessages.ServerboundModify.TYPE, ExchangeMessages.ServerboundModify.CODEC, (payload, context) ->
+            ServerExchange.modify((ServerPlayer) context.player(), payload));
+        registrar.playToServer(ExchangeMessages.ServerboundQuery.TYPE, ExchangeMessages.ServerboundQuery.CODEC, (payload, context) ->
+            ServerExchange.query((ServerPlayer) context.player(), payload));
+        registrar.playToServer(ExchangeMessages.ServerboundMoveItems.TYPE, ExchangeMessages.ServerboundMoveItems.CODEC, (payload, context) ->
+            ServerExchange.moveItems((ServerPlayer) context.player(), payload));
+        registrar.playToServer(ExchangeMessages.ServerboundListStatus.TYPE, ExchangeMessages.ServerboundListStatus.CODEC, (payload, context) ->
+            ServerExchange.listStatus((ServerPlayer) context.player(), payload));
+        registrar.playToServer(ExchangeMessages.ServerboundBuy.TYPE, ExchangeMessages.ServerboundBuy.CODEC, (payload, context) ->
+            ServerExchange.buy((ServerPlayer) context.player(), payload));
+        registrar.playToServer(StoreMessages.ServerboundOpen.TYPE, StoreMessages.ServerboundOpen.CODEC, (payload, context) ->
+            ServerStore.handleOpen((ServerPlayer) context.player(), payload));
+        registrar.playToServer(StoreMessages.ServerboundModifyStore.TYPE, StoreMessages.ServerboundModifyStore.CODEC, (payload, context) ->
+            ServerStore.handleModifyStore((ServerPlayer) context.player(), payload));
+        registrar.playToServer(StoreMessages.ServerboundListItem.TYPE, StoreMessages.ServerboundListItem.CODEC, (payload, context) ->
+            ServerStore.handleListItem((ServerPlayer) context.player(), payload));
+        registrar.playToServer(StoreMessages.ServerboundModifyItems.TYPE, StoreMessages.ServerboundModifyItems.CODEC, (payload, context) ->
+            ServerStore.handleModifyItems((ServerPlayer) context.player(), payload));
+        registrar.playToServer(StoreMessages.ServerboundDelistItems.TYPE, StoreMessages.ServerboundDelistItems.CODEC, (payload, context) ->
+            ServerStore.handleDelistItems((ServerPlayer) context.player(), payload));
+        registrar.playToServer(StoreMessages.ServerboundTransaction.TYPE, StoreMessages.ServerboundTransaction.CODEC, (payload, context) ->
+            ServerStore.handleTransaction((ServerPlayer) context.player(), payload));
+        registrar.playToServer(FeaturesMessages.ServerboundOpen.TYPE, FeaturesMessages.ServerboundOpen.CODEC, (payload, context) ->
+            ServerFeatures.open((ServerPlayer) context.player()));
     }
 }

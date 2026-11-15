@@ -66,7 +66,7 @@ public final class InGameScreens {
         private final net.minecraft.client.gui.screens.@Nullable Screen parent;
 
         Host(final Screen screen, final net.minecraft.client.gui.screens.@Nullable Screen parent) {
-            super(Component.empty(), screen, AlmuraScreens.THEME_REF);
+            super(Component.empty(), screen, AlmuraScreens.IN_GAME_THEME_REF);
             this.window = screen;
             this.parent = parent;
         }

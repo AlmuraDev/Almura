@@ -35,7 +35,7 @@ import java.util.function.Consumer;
  * needed (and again if it drops); what follows a query runs back on the server's thread.
  * <p>
  * A feature's tables are made by {@link #install}, from {@code /almura/database/<feature>.sql} in the jar: statements written for both H2
- * and PostgreSQL, separated by semicolons.
+ * and PostgreSQL, separated by semicolons (none inside a string; {@code --} comments are dropped first).
  * <p>
  * The drivers are called directly, not through {@code DriverManager}, which doesn't see drivers in a mod's jar.
  */
@@ -114,8 +114,10 @@ public final class AlmuraDatabase {
             } catch (final IOException e) {
                 throw new SQLException("Couldn't read " + resource, e);
             }
+            // Comments dropped first, so a semicolon in one doesn't split a statement
+            final String statements = script.replaceAll("(?m)--.*$", "");
             try (Statement statement = connection.createStatement()) {
-                for (final String sql : script.split(";")) {
+                for (final String sql : statements.split(";")) {
                     if (!sql.isBlank()) {
                         statement.execute(sql);
                     }

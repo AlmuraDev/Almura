@@ -151,6 +151,12 @@ public final class SpongeEconomy {
                 .orElse(false);
         }
 
+        @Override
+        public boolean withdraw(final Account from, final BigDecimal amount) {
+            return this.find(from).map(found -> found.withdraw(this.service.defaultCurrency(), amount).result() == ResultType.SUCCESS)
+                .orElse(false);
+        }
+
         private Optional<org.spongepowered.api.service.economy.account.Account> find(final Account account) {
             if (account.player() != null) {
                 return this.service.findOrCreateAccount(account.player()).map(org.spongepowered.api.service.economy.account.Account.class::cast);
