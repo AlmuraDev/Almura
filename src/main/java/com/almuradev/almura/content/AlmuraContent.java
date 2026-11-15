@@ -65,6 +65,8 @@ public final class AlmuraContent {
         }
         final ContentSource source = ContentSource.at(root);
         final ContentParser parser = new ContentParser(source);
+        // The content's own materials and sound groups, for the blocks that name them
+        com.almuradev.almura.content.registry.ContentBlocks.define(parser.materials(), parser.soundGroups());
         final List<ItemGroupDef> groups = parser.itemGroups();
         final List<ItemDef> items = parser.items(ITEM_KINDS);
         final List<BlockDef> blocks = parser.blocks(BLOCK_KINDS);

@@ -124,13 +124,67 @@ public final class ContentBlocks {
         return new ContentSapling(sapling, properties(def).noCollision().randomTicks().pushReaction(PushReaction.POPPED));
     }
 
+    // The content's own materials and sound groups, by id, read before the blocks are made
+    private static final java.util.Map<String, com.almuradev.almura.content.def.ContentDefs.MaterialDef> MATERIALS = new java.util.HashMap<>();
+    private static final java.util.Map<String, SoundType> SOUND_GROUPS = new java.util.HashMap<>();
+    // 1.12's sound names that 26.3 renamed
+    private static final java.util.Map<String, String> RENAMED_SOUNDS = java.util.Map.of("block.cloth.", "block.wool.",
+        "block.slime.", "block.slime_block.", "block.note.", "block.note_block.");
+
+    /**
+     * The content's own materials ({@code material/*.json}) and block sound groups ({@code block_sound_group/*.json}), as 1.12 read
+     * them, for the blocks that name them.
+     */
+    public static void define(final java.util.List<com.almuradev.almura.content.def.ContentDefs.MaterialDef> materials,
+        final java.util.List<com.almuradev.almura.content.def.ContentDefs.SoundGroupDef> soundGroups) {
+        MATERIALS.clear();
+        materials.forEach(material -> MATERIALS.put(material.id(), material));
+        SOUND_GROUPS.clear();
+        for (final com.almuradev.almura.content.def.ContentDefs.SoundGroupDef group : soundGroups) {
+            SOUND_GROUPS.put(group.id(), new SoundType(group.volume(), group.pitch(), soundEvent(group, "break", SoundType.STONE.getBreakSound()),
+                soundEvent(group, "step", SoundType.STONE.getStepSound()), soundEvent(group, "place", SoundType.STONE.getPlaceSound()),
+                soundEvent(group, "hit", SoundType.STONE.getHitSound()), soundEvent(group, "fall", SoundType.STONE.getFallSound())));
+        }
+    }
+
+    /**
+     * One of a sound group's sounds by its 1.12 name (in 26.3's namespace, renamed where 26.3 renamed it), or stone's if there's none.
+     */
+    private static net.minecraft.sounds.SoundEvent soundEvent(final com.almuradev.almura.content.def.ContentDefs.SoundGroupDef group,
+        final String which, final net.minecraft.sounds.SoundEvent otherwise) {
+        final String name = group.sounds().get(which);
+        if (name == null) {
+            return otherwise;
+        }
+        String renamed = name.contains(":") ? name : "minecraft:" + name;
+        for (final java.util.Map.Entry<String, String> rename : RENAMED_SOUNDS.entrySet()) {
+            renamed = renamed.replace(":" + rename.getKey(), ":" + rename.getValue());
+        }
+        final java.util.Optional<net.minecraft.sounds.SoundEvent> found = net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT
+            .getOptional(Identifier.tryParse(renamed));
+        if (found.isEmpty()) {
+            com.almuradev.almura.Almura.LOGGER.warn("Content sound group {}: no sound {} ({}); stone's instead", group.id(), name, which);
+        }
+        return found.orElse(otherwise);
+    }
+
+    /**
+     * One of the content's own block sound groups, by id, for blocks that name it as their {@code sound}.
+     */
+    public static @Nullable SoundType soundGroup(final String id) {
+        return SOUND_GROUPS.get(id);
+    }
+
     static BlockBehaviour.Properties properties(final BlockDef def) {
         final StateDef state = def.state();
         final String material = path(def.material());
+        // One of the content's own materials, if it names one
+        final com.almuradev.almura.content.def.ContentDefs.MaterialDef own = MATERIALS.get(def.material());
+        final SoundType ownSound = def.sound() == null ? null : SOUND_GROUPS.get(def.sound());
         final BlockBehaviour.Properties properties = BlockBehaviour.Properties.of()
             .setId(ResourceKey.create(Registries.BLOCK, Identifier.parse(def.id())))
-            .mapColor(mapColor(def.mapColor(), material))
-            .sound(sound(def.sound()));
+            .mapColor(mapColor(def.mapColor() != null ? def.mapColor() : own != null ? own.mapColor() : null, material))
+            .sound(ownSound != null ? ownSound : sound(def.sound()));
         // 1.12's defaults: broken at once and no resistance, unless the content says
         final float hardness = Float.isNaN(state.hardness()) ? 0f : state.hardness();
         final float resistance = Float.isNaN(state.resistance()) ? 0f : state.resistance() * RESISTANCE_SCALE;
@@ -143,7 +197,8 @@ public final class ContentBlocks {
         // furniture that doesn't fill its space, like chairs); otherwise only when it doesn't say it isn't
         final boolean modelled = def.kind().equals("normal") || def.kind().equals("horizontal");
         final boolean opaque = modelled ? Boolean.TRUE.equals(state.opaque()) : !Boolean.FALSE.equals(state.opaque());
-        if (!opaque || material.equals("ag") || def.kind().equals("flower") || def.kind().equals("crop")
+        final boolean solid = own == null || own.solid();
+        if (!opaque || !solid || def.kind().equals("flower") || def.kind().equals("crop")
             || def.kind().equals("leaf") || def.kind().equals("sapling") || def.kind().equals("container")) {
             properties.noOcclusion();
         }
@@ -154,9 +209,21 @@ public final class ContentBlocks {
         if (material.equals("wood") || material.equals("cloth") || material.equals("plants") || material.equals("leaves")) {
             properties.ignitedByLava();
         }
-        if (material.equals("ag")) {
-            // Almura's agriculture material: not solid, broken when pushed
-            properties.pushReaction(PushReaction.POPPED);
+        if (own != null) {
+            // A material that isn't solid lets liquids in, which wash the block away, as on 1.12
+            if (!solid) {
+                properties.forceSolidOff();
+            }
+            final PushReaction push = own.push() == null ? null : switch (own.push().toUpperCase(java.util.Locale.ROOT)) {
+                case "DESTROY" -> PushReaction.POPPED;
+                case "BLOCK" -> PushReaction.IMMOVEABLE;
+                case "IGNORE" -> PushReaction.IGNORE_ENTITY;
+                case "PUSH_ONLY" -> PushReaction.PUSH;
+                default -> PushReaction.PUSH_PULL;
+            };
+            if (push != null) {
+                properties.pushReaction(push);
+            }
         }
         return properties;
     }

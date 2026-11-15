@@ -13,8 +13,10 @@ import com.almuradev.almura.content.def.ContentDefs.DecayDef;
 import com.almuradev.almura.content.def.ContentDefs.GrassDef;
 import com.almuradev.almura.content.def.ContentDefs.GrassEntryDef;
 import com.almuradev.almura.content.def.ContentDefs.GrassGenDef;
+import com.almuradev.almura.content.def.ContentDefs.MaterialDef;
 import com.almuradev.almura.content.def.ContentDefs.OreDef;
 import com.almuradev.almura.content.def.ContentDefs.OreGenDef;
+import com.almuradev.almura.content.def.ContentDefs.SoundGroupDef;
 import com.almuradev.almura.content.def.ContentDefs.StateRef;
 import com.almuradev.almura.content.def.ContentDefs.TreeGenDef;
 import com.almuradev.almura.content.def.ContentDefs.LeafDef;
@@ -67,6 +69,38 @@ public final class ContentParser {
         final List<ItemGroupDef> groups = new ArrayList<>();
         for (final ContentFile file : this.source.files("item_group")) {
             groups.add(new ItemGroupDef(file.id(), string(file.json(), "icon")));
+        }
+        return groups;
+    }
+
+    /**
+     * The content's own materials ({@code material/*.json}).
+     */
+    public List<MaterialDef> materials() {
+        final List<MaterialDef> materials = new ArrayList<>();
+        for (final ContentFile file : this.source.files("material")) {
+            final JsonObject json = file.json();
+            materials.add(new MaterialDef(file.id(), bool(json, "solid", true), string(json, "map_color"), string(json, "push")));
+        }
+        return materials;
+    }
+
+    /**
+     * The content's own block sound groups ({@code block_sound_group/*.json}).
+     */
+    public List<SoundGroupDef> soundGroups() {
+        final List<SoundGroupDef> groups = new ArrayList<>();
+        for (final ContentFile file : this.source.files("block_sound_group")) {
+            final JsonObject json = file.json();
+            final java.util.Map<String, String> sounds = new java.util.LinkedHashMap<>();
+            if (object(json, "sound") instanceof final JsonObject sound) {
+                for (final String key : sound.keySet()) {
+                    if (sound.get(key).isJsonPrimitive()) {
+                        sounds.put(key, sound.get(key).getAsString());
+                    }
+                }
+            }
+            groups.add(new SoundGroupDef(file.id(), (float) number(json, "volume", 1), (float) number(json, "pitch", 1), sounds));
         }
         return groups;
     }

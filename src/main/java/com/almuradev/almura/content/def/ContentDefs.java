@@ -107,6 +107,20 @@ public final class ContentDefs {
         boolean drip, int flammability, int fireSpreadSpeed, boolean flicker) {
     }
 
+    /**
+     * One of the content's own materials ({@code material/*.json}), as 1.12's: whether it is solid (liquids flow into and wash away a block
+     * that isn't), its map colour, and what a piston does to it ({@code NORMAL}, {@code DESTROY} or {@code BLOCK}).
+     */
+    public record MaterialDef(String id, boolean solid, @Nullable String mapColor, @Nullable String push) {
+    }
+
+    /**
+     * One of the content's own block sound groups ({@code block_sound_group/*.json}), as 1.12's: a volume and a pitch, and the sounds of
+     * breaking, stepping on, placing, hitting and falling on the block (1.12's sound names).
+     */
+    public record SoundGroupDef(String id, float volume, float pitch, Map<String, String> sounds) {
+    }
+
     public record Box(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
 
         public boolean isFullBlock() {

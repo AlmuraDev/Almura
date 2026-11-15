@@ -87,6 +87,16 @@ final class ContentRegistrationTest {
         assertTrue(!(BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:horizontal/agriculture/pipe"))
             instanceof net.minecraft.world.level.block.EntityBlock), "a pipe doesn't");
         assertTrue(BuiltInRegistries.BLOCK_ENTITY_TYPE.containsKey(Identifier.fromNamespaceAndPath("almura", "flicker_light")), "flicker light marker");
+        // The content's own sound group (barrel: gravel break, wool place, at 0.1) and material (ag: not solid, broken when pushed)
+        // (no block names the barrel group as its sound yet; it is read for those that will)
+        final net.minecraft.world.level.block.SoundType barrelSound = com.almuradev.almura.content.registry.ContentBlocks.soundGroup("almura:barrel");
+        assertTrue(barrelSound != null, "the barrel sound group is read");
+        assertEquals(0.1f, barrelSound.getVolume(), 0.0001f, "barrel sound volume");
+        assertEquals(net.minecraft.sounds.SoundEvents.GRAVEL_BREAK, barrelSound.getBreakSound(), "barrel break sound");
+        assertEquals(net.minecraft.sounds.SoundEvents.WOOL_PLACE, barrelSound.getPlaceSound(), "barrel place sound (1.12's block.cloth.place)");
+        final Block pipe = BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:horizontal/agriculture/pipe"));
+        assertEquals(net.minecraft.world.level.material.PushReaction.POPPED, pipe.defaultBlockState().getPistonPushReaction(), "pipes pop when pushed");
+        assertTrue(!pipe.defaultBlockState().isSolid(), "pipes aren't solid");
         // Leaves burn as the content says (flammability 30, fire_spread_speed 60), as 3.5 gave them to Forge
         final Block almond = BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:leaf/almond_tree_leaf"));
         assertEquals(30, almond.getFlammability(almond.defaultBlockState(), net.minecraft.world.level.EmptyBlockGetter.INSTANCE,

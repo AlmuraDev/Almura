@@ -69,12 +69,14 @@ Translations are keyed by the file's name in its folder (`aniseseed.name`, `anis
 | `block/flower` | 99 | done: on earth, no collision |
 | `block/stair` | 128 | done: made of their `block` |
 | `block/slab`, `item/slab` | 220 + 110 | done: one 26.3 slab per single slab, its double state the 1.12 double slab |
-| `block/container` | 69 | done: a chest's screen of their slots, contents kept in the dropped item (spilled when broken sneaking), the crop barrels take their seed and become the storage barrel when opened, the storage barrel takes seeds, crops and tree fruit and is named for what it holds; its label on the barrel later |
+| `block/container` | 69 | done: a chest's screen of their slots, contents kept in the dropped item (spilled when broken sneaking), the crop barrels take their seed and become the storage barrel when opened, the storage barrel takes seeds, crops and tree fruit and is named for what it holds, with its first slot's item drawn on paper on its sides |
 | `block/crop`, `item/seed` | 85 + 85 | done: 3.5's growth (chance, light, temperature, heat lamp, hydration, rollback, even fields), bone meal at the content's chance, drops by stage, seeds from grass, 3.5's farmland, aquatic crops in water, the harvesting sack |
 | `block/leaf`, `block/sapling`, `tree` | 42 + 25 + 25 | done: leaves decay away from logs (vanilla's distance, 6 blocks; 1.12's was 4) with their decay drops at the biome's chance, fruit spreads into the air beside them, shears and silk touch take the leaf; saplings grow 3.5's trees (normal, big, palm) with fruit leaves at the tree's chance; ranges chosen by biome as 3.5 chose them |
 | `generation`, `grass` | 27 + 1 | done: trees, the grass mix (wild flowers and crops) and ores in the overworld, holding vanilla's trees, grass and flowers back where they go, as 3.5 did |
-| `material`, `block_sound_group` | 1 + 1 | later: blocks map 1.12's names to 26.3's materials and sounds; the content's own definitions aren't read |
-| `flicker`, `drip` (block state options), blockstate `transform`s | 13 + 5 + 121 | later: client effects and item display |
+| `material`, `block_sound_group` | 1 + 1 | done: a block naming one of the content's own materials takes its solidity (not solid lets liquids in, which wash it away, as on 1.12), map colour and push reaction (`almura:ag`: the 10 pipes); one naming its own sound group takes its volume, pitch and sounds (1.12's names, renamed where 26.3 did: `block.cloth.*` is `block.wool.*`). No block names `almura:barrel` as its sound yet; 1.12's own materials and sounds map to 26.3's |
+| `flicker`, `drip` (block state options) | 13 + 5 | done: flickering lights flicker on the client as 3.5's (the room's light and the fixture's blink; steady on the server), ceiling pipes drip |
+| `flammability`, `fire_spread_speed` (block state options) | 25 | done: as 3.5 gave them to Forge |
+| blockstate `transform`s | 121 | later: item display |
 
 `ContentConversionTest` reads the copied content and checks the pack; `ContentRegistrationTest` and `ContentDataTest` start the game's
 mod loading (no window, no server) and check the registries and that 26.3 reads every recipe and loot table. `./gradlew test` writes
@@ -99,8 +101,8 @@ mod loading (no window, no server) and check the registries and that 26.3 reads 
 - Seeds from grass: 3.5's hook asked Forge for a grass seed first, and Forge's list always held wheat, so its Almura seed roll never
   ran. 4.0 does what that code meant: one break in eight, when vanilla's wheat seed didn't drop, picks a random Almura seed and drops
   it at its `grass` chance (`GrassSeeds`). Say if the live server should keep 3.5's actual behaviour (no Almura seeds from grass).
-- `flammability` and `fire_spread_speed` (25 leaves set them, at vanilla's 30 and 60) aren't read yet, so content blocks don't catch
-  fire from a neighbouring fire.
+- `flammability` and `fire_spread_speed` (25 leaves): passed to NeoForge as 3.5 passed them to Forge (flammability is how readily fire
+  burns the block away, fire_spread_speed how readily it spreads to it). Leaves that set neither don't burn, as on 3.5.
 - Leaf decay reaches 6 blocks from a log (26.3's leaves), not 1.12's 4; the content's trees are well inside either.
 - World generation (`generation/feature/tree`, `generation/feature/grass`, `grass`, `generation/underground/ore`): done as 3.5 did it on
   1.12's decoration events. Once a chunk, the first tree generation whose biome chance passes grows its tree and vanilla grows no trees
@@ -111,7 +113,6 @@ mod loading (no window, no server) and check the registries and that 26.3 reads 
 - Wild crops: the grass mix holds ripe crops. On 1.12 a crop could only stand on farmland, so 3.5 most likely never placed them; 4.0
   lets a ripe crop stand on grass, so they appear in the wild. Seeds still plant only on their soil.
 - Double grass and double flowers in the grass mix are placed whole (both halves); 1.12 placed only the lower half, which fell.
-- The storage barrel's label (3.5 drew the first slot's item on paper on the barrel's sides) isn't drawn yet.
 - A container broken in creative drops nothing, so what it held is lost, as on 3.5.
 - Aquatic crops (`aquatic`: rice and wasabi `surface`, seaweed `submerged`): as 3.5, planted on a bed (sand, gravel, dirt,
   farmland or clay) into still water, always watered there; seaweed needs water above it, rice and wasabi air. 3.5 made them water
