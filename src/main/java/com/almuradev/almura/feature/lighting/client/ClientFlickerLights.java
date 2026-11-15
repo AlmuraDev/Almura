@@ -51,10 +51,22 @@ public final class ClientFlickerLights implements FlickerLights.Driver {
     private final Set<BlockPos> queued = new HashSet<>();
     private final Random random = new Random();
 
+    private static @org.jspecify.annotations.Nullable ClientFlickerLights instance;
+
     public static void install() {
         final ClientFlickerLights lights = new ClientFlickerLights();
+        instance = lights;
         FlickerLights.setDriver(lights);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.register(lights);
+    }
+
+    /**
+     * How bright the fixture at the position is drawn, 0 to 1, smoothed between ticks: 1 for a steady light.
+     */
+    public static float brightness(final BlockPos pos, final float partialTicks) {
+        final ClientFlickerLights lights = instance;
+        final FlickerState state = lights == null ? null : lights.lights.get(pos);
+        return state == null ? 1f : state.brightness(partialTicks);
     }
 
     @Override
@@ -149,6 +161,8 @@ public final class ClientFlickerLights implements FlickerLights.Driver {
         private Mode mode = Mode.STEADY;
         private int ticksLeft;
         private float cast = 1f;
+        // How bright the fixture is drawn this tick and the last
+        private float brightness = 1f, previousBrightness = 1f;
 
         FlickerState(final BlockPos pos) {
             // The time mixed in, so two lights at a spot in different sessions don't repeat each other
@@ -158,7 +172,25 @@ public final class ClientFlickerLights implements FlickerLights.Driver {
         }
 
         int tick() {
-            return --this.ticksLeft <= 0 ? this.nextMode() : 0;
+            this.previousBrightness = this.brightness;
+            final int flags = --this.ticksLeft <= 0 ? this.nextMode() : 0;
+            switch (this.mode) {
+                // Blinks between full and weak, never holding either for long
+                case STUTTER -> {
+                    if (this.random.nextInt(2) == 0) {
+                        this.brightness = this.brightness > 0.5f ? 0.1f + this.random.nextFloat() * 0.3f : 1f;
+                    }
+                }
+                case BROWNOUT -> this.brightness = 0.45f + this.random.nextFloat() * 0.2f;
+                // Mostly dark, with the odd weak spark of power
+                case DROPOUT -> this.brightness = this.random.nextInt(12) == 0 ? 0.3f : 0.03f;
+                default -> this.brightness = 1f;
+            }
+            return flags;
+        }
+
+        float brightness(final float partialTicks) {
+            return this.previousBrightness + (this.brightness - this.previousBrightness) * partialTicks;
         }
 
         private int nextMode() {
@@ -204,6 +236,8 @@ public final class ClientFlickerLights implements FlickerLights.Driver {
             this.mode = Mode.STEADY;
             this.ticksLeft = 100 + this.random.nextInt(600);
             this.cast = 1f;
+            this.brightness = 1f;
+            this.previousBrightness = 1f;
             return changed;
         }
 

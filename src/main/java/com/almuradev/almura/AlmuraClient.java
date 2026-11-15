@@ -53,6 +53,11 @@ public final class AlmuraClient {
                 event.registerBlockEntityRenderer(com.almuradev.almura.content.registry.ContentContainers.blockEntityType(),
                     com.almuradev.almura.content.client.StorageBarrelRenderer::new);
             }
+            // A flickering light's fast blink
+            if (com.almuradev.almura.content.registry.FlickerLights.blockEntityType() != null) {
+                event.registerBlockEntityRenderer(com.almuradev.almura.content.registry.FlickerLights.blockEntityType(),
+                    com.almuradev.almura.feature.lighting.client.FlickerLightRenderer::new);
+            }
         });
         // The content's containers show a chest's screen
         modBus.addListener((final net.neoforged.neoforge.client.event.RegisterMenuScreensEvent event) -> {
