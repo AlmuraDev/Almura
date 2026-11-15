@@ -7,8 +7,8 @@
  */
 package com.almuradev.almura.feature.guide.client;
 
+import com.almuradev.almura.Almura;
 import com.almuradev.almura.core.client.config.AlmuraClientConfig;
-import com.almuradev.almura.feature.guide.network.GuideMessages;
 import com.almuradev.almura.feature.guide.network.GuideMessages.Abilities;
 import com.almuradev.almura.feature.guide.network.GuideMessages.ChangeType;
 import com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundPage;
@@ -16,10 +16,15 @@ import com.almuradev.almura.feature.guide.network.GuideMessages.Entry;
 import com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundChange;
 import com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundMove;
 import com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundPage;
+import com.almuradev.almura.feature.guide.network.GuideMessages;
+import com.almuradev.almura.feature.menu.InGameScreens;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import net.neoforged.neoforge.common.ModConfigSpec;
 import org.inspirenxe.strata.api.ComponentFactory;
 import org.inspirenxe.strata.api.component.Component;
+import org.inspirenxe.strata.api.component.HasContextMenu;
 import org.inspirenxe.strata.api.control.attribute.item.Activatable;
 import org.inspirenxe.strata.api.control.attribute.item.Selection;
 import org.inspirenxe.strata.api.control.attribute.text.TextInput;
@@ -28,8 +33,13 @@ import org.inspirenxe.strata.api.control.button.CheckBox;
 import org.inspirenxe.strata.api.control.button.CheckState;
 import org.inspirenxe.strata.api.control.collection.ListView;
 import org.inspirenxe.strata.api.control.field.TextArea;
+import org.inspirenxe.strata.api.control.menu.Menu;
+import org.inspirenxe.strata.api.control.menu.MenuItem;
 import org.inspirenxe.strata.api.control.window.MessageBox;
 import org.inspirenxe.strata.api.control.window.Window;
+import org.inspirenxe.strata.api.event.input.InputEvents;
+import org.inspirenxe.strata.api.geometry.Insets;
+import org.inspirenxe.strata.api.input.MouseButton;
 import org.inspirenxe.strata.api.layout.Anchor;
 import org.inspirenxe.strata.api.layout.AnchorPanel;
 import org.inspirenxe.strata.api.layout.HorizontalAlignment;
@@ -41,12 +51,14 @@ import org.inspirenxe.strata.api.screen.Screen;
 import org.inspirenxe.strata.api.text.Text;
 import org.inspirenxe.strata.api.theme.Border;
 import org.inspirenxe.strata.api.theme.Paint;
+import org.inspirenxe.strata.api.theme.SpriteId;
 import org.inspirenxe.strata.minecraft.MinecraftText;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
 
 /**
  * The Guide, as 3.5's page view: the pages on the left (a server page's name split at " - " into its title and, in grey under it, its
@@ -69,14 +81,14 @@ final class GuideScreen implements Screen {
     // The window's bottom padding (3) shows under the bottom row: half of it, to centre the row in all of it
     private static final float BOTTOM_NUDGE = 3f;
     private static final float ARROW_ICON_WIDTH = 9f, ARROW_ICON_HEIGHT = 5f;
-    private static final Paint ARROW_BUTTON = Paint.nineSlice(org.inspirenxe.strata.api.theme.SpriteId.of(com.almuradev.almura.Almura.ID,
-        "theme/button"), org.inspirenxe.strata.api.geometry.Insets.of(2f));
-    private static final Paint ARROW_BUTTON_DISABLED = Paint.nineSlice(org.inspirenxe.strata.api.theme.SpriteId.of(
-        com.almuradev.almura.Almura.ID, "theme/button_disabled"), org.inspirenxe.strata.api.geometry.Insets.of(1f));
-    private static final org.inspirenxe.strata.api.theme.SpriteId ARROW_UP =
-        org.inspirenxe.strata.api.theme.SpriteId.of(com.almuradev.almura.Almura.ID, "guide/arrow_up");
-    private static final org.inspirenxe.strata.api.theme.SpriteId ARROW_DOWN =
-        org.inspirenxe.strata.api.theme.SpriteId.of(com.almuradev.almura.Almura.ID, "guide/arrow_down");
+    private static final Paint ARROW_BUTTON = Paint.nineSlice(SpriteId.of(Almura.ID,
+        "theme/button"), Insets.of(2f));
+    private static final Paint ARROW_BUTTON_DISABLED = Paint.nineSlice(SpriteId.of(
+        Almura.ID, "theme/button_disabled"), Insets.of(1f));
+    private static final SpriteId ARROW_UP =
+        SpriteId.of(Almura.ID, "guide/arrow_up");
+    private static final SpriteId ARROW_DOWN =
+        SpriteId.of(Almura.ID, "guide/arrow_down");
     private static final Border BOX_BORDER = Border.of(0xB9FFFFFF, 1f);
 
     private @Nullable ComponentFactory factory;
@@ -125,17 +137,17 @@ final class GuideScreen implements Screen {
         preview.setBackground(BOX).setBorder(BOX_BORDER).setPadding(2f, 2f);
         // Its right click menu, as 3.5's: Edit page and Copy
         preview.setContextMenu(factory.menu());
-        preview.onEvent(org.inspirenxe.strata.api.component.HasContextMenu.SHOW_CONTEXT_MENU, event -> event.setValue(this.previewMenu(null)));
+        preview.onEvent(HasContextMenu.SHOW_CONTEXT_MENU, event -> event.setValue(this.previewMenu(null)));
         this.preview = preview;
 
         // The page's text to change, with the formatter bar
         final TextArea editor = factory.textArea().setMaxLength(GuideMessages.MAX_CONTENT).setWrap(true);
         // The page view's padding, so a long line breaks at the same place in both
-        editor.setTextPadding(new org.inspirenxe.strata.api.geometry.Insets(2f, 2f, 2f, 2f));
+        editor.setTextPadding(new Insets(2f, 2f, 2f, 2f));
         editor.setHighlighter(GuideEditor.HIGHLIGHTER);
         editor.onEvent(TextInput.EDITED, event -> this.updateButtons());
         // Its right click menu, as 3.5's: the link's commands, Cut, Copy, Paste, and back to the page as it reads
-        editor.onEvent(org.inspirenxe.strata.api.component.HasContextMenu.SHOW_CONTEXT_MENU, event -> event.setValue(this.editorMenu()));
+        editor.onEvent(HasContextMenu.SHOW_CONTEXT_MENU, event -> event.setValue(this.editorMenu()));
         this.editor = editor;
         // Over the page for those who may change it, as on 3.5; using it starts editing
         final StackPanel bar = GuideEditor.bar(factory, editor, this::enterEditor, area -> GuideDialogs.link(factory, area));
@@ -204,7 +216,7 @@ final class GuideScreen implements Screen {
             .setSize(width, height)
             .setAnchor(Anchor.CENTER);
         // Its x closes the guide as Close does, asking about unsaved changes first
-        com.almuradev.almura.feature.menu.InGameScreens.closesScreen(window, this::close);
+        InGameScreens.closesScreen(window, this::close);
         if (this.page != null) {
             editor.setText(GuideEditor.toEditor(this.page.content()));
             this.showText(this.page.content());
@@ -229,7 +241,7 @@ final class GuideScreen implements Screen {
      * As 3.5: the list as wide as its longest name needs (with the arrows and the scroll bar), never narrower than 156.
      */
     private static float listWidth(final List<Entry> entries) {
-        final net.minecraft.client.gui.Font font = Minecraft.getInstance().font;
+        final Font font = Minecraft.getInstance().font;
         int widest = 0;
         for (final Entry entry : entries) {
             final int split = entry.name().indexOf(" - ");
@@ -245,7 +257,7 @@ final class GuideScreen implements Screen {
     }
 
     private static CheckBox setting(final ComponentFactory factory, final String text,
-        final net.neoforged.neoforge.common.ModConfigSpec.BooleanValue value) {
+        final ModConfigSpec.BooleanValue value) {
         final CheckBox box = factory.checkBox(text).setState(AlmuraClientConfig.get(value) ? CheckState.CHECKED : CheckState.UNCHECKED);
         box.onEvent(CheckBox.CHANGED, event -> AlmuraClientConfig.set(value, event.value() == CheckState.CHECKED));
         return box;
@@ -286,7 +298,7 @@ final class GuideScreen implements Screen {
     /**
      * 3.5's arrow: its 9 by 5 triangle at its size, on a small button (greyed out where the page can't move that way).
      */
-    private static Component<?> arrow(final ComponentFactory factory, final org.inspirenxe.strata.api.theme.SpriteId icon,
+    private static Component<?> arrow(final ComponentFactory factory, final SpriteId icon,
         final String tooltip, final boolean enabled, final Entry entry, final boolean up) {
         final AnchorPanel arrow = factory.anchorPanel()
             .setBackground(enabled ? ARROW_BUTTON : ARROW_BUTTON_DISABLED)
@@ -294,8 +306,8 @@ final class GuideScreen implements Screen {
                 .setOpacity(enabled ? 1f : 0.35f).setAnchor(Anchor.CENTER));
         arrow.setSize(ARROW_WIDTH, ARROW_HEIGHT).setTooltip(Text.of(tooltip));
         if (enabled) {
-            arrow.onEvent(org.inspirenxe.strata.api.event.input.InputEvents.CLICK, event -> {
-                if (event.button() == org.inspirenxe.strata.api.input.MouseButton.LEFT) {
+            arrow.onEvent(InputEvents.CLICK, event -> {
+                if (event.button() == MouseButton.LEFT) {
                     ClientPacketDistributor.sendToServer(new ServerboundMove(entry.id(), up));
                 }
             });
@@ -426,8 +438,7 @@ final class GuideScreen implements Screen {
         this.preview.clear();
         this.preview.add(GuideText.build(this.factory, text, (label, index, address) -> {
             label.setContextMenu(this.factory.menu());
-            label.onEvent(org.inspirenxe.strata.api.component.HasContextMenu.SHOW_CONTEXT_MENU,
-                event -> event.setValue(this.previewMenu(new LinkAt(index, address))));
+            label.onEvent(HasContextMenu.SHOW_CONTEXT_MENU, event -> event.setValue(this.previewMenu(new LinkAt(index, address))));
         }).setAlignment(HorizontalAlignment.STRETCH, VerticalAlignment.TOP));
         this.preview.setScroll(0f, 0f);
     }
@@ -445,7 +456,7 @@ final class GuideScreen implements Screen {
     }
 
     private static @Nullable LinkSpan linkNumber(final String text, final int index) {
-        final java.util.regex.Matcher matcher = GuideText.LINK.matcher(text);
+        final Matcher matcher = GuideText.LINK.matcher(text);
         for (int i = 0; matcher.find(); i++) {
             if (i == index) {
                 return new LinkSpan(matcher.start(), matcher.end(), matcher.group(1), matcher.group(2));
@@ -455,7 +466,7 @@ final class GuideScreen implements Screen {
     }
 
     private static @Nullable LinkSpan linkAround(final String text, final int caret) {
-        final java.util.regex.Matcher matcher = GuideText.LINK.matcher(text);
+        final Matcher matcher = GuideText.LINK.matcher(text);
         while (matcher.find()) {
             if (caret >= matcher.start() && caret <= matcher.end()) {
                 return new LinkSpan(matcher.start(), matcher.end(), matcher.group(1), matcher.group(2));
@@ -468,7 +479,7 @@ final class GuideScreen implements Screen {
         return Minecraft.getInstance();
     }
 
-    private org.inspirenxe.strata.api.control.menu.MenuItem item(final String text, final boolean enabled, final Runnable action) {
+    private MenuItem item(final String text, final boolean enabled, final Runnable action) {
         return Objects.requireNonNull(this.factory).menuItem(text).setEnabled(enabled).setAction(action);
     }
 
@@ -476,9 +487,9 @@ final class GuideScreen implements Screen {
      * The page as it reads: on a link Open link, and for those who may change the page Edit link... and Remove link (changed and saved at
      * once, as on 3.5); Edit page; Copy (the page's text).
      */
-    private org.inspirenxe.strata.api.control.menu.Menu previewMenu(final @Nullable LinkAt link) {
+    private Menu previewMenu(final @Nullable LinkAt link) {
         final ComponentFactory factory = Objects.requireNonNull(this.factory);
-        final org.inspirenxe.strata.api.control.menu.Menu menu = factory.menu();
+        final Menu menu = factory.menu();
         final boolean editable = this.page != null && this.page.editable() && this.editor != null;
         if (link != null) {
             menu.addItem(this.item("Open link", true, () -> GuideText.open(link.address())));
@@ -526,10 +537,10 @@ final class GuideScreen implements Screen {
      * The text being changed: in a link Edit link... and Remove link, else Create link... (for selected text without brackets or line
      * breaks); Cut, Copy, Paste; and Preview page, back to the page as it reads.
      */
-    private org.inspirenxe.strata.api.control.menu.Menu editorMenu() {
+    private Menu editorMenu() {
         final ComponentFactory factory = Objects.requireNonNull(this.factory);
         final TextArea editor = Objects.requireNonNull(this.editor);
-        final org.inspirenxe.strata.api.control.menu.Menu menu = factory.menu();
+        final Menu menu = factory.menu();
         final LinkSpan span = linkAround(editor.text(), editor.caret());
         if (span != null) {
             menu.addItem(this.item("Edit link...", true, () ->

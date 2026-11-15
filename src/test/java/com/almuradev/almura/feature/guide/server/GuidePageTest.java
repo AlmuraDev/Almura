@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.guide.server;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -56,7 +57,7 @@ class GuidePageTest {
             dockter, Instant.parse("2019-01-02T03:04:05Z"), dockter, Instant.parse("2020-05-06T07:08:09Z"));
         final String written = ServerGuide.write(page);
         // 3.5 saved & colour codes
-        org.junit.jupiter.api.Assertions.assertTrue(written.contains("&aBe &lnice&r.") && !written.contains("§"), written);
+        assertTrue(written.contains("&aBe &lnice&r.") && !written.contains("§"), written);
         assertEquals(page, ServerGuide.read("rules", written));
     }
 

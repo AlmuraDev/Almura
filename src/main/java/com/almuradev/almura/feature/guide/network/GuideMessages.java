@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.guide.network;
 
 import com.almuradev.almura.network.AlmuraNetwork;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -43,7 +44,7 @@ public final class GuideMessages {
         ADD, MODIFY, REMOVE
     }
 
-    private static <E extends Enum<E>> StreamCodec<io.netty.buffer.ByteBuf, E> enumCodec(final E[] values) {
+    private static <E extends Enum<E>> StreamCodec<ByteBuf, E> enumCodec(final E[] values) {
         return ByteBufCodecs.idMapper(index -> values[index], Enum::ordinal);
     }
 

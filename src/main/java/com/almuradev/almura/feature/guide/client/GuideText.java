@@ -11,7 +11,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import org.inspirenxe.strata.api.ComponentFactory;
 import org.inspirenxe.strata.api.component.Component;
+import org.inspirenxe.strata.api.control.display.Label;
 import org.inspirenxe.strata.api.event.input.InputEvents;
+import org.inspirenxe.strata.api.input.MouseButton;
 import org.inspirenxe.strata.api.layout.HorizontalAlignment;
 import org.inspirenxe.strata.api.layout.StackPanel;
 import org.inspirenxe.strata.api.layout.VerticalAlignment;
@@ -55,7 +57,7 @@ final class GuideText {
     @FunctionalInterface
     interface LinkMenus {
 
-        void give(org.inspirenxe.strata.api.control.display.Label label, int index, String address);
+        void give(Label label, int index, String address);
     }
 
     /**
@@ -109,11 +111,11 @@ final class GuideText {
 
     private static Component<?> link(final ComponentFactory factory, final String text, final String address, final int index,
         final LinkMenus menus) {
-        final org.inspirenxe.strata.api.control.display.Label label = factory.label(Text.of(stripped(text)).color(LINK_COLOR).underline());
+        final Label label = factory.label(Text.of(stripped(text)).color(LINK_COLOR).underline());
         label.setTooltip(Text.of(address));
         // A left click opens it; a right click is its menu's
         label.onEvent(InputEvents.CLICK, event -> {
-            if (event.button() == org.inspirenxe.strata.api.input.MouseButton.LEFT) {
+            if (event.button() == MouseButton.LEFT) {
                 open(address);
             }
         });

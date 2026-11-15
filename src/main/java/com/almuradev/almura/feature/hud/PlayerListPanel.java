@@ -8,15 +8,15 @@
 package com.almuradev.almura.feature.hud;
 
 import com.almuradev.almura.Almura;
+import net.minecraft.ChatFormatting;
+import net.minecraft.Optionull;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.ChatFormatting;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.Optionull;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.scores.PlayerTeam;
 import org.inspirenxe.strata.api.ComponentFactory;
@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 
 /**
  * The player list (held Tab), as on 1.12: a header (Player, Nickname, World), then a row for each player with their face, their name,
@@ -74,7 +75,7 @@ final class PlayerListPanel {
         this.rows = rows;
     }
 
-    static PlayerListPanel create(final ComponentFactory factory, final java.util.function.Function<org.inspirenxe.strata.api.component.Component<?>,
+    static PlayerListPanel create(final ComponentFactory factory, final Function<org.inspirenxe.strata.api.component.Component<?>,
         AnchorPanel> panelOf) {
         final StackPanel rows = factory.stackPanel().setSpacing(ROW_GAP);
         final ScrollPanel scroll = factory.scrollPanel();

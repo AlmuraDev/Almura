@@ -10,16 +10,16 @@ package com.almuradev.almura.content.convert;
 import com.almuradev.almura.content.def.ContentDefs.BlockDef;
 import com.almuradev.almura.content.def.ContentDefs.CropDef;
 import com.almuradev.almura.content.def.ContentDefs.CropStageDef;
+import com.almuradev.almura.content.def.ContentDefs.DropDef;
 import com.almuradev.almura.content.def.ContentDefs.GrassGenDef;
+import com.almuradev.almura.content.def.ContentDefs.ItemDef;
+import com.almuradev.almura.content.def.ContentDefs.ItemGroupDef;
 import com.almuradev.almura.content.def.ContentDefs.OreDef;
 import com.almuradev.almura.content.def.ContentDefs.OreGenDef;
 import com.almuradev.almura.content.def.ContentDefs.TreeGenDef;
-import com.almuradev.almura.content.def.ContentDefs.DropDef;
-import com.almuradev.almura.content.def.ContentDefs.ItemDef;
-import com.almuradev.almura.content.def.ContentDefs.ItemGroupDef;
-import com.almuradev.almura.content.source.ContentSource;
 import com.almuradev.almura.content.source.ContentSource.ContentFile;
 import com.almuradev.almura.content.source.ContentSource.TranslationFile;
+import com.almuradev.almura.content.source.ContentSource;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -36,6 +36,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +44,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.Predicate;
-
 import javax.imageio.ImageIO;
 
 /**
@@ -101,7 +101,7 @@ public final class ContentPackBuilder {
         for (final String namespace : this.source.namespaces()) {
             this.passThrough(namespace);
         }
-        final Map<String, BlockDef> doubleSlabs = new java.util.HashMap<>();
+        final Map<String, BlockDef> doubleSlabs = new HashMap<>();
         blocks.stream().filter(BlockDef::isDoubleSlab).forEach(block -> doubleSlabs.put(block.single(), block));
         for (final BlockDef block : blocks) {
             this.blockstate(block, doubleSlabs);

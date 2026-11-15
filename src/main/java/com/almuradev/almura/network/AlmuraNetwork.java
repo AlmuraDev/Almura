@@ -8,12 +8,17 @@
 package com.almuradev.almura.network;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.feature.almanac.network.ClientboundAlmanacCrops;
+import com.almuradev.almura.feature.almanac.network.ClientboundAlmanacField;
+import com.almuradev.almura.feature.guide.network.GuideMessages;
+import com.almuradev.almura.feature.guide.server.ServerGuide;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerWorlds;
 import com.almuradev.almura.feature.hud.network.ClientboundServerTps;
 import com.almuradev.almura.feature.hud.network.ClientboundWorldName;
 import com.almuradev.almura.feature.notification.network.ClientboundPopupNotification;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -48,23 +53,19 @@ public final class AlmuraNetwork {
         registrar.playToClient(ClientboundWorldName.TYPE, ClientboundWorldName.CODEC);
         registrar.playToClient(ClientboundServerTps.TYPE, ClientboundServerTps.CODEC);
         registrar.playToClient(ClientboundPlayerWorlds.TYPE, ClientboundPlayerWorlds.CODEC);
-        registrar.playToClient(com.almuradev.almura.feature.almanac.network.ClientboundAlmanacField.TYPE,
-            com.almuradev.almura.feature.almanac.network.ClientboundAlmanacField.CODEC);
-        registrar.playToClient(com.almuradev.almura.feature.almanac.network.ClientboundAlmanacCrops.TYPE,
-            com.almuradev.almura.feature.almanac.network.ClientboundAlmanacCrops.CODEC);
-        registrar.playToClient(com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundListing.TYPE, com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundListing.CODEC);
-        registrar.playToClient(com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundPage.TYPE, com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundPage.CODEC);
-        registrar.playToClient(com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundChangeResult.TYPE, com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundChangeResult.CODEC);
+        registrar.playToClient(ClientboundAlmanacField.TYPE, ClientboundAlmanacField.CODEC);
+        registrar.playToClient(ClientboundAlmanacCrops.TYPE, ClientboundAlmanacCrops.CODEC);
+        registrar.playToClient(GuideMessages.ClientboundListing.TYPE, GuideMessages.ClientboundListing.CODEC);
+        registrar.playToClient(GuideMessages.ClientboundPage.TYPE, GuideMessages.ClientboundPage.CODEC);
+        registrar.playToClient(GuideMessages.ClientboundChangeResult.TYPE, GuideMessages.ClientboundChangeResult.CODEC);
         // To the server
-        registrar.playToServer(com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundOpen.TYPE, com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundOpen.CODEC, (payload, context) ->
-            com.almuradev.almura.feature.guide.server.ServerGuide.open((net.minecraft.server.level.ServerPlayer) context.player()));
-        registrar.playToServer(com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundPage.TYPE, com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundPage.CODEC, (payload, context) ->
-            com.almuradev.almura.feature.guide.server.ServerGuide.openPage((net.minecraft.server.level.ServerPlayer) context.player(),
-                payload.id()));
-        registrar.playToServer(com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundChange.TYPE, com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundChange.CODEC, (payload, context) ->
-            com.almuradev.almura.feature.guide.server.ServerGuide.change((net.minecraft.server.level.ServerPlayer) context.player(), payload));
-        registrar.playToServer(com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundMove.TYPE, com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundMove.CODEC, (payload, context) ->
-            com.almuradev.almura.feature.guide.server.ServerGuide.move((net.minecraft.server.level.ServerPlayer) context.player(), payload.id(),
-                payload.up()));
+        registrar.playToServer(GuideMessages.ServerboundOpen.TYPE, GuideMessages.ServerboundOpen.CODEC, (payload, context) ->
+            ServerGuide.open((ServerPlayer) context.player()));
+        registrar.playToServer(GuideMessages.ServerboundPage.TYPE, GuideMessages.ServerboundPage.CODEC, (payload, context) ->
+            ServerGuide.openPage((ServerPlayer) context.player(), payload.id()));
+        registrar.playToServer(GuideMessages.ServerboundChange.TYPE, GuideMessages.ServerboundChange.CODEC, (payload, context) ->
+            ServerGuide.change((ServerPlayer) context.player(), payload));
+        registrar.playToServer(GuideMessages.ServerboundMove.TYPE, GuideMessages.ServerboundMove.CODEC, (payload, context) ->
+            ServerGuide.move((ServerPlayer) context.player(), payload.id(), payload.up()));
     }
 }

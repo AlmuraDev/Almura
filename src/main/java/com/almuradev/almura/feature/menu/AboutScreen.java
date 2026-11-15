@@ -17,12 +17,13 @@ import org.inspirenxe.strata.api.ComponentFactory;
 import org.inspirenxe.strata.api.component.Component;
 import org.inspirenxe.strata.api.control.attribute.item.Selection;
 import org.inspirenxe.strata.api.control.button.Button;
+import org.inspirenxe.strata.api.control.collection.ListView;
 import org.inspirenxe.strata.api.control.display.Image;
 import org.inspirenxe.strata.api.control.display.Label;
-import org.inspirenxe.strata.api.control.collection.ListView;
 import org.inspirenxe.strata.api.layout.Anchor;
 import org.inspirenxe.strata.api.layout.AnchorPanel;
 import org.inspirenxe.strata.api.layout.HorizontalAlignment;
+import org.inspirenxe.strata.api.layout.Orientation;
 import org.inspirenxe.strata.api.layout.ScrollPanel;
 import org.inspirenxe.strata.api.layout.StackPanel;
 import org.inspirenxe.strata.api.layout.VerticalAlignment;
@@ -143,7 +144,7 @@ final class AboutScreen implements Screen {
             image.setImageSize(FACE, FACE).setSize(FACE, FACE).setMargin(2f, 0f, 0f, 0f);
             padding = 4f;
         }
-        final StackPanel line = factory.stackPanel(org.inspirenxe.strata.api.layout.Orientation.HORIZONTAL).setSpacing(padding)
+        final StackPanel line = factory.stackPanel(Orientation.HORIZONTAL).setSpacing(padding)
             .add(image.setAlignment(HorizontalAlignment.LEFT, VerticalAlignment.MIDDLE))
             .add(factory.label(entry.title).setAlignment(HorizontalAlignment.LEFT, VerticalAlignment.MIDDLE));
         // A press anywhere on the row selects it, the face and name included

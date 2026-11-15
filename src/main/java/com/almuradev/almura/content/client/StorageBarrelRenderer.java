@@ -26,6 +26,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.client.resources.model.sprite.SpriteGetter;
 import net.minecraft.client.resources.model.sprite.SpriteId;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.BlockItem;
@@ -86,7 +87,7 @@ public final class StorageBarrelRenderer implements BlockEntityRenderer<ContentC
         BlockEntityRenderer.super.extractRenderState(barrel, state, partialTicks, cameraPosition, breakProgress);
         state.icon = null;
         final ItemStack label = barrel.label();
-        if (label.isEmpty() || !ContentContainers.STORAGE_BARREL.equals(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(
+        if (label.isEmpty() || !ContentContainers.STORAGE_BARREL.equals(BuiltInRegistries.BLOCK.getKey(
             barrel.getBlockState().getBlock()))) {
             return;
         }

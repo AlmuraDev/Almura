@@ -10,6 +10,8 @@ package com.almuradev.almura.feature.menu;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
+import org.inspirenxe.strata.api.control.attribute.popup.Closable;
+import org.inspirenxe.strata.api.control.window.Window;
 import org.inspirenxe.strata.api.screen.Screen;
 import org.inspirenxe.strata.minecraft.StrataScreen;
 import org.jspecify.annotations.Nullable;
@@ -36,9 +38,8 @@ public final class InGameScreens {
      *
      * @param close what Close does, such as asking about unsaved changes first
      */
-    public static org.inspirenxe.strata.api.control.window.Window closesScreen(final org.inspirenxe.strata.api.control.window.Window window,
-        final Runnable close) {
-        window.onEvent(org.inspirenxe.strata.api.control.attribute.popup.Closable.CLOSE, event -> {
+    public static Window closesScreen(final Window window, final Runnable close) {
+        window.onEvent(Closable.CLOSE, event -> {
             event.cancel();
             close.run();
         });
@@ -48,7 +49,7 @@ public final class InGameScreens {
     /**
      * Makes a screen's main window's close button close the screen.
      */
-    public static org.inspirenxe.strata.api.control.window.Window closesScreen(final org.inspirenxe.strata.api.control.window.Window window) {
+    public static Window closesScreen(final Window window) {
         return closesScreen(window, () -> Minecraft.getInstance().gui.screen().onClose());
     }
 

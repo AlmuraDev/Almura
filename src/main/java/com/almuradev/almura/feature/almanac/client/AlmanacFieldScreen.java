@@ -17,13 +17,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.FarmlandBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import org.inspirenxe.strata.api.ComponentFactory;
 import org.inspirenxe.strata.api.component.Component;
 import org.inspirenxe.strata.api.control.button.Button;
+import org.inspirenxe.strata.api.control.window.Window;
 import org.inspirenxe.strata.api.layout.Anchor;
 import org.inspirenxe.strata.api.layout.AnchorPanel;
 import org.inspirenxe.strata.api.layout.HorizontalAlignment;
@@ -31,9 +34,10 @@ import org.inspirenxe.strata.api.layout.Orientation;
 import org.inspirenxe.strata.api.layout.ScrollPanel;
 import org.inspirenxe.strata.api.layout.StackPanel;
 import org.inspirenxe.strata.api.layout.VerticalAlignment;
-import org.inspirenxe.strata.api.control.window.Window;
 import org.inspirenxe.strata.api.screen.Screen;
 import org.inspirenxe.strata.api.text.Text;
+import org.inspirenxe.strata.api.theme.Border;
+import org.inspirenxe.strata.api.theme.Paint;
 import org.inspirenxe.strata.minecraft.MinecraftVisuals;
 
 import java.math.BigDecimal;
@@ -54,8 +58,8 @@ final class AlmanacFieldScreen implements Screen {
         RED = 0xFFFF5555, YELLOW = 0xFFFFFF55, GOLD = 0xFFFFAA00;
     private static final float WIDTH = 230f, LIST_MAX_HEIGHT = 120f, LINE_HEIGHT = 11f, CLOSE_WIDTH = 40f, BUTTON_HEIGHT = 16f, ICON = 16f;
     static final DecimalFormat TWO = new DecimalFormat("0.00");
-    static final org.inspirenxe.strata.api.theme.Paint BOX = org.inspirenxe.strata.api.theme.Paint.solid(0x23FFFFFF);
-    static final org.inspirenxe.strata.api.theme.Border BOX_BORDER = org.inspirenxe.strata.api.theme.Border.of(0xB9FFFFFF, 1f);
+    static final Paint BOX = Paint.solid(0x23FFFFFF);
+    static final Border BOX_BORDER = Border.of(0xB9FFFFFF, 1f);
 
     private final ClientboundAlmanacField field;
     private final List<Text> lines = new ArrayList<>();
@@ -74,7 +78,7 @@ final class AlmanacFieldScreen implements Screen {
     public Component<?> build(final ComponentFactory factory) {
         final ClientLevel level = Minecraft.getInstance().level;
         final BlockPos pos = this.field.pos();
-        final BlockState state = level == null ? net.minecraft.world.level.block.Blocks.AIR.defaultBlockState() : level.getBlockState(pos);
+        final BlockState state = level == null ? Blocks.AIR.defaultBlockState() : level.getBlockState(pos);
         if (level != null) {
             this.describe(level, pos, state);
         }
@@ -151,7 +155,7 @@ final class AlmanacFieldScreen implements Screen {
         if (hydration != null) {
             this.lines.add(Text.of("Hydrated by:").color(WHITE));
             for (final HydrationBlockDef block : hydration.blocks()) {
-                final String name = BuiltInRegistries.BLOCK.getOptional(net.minecraft.resources.Identifier.tryParse(block.block()))
+                final String name = BuiltInRegistries.BLOCK.getOptional(Identifier.tryParse(block.block()))
                     .map(found -> found.getName().getString()).orElse(block.block());
                 this.lines.add(Text.of("  - ").color(WHITE).append(Text.of(name).color(YELLOW)));
                 for (final Map.Entry<String, Range> property : block.properties().entrySet()) {

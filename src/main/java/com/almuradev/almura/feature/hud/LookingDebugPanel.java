@@ -20,6 +20,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import org.inspirenxe.strata.api.ComponentFactory;
+import org.inspirenxe.strata.api.component.Component;
 import org.inspirenxe.strata.api.control.display.Image;
 import org.inspirenxe.strata.api.layout.AnchorPanel;
 import org.inspirenxe.strata.api.layout.HorizontalAlignment;
@@ -30,6 +31,7 @@ import org.inspirenxe.strata.minecraft.MinecraftVisuals;
 import org.jspecify.annotations.Nullable;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * The debug panel under the player's while the debug screen (F3) is open and the player looks at a block or an entity, as on 1.12: the
@@ -46,7 +48,7 @@ final class LookingDebugPanel {
     // What the icon shows, so it's made again only when that changes
     private @Nullable Object iconOf;
 
-    LookingDebugPanel(final ComponentFactory factory, final Function<org.inspirenxe.strata.api.component.Component<?>, AnchorPanel> wrapper) {
+    LookingDebugPanel(final ComponentFactory factory, final Function<Component<?>, AnchorPanel> wrapper) {
         this.icon = factory.image();
         this.icon.setImageSize(ICON, ICON).setSize(ICON, ICON);
         this.lines = new DebugLines(factory, LINE_GAP);
@@ -122,7 +124,7 @@ final class LookingDebugPanel {
         }
     }
 
-    private void showIcon(final Object of, final java.util.function.Supplier<org.inspirenxe.strata.api.visual.@Nullable Visual> visual) {
+    private void showIcon(final Object of, final Supplier<org.inspirenxe.strata.api.visual.@Nullable Visual> visual) {
         if (of != this.iconOf) {
             this.iconOf = of;
             final var shown = visual.get();

@@ -15,14 +15,15 @@ import com.almuradev.almura.content.convert.ContentPack;
 import com.almuradev.almura.content.convert.ContentPackBuilder;
 import com.almuradev.almura.content.def.ContentDefs.BlockDef;
 import com.almuradev.almura.content.def.ContentDefs.CropDef;
-import com.almuradev.almura.content.def.ContentDefs.LeafDef;
-import com.almuradev.almura.content.def.ContentDefs.SaplingDef;
-import com.almuradev.almura.content.def.ContentDefs.TreeDef;
-import com.almuradev.almura.content.def.ContentDefs.SeedDef;
 import com.almuradev.almura.content.def.ContentDefs.ItemDef;
 import com.almuradev.almura.content.def.ContentDefs.ItemGroupDef;
+import com.almuradev.almura.content.def.ContentDefs.LeafDef;
+import com.almuradev.almura.content.def.ContentDefs.SaplingDef;
+import com.almuradev.almura.content.def.ContentDefs.SeedDef;
+import com.almuradev.almura.content.def.ContentDefs.TreeDef;
 import com.almuradev.almura.content.def.ContentParser;
 import com.almuradev.almura.content.source.ContentSource;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.resources.Identifier;
@@ -31,10 +32,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -459,7 +462,7 @@ final class ContentConversionTest {
                 continue;
             }
             final JsonObject model = pack.json(path).getAsJsonObject();
-            if (model.get("elements") instanceof final com.google.gson.JsonArray elements && !elements.isEmpty()) {
+            if (model.get("elements") instanceof final JsonArray elements && !elements.isEmpty()) {
                 if (!(model.get("textures") instanceof final JsonObject textures) || !textures.has("particle")) {
                     wrong.add(path + ": no particle texture");
                 }
@@ -516,7 +519,7 @@ final class ContentConversionTest {
     @Test
     void wildCropsAndEffectsAreRight() {
         final ContentParser parser = new ContentParser(source);
-        final java.util.Map<String, Integer> ripe = new java.util.HashMap<>();
+        final Map<String, Integer> ripe = new HashMap<>();
         crops.forEach(crop -> ripe.put(crop.id(), crop.maxAge()));
         final List<String> wrong = new ArrayList<>();
         parser.grasses().forEach(mix -> mix.entries().forEach(entry -> entry.blocks().forEach(state -> {
@@ -525,7 +528,7 @@ final class ContentConversionTest {
             }
         })));
         items.stream().filter(item -> item.food() != null).forEach(item -> item.food().effects().forEach(effect -> effect.effects().forEach(id -> {
-            if (net.minecraft.resources.Identifier.tryParse(id) == null) {
+            if (Identifier.tryParse(id) == null) {
                 wrong.add(item.id() + ": effect " + id + " isn't an id");
             }
         })));
@@ -568,7 +571,7 @@ final class ContentConversionTest {
                 try (var in = pack.open(path)) {
                     Files.write(samples.resolve(path.replace('/', '_')), in.readAllBytes());
                 } catch (final IOException e) {
-                    throw new java.io.UncheckedIOException(e);
+                    throw new UncheckedIOException(e);
                 }
             });
         }

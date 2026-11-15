@@ -10,11 +10,16 @@ package com.almuradev.almura.content.registry;
 import com.almuradev.almura.Almura;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.Containers;
@@ -39,6 +44,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
@@ -221,7 +227,7 @@ public final class ContentContainers {
 
         @Override
         protected int getAnalogOutputSignal(final BlockState state, final Level level, final BlockPos pos, final Direction direction) {
-            return net.minecraft.world.inventory.AbstractContainerMenu.getRedstoneSignalFromBlockEntity(level.getBlockEntity(pos));
+            return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(level.getBlockEntity(pos));
         }
     }
 
@@ -309,20 +315,20 @@ public final class ContentContainers {
          * whenever that changes.
          */
         @Override
-        public net.minecraft.nbt.CompoundTag getUpdateTag(final net.minecraft.core.HolderLookup.Provider registries) {
+        public CompoundTag getUpdateTag(final HolderLookup.Provider registries) {
             if (!isStorageBarrel(this.getBlockState().getBlock())) {
                 return super.getUpdateTag(registries);
             }
-            final net.minecraft.world.level.storage.TagValueOutput output = net.minecraft.world.level.storage.TagValueOutput.createWithContext(
-                net.minecraft.util.ProblemReporter.DISCARDING, registries);
+            final TagValueOutput output = TagValueOutput.createWithContext(
+                ProblemReporter.DISCARDING, registries);
             output.store(LABEL, ItemStack.OPTIONAL_CODEC, this.firstAsLabel());
             return output.buildResult();
         }
 
         @Override
-        public net.minecraft.network.protocol.@Nullable Packet<net.minecraft.network.protocol.game.ClientGamePacketListener> getUpdatePacket() {
+        public net.minecraft.network.protocol.@Nullable Packet<ClientGamePacketListener> getUpdatePacket() {
             return isStorageBarrel(this.getBlockState().getBlock())
-                ? net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket.create(this) : null;
+                ? ClientboundBlockEntityDataPacket.create(this) : null;
         }
 
         @Override

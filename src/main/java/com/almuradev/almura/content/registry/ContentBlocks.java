@@ -7,44 +7,57 @@
  */
 package com.almuradev.almura.content.registry;
 
+import com.almuradev.almura.Almura;
 import com.almuradev.almura.content.def.ContentDefs.BlockDef;
+import com.almuradev.almura.content.def.ContentDefs.Box;
 import com.almuradev.almura.content.def.ContentDefs.ContainerDef;
 import com.almuradev.almura.content.def.ContentDefs.CropDef;
 import com.almuradev.almura.content.def.ContentDefs.CropStageDef;
 import com.almuradev.almura.content.def.ContentDefs.LeafDef;
 import com.almuradev.almura.content.def.ContentDefs.SaplingDef;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import com.almuradev.almura.content.def.ContentDefs.Box;
 import com.almuradev.almura.content.def.ContentDefs.StateDef;
+import com.almuradev.almura.content.def.ContentDefs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SlabBlock;
-import net.minecraft.world.level.block.StairBlock;
-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jspecify.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Blocks made from content: {@code normal} ones, {@code horizontal} ones (facing the way they were placed from, with their shape turned
@@ -125,22 +138,21 @@ public final class ContentBlocks {
     }
 
     // The content's own materials and sound groups, by id, read before the blocks are made
-    private static final java.util.Map<String, com.almuradev.almura.content.def.ContentDefs.MaterialDef> MATERIALS = new java.util.HashMap<>();
-    private static final java.util.Map<String, SoundType> SOUND_GROUPS = new java.util.HashMap<>();
+    private static final Map<String, ContentDefs.MaterialDef> MATERIALS = new HashMap<>();
+    private static final Map<String, SoundType> SOUND_GROUPS = new HashMap<>();
     // 1.12's sound names that 26.3 renamed
-    private static final java.util.Map<String, String> RENAMED_SOUNDS = java.util.Map.of("block.cloth.", "block.wool.",
+    private static final Map<String, String> RENAMED_SOUNDS = Map.of("block.cloth.", "block.wool.",
         "block.slime.", "block.slime_block.", "block.note.", "block.note_block.");
 
     /**
      * The content's own materials ({@code material/*.json}) and block sound groups ({@code block_sound_group/*.json}), as 1.12 read
      * them, for the blocks that name them.
      */
-    public static void define(final java.util.List<com.almuradev.almura.content.def.ContentDefs.MaterialDef> materials,
-        final java.util.List<com.almuradev.almura.content.def.ContentDefs.SoundGroupDef> soundGroups) {
+    public static void define(final List<ContentDefs.MaterialDef> materials, final List<ContentDefs.SoundGroupDef> soundGroups) {
         MATERIALS.clear();
         materials.forEach(material -> MATERIALS.put(material.id(), material));
         SOUND_GROUPS.clear();
-        for (final com.almuradev.almura.content.def.ContentDefs.SoundGroupDef group : soundGroups) {
+        for (final ContentDefs.SoundGroupDef group : soundGroups) {
             SOUND_GROUPS.put(group.id(), new SoundType(group.volume(), group.pitch(), soundEvent(group, "break", SoundType.STONE.getBreakSound()),
                 soundEvent(group, "step", SoundType.STONE.getStepSound()), soundEvent(group, "place", SoundType.STONE.getPlaceSound()),
                 soundEvent(group, "hit", SoundType.STONE.getHitSound()), soundEvent(group, "fall", SoundType.STONE.getFallSound())));
@@ -150,20 +162,19 @@ public final class ContentBlocks {
     /**
      * One of a sound group's sounds by its 1.12 name (in 26.3's namespace, renamed where 26.3 renamed it), or stone's if there's none.
      */
-    private static net.minecraft.sounds.SoundEvent soundEvent(final com.almuradev.almura.content.def.ContentDefs.SoundGroupDef group,
-        final String which, final net.minecraft.sounds.SoundEvent otherwise) {
+    private static SoundEvent soundEvent(final ContentDefs.SoundGroupDef group, final String which, final SoundEvent otherwise) {
         final String name = group.sounds().get(which);
         if (name == null) {
             return otherwise;
         }
         String renamed = name.contains(":") ? name : "minecraft:" + name;
-        for (final java.util.Map.Entry<String, String> rename : RENAMED_SOUNDS.entrySet()) {
+        for (final Map.Entry<String, String> rename : RENAMED_SOUNDS.entrySet()) {
             renamed = renamed.replace(":" + rename.getKey(), ":" + rename.getValue());
         }
-        final java.util.Optional<net.minecraft.sounds.SoundEvent> found = net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT
+        final Optional<SoundEvent> found = BuiltInRegistries.SOUND_EVENT
             .getOptional(Identifier.tryParse(renamed));
         if (found.isEmpty()) {
-            com.almuradev.almura.Almura.LOGGER.warn("Content sound group {}: no sound {} ({}); stone's instead", group.id(), name, which);
+            Almura.LOGGER.warn("Content sound group {}: no sound {} ({}); stone's instead", group.id(), name, which);
         }
         return found.orElse(otherwise);
     }
@@ -179,7 +190,7 @@ public final class ContentBlocks {
         final StateDef state = def.state();
         final String material = path(def.material());
         // One of the content's own materials, if it names one
-        final com.almuradev.almura.content.def.ContentDefs.MaterialDef own = MATERIALS.get(def.material());
+        final ContentDefs.MaterialDef own = MATERIALS.get(def.material());
         final SoundType ownSound = def.sound() == null ? null : SOUND_GROUPS.get(def.sound());
         final BlockBehaviour.Properties properties = BlockBehaviour.Properties.of()
             .setId(ResourceKey.create(Registries.BLOCK, Identifier.parse(def.id())))
@@ -214,7 +225,7 @@ public final class ContentBlocks {
             if (!solid) {
                 properties.forceSolidOff();
             }
-            final PushReaction push = own.push() == null ? null : switch (own.push().toUpperCase(java.util.Locale.ROOT)) {
+            final PushReaction push = own.push() == null ? null : switch (own.push().toUpperCase(Locale.ROOT)) {
                 case "DESTROY" -> PushReaction.POPPED;
                 case "BLOCK" -> PushReaction.IMMOVEABLE;
                 case "IGNORE" -> PushReaction.IGNORE_ENTITY;
@@ -381,14 +392,14 @@ public final class ContentBlocks {
         private static Direction cornerFacing(final Direction clicked, final BlockPlaceContext context) {
             // Right of the arm into the clicked block
             final Direction right = clicked.getOpposite().getClockWise();
-            final net.minecraft.world.entity.player.Player player = context.getPlayer();
+            final Player player = context.getPlayer();
             if (player == null) {
                 return clicked;
             }
             final BlockPos pos = context.getClickedPos();
             double side = (player.getX() - (pos.getX() + 0.5)) * right.getStepX() + (player.getZ() - (pos.getZ() + 0.5)) * right.getStepZ();
             if (Math.abs(side) < 0.5) {
-                final net.minecraft.world.phys.Vec3 look = player.getLookAngle();
+                final Vec3 look = player.getLookAngle();
                 side = look.x * right.getStepX() + look.z * right.getStepZ();
             }
             // Facing the clicked face, the arms point into the clicked block and to its right; facing right, into it and to its left
@@ -400,8 +411,8 @@ public final class ContentBlocks {
          * the block below it.
          */
         @Override
-        public void animateTick(final BlockState state, final net.minecraft.world.level.Level level, final BlockPos pos,
-            final net.minecraft.util.RandomSource random) {
+        public void animateTick(final BlockState state, final Level level, final BlockPos pos,
+            final RandomSource random) {
             if (!this.drip || random.nextInt(10) != 0) {
                 return;
             }
@@ -410,7 +421,7 @@ public final class ContentBlocks {
             final double x = pos.getX() + 0.35 + random.nextDouble() * 0.3;
             final double y = pos.getY() + bottom - 0.05;
             final double z = pos.getZ() + 0.35 + random.nextDouble() * 0.3;
-            level.addParticle(net.minecraft.core.particles.ParticleTypes.DRIPPING_WATER, x, y, z, 0, 0, 0);
+            level.addParticle(ParticleTypes.DRIPPING_WATER, x, y, z, 0, 0, 0);
         }
 
         @Override
@@ -428,7 +439,7 @@ public final class ContentBlocks {
      * A light with power trouble ({@code flicker}), as 3.5's: its block entity tells the client where it is, and in a client's world the
      * light it casts is the flicker's ({@link FlickerLights}); everywhere else, the server included, it is steady.
      */
-    static final class FlickeringHorizontal extends Horizontal implements net.minecraft.world.level.block.EntityBlock {
+    static final class FlickeringHorizontal extends Horizontal implements EntityBlock {
 
         FlickeringHorizontal(final BlockBehaviour.Properties properties, final VoxelShape north, final VoxelShape collisionNorth,
             final @Nullable String rotatePlacement, final boolean drip) {

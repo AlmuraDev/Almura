@@ -8,11 +8,17 @@
 package com.almuradev.almura;
 
 import com.almuradev.almura.content.client.ContentTooltips;
+import com.almuradev.almura.content.client.StorageBarrelRenderer;
+import com.almuradev.almura.content.client.StorageBarrelScreen;
+import com.almuradev.almura.content.registry.ContentContainers;
+import com.almuradev.almura.content.registry.FlickerLights;
+import com.almuradev.almura.core.client.AlmuraFontPack;
 import com.almuradev.almura.core.client.config.AlmuraClientConfig;
+import com.almuradev.almura.feature.harvestsack.HarvestingSack;
 import com.almuradev.almura.feature.hud.Huds;
 import com.almuradev.almura.feature.hud.ServerHudData;
-import com.almuradev.almura.network.client.ClientPayloads;
-import com.almuradev.almura.feature.menu.ingame.FeaturesMenu;
+import com.almuradev.almura.feature.lighting.client.ClientFlickerLights;
+import com.almuradev.almura.feature.lighting.client.FlickerLightRenderer;
 import com.almuradev.almura.feature.menu.Disconnected;
 import com.almuradev.almura.feature.menu.GameMenu;
 import com.almuradev.almura.feature.menu.MainMenuManager;
@@ -21,15 +27,20 @@ import com.almuradev.almura.feature.menu.WorldLoading;
 import com.almuradev.almura.feature.menu.figure.AlmuraFigureRenderState;
 import com.almuradev.almura.feature.menu.figure.AlmuraFigureRenderer;
 import com.almuradev.almura.feature.menu.figure.FigureSlot;
+import com.almuradev.almura.feature.menu.ingame.FeaturesMenu;
 import com.almuradev.almura.feature.menu.options.AlmuraOptions;
+import com.almuradev.almura.network.client.ClientPayloads;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
+import net.minecraft.client.gui.screens.inventory.ContainerScreen;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
@@ -46,30 +57,27 @@ public final class AlmuraClient {
         modBus.addListener(AlmuraClient::onClientSetup);
         modBus.addListener(AlmuraClient::onRegisterPictureInPictureRenderers);
         // Almura's lettering, above any resource pack's
-        com.almuradev.almura.core.client.AlmuraFontPack.register(modBus);
+        AlmuraFontPack.register(modBus);
         // The storage barrel's label
-        modBus.addListener((final net.neoforged.neoforge.client.event.EntityRenderersEvent.RegisterRenderers event) -> {
-            if (com.almuradev.almura.content.registry.ContentContainers.blockEntityType() != null) {
-                event.registerBlockEntityRenderer(com.almuradev.almura.content.registry.ContentContainers.blockEntityType(),
-                    com.almuradev.almura.content.client.StorageBarrelRenderer::new);
+        modBus.addListener((final EntityRenderersEvent.RegisterRenderers event) -> {
+            if (ContentContainers.blockEntityType() != null) {
+                event.registerBlockEntityRenderer(ContentContainers.blockEntityType(),
+                    StorageBarrelRenderer::new);
             }
             // A flickering light's fast blink
-            if (com.almuradev.almura.content.registry.FlickerLights.blockEntityType() != null) {
-                event.registerBlockEntityRenderer(com.almuradev.almura.content.registry.FlickerLights.blockEntityType(),
-                    com.almuradev.almura.feature.lighting.client.FlickerLightRenderer::new);
+            if (FlickerLights.blockEntityType() != null) {
+                event.registerBlockEntityRenderer(FlickerLights.blockEntityType(),
+                    FlickerLightRenderer::new);
             }
         });
         // The content's containers show a chest's screen
-        modBus.addListener((final net.neoforged.neoforge.client.event.RegisterMenuScreensEvent event) -> {
-            if (com.almuradev.almura.content.registry.ContentContainers.menuType() != null) {
-                event.register(com.almuradev.almura.content.registry.ContentContainers.menuType(),
-                    net.minecraft.client.gui.screens.inventory.ContainerScreen::new);
-                event.register(com.almuradev.almura.content.registry.ContentContainers.storageBarrelMenuType(),
-                    com.almuradev.almura.content.client.StorageBarrelScreen::new);
+        modBus.addListener((final RegisterMenuScreensEvent event) -> {
+            if (ContentContainers.menuType() != null) {
+                event.register(ContentContainers.menuType(), ContainerScreen::new);
+                event.register(ContentContainers.storageBarrelMenuType(), StorageBarrelScreen::new);
                 // The harvesting sack shows a single chest's
-                if (com.almuradev.almura.feature.harvestsack.HarvestingSack.menuType() != null) {
-                    event.register(com.almuradev.almura.feature.harvestsack.HarvestingSack.menuType(),
-                        net.minecraft.client.gui.screens.inventory.ContainerScreen::new);
+                if (HarvestingSack.menuType() != null) {
+                    event.register(HarvestingSack.menuType(), ContainerScreen::new);
                 }
             }
         });
@@ -83,7 +91,7 @@ public final class AlmuraClient {
         // The content's item tooltips
         NeoForge.EVENT_BUS.register(new ContentTooltips());
         // The content's flickering lights flicker on this client
-        com.almuradev.almura.feature.lighting.client.ClientFlickerLights.install();
+        ClientFlickerLights.install();
         // Almura's messages from the server
         ClientPayloads.register(modBus);
         NeoForge.EVENT_BUS.register(new ServerHudData.Resetter());

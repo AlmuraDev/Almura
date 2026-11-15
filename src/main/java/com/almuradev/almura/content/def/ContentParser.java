@@ -9,36 +9,36 @@ package com.almuradev.almura.content.def;
 
 import com.almuradev.almura.content.def.ContentDefs.BiomeRange;
 import com.almuradev.almura.content.def.ContentDefs.BlockDef;
-import com.almuradev.almura.content.def.ContentDefs.DecayDef;
-import com.almuradev.almura.content.def.ContentDefs.GrassDef;
-import com.almuradev.almura.content.def.ContentDefs.GrassEntryDef;
-import com.almuradev.almura.content.def.ContentDefs.GrassGenDef;
-import com.almuradev.almura.content.def.ContentDefs.MaterialDef;
-import com.almuradev.almura.content.def.ContentDefs.OreDef;
-import com.almuradev.almura.content.def.ContentDefs.OreGenDef;
-import com.almuradev.almura.content.def.ContentDefs.SoundGroupDef;
-import com.almuradev.almura.content.def.ContentDefs.StateRef;
-import com.almuradev.almura.content.def.ContentDefs.TreeGenDef;
-import com.almuradev.almura.content.def.ContentDefs.LeafDef;
-import com.almuradev.almura.content.def.ContentDefs.SaplingDef;
-import com.almuradev.almura.content.def.ContentDefs.TreeDef;
-import com.almuradev.almura.content.def.ContentDefs.TreeHeightDef;
+import com.almuradev.almura.content.def.ContentDefs.Box;
 import com.almuradev.almura.content.def.ContentDefs.ContainerDef;
 import com.almuradev.almura.content.def.ContentDefs.CropDef;
 import com.almuradev.almura.content.def.ContentDefs.CropStageDef;
-import com.almuradev.almura.content.def.ContentDefs.HydrationBlockDef;
-import com.almuradev.almura.content.def.ContentDefs.HydrationDef;
-import com.almuradev.almura.content.def.ContentDefs.Range;
-import com.almuradev.almura.content.def.ContentDefs.SeedDef;
-import com.almuradev.almura.content.def.ContentDefs.Box;
+import com.almuradev.almura.content.def.ContentDefs.DecayDef;
 import com.almuradev.almura.content.def.ContentDefs.DropDef;
 import com.almuradev.almura.content.def.ContentDefs.EffectDef;
 import com.almuradev.almura.content.def.ContentDefs.FoodDef;
+import com.almuradev.almura.content.def.ContentDefs.GrassDef;
+import com.almuradev.almura.content.def.ContentDefs.GrassEntryDef;
+import com.almuradev.almura.content.def.ContentDefs.GrassGenDef;
+import com.almuradev.almura.content.def.ContentDefs.HydrationBlockDef;
+import com.almuradev.almura.content.def.ContentDefs.HydrationDef;
 import com.almuradev.almura.content.def.ContentDefs.ItemDef;
 import com.almuradev.almura.content.def.ContentDefs.ItemGroupDef;
+import com.almuradev.almura.content.def.ContentDefs.LeafDef;
+import com.almuradev.almura.content.def.ContentDefs.MaterialDef;
+import com.almuradev.almura.content.def.ContentDefs.OreDef;
+import com.almuradev.almura.content.def.ContentDefs.OreGenDef;
+import com.almuradev.almura.content.def.ContentDefs.Range;
+import com.almuradev.almura.content.def.ContentDefs.SaplingDef;
+import com.almuradev.almura.content.def.ContentDefs.SeedDef;
+import com.almuradev.almura.content.def.ContentDefs.SoundGroupDef;
 import com.almuradev.almura.content.def.ContentDefs.StateDef;
-import com.almuradev.almura.content.source.ContentSource;
+import com.almuradev.almura.content.def.ContentDefs.StateRef;
+import com.almuradev.almura.content.def.ContentDefs.TreeDef;
+import com.almuradev.almura.content.def.ContentDefs.TreeGenDef;
+import com.almuradev.almura.content.def.ContentDefs.TreeHeightDef;
 import com.almuradev.almura.content.source.ContentSource.ContentFile;
+import com.almuradev.almura.content.source.ContentSource;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -47,7 +47,9 @@ import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -92,7 +94,7 @@ public final class ContentParser {
         final List<SoundGroupDef> groups = new ArrayList<>();
         for (final ContentFile file : this.source.files("block_sound_group")) {
             final JsonObject json = file.json();
-            final java.util.Map<String, String> sounds = new java.util.LinkedHashMap<>();
+            final Map<String, String> sounds = new LinkedHashMap<>();
             if (object(json, "sound") instanceof final JsonObject sound) {
                 for (final String key : sound.keySet()) {
                     if (sound.get(key).isJsonPrimitive()) {
@@ -395,7 +397,7 @@ public final class ContentParser {
     private static List<BiomeRange> legacyBiomes(final List<BiomeRange> ranges) {
         final List<BiomeRange> mapped = new ArrayList<>();
         for (final BiomeRange range : ranges) {
-            final Set<String> biomes = new java.util.LinkedHashSet<>();
+            final Set<String> biomes = new LinkedHashSet<>();
             range.biomes().forEach(biome -> biomes.add(legacyBiome(biome)));
             mapped.add(new BiomeRange(List.copyOf(biomes), range.range()));
         }
@@ -688,7 +690,7 @@ public final class ContentParser {
         if (value.getAsJsonPrimitive().isBoolean()) {
             return value.getAsBoolean() ? "across" : null;
         }
-        return value.getAsString().toLowerCase(java.util.Locale.ROOT);
+        return value.getAsString().toLowerCase(Locale.ROOT);
     }
 
     private static @Nullable Box box(final @Nullable JsonObject json) {

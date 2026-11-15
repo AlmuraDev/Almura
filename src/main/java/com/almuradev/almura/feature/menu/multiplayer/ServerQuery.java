@@ -14,6 +14,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -72,7 +73,7 @@ final class ServerQuery {
                 if (key.isEmpty()) {
                     break;
                 }
-                values.put(key.toLowerCase(java.util.Locale.ROOT), readString(received, cursor));
+                values.put(key.toLowerCase(Locale.ROOT), readString(received, cursor));
             }
             return values;
         } catch (final IOException | NumberFormatException ignored) {

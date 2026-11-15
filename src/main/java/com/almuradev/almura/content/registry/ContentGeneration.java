@@ -41,6 +41,8 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -63,9 +65,9 @@ public final class ContentGeneration {
 
     private static final List<TreeGenDef> TREES = new ArrayList<>();
     private static final List<GrassGenDef> GRASSES = new ArrayList<>();
-    private static final Map<String, GrassDef> GRASS_MIXES = new java.util.HashMap<>();
+    private static final Map<String, GrassDef> GRASS_MIXES = new HashMap<>();
     // What Almura took in each chunk being decorated (a WorldGenRegion is one chunk's decoration)
-    private static final Map<WorldGenRegion, java.util.EnumSet<Kind>> TAKEN = Collections.synchronizedMap(new WeakHashMap<>());
+    private static final Map<WorldGenRegion, EnumSet<Kind>> TAKEN = Collections.synchronizedMap(new WeakHashMap<>());
     // Where a tree may grow unless its config says otherwise: anywhere it doesn't snow (vanilla snows below 0.15)
     private static final double MIN_TEMPERATURE = 0.15;
 
@@ -89,13 +91,13 @@ public final class ContentGeneration {
         if (!(level instanceof final WorldGenRegion region)) {
             return false;
         }
-        final java.util.EnumSet<Kind> taken = TAKEN.get(region);
+        final EnumSet<Kind> taken = TAKEN.get(region);
         return taken != null && taken.contains(kind);
     }
 
     private static void take(final WorldGenLevel level, final Kind kind) {
         if (level instanceof final WorldGenRegion region) {
-            TAKEN.computeIfAbsent(region, key -> java.util.EnumSet.noneOf(Kind.class)).add(kind);
+            TAKEN.computeIfAbsent(region, key -> EnumSet.noneOf(Kind.class)).add(kind);
         }
     }
 

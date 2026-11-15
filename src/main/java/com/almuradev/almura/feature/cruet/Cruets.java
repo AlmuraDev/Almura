@@ -25,6 +25,7 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.entity.animal.cow.AbstractCow;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -191,7 +192,7 @@ public final class Cruets {
             if (!(state.isAir() || (mayReplace || intoBlock) && (!player.isShiftKeyDown() || hit == null))) {
                 return hit != null && pour(player, level, hit.getBlockPos().relative(hit.getDirection()), null);
             }
-            if (level.environmentAttributes().getValue(net.minecraft.world.attribute.EnvironmentAttributes.WATER_EVAPORATES, pos)) {
+            if (level.environmentAttributes().getValue(EnvironmentAttributes.WATER_EVAPORATES, pos)) {
                 final RandomSource random = level.getRandom();
                 level.playSound(player, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5F, 2.6F + (random.nextFloat() - random.nextFloat()) * 0.8F);
                 if (level instanceof final ServerLevel serverLevel) {

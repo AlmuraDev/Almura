@@ -36,6 +36,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ClipContext;
@@ -152,7 +153,7 @@ public final class HarvestingSack {
                     }
                 }
             }
-            items.remove(net.minecraft.world.item.Items.AIR);
+            items.remove(Items.AIR);
             harvestItems = items;
         }
         return harvestItems.contains(stack.getItem());

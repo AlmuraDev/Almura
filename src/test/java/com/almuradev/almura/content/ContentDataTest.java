@@ -14,20 +14,32 @@ import com.almuradev.almura.content.convert.ContentPack;
 import com.almuradev.almura.content.convert.ContentPackBuilder;
 import com.almuradev.almura.content.def.ContentParser;
 import com.almuradev.almura.content.source.ContentSource;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.placement.PlacementModifier;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /**
  * With the game's mod loading started, every recipe and loot table the content pack generates reads with 26.3's own codecs.
@@ -59,19 +71,19 @@ final class ContentDataTest {
                     .ifSuccess(written -> lost(json, written, path, failures)));
             } else if (path.contains("/worldgen/feature/")) {
                 tables++;
-                net.minecraft.world.level.levelgen.feature.Feature.DIRECT_CODEC.parse(ops, json).ifError(error -> failures.add(path + ": " + error.message()))
-                    .ifSuccess(read -> net.minecraft.world.level.levelgen.feature.Feature.DIRECT_CODEC.encodeStart(ops, read)
+                Feature.DIRECT_CODEC.parse(ops, json).ifError(error -> failures.add(path + ": " + error.message()))
+                    .ifSuccess(read -> Feature.DIRECT_CODEC.encodeStart(ops, read)
                         .ifSuccess(written -> lost(json, written, path, failures)));
             } else if (path.contains("/worldgen/placed_feature/")) {
                 // The feature it names is world data; its placement is checked
                 final JsonElement placement = json.getAsJsonObject().get("placement");
-                net.minecraft.world.level.levelgen.placement.PlacementModifier.CODEC.listOf().parse(ops, placement)
+                PlacementModifier.CODEC.listOf().parse(ops, placement)
                     .ifError(error -> failures.add(path + ": " + error.message()))
-                    .ifSuccess(read -> net.minecraft.world.level.levelgen.placement.PlacementModifier.CODEC.listOf().encodeStart(ops, read)
+                    .ifSuccess(read -> PlacementModifier.CODEC.listOf().encodeStart(ops, read)
                         .ifSuccess(written -> lost(placement, written, path, failures)));
             } else if (path.contains("/neoforge/biome_modifier/")) {
                 final String step = json.getAsJsonObject().get("step").getAsString();
-                if (java.util.Arrays.stream(net.minecraft.world.level.levelgen.GenerationStep.Decoration.values())
+                if (Arrays.stream(GenerationStep.Decoration.values())
                     .noneMatch(decoration -> decoration.getSerializedName().equals(step))) {
                     failures.add(path + ": no step " + step);
                 }
@@ -83,12 +95,12 @@ final class ContentDataTest {
         }
         // The grass seed loot modifier (a resource of the mod, not of the pack)
         try (var in = ContentDataTest.class.getResourceAsStream("/data/almura/loot_modifiers/grass_seeds.json")) {
-            final JsonElement modifier = com.google.gson.JsonParser.parseReader(new java.io.InputStreamReader(in, java.nio.charset.StandardCharsets.UTF_8));
-            net.neoforged.neoforge.common.loot.IGlobalLootModifier.DIRECT_CODEC.parse(ops, modifier)
+            final JsonElement modifier = JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+            IGlobalLootModifier.DIRECT_CODEC.parse(ops, modifier)
                 .ifError(error -> failures.add("loot_modifiers/grass_seeds.json: " + error.message()))
-                .ifSuccess(read -> net.neoforged.neoforge.common.loot.IGlobalLootModifier.DIRECT_CODEC.encodeStart(ops, read)
+                .ifSuccess(read -> IGlobalLootModifier.DIRECT_CODEC.encodeStart(ops, read)
                     .ifSuccess(written -> lost(modifier, written, "loot_modifiers/grass_seeds.json", failures)));
-        } catch (final java.io.IOException e) {
+        } catch (final IOException e) {
             failures.add("loot_modifiers/grass_seeds.json: " + e);
         }
         System.out.println("Read " + recipes + " recipes and " + tables + " loot tables");
@@ -114,8 +126,8 @@ final class ContentDataTest {
     }
 
     private static void replaceNamed(final JsonElement json) {
-        if (json instanceof final com.google.gson.JsonObject object) {
-            for (final String key : java.util.Set.copyOf(object.keySet())) {
+        if (json instanceof final JsonObject object) {
+            for (final String key : Set.copyOf(object.keySet())) {
                 final JsonElement value = object.get(key);
                 if ((key.equals("term") || key.equals("condition")) && value.isJsonPrimitive() && value.getAsString().startsWith("minecraft:tool/")) {
                     object.add(key, standIn());
@@ -123,7 +135,7 @@ final class ContentDataTest {
                     replaceNamed(value);
                 }
             }
-        } else if (json instanceof final com.google.gson.JsonArray array) {
+        } else if (json instanceof final JsonArray array) {
             for (int i = 0; i < array.size(); i++) {
                 if (array.get(i).isJsonPrimitive() && array.get(i).getAsString().startsWith("minecraft:tool/")) {
                     array.set(i, standIn());
@@ -134,8 +146,8 @@ final class ContentDataTest {
         }
     }
 
-    private static com.google.gson.JsonObject standIn() {
-        final com.google.gson.JsonObject condition = new com.google.gson.JsonObject();
+    private static JsonObject standIn() {
+        final JsonObject condition = new JsonObject();
         condition.addProperty("type", "minecraft:survives_explosion");
         return condition;
     }
@@ -149,8 +161,8 @@ final class ContentDataTest {
     }
 
     private static void lost(final JsonElement given, final JsonElement written, final String where, final List<String> failures) {
-        if (given instanceof final com.google.gson.JsonObject object) {
-            if (!(written instanceof final com.google.gson.JsonObject writtenObject)) {
+        if (given instanceof final JsonObject object) {
+            if (!(written instanceof final JsonObject writtenObject)) {
                 failures.add(where + ": read as " + written);
                 return;
             }
@@ -165,8 +177,8 @@ final class ContentDataTest {
                     lost(entry.getValue(), back, where + "." + entry.getKey(), failures);
                 }
             }
-        } else if (given instanceof final com.google.gson.JsonArray array) {
-            if (!(written instanceof final com.google.gson.JsonArray writtenArray) || writtenArray.size() != array.size()) {
+        } else if (given instanceof final JsonArray array) {
+            if (!(written instanceof final JsonArray writtenArray) || writtenArray.size() != array.size()) {
                 // A single condition may be written back unwrapped, and a list of one as the one
                 if (array.size() == 1) {
                     lost(array.get(0), written, where, failures);

@@ -7,11 +7,11 @@
  */
 package com.almuradev.almura.feature.guide.client;
 
-import com.almuradev.almura.feature.guide.network.GuideMessages;
 import com.almuradev.almura.feature.guide.network.GuideMessages.Abilities;
 import com.almuradev.almura.feature.guide.network.GuideMessages.ChangeType;
 import com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundPage;
 import com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundChange;
+import com.almuradev.almura.feature.guide.network.GuideMessages;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.inspirenxe.strata.api.ComponentFactory;
 import org.inspirenxe.strata.api.component.Component;
@@ -36,6 +36,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.Locale;
 import java.util.function.Consumer;
 
 /**
@@ -225,7 +226,7 @@ final class GuideDialogs {
     private static TextBox filtered(final TextBox box, final String drop, final int maxLength, final boolean lowerCase) {
         box.setMaxLength(maxLength);
         box.onEvent(TextInput.EDIT, event -> {
-            final String value = lowerCase ? event.value().toLowerCase(java.util.Locale.ROOT) : event.value();
+            final String value = lowerCase ? event.value().toLowerCase(Locale.ROOT) : event.value();
             event.setValue(value.replaceAll(drop, ""));
         });
         return box;

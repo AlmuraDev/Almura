@@ -8,13 +8,14 @@
 package com.almuradev.almura;
 
 import com.almuradev.almura.content.AlmuraContent;
+import com.almuradev.almura.feature.guide.server.ServerGuide;
 import com.almuradev.almura.feature.hud.server.ServerHud;
 import com.almuradev.almura.feature.notification.server.ServerNotifications;
 import com.almuradev.almura.network.AlmuraNetwork;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.NeoForge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +36,6 @@ public final class Almura {
         // What the server does for Almura's players: the HUD's data, notifications
         NeoForge.EVENT_BUS.register(new ServerHud());
         NeoForge.EVENT_BUS.register(new ServerNotifications());
-        NeoForge.EVENT_BUS.register(new com.almuradev.almura.feature.guide.server.ServerGuide());
+        NeoForge.EVENT_BUS.register(new ServerGuide());
     }
 }

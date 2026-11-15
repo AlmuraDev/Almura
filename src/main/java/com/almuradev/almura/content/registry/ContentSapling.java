@@ -15,6 +15,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BonemealSource;
 import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.grower.TreeGrower;
@@ -49,7 +50,7 @@ public final class ContentSapling extends SaplingBlock {
         if (tree == null) {
             return;
         }
-        level.setBlock(pos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), Block.UPDATE_NONE);
+        level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_NONE);
         if (!ContentTrees.grow(level, pos, tree, random)) {
             level.setBlock(pos, state, Block.UPDATE_NONE);
         }

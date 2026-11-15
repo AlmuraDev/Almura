@@ -7,6 +7,11 @@
  */
 package com.almuradev.almura.network.client;
 
+import com.almuradev.almura.feature.almanac.client.AlmanacScreens;
+import com.almuradev.almura.feature.almanac.network.ClientboundAlmanacCrops;
+import com.almuradev.almura.feature.almanac.network.ClientboundAlmanacField;
+import com.almuradev.almura.feature.guide.client.ClientGuide;
+import com.almuradev.almura.feature.guide.network.GuideMessages;
 import com.almuradev.almura.feature.hud.ServerHudData;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerWorlds;
 import com.almuradev.almura.feature.hud.network.ClientboundServerTps;
@@ -36,15 +41,10 @@ public final class ClientPayloads {
         event.register(ClientboundWorldName.TYPE, (payload, context) -> ServerHudData.setWorldName(payload.name()));
         event.register(ClientboundServerTps.TYPE, (payload, context) -> ServerHudData.setTps(payload.tps()));
         event.register(ClientboundPlayerWorlds.TYPE, (payload, context) -> ServerHudData.updatePlayerWorlds(payload.replace(), payload.worlds()));
-        event.register(com.almuradev.almura.feature.almanac.network.ClientboundAlmanacField.TYPE,
-            (payload, context) -> com.almuradev.almura.feature.almanac.client.AlmanacScreens.openField(payload));
-        event.register(com.almuradev.almura.feature.almanac.network.ClientboundAlmanacCrops.TYPE,
-            (payload, context) -> com.almuradev.almura.feature.almanac.client.AlmanacScreens.openCrops(payload));
-        event.register(com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundListing.TYPE,
-            (payload, context) -> com.almuradev.almura.feature.guide.client.ClientGuide.onListing(payload));
-        event.register(com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundPage.TYPE,
-            (payload, context) -> com.almuradev.almura.feature.guide.client.ClientGuide.onPage(payload));
-        event.register(com.almuradev.almura.feature.guide.network.GuideMessages.ClientboundChangeResult.TYPE,
-            (payload, context) -> com.almuradev.almura.feature.guide.client.ClientGuide.onChangeResult(payload));
+        event.register(ClientboundAlmanacField.TYPE, (payload, context) -> AlmanacScreens.openField(payload));
+        event.register(ClientboundAlmanacCrops.TYPE, (payload, context) -> AlmanacScreens.openCrops(payload));
+        event.register(GuideMessages.ClientboundListing.TYPE, (payload, context) -> ClientGuide.onListing(payload));
+        event.register(GuideMessages.ClientboundPage.TYPE, (payload, context) -> ClientGuide.onPage(payload));
+        event.register(GuideMessages.ClientboundChangeResult.TYPE, (payload, context) -> ClientGuide.onChangeResult(payload));
     }
 }

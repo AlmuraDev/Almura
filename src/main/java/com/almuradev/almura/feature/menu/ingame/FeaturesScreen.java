@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.menu.ingame;
 
+import com.almuradev.almura.feature.guide.client.ClientGuide;
 import com.almuradev.almura.feature.menu.InGameScreens;
 import com.almuradev.almura.feature.notification.history.NotificationHistoryScreen;
 import com.almuradev.almura.feature.skills.client.ClientSkills;
@@ -49,7 +50,7 @@ final class FeaturesScreen implements Screen {
         final StackPanel column = factory.stackPanel().setSpacing(BUTTON_GAP)
             .add(centred(factory.button(Text.of("Guide"))
                 .setSize(BUTTON_WIDTH, BUTTON_HEIGHT)
-                .onEvent(Button.PRESSED, event -> com.almuradev.almura.feature.guide.client.ClientGuide.requestOpen())))
+                .onEvent(Button.PRESSED, event -> ClientGuide.requestOpen())))
             .add(later(factory, "Claim Management", BUTTON_WIDTH))
             .add(later(factory, "Nicknames", BUTTON_WIDTH))
             .add(later(factory, "Titles", BUTTON_WIDTH))
@@ -89,7 +90,7 @@ final class FeaturesScreen implements Screen {
             .setWidth(WIDTH)
             .setAnchor(Anchor.CENTER);
         // Its x closes the menu, as Close does
-        com.almuradev.almura.feature.menu.InGameScreens.closesScreen(window);
+        InGameScreens.closesScreen(window);
         return factory.anchorPanel().add(window).setAnchor(Anchor.FILL);
     }
 

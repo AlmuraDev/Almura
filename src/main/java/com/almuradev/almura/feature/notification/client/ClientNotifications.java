@@ -11,6 +11,7 @@ import com.almuradev.almura.feature.notification.PopupNotification;
 import com.almuradev.almura.feature.notification.history.NotificationHistory;
 import com.almuradev.almura.feature.notification.history.NotificationRecord;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
@@ -88,7 +89,7 @@ public final class ClientNotifications {
                 } else {
                     // No HUD to show it on: the message in chat
                     Minecraft.getInstance().gui.hud.getChat().addClientSystemMessage(
-                        net.minecraft.network.chat.Component.literal(next.message()));
+                        Component.literal(next.message()));
                 }
             } else if (--ClientNotifications.ticksLeft <= 0) {
                 ClientNotifications.current = null;

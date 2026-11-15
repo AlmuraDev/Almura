@@ -11,6 +11,7 @@ import com.almuradev.almura.network.AlmuraNetwork;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
@@ -28,7 +29,7 @@ public record ClientboundAlmanacField(BlockPos pos, String biome, float temperat
 
     private void write(final ByteBuf buffer) {
         BlockPos.STREAM_CODEC.encode(buffer, this.pos);
-        net.minecraft.network.codec.ByteBufCodecs.STRING_UTF8.encode(buffer, this.biome);
+        ByteBufCodecs.STRING_UTF8.encode(buffer, this.biome);
         buffer.writeFloat(this.temperature);
         buffer.writeFloat(this.rainfall);
         buffer.writeByte(this.blockLight);
@@ -43,7 +44,7 @@ public record ClientboundAlmanacField(BlockPos pos, String biome, float temperat
 
     private static ClientboundAlmanacField read(final ByteBuf buffer) {
         return new ClientboundAlmanacField(BlockPos.STREAM_CODEC.decode(buffer),
-            net.minecraft.network.codec.ByteBufCodecs.STRING_UTF8.decode(buffer), buffer.readFloat(), buffer.readFloat(), buffer.readByte(),
+            ByteBufCodecs.STRING_UTF8.decode(buffer), buffer.readFloat(), buffer.readFloat(), buffer.readByte(),
             buffer.readByte(), buffer.readByte(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(),
             buffer.readBoolean());
     }

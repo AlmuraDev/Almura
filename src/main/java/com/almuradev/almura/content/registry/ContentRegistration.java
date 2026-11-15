@@ -9,23 +9,29 @@ package com.almuradev.almura.content.registry;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.content.convert.ContentPackBuilder;
+import com.almuradev.almura.content.convert.Legacy;
 import com.almuradev.almura.content.def.ContentDefs.BlockDef;
 import com.almuradev.almura.content.def.ContentDefs.ContainerDef;
 import com.almuradev.almura.content.def.ContentDefs.CropDef;
-import com.almuradev.almura.content.def.ContentDefs.LeafDef;
-import com.almuradev.almura.content.def.ContentDefs.SaplingDef;
-import com.almuradev.almura.content.def.ContentDefs.TreeDef;
-import com.almuradev.almura.content.def.ContentDefs.SeedDef;
 import com.almuradev.almura.content.def.ContentDefs.EffectDef;
 import com.almuradev.almura.content.def.ContentDefs.FoodDef;
 import com.almuradev.almura.content.def.ContentDefs.ItemDef;
 import com.almuradev.almura.content.def.ContentDefs.ItemGroupDef;
+import com.almuradev.almura.content.def.ContentDefs.LeafDef;
+import com.almuradev.almura.content.def.ContentDefs.SaplingDef;
+import com.almuradev.almura.content.def.ContentDefs.SeedDef;
+import com.almuradev.almura.content.def.ContentDefs.TreeDef;
+import com.almuradev.almura.feature.almanac.FarmersAlmanac;
+import com.almuradev.almura.feature.cruet.Cruets;
+import com.almuradev.almura.feature.handbook.SkillsHandbook;
+import com.almuradev.almura.feature.harvestsack.HarvestingSack;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.food.FoodProperties;
@@ -35,18 +41,19 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ToolMaterial;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.component.Consumable;
 import net.minecraft.world.item.component.Consumables;
 import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -132,12 +139,12 @@ public final class ContentRegistration {
         });
         event.register(Registries.ITEM, helper -> {
             // Almura's cruets: content items are handed back in them
-            com.almuradev.almura.feature.cruet.Cruets.register(helper, this::addToTab);
+            Cruets.register(helper, this::addToTab);
             // Almura's harvesting sack: picks the content's sack_harvest crops
-            com.almuradev.almura.feature.harvestsack.HarvestingSack.register(helper, this::addToTab);
+            HarvestingSack.register(helper, this::addToTab);
             // Almura's Farmer's Almanac and Skills Handbook
-            com.almuradev.almura.feature.almanac.FarmersAlmanac.register(helper, this::addToTab);
-            com.almuradev.almura.feature.handbook.SkillsHandbook.register(helper, this::addToTab);
+            FarmersAlmanac.register(helper, this::addToTab);
+            SkillsHandbook.register(helper, this::addToTab);
             for (final ItemDef def : this.ordered()) {
                 if (def.kind().equals("slab")) {
                     // A slab's item is its block's
@@ -171,15 +178,15 @@ public final class ContentRegistration {
             }
         });
         event.register(Registries.BLOCK_ENTITY_TYPE, helper -> {
-            final java.util.Set<Block> containerBlocks = new java.util.HashSet<>();
+            final Set<Block> containerBlocks = new HashSet<>();
             this.registeredBlocks.values().stream().filter(block -> block instanceof ContentContainers.ContainerBlock).forEach(containerBlocks::add);
-            ContentContainers.blockEntityType = new net.minecraft.world.level.block.entity.BlockEntityType<>(
+            ContentContainers.blockEntityType = new BlockEntityType<>(
                 ContentContainers.ContainerBlockEntity::new, containerBlocks);
             helper.register(Identifier.fromNamespaceAndPath(Almura.ID, "container"), ContentContainers.blockEntityType);
             // The flickering lights' markers
-            final java.util.Set<Block> flickering = new java.util.HashSet<>();
+            final Set<Block> flickering = new HashSet<>();
             this.registeredBlocks.values().stream().filter(block -> block instanceof ContentBlocks.FlickeringHorizontal).forEach(flickering::add);
-            FlickerLights.blockEntityType = new net.minecraft.world.level.block.entity.BlockEntityType<>(
+            FlickerLights.blockEntityType = new BlockEntityType<>(
                 FlickerLights.FlickerLightBlockEntity::new, flickering);
             helper.register(Identifier.fromNamespaceAndPath(Almura.ID, "flicker_light"), FlickerLights.blockEntityType);
         });
@@ -188,7 +195,7 @@ public final class ContentRegistration {
             ContentContainers.storageBarrelMenuType = ContentContainers.newMenuType(true);
             helper.register(Identifier.fromNamespaceAndPath(Almura.ID, "container"), ContentContainers.menuType);
             helper.register(Identifier.fromNamespaceAndPath(Almura.ID, "storage_barrel"), ContentContainers.storageBarrelMenuType);
-            com.almuradev.almura.feature.harvestsack.HarvestingSack.registerMenu(helper);
+            HarvestingSack.registerMenu(helper);
             this.storageBarrelItems();
         });
         event.register(Registries.CREATIVE_MODE_TAB, helper -> {
@@ -207,7 +214,7 @@ public final class ContentRegistration {
      * What the storage barrel takes: the seeds, what the crops drop, and what the fruit trees' fruit leaves drop, as 3.5's did.
      */
     private void storageBarrelItems() {
-        final java.util.Set<String> items = new java.util.HashSet<>(this.seeds.keySet());
+        final Set<String> items = new HashSet<>(this.seeds.keySet());
         this.crops.values().forEach(crop -> crop.stages().forEach(stage -> stage.state().drops().forEach(drop -> items.add(drop.item()))));
         this.blocks.stream().filter(block -> block.kind().equals("leaf") && block.id().endsWith("_fruit_leaf"))
             .forEach(leaf -> leaf.state().drops().forEach(drop -> items.add(drop.item())));
@@ -222,7 +229,7 @@ public final class ContentRegistration {
         if (!def.kind().equals("stair")) {
             return Blocks.AIR.defaultBlockState();
         }
-        final String named = def.base() == null ? null : com.almuradev.almura.content.convert.Legacy.item(def.base(), 0);
+        final String named = def.base() == null ? null : Legacy.item(def.base(), 0);
         final Identifier base = named == null ? null : Identifier.tryParse(named);
         final Block block = base == null ? null : BuiltInRegistries.BLOCK.getOptional(base).orElse(null);
         if (block == null || block == Blocks.AIR) {

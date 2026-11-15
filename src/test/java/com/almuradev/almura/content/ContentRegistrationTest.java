@@ -11,16 +11,48 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+import com.almuradev.almura.content.def.ContentDefs;
+import com.almuradev.almura.content.def.ContentParser;
+import com.almuradev.almura.content.registry.ContentBlocks;
+import com.almuradev.almura.content.registry.ContentContainers;
+import com.almuradev.almura.content.registry.ContentCrop;
+import com.almuradev.almura.content.registry.ContentLeaves;
+import com.almuradev.almura.content.registry.ContentSapling;
+import com.almuradev.almura.content.registry.ContentTrees;
+import com.almuradev.almura.content.source.ContentSource;
+import com.almuradev.almura.feature.cruet.Cruets;
+import com.almuradev.almura.feature.harvestsack.HarvestingSack;
+import com.almuradev.almura.mixin.BiomeAccessor;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.EmptyBlockGetter;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.FarmlandBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.levelgen.feature.SimpleBlockFeature;
+import net.minecraft.world.level.levelgen.feature.TreeFeature;
+import net.minecraft.world.level.material.PushReaction;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * With the game's mod loading started (FML's JUnit extension, set up by the build), the content's blocks, items and creative tabs are in
@@ -49,27 +81,27 @@ final class ContentRegistrationTest {
         // Normal, food, hoe, sickle and seed items, and an item for each block but the crops (their item is their seed)
         // and Almura's three cruets, harvesting sack, Farmer's Almanac and Skills Handbook
         assertEquals(186 + 413 + 5 + 5 + 85 + blocks + 3 + 3, count("almura", BuiltInRegistries.ITEM.keySet()), "items");
-        final Item cruet = BuiltInRegistries.ITEM.getValue(com.almuradev.almura.feature.cruet.Cruets.EMPTY);
-        for (final Identifier filled : new Identifier[] {com.almuradev.almura.feature.cruet.Cruets.WATER, com.almuradev.almura.feature.cruet.Cruets.MILK}) {
+        final Item cruet = BuiltInRegistries.ITEM.getValue(Cruets.EMPTY);
+        for (final Identifier filled : new Identifier[] {Cruets.WATER, Cruets.MILK}) {
             final var remainder = BuiltInRegistries.ITEM.getValue(filled).getCraftingRemainder();
             assertTrue(remainder != null && remainder.item().value() == cruet, filled + " hands the glass cruet back");
         }
 
         final Block barley = BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:crop/barley"));
-        assertTrue(barley instanceof com.almuradev.almura.content.registry.ContentCrop crop && crop.getMaxAge() == 3, "barley grows in 4 stages");
+        assertTrue(barley instanceof ContentCrop crop && crop.getMaxAge() == 3, "barley grows in 4 stages");
         final Item barleySeed = BuiltInRegistries.ITEM.getValue(Identifier.parse("almura:seed/barley_seed"));
         assertTrue(barleySeed instanceof BlockItem seedItem && seedItem.getBlock() == barley, "barley seed plants barley");
         assertEquals("item.almura.seed.barley_seed", barleySeed.getDescriptionId());
         assertTrue(barley.defaultBlockState().isRandomlyTicking(), "crops grow");
         // The harvesting sack picks the content's sack_harvest crops and holds what they drop (components aren't bound here, so its stack
         // size of 1 can't be read)
-        final Item sack = BuiltInRegistries.ITEM.getValue(com.almuradev.almura.feature.harvestsack.HarvestingSack.ID);
-        assertTrue(sack instanceof com.almuradev.almura.feature.harvestsack.HarvestingSack.SackItem, "the harvesting sack is there");
-        assertTrue(BuiltInRegistries.BLOCK.stream().filter(block -> block instanceof com.almuradev.almura.content.registry.ContentCrop crop
+        final Item sack = BuiltInRegistries.ITEM.getValue(HarvestingSack.ID);
+        assertTrue(sack instanceof HarvestingSack.SackItem, "the harvesting sack is there");
+        assertTrue(BuiltInRegistries.BLOCK.stream().filter(block -> block instanceof ContentCrop crop
             && crop.def().sackResetAge() >= 0).count() == 11, "11 crops are picked with the sack");
         // Aquatic crops: seaweed is always water, rice is waterlogged in water and dry in the wild, barley is a land crop
-        final net.minecraft.world.level.block.state.properties.BooleanProperty waterlogged =
-            net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
+        final BooleanProperty waterlogged =
+            BlockStateProperties.WATERLOGGED;
         final Block seaweed = BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:crop/seaweed"));
         assertTrue(seaweed.defaultBlockState().getFluidState().isSource(), "seaweed holds water");
         final Block rice = BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:crop/rice"));
@@ -80,46 +112,46 @@ final class ContentRegistrationTest {
         assertTrue(barley.defaultBlockState().getFluidState().isEmpty() && !barley.defaultBlockState().hasProperty(waterlogged),
             "barley is a land crop");
         assertTrue(BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:leaf/cherry_tree_leaf"))
-            instanceof com.almuradev.almura.content.registry.ContentLeaves, "leaves are leaves");
+            instanceof ContentLeaves, "leaves are leaves");
         // The 13 flickering lights mark themselves with a block entity, so the client can make them flicker
         assertTrue(BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:horizontal/lighting/hanging_lamp_flicker"))
-            instanceof net.minecraft.world.level.block.EntityBlock, "a flickering light has a block entity");
+            instanceof EntityBlock, "a flickering light has a block entity");
         assertTrue(!(BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:horizontal/agriculture/pipe"))
-            instanceof net.minecraft.world.level.block.EntityBlock), "a pipe doesn't");
+            instanceof EntityBlock), "a pipe doesn't");
         assertTrue(BuiltInRegistries.BLOCK_ENTITY_TYPE.containsKey(Identifier.fromNamespaceAndPath("almura", "flicker_light")), "flicker light marker");
         // The content's own sound group (barrel: gravel break, wool place, at 0.1) and material (ag: not solid, broken when pushed)
         // (no block names the barrel group as its sound yet; it is read for those that will)
-        final net.minecraft.world.level.block.SoundType barrelSound = com.almuradev.almura.content.registry.ContentBlocks.soundGroup("almura:barrel");
+        final SoundType barrelSound = ContentBlocks.soundGroup("almura:barrel");
         assertTrue(barrelSound != null, "the barrel sound group is read");
         assertEquals(0.1f, barrelSound.getVolume(), 0.0001f, "barrel sound volume");
-        assertEquals(net.minecraft.sounds.SoundEvents.GRAVEL_BREAK, barrelSound.getBreakSound(), "barrel break sound");
-        assertEquals(net.minecraft.sounds.SoundEvents.WOOL_PLACE, barrelSound.getPlaceSound(), "barrel place sound (1.12's block.cloth.place)");
+        assertEquals(SoundEvents.GRAVEL_BREAK, barrelSound.getBreakSound(), "barrel break sound");
+        assertEquals(SoundEvents.WOOL_PLACE, barrelSound.getPlaceSound(), "barrel place sound (1.12's block.cloth.place)");
         final Block pipe = BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:horizontal/agriculture/pipe"));
-        assertEquals(net.minecraft.world.level.material.PushReaction.POPPED, pipe.defaultBlockState().getPistonPushReaction(), "pipes pop when pushed");
+        assertEquals(PushReaction.POPPED, pipe.defaultBlockState().getPistonPushReaction(), "pipes pop when pushed");
         assertTrue(!pipe.defaultBlockState().isSolid(), "pipes aren't solid");
         // Leaves burn as the content says (flammability 30, fire_spread_speed 60), as 3.5 gave them to Forge
         final Block almond = BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:leaf/almond_tree_leaf"));
-        assertEquals(30, almond.getFlammability(almond.defaultBlockState(), net.minecraft.world.level.EmptyBlockGetter.INSTANCE,
-            net.minecraft.core.BlockPos.ZERO, net.minecraft.core.Direction.UP), "leaf flammability");
-        assertEquals(60, almond.getFireSpreadSpeed(almond.defaultBlockState(), net.minecraft.world.level.EmptyBlockGetter.INSTANCE,
-            net.minecraft.core.BlockPos.ZERO, net.minecraft.core.Direction.UP), "leaf fire spread speed");
+        assertEquals(30, almond.getFlammability(almond.defaultBlockState(), EmptyBlockGetter.INSTANCE,
+            BlockPos.ZERO, Direction.UP), "leaf flammability");
+        assertEquals(60, almond.getFireSpreadSpeed(almond.defaultBlockState(), EmptyBlockGetter.INSTANCE,
+            BlockPos.ZERO, Direction.UP), "leaf fire spread speed");
         assertTrue(BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:sapling/cherry_tree_sapling"))
-            instanceof com.almuradev.almura.content.registry.ContentSapling, "saplings are saplings");
-        assertTrue(com.almuradev.almura.content.registry.ContentTrees.tree("almura:cherry_tree") != null, "saplings know their trees");
-        final Block storageBarrel = BuiltInRegistries.BLOCK.getValue(com.almuradev.almura.content.registry.ContentContainers.STORAGE_BARREL);
-        assertTrue(storageBarrel instanceof com.almuradev.almura.content.registry.ContentContainers.ContainerBlock, "the storage barrel is a container");
-        assertTrue(com.almuradev.almura.content.registry.ContentContainers.storageBarrelAccepts("almura:seed/barley_seed"), "the storage barrel takes seeds");
-        assertTrue(com.almuradev.almura.content.registry.ContentContainers.storageBarrelAccepts("almura:normal/ingredient/barley"),
+            instanceof ContentSapling, "saplings are saplings");
+        assertTrue(ContentTrees.tree("almura:cherry_tree") != null, "saplings know their trees");
+        final Block storageBarrel = BuiltInRegistries.BLOCK.getValue(ContentContainers.STORAGE_BARREL);
+        assertTrue(storageBarrel instanceof ContentContainers.ContainerBlock, "the storage barrel is a container");
+        assertTrue(ContentContainers.storageBarrelAccepts("almura:seed/barley_seed"), "the storage barrel takes seeds");
+        assertTrue(ContentContainers.storageBarrelAccepts("almura:normal/ingredient/barley"),
             "the storage barrel takes crops");
-        assertTrue(!com.almuradev.almura.content.registry.ContentContainers.storageBarrelAccepts("minecraft:dirt"), "the storage barrel takes no dirt");
+        assertTrue(!ContentContainers.storageBarrelAccepts("minecraft:dirt"), "the storage barrel takes no dirt");
         assertTrue(BuiltInRegistries.BLOCK_ENTITY_TYPE.containsKey(Identifier.fromNamespaceAndPath("almura", "container")), "container block entity");
         assertTrue(BuiltInRegistries.MENU.containsKey(Identifier.fromNamespaceAndPath("almura", "storage_barrel")), "storage barrel menu");
         // Every crop's hydration names blocks and properties that are there
-        final var parser = new com.almuradev.almura.content.def.ContentParser(
-            com.almuradev.almura.content.source.ContentSource.at(Path.of(root)));
+        final var parser = new ContentParser(
+            ContentSource.at(Path.of(root)));
         // The pipes turn to connect when placed against a block's side, and the ceiling ones drip, as on 3.5
-        final java.util.Map<String, com.almuradev.almura.content.def.ContentDefs.StateDef> pipes = new java.util.HashMap<>();
-        parser.blocks(com.almuradev.almura.content.AlmuraContent.BLOCK_KINDS).stream()
+        final Map<String, ContentDefs.StateDef> pipes = new HashMap<>();
+        parser.blocks(AlmuraContent.BLOCK_KINDS).stream()
             .filter(block -> block.id().startsWith("almura:horizontal/agriculture/"))
             .forEach(block -> pipes.put(block.id().substring("almura:horizontal/agriculture/".length()), block.state()));
         assertEquals("across", pipes.get("pipe").rotatePlacement(), "a straight pipe continues out from the block");
@@ -127,7 +159,7 @@ final class ContentRegistrationTest {
         assertEquals("corner", pipes.get("corner_pipe").rotatePlacement(), "a corner puts an arm into the block");
         assertEquals(null, pipes.get("four_way_pipe").rotatePlacement(), "a four way pipe faces the player");
         assertTrue(pipes.get("ceiling_pipe").drip() && !pipes.get("pipe").drip(), "ceiling pipes drip, floor ones don't");
-        final java.util.List<String> wrongHydration = new java.util.ArrayList<>();
+        final List<String> wrongHydration = new ArrayList<>();
         parser.crops(parser.seeds()).forEach(crop -> crop.stages().forEach(stage -> {
             if (stage.hydration() != null) {
                 stage.hydration().blocks().forEach(block -> {
@@ -141,21 +173,20 @@ final class ContentRegistrationTest {
                 });
             }
         }));
-        assertEquals(java.util.List.of(), wrongHydration, "crop hydration");
+        assertEquals(List.of(), wrongHydration, "crop hydration");
         // The farmland rules and the biome temperature crops read are mixed in
-        assertTrue(com.almuradev.almura.mixin.BiomeAccessor.class.isAssignableFrom(net.minecraft.world.level.biome.Biome.class), "biome accessor");
-        assertTrue(java.util.Arrays.stream(net.minecraft.world.level.block.FarmlandBlock.class.getDeclaredMethods())
+        assertTrue(BiomeAccessor.class.isAssignableFrom(Biome.class), "biome accessor");
+        assertTrue(Arrays.stream(FarmlandBlock.class.getDeclaredMethods())
             .anyMatch(method -> method.getName().contains("irrigationNear")), "farmland mixin");
-        for (final Class<?> held : new Class<?>[] {net.minecraft.world.level.levelgen.feature.TreeFeature.class,
-            net.minecraft.world.level.levelgen.feature.SimpleBlockFeature.class}) {
-            assertTrue(java.util.Arrays.stream(held.getDeclaredMethods()).anyMatch(method -> method.getName().contains("heldBack")),
+        for (final Class<?> held : new Class<?>[] {TreeFeature.class, SimpleBlockFeature.class}) {
+            assertTrue(Arrays.stream(held.getDeclaredMethods()).anyMatch(method -> method.getName().contains("heldBack")),
                 held.getSimpleName() + " held back where Almura generated");
         }
         assertTrue(BuiltInRegistries.FEATURE_TYPE.containsKey(Identifier.fromNamespaceAndPath("almura", "content_trees")), "tree generation");
         assertTrue(BuiltInRegistries.FEATURE_TYPE.containsKey(Identifier.fromNamespaceAndPath("almura", "content_grass")), "grass generation");
-        assertTrue(BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:slab/afledos_slab")) instanceof net.minecraft.world.level.block.SlabBlock,
+        assertTrue(BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:slab/afledos_slab")) instanceof SlabBlock,
             "slabs are slabs");
-        assertTrue(BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:stair/afledos_stair")) instanceof net.minecraft.world.level.block.StairBlock,
+        assertTrue(BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:stair/afledos_stair")) instanceof StairBlock,
             "stairs are stairs");
         assertEquals(23, count("almura", BuiltInRegistries.CREATIVE_MODE_TAB.keySet()), "creative tabs");
         assertTrue(BuiltInRegistries.CONSUME_EFFECT_TYPE.containsKey(Identifier.fromNamespaceAndPath("almura", "heal")), "heal effect");

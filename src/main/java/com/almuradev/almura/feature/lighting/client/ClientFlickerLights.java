@@ -21,6 +21,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.level.LevelEvent;
 
 import java.util.ArrayDeque;
@@ -57,7 +58,7 @@ public final class ClientFlickerLights implements FlickerLights.Driver {
         final ClientFlickerLights lights = new ClientFlickerLights();
         instance = lights;
         FlickerLights.setDriver(lights);
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.register(lights);
+        NeoForge.EVENT_BUS.register(lights);
     }
 
     /**

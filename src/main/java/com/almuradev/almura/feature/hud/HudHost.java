@@ -11,6 +11,7 @@ import com.almuradev.almura.feature.menu.AlmuraScreens;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import org.inspirenxe.strata.api.screen.Screen;
 import org.inspirenxe.strata.core.StrataCore;
 import org.inspirenxe.strata.minecraft.MinecraftCanvas;
 import org.inspirenxe.strata.minecraft.MinecraftPlatform;
@@ -24,12 +25,12 @@ import org.jspecify.annotations.Nullable;
 final class HudHost {
 
     private final Minecraft minecraft;
-    private final org.inspirenxe.strata.api.screen.Screen content;
+    private final Screen content;
     private @Nullable ScreenHost host;
     private @Nullable MinecraftCanvas canvas;
     private float width = -1f, height = -1f, pixelsPerUnit = -1f;
 
-    HudHost(final Minecraft minecraft, final org.inspirenxe.strata.api.screen.Screen content) {
+    HudHost(final Minecraft minecraft, final Screen content) {
         this.minecraft = minecraft;
         this.content = content;
     }

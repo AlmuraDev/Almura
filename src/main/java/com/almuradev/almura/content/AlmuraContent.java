@@ -14,24 +14,29 @@ import com.almuradev.almura.content.def.ContentDefs.BlockDef;
 import com.almuradev.almura.content.def.ContentDefs.CropDef;
 import com.almuradev.almura.content.def.ContentDefs.GrassDef;
 import com.almuradev.almura.content.def.ContentDefs.GrassGenDef;
-import com.almuradev.almura.content.def.ContentDefs.OreGenDef;
-import com.almuradev.almura.content.def.ContentDefs.TreeGenDef;
-import com.almuradev.almura.content.def.ContentDefs.LeafDef;
-import com.almuradev.almura.content.def.ContentDefs.SaplingDef;
-import com.almuradev.almura.content.def.ContentDefs.TreeDef;
-import com.almuradev.almura.content.def.ContentDefs.SeedDef;
 import com.almuradev.almura.content.def.ContentDefs.ItemDef;
 import com.almuradev.almura.content.def.ContentDefs.ItemGroupDef;
+import com.almuradev.almura.content.def.ContentDefs.LeafDef;
+import com.almuradev.almura.content.def.ContentDefs.OreGenDef;
+import com.almuradev.almura.content.def.ContentDefs.SaplingDef;
+import com.almuradev.almura.content.def.ContentDefs.SeedDef;
+import com.almuradev.almura.content.def.ContentDefs.TreeDef;
+import com.almuradev.almura.content.def.ContentDefs.TreeGenDef;
 import com.almuradev.almura.content.def.ContentParser;
 import com.almuradev.almura.content.pack.ContentPacks;
+import com.almuradev.almura.content.registry.ContentBlocks;
 import com.almuradev.almura.content.registry.ContentGeneration;
 import com.almuradev.almura.content.registry.ContentRegistration;
 import com.almuradev.almura.content.registry.GrassSeeds;
 import com.almuradev.almura.content.source.ContentSource;
+import com.almuradev.almura.feature.almanac.FarmersAlmanac;
+import com.almuradev.almura.feature.cruet.Cruets;
+import com.almuradev.almura.feature.harvestsack.HarvestingSack;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -66,7 +71,7 @@ public final class AlmuraContent {
         final ContentSource source = ContentSource.at(root);
         final ContentParser parser = new ContentParser(source);
         // The content's own materials and sound groups, for the blocks that name them
-        com.almuradev.almura.content.registry.ContentBlocks.define(parser.materials(), parser.soundGroups());
+        ContentBlocks.define(parser.materials(), parser.soundGroups());
         final List<ItemGroupDef> groups = parser.itemGroups();
         final List<ItemDef> items = parser.items(ITEM_KINDS);
         final List<BlockDef> blocks = parser.blocks(BLOCK_KINDS);
@@ -86,9 +91,9 @@ public final class AlmuraContent {
         modBus.register(new ContentRegistration(groups, items, blocks, crops, seeds).trees(leaves, saplings, trees)
             .containers(parser.containers()));
         GrassSeeds.register(modBus);
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.register(new com.almuradev.almura.feature.cruet.Cruets());
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.register(new com.almuradev.almura.feature.harvestsack.HarvestingSack());
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.register(new com.almuradev.almura.feature.almanac.FarmersAlmanac());
+        NeoForge.EVENT_BUS.register(new Cruets());
+        NeoForge.EVENT_BUS.register(new HarvestingSack());
+        NeoForge.EVENT_BUS.register(new FarmersAlmanac());
         ContentGeneration.register(modBus, treeGeneration, grassGeneration, grasses);
         ContentPacks.register(modBus, () -> {
             final ContentPackBuilder builder = new ContentPackBuilder(source).crops(crops);

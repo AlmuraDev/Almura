@@ -10,6 +10,7 @@ package com.almuradev.almura.content.convert;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -113,7 +114,7 @@ final class RecipeConverter {
     private static JsonElement ingredient(final JsonElement stack) {
         final List<JsonElement> options = options(stack);
         if (options.size() == 1) {
-            return new com.google.gson.JsonPrimitive(item(options.getFirst()));
+            return new JsonPrimitive(item(options.getFirst()));
         }
         final JsonArray array = new JsonArray();
         options.forEach(option -> array.add(item(option)));

@@ -20,8 +20,10 @@ import com.almuradev.almura.content.def.ContentDefs.CropStageDef;
 import com.almuradev.almura.content.def.ContentDefs.Range;
 import com.almuradev.almura.content.registry.ContentCrop;
 import com.almuradev.almura.feature.almanac.network.ClientboundAlmanacCrops;
+import com.almuradev.almura.feature.menu.InGameScreens;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -123,7 +125,7 @@ final class AlmanacCropsScreen implements Screen {
             .setSize(WIDTH, HEIGHT)
             .setAnchor(Anchor.CENTER);
         // Its x closes the almanac, as Close does
-        com.almuradev.almura.feature.menu.InGameScreens.closesScreen(window);
+        InGameScreens.closesScreen(window);
         return factory.anchorPanel().add(window).setAnchor(Anchor.FILL);
     }
 
@@ -153,7 +155,7 @@ final class AlmanacCropsScreen implements Screen {
             }
         }
         final String name = crop.getName().getString();
-        final Item seed = BuiltInRegistries.ITEM.getOptional(net.minecraft.resources.Identifier.tryParse(crop.def().seed())).orElse(Items.AIR);
+        final Item seed = BuiltInRegistries.ITEM.getOptional(Identifier.tryParse(crop.def().seed())).orElse(Items.AIR);
         final ItemStack icon = seed != Items.AIR ? new ItemStack(seed) : new ItemStack(crop.asItem());
 
         final double ground = Math.round(this.crops.temperature() * 100f) / 100.0;

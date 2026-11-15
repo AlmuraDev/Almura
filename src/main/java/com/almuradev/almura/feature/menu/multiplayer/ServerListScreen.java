@@ -14,6 +14,7 @@ import net.minecraft.client.gui.screens.ConnectScreen;
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.resolver.ServerAddress;
+import net.minecraft.client.resources.language.I18n;
 import org.inspirenxe.strata.api.ComponentFactory;
 import org.inspirenxe.strata.api.component.Component;
 import org.inspirenxe.strata.api.control.attribute.item.Activatable;
@@ -183,7 +184,7 @@ public final class ServerListScreen implements Screen {
         }
         final Minecraft minecraft = Minecraft.getInstance();
         final String ip = server.host + ":" + server.port;
-        final ServerData data = new ServerData(net.minecraft.client.resources.language.I18n.get(server.nameKey), ip, ServerData.Type.OTHER);
+        final ServerData data = new ServerData(I18n.get(server.nameKey), ip, ServerData.Type.OTHER);
         ConnectScreen.startConnecting(minecraft.gui.screen(), minecraft, ServerAddress.parseString(ip), data, false, null);
     }
 

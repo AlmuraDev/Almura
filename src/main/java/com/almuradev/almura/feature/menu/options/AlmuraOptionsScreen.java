@@ -7,12 +7,13 @@
  */
 package com.almuradev.almura.feature.menu.options;
 
-import com.almuradev.almura.core.client.config.AlmuraClientConfig;
 import com.almuradev.almura.core.client.config.AlmuraClientConfig.HudType;
+import com.almuradev.almura.core.client.config.AlmuraClientConfig;
 import net.minecraft.client.Minecraft;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.inspirenxe.strata.api.ComponentFactory;
 import org.inspirenxe.strata.api.component.Component;
+import org.inspirenxe.strata.api.component.HasTooltip;
 import org.inspirenxe.strata.api.control.attribute.item.Selection;
 import org.inspirenxe.strata.api.control.button.Button;
 import org.inspirenxe.strata.api.control.button.CheckBox;
@@ -151,7 +152,7 @@ final class AlmuraOptionsScreen implements Screen {
 
     private static <T extends Component<T>> T later(final T component) {
         component.setEnabled(false);
-        if (component instanceof final org.inspirenxe.strata.api.component.HasTooltip<?> tooltip) {
+        if (component instanceof final HasTooltip<?> tooltip) {
             tooltip.setTooltip(Text.translatable("almura.features.later"));
         }
         return component;

@@ -20,6 +20,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.LevelEvent;
@@ -55,8 +56,8 @@ public final class ContentLeaves extends LeavesBlock {
      * don't burn, as on 3.5).
      */
     @Override
-    public int getFlammability(final BlockState state, final net.minecraft.world.level.BlockGetter level, final net.minecraft.core.BlockPos pos,
-        final net.minecraft.core.Direction direction) {
+    public int getFlammability(final BlockState state, final BlockGetter level, final BlockPos pos,
+        final Direction direction) {
         return this.flammability;
     }
 
@@ -64,8 +65,8 @@ public final class ContentLeaves extends LeavesBlock {
      * How readily fire spreads to the leaf: the content's {@code fire_spread_speed}.
      */
     @Override
-    public int getFireSpreadSpeed(final BlockState state, final net.minecraft.world.level.BlockGetter level, final net.minecraft.core.BlockPos pos,
-        final net.minecraft.core.Direction direction) {
+    public int getFireSpreadSpeed(final BlockState state, final BlockGetter level, final BlockPos pos,
+        final Direction direction) {
         return this.fireSpreadSpeed;
     }
 
