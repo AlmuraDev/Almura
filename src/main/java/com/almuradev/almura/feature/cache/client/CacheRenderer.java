@@ -7,9 +7,11 @@
  */
 package com.almuradev.almura.feature.cache.client;
 
+import com.almuradev.almura.core.client.config.AlmuraClientConfig;
 import com.almuradev.almura.feature.cache.CacheBlock;
 import com.almuradev.almura.feature.cache.CacheBlockEntity;
 import com.almuradev.almura.feature.cache.CacheStack;
+import com.almuradev.almura.feature.renderdistance.RenderDistances;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.ChatFormatting;
@@ -61,6 +63,15 @@ public final class CacheRenderer implements BlockEntityRenderer<CacheBlockEntity
         List<FormattedCharSequence> name = List.of();
         String quantity = "0", limit = "0";
         int frontLight;
+    }
+
+    /**
+     * Past Almura's cache render distance (Options), the cache's item and text aren't drawn, as 3.5's.
+     */
+    @Override
+    public boolean shouldRender(final CacheBlockEntity cache, final Vec3 cameraPosition) {
+        return BlockEntityRenderer.super.shouldRender(cache, cameraPosition)
+            && !RenderDistances.beyond(AlmuraClientConfig.CACHE_RENDER_DISTANCE, Vec3.atCenterOf(cache.getBlockPos()).distanceToSqr(cameraPosition));
     }
 
     @Override

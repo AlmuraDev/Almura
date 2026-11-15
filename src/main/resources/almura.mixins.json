@@ -9,9 +9,12 @@
     "TreeFeatureMixin"
   ],
   "client": [
+    "client.AbstractSignRendererMixin",
+    "client.BlockEntityRenderDispatcherMixin",
     "client.ConnectScreenAccessor",
     "client.DebugScreenOverlayMixin",
     "client.DisconnectedScreenAccessor",
+    "client.EntityRenderDispatcherMixin",
     "client.HudAccessor",
     "client.JoinMultiplayerScreenAccessor",
     "client.LevelLoadingScreenAccessor",

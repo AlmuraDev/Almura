@@ -17,6 +17,7 @@ import com.almuradev.almura.core.client.config.AlmuraClientConfig;
 import com.almuradev.almura.feature.cache.Caches;
 import com.almuradev.almura.feature.cache.client.CacheRenderer;
 import com.almuradev.almura.feature.harvestsack.HarvestingSack;
+import com.almuradev.almura.feature.healthbar.client.EntityLabels;
 import com.almuradev.almura.feature.hud.Huds;
 import com.almuradev.almura.feature.hud.ServerHudData;
 import com.almuradev.almura.feature.lighting.client.ClientFlickerLights;
@@ -32,6 +33,7 @@ import com.almuradev.almura.feature.menu.options.AlmuraOptions;
 import com.almuradev.almura.feature.menu.ServerStatus;
 import com.almuradev.almura.feature.menu.WorldLoading;
 import com.almuradev.almura.feature.nick.client.ClientNicks;
+import com.almuradev.almura.feature.offhand.client.OffhandTorches;
 import com.almuradev.almura.feature.title.client.ClientTitles;
 import com.almuradev.almura.feature.title.client.PlayerPreview;
 import com.almuradev.almura.feature.title.client.TitleTags;
@@ -63,6 +65,8 @@ public final class AlmuraClient {
         container.registerConfig(ModConfig.Type.CLIENT, AlmuraClientConfig.SPEC);
         AlmuraOptions.register(container);
         modBus.addListener(AlmuraClient::onClientSetup);
+        // The health bars' health, kept on living entities' render states
+        modBus.addListener(EntityLabels::onRegisterRenderStateModifiers);
         modBus.addListener(AlmuraClient::onRegisterPictureInPictureRenderers);
         // Almura's lettering, above any resource pack's
         AlmuraFontPack.register(modBus);
@@ -105,6 +109,9 @@ public final class AlmuraClient {
         // Almura's messages from the server
         ClientPayloads.register(modBus);
         NeoForge.EVENT_BUS.register(new ServerHudData.Resetter());
+        // Names and health bars over players, monsters and animals, and the off-hand torch option
+        NeoForge.EVENT_BUS.register(new EntityLabels());
+        NeoForge.EVENT_BUS.register(new OffhandTorches());
         // Titles over players' names, nicknames on them, and the Titles and Nicknames windows' player
         NeoForge.EVENT_BUS.register(new TitleTags());
         NeoForge.EVENT_BUS.register(new ClientTitles.Resetter());

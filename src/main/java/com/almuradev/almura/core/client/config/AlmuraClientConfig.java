@@ -38,6 +38,16 @@ public final class AlmuraClientConfig {
     public static final ModConfigSpec.BooleanValue HIDE_GUIDE_FORMATTER_BAR;
     public static final ModConfigSpec.BooleanValue FLICKERING_LIGHTS;
     public static final ModConfigSpec.ConfigValue<List<? extends String>> HUD_SKILLS;
+    public static final ModConfigSpec.BooleanValue DISPLAY_NAMES;
+    public static final ModConfigSpec.BooleanValue DISPLAY_HEALTHBARS;
+    public static final ModConfigSpec.IntValue PLAYER_NAME_RENDER_DISTANCE;
+    public static final ModConfigSpec.IntValue ENEMY_NAME_RENDER_DISTANCE;
+    public static final ModConfigSpec.IntValue ANIMAL_NAME_RENDER_DISTANCE;
+    public static final ModConfigSpec.IntValue CHEST_RENDER_DISTANCE;
+    public static final ModConfigSpec.IntValue SIGN_TEXT_RENDER_DISTANCE;
+    public static final ModConfigSpec.IntValue ITEM_FRAME_RENDER_DISTANCE;
+    public static final ModConfigSpec.IntValue CACHE_RENDER_DISTANCE;
+    public static final ModConfigSpec.BooleanValue DISABLE_OFFHAND_TORCH_PLACEMENT;
 
     static {
         final ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -65,6 +75,32 @@ public final class AlmuraClientConfig {
             .define("display-other-player-guides", false);
         HIDE_GUIDE_FORMATTER_BAR = builder.comment("Hides the guide's formatter bar for those who may change its pages")
             .define("hide-formatter-bar", false);
+        builder.pop();
+        builder.push("labels");
+        DISPLAY_NAMES = builder.comment("Shows the names of players, monsters and animals over them (within their render distances), as 3.5's")
+            .define("display-names", true);
+        DISPLAY_HEALTHBARS = builder.comment("Shows a health bar under the names of players, monsters and animals (within their render distances)")
+            .define("display-healthbars", true);
+        PLAYER_NAME_RENDER_DISTANCE = builder.comment("How far away (blocks) a player's name and health bar show. 0 hides them")
+            .defineInRange("player-name-render-distance", 8, 0, 128);
+        ENEMY_NAME_RENDER_DISTANCE = builder.comment("How far away (blocks) a monster's name and health bar show. 0 hides them")
+            .defineInRange("enemy-name-render-distance", 8, 0, 128);
+        ANIMAL_NAME_RENDER_DISTANCE = builder.comment("How far away (blocks) an animal's name and health bar show. 0 hides them")
+            .defineInRange("animal-name-render-distance", 4, 0, 128);
+        builder.pop();
+        builder.push("render-distance");
+        CHEST_RENDER_DISTANCE = builder.comment("How far away (blocks) chests are drawn. 0 for no limit (vanilla's)")
+            .defineInRange("chest-render-distance", 16, 0, 128);
+        SIGN_TEXT_RENDER_DISTANCE = builder.comment("How far away (blocks) a sign's text is drawn. 0 for no limit (vanilla's)")
+            .defineInRange("sign-text-render-distance", 16, 0, 128);
+        ITEM_FRAME_RENDER_DISTANCE = builder.comment("How far away (blocks) item frames are drawn. 0 for no limit (vanilla's)")
+            .defineInRange("item-frame-render-distance", 16, 0, 128);
+        CACHE_RENDER_DISTANCE = builder.comment("How far away (blocks) a cache's item and text are drawn. 0 for no limit")
+            .defineInRange("cache-render-distance", 16, 0, 128);
+        builder.pop();
+        builder.push("gameplay");
+        DISABLE_OFFHAND_TORCH_PLACEMENT = builder.comment("Stops torches held in the off hand from being placed")
+            .define("disable-offhand-torch-placement", false);
         builder.pop();
         builder.push("lighting");
         FLICKERING_LIGHTS = builder.comment("Lets the content's flickering lights flicker (near the player, on this client only)")
