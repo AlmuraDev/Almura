@@ -28,6 +28,7 @@ import net.malisis.core.client.gui.Anchor;
 import net.malisis.core.client.gui.BasicScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Mouse;
@@ -98,13 +99,17 @@ public class OriginHUD extends AbstractHUD {
         // Player list panel
         this.playerListPanel = new UIPlayerListPanel(this, 150, 16);
         this.playerListPanel.setPosition(0, 40, Anchor.TOP | Anchor.CENTER);
-
         // Skills panel
-        this.skillsPanel = new UISkillsPanel(this, 124);
-        this.skillsPanel.setPosition(0, 0, Anchor.BOTTOM | Anchor.RIGHT);
 
-        addToScreen(this.userPanel, this.debugBlockPanel, this.notificationPanel, this.worldPanel, this.detailsPanel, this.debugDetailsPanel, this.bossBarPanel,
-                this.playerListPanel, this.skillsPanel);
+        if (Loader.isModLoaded("skills")) {
+            this.skillsPanel = new UISkillsPanel(this, 124);
+            this.skillsPanel.setPosition(0, 0, Anchor.BOTTOM | Anchor.RIGHT);
+            addToScreen(this.userPanel, this.debugBlockPanel, this.notificationPanel, this.worldPanel, this.detailsPanel, this.debugDetailsPanel, this.bossBarPanel,
+                    this.playerListPanel,this.skillsPanel);
+        } else addToScreen(this.userPanel, this.debugBlockPanel, this.notificationPanel, this.worldPanel, this.detailsPanel, this.debugDetailsPanel, this.bossBarPanel,
+                this.playerListPanel);
+
+
     }
 
     public boolean handleScroll() {
@@ -125,10 +130,10 @@ public class OriginHUD extends AbstractHUD {
         this.detailsPanel.setAlpha(general.originHudOpacity);
 
         this.worldPanel.setVisible(general.displayWorldCompassWidget && this.worldPanel.refresh());
-
-        this.skillsPanel.refresh();
-        this.skillsPanel.setAlpha(general.originHudOpacity);
-
+        if (Loader.isModLoaded("skills")) {
+            this.skillsPanel.refresh();
+            this.skillsPanel.setAlpha(general.originHudOpacity);
+        }
         if (manager.getCurrent() == null) {
             this.notificationPanel.setAlpha(Math.max(this.notificationPanel.getAlpha() - 2, 0));
             this.worldPanel.setAlpha(Math.min(this.worldPanel.getAlpha() + 2, general.originHudOpacity));

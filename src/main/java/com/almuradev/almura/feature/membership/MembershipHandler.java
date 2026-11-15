@@ -14,6 +14,7 @@ import com.almuradev.almura.feature.skills.SkillsHandler;
 import com.almuradev.almura.shared.network.NetworkConfig;
 import com.almuradev.core.event.Witness;
 import net.luckperms.api.LuckPerms;
+import net.minecraftforge.fml.common.Loader;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.entity.living.player.Player;
@@ -36,10 +37,10 @@ public final class MembershipHandler implements Witness {
     private final CommandManager commandManager;
 
     @Inject
-    public MembershipHandler(final ServerNotificationManager serverNotificationManager, final @ChannelId(NetworkConfig.CHANNEL) ChannelBinding.IndexedMessageChannel network, final SkillsHandler skillHandler, final CommandManager commandManager) {
+    public MembershipHandler(final ServerNotificationManager serverNotificationManager, final @ChannelId(NetworkConfig.CHANNEL) ChannelBinding.IndexedMessageChannel network, final CommandManager commandManager) {
         this.serverNotificationManager = serverNotificationManager;
         this.network = network;
-        this.skillsManager = skillHandler;
+        this.skillsManager = Loader.isModLoaded("skills")?new SkillsHandler(serverNotificationManager, network):null;
         this.commandManager = commandManager;
     }
 
