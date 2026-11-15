@@ -89,7 +89,7 @@ final class FeaturesScreen implements Screen {
         column.add(close.setAlignment(HorizontalAlignment.RIGHT, VerticalAlignment.TOP).setMargin(0f, SECTION_GAP, 0f, 0f));
 
         final Window window = factory.window(this.title())
-            .setMovable(false)
+            .setMovable(true)
             .setResizable(false)
             .setCollapsible(false)
             .setMaximizable(false)

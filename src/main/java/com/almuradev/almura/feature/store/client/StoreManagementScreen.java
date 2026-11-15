@@ -144,7 +144,7 @@ final class StoreManagementScreen implements Screen {
 
         final Minecraft minecraft = Minecraft.getInstance();
         final Window window = factory.window(this.title())
-            .setMovable(false)
+            .setMovable(true)
             .setResizable(false)
             .setCollapsible(false)
             .setMaximizable(false)

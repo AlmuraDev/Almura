@@ -59,6 +59,9 @@ dependencies {
     compileOnly("org.inspirenxe:strata-core:${strata_version}")
     localRuntime("org.inspirenxe:strata-minecraft-neoforge:${strata_version}")
 
+    // LuckPerms' API, for permissions only known while the server runs (a store's, an exchange's); LuckPerms brings it at run time
+    compileOnly("net.luckperms:api:${luckperms_api_version}")
+
     // Almura's database (banking, and later exchanges and stores), as 3.5's: H2 in a file by default, or PostgreSQL. Both drivers ride in
     // the jar
     jarJar(implementation("com.h2database:h2:${h2_version}"))

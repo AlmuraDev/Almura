@@ -122,7 +122,7 @@ final class AlmanacFieldScreen implements Screen {
 
         final Window window = factory.window(this.title())
             .setClosable(false)
-            .setMovable(false)
+            .setMovable(true)
             .setResizable(false)
             .setCollapsible(false)
             .setMaximizable(false)

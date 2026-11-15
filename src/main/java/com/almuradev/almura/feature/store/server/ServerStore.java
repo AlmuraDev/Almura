@@ -27,6 +27,7 @@ import com.almuradev.almura.feature.store.network.StoreMessages.ServerboundModif
 import com.almuradev.almura.feature.store.network.StoreMessages.ServerboundOpen;
 import com.almuradev.almura.feature.store.network.StoreMessages.ServerboundTransaction;
 import com.almuradev.almura.feature.store.network.StoreMessages.StoreInfo;
+import com.almuradev.almura.core.permission.RuntimePermissions;
 import com.google.gson.JsonParser;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -67,7 +68,6 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,9 +89,8 @@ import java.util.regex.Pattern;
  *     <li>{@code almura.store.add}, {@code almura.store.modify}, {@code almura.store.delete}: add, change and delete stores;</li>
  *     <li>{@code almura.store.manage}, {@code almura.store.open}: the {@code /almura store manage [player]} and
  *     {@code /almura store open <player> <id>} commands (for NPCs and command blocks);</li>
- *     <li>each store's own permission, typed in the management screen: open and use that store. As the exchanges' permissions, each is
- *     registered when the server starts (so the permission plugin answers for it); a store added, or given another permission, since then is
- *     for operators until the next start.</li>
+ *     <li>each store's own permission, typed in the management screen: open and use that store. Asked of LuckPerms by name, as 3.5 asked
+ *     Sponge, so it works as soon as the store is made (without LuckPerms, only operators have it).</li>
  * </ul>
  */
 public final class ServerStore {
@@ -108,8 +107,6 @@ public final class ServerStore {
     public static final PermissionNode<Boolean> OPEN_COMMAND = node("store.open");
 
     private static final Map<String, Store> stores = new LinkedHashMap<>();
-    // Each store's own permission, registered at the server's start
-    private static final Map<String, PermissionNode<Boolean>> storeNodes = new HashMap<>();
     private static boolean ready;
 
     /**
@@ -183,13 +180,12 @@ public final class ServerStore {
     }
 
     /**
-     * Reads the stores here, at the server's start, so each store's own permission is registered (as the exchanges' are).
+     * Reads the stores here, at the server's start.
      */
     @SubscribeEvent
     public void onPermissionNodes(final PermissionGatherEvent.Nodes event) {
         event.addNodes(ADMIN, ADD, MODIFY, DELETE, MANAGE_COMMAND, OPEN_COMMAND);
         stores.clear();
-        storeNodes.clear();
         ready = false;
         // Only where there can be an economy: a server without Sponge has no stores
         if (!Economy.available()) {
@@ -204,30 +200,6 @@ public final class ServerStore {
         }
         ready = true;
         Almura.LOGGER.info("Loaded {} store(s)", stores.size());
-        for (final Store store : stores.values()) {
-            final PermissionNode<Boolean> node = storeNode(store.permission);
-            if (node != null && !storeNodes.containsKey(store.permission)) {
-                storeNodes.put(store.permission, node);
-                event.addNodes(node);
-            }
-        }
-    }
-
-    /**
-     * @return the node for a full permission name ({@code namespace.path}), or null if it can't be one
-     */
-    private static @Nullable PermissionNode<Boolean> storeNode(final String name) {
-        final int dot = name.indexOf('.');
-        if (dot <= 0 || dot == name.length() - 1) {
-            return null;
-        }
-        try {
-            return new PermissionNode<>(name.substring(0, dot), name.substring(dot + 1), PermissionTypes.BOOLEAN,
-                (player, uuid, context) -> player != null && isOperator(player));
-        } catch (final RuntimeException e) {
-            Almura.LOGGER.warn("'{}' can't be a permission; only operators have it", name);
-            return null;
-        }
     }
 
     @SubscribeEvent
@@ -241,7 +213,6 @@ public final class ServerStore {
     public void onServerStopped(final ServerStoppedEvent event) {
         ready = false;
         stores.clear();
-        storeNodes.clear();
     }
 
     @SubscribeEvent
@@ -342,9 +313,8 @@ public final class ServerStore {
         if (store.hidden && !PermissionAPI.getPermission(player, ADMIN)) {
             return false;
         }
-        // Registered at the server's start, else (a store added, or given another permission, since) only operators
-        final PermissionNode<Boolean> node = storeNodes.get(store.permission);
-        return node == null ? isOperator(player) : PermissionAPI.getPermission(player, node);
+        // Asked of LuckPerms by name, as 3.5 asked Sponge, so a store added while the server runs works straight away
+        return RuntimePermissions.has(player, store.permission);
     }
 
     private static boolean unavailable(final ServerPlayer player) {

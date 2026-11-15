@@ -117,7 +117,7 @@ final class AlmanacCropsScreen implements Screen {
             .add(close.setAnchor(Anchor.BOTTOM_RIGHT));
 
         final Window window = factory.window(this.title())
-            .setMovable(false)
+            .setMovable(true)
             .setResizable(false)
             .setCollapsible(false)
             .setMaximizable(false)

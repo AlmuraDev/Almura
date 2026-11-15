@@ -40,6 +40,10 @@ public final class InGameScreens {
      */
     public static Window closesScreen(final Window window, final Runnable close) {
         window.onEvent(Closable.CLOSE, event -> {
+            // Only the window's own: a drop-down, menu or dialog inside it closing asks to close too, and that request reaches the window
+            if (event.target() != window) {
+                return;
+            }
             event.cancel();
             close.run();
         });

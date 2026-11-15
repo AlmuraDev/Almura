@@ -18,6 +18,7 @@ import com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundMove;
 import com.almuradev.almura.feature.guide.network.GuideMessages.ServerboundPage;
 import com.almuradev.almura.feature.guide.network.GuideMessages;
 import com.almuradev.almura.feature.menu.InGameScreens;
+import com.almuradev.almura.feature.menu.ListRows;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
@@ -74,10 +75,7 @@ final class GuideScreen implements Screen {
     private static final float BUTTON_WIDTH = 50f, SMALL_WIDTH = 12f, SMALL_HEIGHT = 15f, SMALL_GAP = 3f, BUTTON_HEIGHT = 16f, ARROW_WIDTH = 15f, ARROW_HEIGHT = 11f, MARGIN = 10f;
     private static final int GRAY = 0xFFAAAAAA, GREEN = 0xFF55FF55, GOLD = 0xFFFFAA00, ADD = 0xFF55FF55, REMOVE = 0xFFFF5555, DETAILS = 0xFFFFFF55;
     private static final Paint BOX = Paint.solid(0x23FFFFFF);
-    // 3.5's page boxes: black with a grey border, grey when it is the page shown, a gap between them
-    private static final Paint ROW = Paint.solid(0xFF000000), ROW_SHOWN = Paint.solid(0xFF4A4A4A);
-    private static final Border ROW_BORDER = Border.of(0xFFA0A0A0, 1f);
-    private static final float ROW_SPACING = 3f;
+    // 3.5's page boxes (ListRows): black with a grey border, grey when it is the page shown
     // The window's bottom padding (3) shows under the bottom row: half of it, to centre the row in all of it
     private static final float BOTTOM_NUDGE = 3f;
     private static final float ARROW_ICON_WIDTH = 9f, ARROW_ICON_HEIGHT = 5f;
@@ -126,7 +124,7 @@ final class GuideScreen implements Screen {
         list.setRowHeight(ROW_HEIGHT);
         // The rows draw themselves, as 3.5's boxes
         list.setRowBackgrounds(false);
-        list.setRowSpacing(ROW_SPACING);
+        list.setRowSpacing(0f);
         list.onEvent(Selection.SELECTED, event -> list.selected().ifPresent(this::request));
         // A double click opens a page's details, as 3.5
         list.onEvent(Activatable.ACTIVATED, event -> this.openDetails());
@@ -208,7 +206,7 @@ final class GuideScreen implements Screen {
         final float width = Math.min(WIDTH + this.listWidth - LIST_WIDTH, minecraft.getWindow().getGuiScaledWidth() - MARGIN);
         final float height = Math.min(HEIGHT, minecraft.getWindow().getGuiScaledHeight() - MARGIN);
         final Window window = factory.window(this.title())
-            .setMovable(false)
+            .setMovable(true)
             .setResizable(false)
             .setCollapsible(false)
             .setMaximizable(false)
@@ -282,7 +280,7 @@ final class GuideScreen implements Screen {
         }
         lines.setHitTestVisible(false);
         final AnchorPanel cell = factory.anchorPanel().add(lines.setAnchor(Anchor.MIDDLE_LEFT).setMargin(4f, 0f, 0f, 0f));
-        cell.setBackground(entry.id().equals(this.shown) ? ROW_SHOWN : ROW).setBorder(ROW_BORDER);
+        ListRows.box(cell, entry.id().equals(this.shown));
         // The arrows that move a page, only while editing
         if (entry.movable() && this.inEditor) {
             final int at = this.shownEntries.indexOf(entry);

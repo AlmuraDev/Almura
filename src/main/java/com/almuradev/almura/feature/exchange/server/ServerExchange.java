@@ -32,6 +32,7 @@ import com.almuradev.almura.feature.exchange.network.ExchangeMessages.Serverboun
 import com.almuradev.almura.feature.exchange.network.ExchangeMessages.ServerboundMoveItems;
 import com.almuradev.almura.feature.exchange.network.ExchangeMessages.ServerboundQuery;
 import com.almuradev.almura.feature.notification.server.ServerNotifications;
+import com.almuradev.almura.core.permission.RuntimePermissions;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -118,7 +119,6 @@ public final class ServerExchange {
 
     private static final Map<String, Exchange> exchanges = new LinkedHashMap<>();
     // Each exchange's own permissions (open, admin, slots), by their full name, registered at the server's start
-    private static final Map<String, PermissionNode<Boolean>> exchangeNodes = new HashMap<>();
     private static boolean ready;
 
     // ---- What the server keeps
@@ -216,13 +216,12 @@ public final class ServerExchange {
     }
 
     /**
-     * Reads the exchanges here, at the server's start (making the global one if there are none, as 3.5 did), so each gets its permissions.
+     * Reads the exchanges here, at the server's start (making the global one if there are none, as 3.5 did).
      */
     @SubscribeEvent
     public void onPermissionNodes(final PermissionGatherEvent.Nodes event) {
         event.addNodes(MANAGE, OPEN, ADMIN, ADD, MODIFY, DELETE);
         exchanges.clear();
-        exchangeNodes.clear();
         ready = false;
         if (!Economy.available()) {
             return;
@@ -248,46 +247,14 @@ public final class ServerExchange {
             Almura.LOGGER.error("Couldn't read the exchanges; they are unavailable", e.getCause() == null ? e : e.getCause());
             return;
         }
-        for (final Exchange exchange : exchanges.values()) {
-            final List<String> names = new ArrayList<>();
-            names.add(exchange.permission + ".open");
-            names.add(exchange.permission + ".admin");
-            for (final int slots : SLOTS) {
-                names.add(exchange.permission + ".slots." + slots);
-            }
-            for (final String name : names) {
-                final PermissionNode<Boolean> node = exchangeNode(name);
-                if (node != null && !exchangeNodes.containsKey(name)) {
-                    exchangeNodes.put(name, node);
-                    event.addNodes(node);
-                }
-            }
-        }
     }
 
     /**
-     * @return the node for a full permission name ({@code namespace.path}), or null if it can't be one
-     */
-    private static @Nullable PermissionNode<Boolean> exchangeNode(final String name) {
-        final int dot = name.indexOf('.');
-        if (dot <= 0 || dot == name.length() - 1) {
-            return null;
-        }
-        try {
-            return new PermissionNode<>(name.substring(0, dot), name.substring(dot + 1), PermissionTypes.BOOLEAN,
-                (player, uuid, context) -> player != null && isOperator(player));
-        } catch (final RuntimeException e) {
-            Almura.LOGGER.warn("'{}' can't be a permission; only operators have it", name);
-            return null;
-        }
-    }
-
-    /**
-     * Whether the player has one of an exchange's permissions: registered at the start, else (an exchange added since) only operators.
+     * Whether the player has one of an exchange's permissions, asked of LuckPerms by name as 3.5 asked Sponge, so an exchange added while the
+     * server runs works straight away (without LuckPerms, only operators).
      */
     private static boolean has(final ServerPlayer player, final String name) {
-        final PermissionNode<Boolean> node = exchangeNodes.get(name);
-        return node == null ? isOperator(player) : PermissionAPI.getPermission(player, node);
+        return RuntimePermissions.has(player, name);
     }
 
     private static boolean isAdmin(final ServerPlayer player, final Exchange exchange) {
@@ -321,7 +288,6 @@ public final class ServerExchange {
     public void onServerStopped(final ServerStoppedEvent event) {
         ready = false;
         exchanges.clear();
-        exchangeNodes.clear();
     }
 
     // ---- Commands

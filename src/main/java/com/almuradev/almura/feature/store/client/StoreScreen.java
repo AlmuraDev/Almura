@@ -18,6 +18,7 @@ import com.almuradev.almura.feature.store.network.StoreMessages.ServerboundDelis
 import com.almuradev.almura.feature.store.network.StoreMessages.ServerboundModifyItems;
 import com.almuradev.almura.feature.store.network.StoreMessages.ServerboundTransaction;
 import com.almuradev.almura.feature.store.network.StoreMessages.StoreInfo;
+import com.almuradev.almura.feature.menu.ListRows;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 import org.inspirenxe.strata.api.ComponentFactory;
@@ -159,6 +160,7 @@ final class StoreScreen implements Screen {
 
         final ListView<ItemView> itemList = factory.<ItemView>listView(view -> this.itemRow(factory, view));
         itemList.setRowHeight(ROW_HEIGHT);
+        ListRows.style(itemList);
         itemList.onEvent(Selection.SELECTED, event -> {
             this.selected = itemList.selected().map(ItemView::recNo).orElse(-1);
             this.updateStoreButtons();
@@ -202,6 +204,7 @@ final class StoreScreen implements Screen {
             this.adminSearch = adminSearch;
             final ListView<ItemStack> adminList = factory.<ItemStack>listView(item -> this.adminRow(factory, item));
             adminList.setRowHeight(ROW_HEIGHT);
+            ListRows.style(adminList);
             adminList.onEvent(Selection.SELECTED, event -> this.updateAdminButtons());
             adminList.onEvent(Activatable.ACTIVATED, event -> this.listOrModify());
             this.adminList = adminList;
@@ -224,7 +227,7 @@ final class StoreScreen implements Screen {
         }
 
         final Window window = factory.window(this.title())
-            .setMovable(false)
+            .setMovable(true)
             .setResizable(false)
             .setCollapsible(false)
             .setMaximizable(false)
@@ -237,10 +240,17 @@ final class StoreScreen implements Screen {
             // Edit mode, at the left of the title bar: off shows the store as players see it
             final CheckBox editMode = factory.checkBox(Text.translatable("almura.feature.store.checkbox.edit_mode"))
                 .setState(ClientStore.editMode() ? CheckState.CHECKED : CheckState.UNCHECKED);
+            // A box as tall as its text (Strata's is the text's height plus 8), so it sits inside the title bar as 3.5's small one did
+            editMode.setBoxSize(9f);
             editMode.setTooltip(Text.translatable("almura.feature.store.checkbox.edit_mode.tooltip"));
             editMode.onEvent(CheckBox.CHANGED, event -> this.setEditMode(event.value() == CheckState.CHECKED));
             this.editModeBox = editMode;
+            // Above the window, which comes to the front when it is clicked and would otherwise cover it
+            editMode.setZIndex(1);
             root.add(editMode.setAnchor(Anchor.TOP_LEFT));
+            // At the left of the window's title bar, wherever the window is dragged to (Strata reports no move, so it is checked as the
+            // window is drawn)
+            window.onEvent(Component.PAINT, event -> this.placeEditMode());
             if (this.finder != null && !this.finder.items().isEmpty()) {
                 this.finder.select(0);
             }
@@ -441,14 +451,22 @@ final class StoreScreen implements Screen {
         if (this.window != null) {
             this.window.setSize(width, height);
         }
-        if (this.editModeBox != null) {
-            // At the left of the centred window's title bar
-            this.editModeBox.setMargin((minecraft.getWindow().getGuiScaledWidth() - width) / 2f + 4f,
-                (minecraft.getWindow().getGuiScaledHeight() - height) / 2f + 3f, 0f, 0f);
-        }
         // The rows show their move arrows in edit mode
         if (this.itemList != null) {
             this.itemList.refresh();
+        }
+    }
+
+    /**
+     * Keeps Edit mode at the left of the window's title bar.
+     */
+    private void placeEditMode() {
+        if (this.editModeBox == null || this.window == null) {
+            return;
+        }
+        final float x = this.window.bounds().x() + 4f, y = this.window.bounds().y() + 3f;
+        if (this.editModeBox.margin().left() != x || this.editModeBox.margin().top() != y) {
+            this.editModeBox.setMargin(x, y, 0f, 0f);
         }
     }
 
@@ -595,8 +613,9 @@ final class StoreScreen implements Screen {
             final StackPanel stackedArrows = factory.stackPanel().setSpacing(-1f)
                 .add(this.arrow(factory, ARROW_UP, view, -1, this.inShopOrder && !first))
                 .add(this.arrow(factory, ARROW_DOWN, view, 1, this.inShopOrder && !last));
-            row.add(stackedArrows.setAnchor(Anchor.MIDDLE_RIGHT));
+            row.add(stackedArrows.setAnchor(Anchor.MIDDLE_RIGHT).setMargin(0f, 0f, 2f, 0f));
         }
+        ListRows.box(row, this.itemList != null && this.itemList.selected().filter(view::equals).isPresent());
         return row.setAnchor(Anchor.FILL).setAlignment(HorizontalAlignment.STRETCH, VerticalAlignment.STRETCH);
     }
 
@@ -654,6 +673,7 @@ final class StoreScreen implements Screen {
             row.add(strip.setAnchor(Anchor.MIDDLE_RIGHT).setMargin(0f, 0f, 2f, 0f));
         }
         row.setHitTestVisible(true);
+        ListRows.box(row, this.adminList != null && this.adminList.selected().filter(selected -> selected == item).isPresent());
         return row.setAnchor(Anchor.FILL).setAlignment(HorizontalAlignment.STRETCH, VerticalAlignment.STRETCH);
     }
 

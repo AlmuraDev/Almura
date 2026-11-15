@@ -20,6 +20,7 @@ import com.almuradev.almura.feature.exchange.network.ExchangeMessages.Serverboun
 import com.almuradev.almura.feature.menu.InGameScreens;
 import com.almuradev.almura.feature.notification.PopupNotification;
 import com.almuradev.almura.feature.notification.client.ClientNotifications;
+import com.almuradev.almura.feature.menu.ListRows;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.world.item.ItemStack;
@@ -62,15 +63,12 @@ final class ExchangeScreen implements Screen {
 
     // 3.5's sizes
     private static final float WIDTH = 600f, HEIGHT = 370f, HALF_WIDTH = 301f, PANEL_WIDTH = 295f, SEARCH_HEIGHT = 322f, BUY_HEIGHT = 21f;
-    private static final float LIST_HEIGHT = 345f, BUTTON_HEIGHT = 16f, ROW_HEIGHT = 24f, FOR_SALE_ROW_HEIGHT = 22f, LABEL_WIDTH = 64f;
+    private static final float LIST_HEIGHT = 345f, BUTTON_HEIGHT = 16f, ROW_HEIGHT = 24f, FOR_SALE_ROW_HEIGHT = 24f, LABEL_WIDTH = 64f;
     private static final float HEADER_TOP = 39f, HEADER_HEIGHT = 12f, HEADER_ITEM_X = 24f, HEADER_RIGHT_INSET = 5f, MARGIN = 10f;
     private static final int PAGE_SIZE = 10;
     private static final int WHITE = 0xFFFFFFFF, GRAY = 0xFFAAAAAA, GOLD = 0xFFFFAA00, RED = 0xFFFF5555, DARK_GREEN = 0xFF00AA00;
     private static final Paint PANEL = Paint.solid(0xD7000000), LINE = Paint.solid(0xB9FFFFFF), LISTED = Paint.solid(DARK_GREEN);
     private static final Border PANEL_BORDER = Border.of(0xB9FFFFFF, 1f), OWN_BORDER = Border.of(0xFF55FFFF, 1f);
-    // As 3.5's: each row a box with a grey border, a gap between them
-    private static final Border ROW_BORDER = Border.of(0xFFA0A0A0, 1f);
-    private static final float ROW_SPACING = 2f;
 
     private final ExchangeInfo exchange;
     private final int limit;
@@ -152,7 +150,7 @@ final class ExchangeScreen implements Screen {
 
         final ListView<ForSaleView> forSaleList = factory.<ForSaleView>listView(item -> this.forSaleRow(factory, item));
         forSaleList.setRowHeight(FOR_SALE_ROW_HEIGHT);
-        forSaleList.setRowSpacing(ROW_SPACING);
+        ListRows.style(forSaleList);
         forSaleList.onEvent(Selection.SELECTED, event -> this.updateControls());
         // A double click buys one, as 3.5
         forSaleList.onEvent(Activatable.ACTIVATED, event -> this.buy(1));
@@ -212,7 +210,7 @@ final class ExchangeScreen implements Screen {
         if (this.limit > 0) {
             final ListView<ListItemView> listItemList = factory.<ListItemView>listView(item -> this.listItemRow(factory, item));
             listItemList.setRowHeight(ROW_HEIGHT);
-            listItemList.setRowSpacing(ROW_SPACING);
+            ListRows.style(listItemList);
             listItemList.onEvent(Selection.SELECTED, event -> this.updateControls());
             listItemList.onEvent(Activatable.ACTIVATED, event -> this.list());
             this.listItemList = listItemList;
@@ -234,7 +232,7 @@ final class ExchangeScreen implements Screen {
         }
 
         final Window window = factory.window(this.title())
-            .setMovable(false)
+            .setMovable(true)
             .setResizable(false)
             .setCollapsible(false)
             .setMaximizable(false)
@@ -559,7 +557,8 @@ final class ExchangeScreen implements Screen {
         if (this.limit > 0 && !own) {
             row.add(factory.label(Text.of(item.sellerName()).color(GRAY).italic()).setAnchor(Anchor.MIDDLE_RIGHT).setMargin(0f, 0f, 2f, 0f));
         }
-        row.setBorder(own ? OWN_BORDER : ROW_BORDER);
+        ListRows.box(row, this.forSaleList != null && this.forSaleList.selected().filter(item::equals).isPresent(),
+            own ? OWN_BORDER : ListRows.BORDER);
         row.setContextMenu(factory.menu());
         row.onEvent(HasContextMenu.SHOW_CONTEXT_MENU, event -> event.setValue(this.forSaleMenu(factory, item)));
         return row.setAnchor(Anchor.FILL).setAlignment(HorizontalAlignment.STRETCH, VerticalAlignment.STRETCH);
@@ -586,7 +585,7 @@ final class ExchangeScreen implements Screen {
         }
         final float nameSpace = PANEL_WIDTH - 6f - 8f - 22f - used - 16f;
         row.add(factory.label(nameAndQuantity(item.item(), item.quantity(), nameSpace)).setAnchor(Anchor.MIDDLE_LEFT).setMargin(22f, 0f, 0f, 0f));
-        row.setBorder(ROW_BORDER);
+        ListRows.box(row, this.listItemList != null && this.listItemList.selected().filter(item::equals).isPresent());
         row.setContextMenu(factory.menu());
         row.onEvent(HasContextMenu.SHOW_CONTEXT_MENU, event -> event.setValue(this.listItemMenu(factory, item)));
         return row.setAnchor(Anchor.FILL).setAlignment(HorizontalAlignment.STRETCH, VerticalAlignment.STRETCH);
