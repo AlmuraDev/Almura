@@ -8,6 +8,7 @@
 package com.almuradev.almura;
 
 import com.almuradev.almura.content.AlmuraContent;
+import com.almuradev.almura.feature.economy.Economy;
 import com.almuradev.almura.feature.guide.server.ServerGuide;
 import com.almuradev.almura.feature.hud.server.ServerHud;
 import com.almuradev.almura.feature.notification.server.ServerNotifications;
@@ -35,6 +36,8 @@ public final class Almura {
         AlmuraNetwork.register(modBus);
         // What the server does for Almura's players: the HUD's data, notifications
         NeoForge.EVENT_BUS.register(new ServerHud());
+        // The server's economy (Sponge's, such as EconomyLite's) for the HUD's money, when there is one
+        Economy.install();
         NeoForge.EVENT_BUS.register(new ServerNotifications());
         NeoForge.EVENT_BUS.register(new ServerGuide());
     }

@@ -11,6 +11,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import org.jspecify.annotations.Nullable;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -25,6 +26,9 @@ public final class ServerHudData {
     private static @Nullable Double tps;
     private static final Map<UUID, String> playerWorlds = new HashMap<>();
     private static boolean playerWorldsKnown;
+    // The player's money, from a server with an economy: its currency's symbol and the balance
+    private static @Nullable String moneySymbol;
+    private static double money;
 
     private ServerHudData() {
     }
@@ -43,6 +47,22 @@ public final class ServerHudData {
 
     public static void setTps(final double value) {
         tps = value;
+    }
+
+    /**
+     * @return The player's money as 3.5's HUD showed it, always with a dollar sign whatever the currency's own symbol ({@code $ 1,234.50}),
+     *     or null until a server with an economy has said
+     */
+    public static @Nullable String money() {
+        if (moneySymbol == null) {
+            return null;
+        }
+        return "$ " + new DecimalFormat("#,##0.00").format(money);
+    }
+
+    public static void setMoney(final String symbol, final double balance) {
+        moneySymbol = symbol;
+        money = balance;
     }
 
     /**
@@ -74,6 +94,8 @@ public final class ServerHudData {
         tps = null;
         playerWorlds.clear();
         playerWorldsKnown = false;
+        moneySymbol = null;
+        money = 0;
     }
 
     public static final class Resetter {

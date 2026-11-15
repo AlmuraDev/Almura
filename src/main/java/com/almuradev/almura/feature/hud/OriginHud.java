@@ -103,7 +103,7 @@ final class OriginHud implements Screen {
     private float shownOpacity = -1f;
     private @Nullable Image avatar;
     private @Nullable GameProfile avatarProfile;
-    private @Nullable Label name, level, worldName, compass, x, y, z, performance, ping;
+    private @Nullable Label name, level, money, worldName, compass, x, y, z, performance, ping;
     private @Nullable HudBar experience, health, armor, hunger, stamina, air, mount;
     private @Nullable Image clock;
 
@@ -114,10 +114,18 @@ final class OriginHud implements Screen {
         // The player: face, name and level, then the bars
         this.avatar = factory.image();
         this.avatar.setImageSize(AVATAR, AVATAR).setSize(AVATAR, AVATAR);
-        this.name = factory.label("");
-        this.level = factory.label("").setTextScale(0.7f);
+        // As 1.12 drew them, without a shadow
+        this.name = plain(factory.label(""));
+        this.level = plain(factory.label("").setTextScale(0.7f));
         final StackPanel nameAndLevel = factory.stackPanel().add(this.name).add(this.level);
-        final StackPanel header = factory.stackPanel(Orientation.HORIZONTAL).setSpacing(3f).add(this.avatar).add(nameAndLevel);
+        final StackPanel face = factory.stackPanel(Orientation.HORIZONTAL).setSpacing(3f).add(this.avatar).add(nameAndLevel);
+        // The player's money, from a server with an economy: gold, small, at the right of the level's row, as on 1.12
+        this.money = plain(factory.label("").setTextScale(0.7f));
+        this.money.setVisible(false);
+        final AnchorPanel header = factory.anchorPanel()
+            .add(face.setAnchor(Anchor.TOP_LEFT))
+            .add(this.money.setAnchor(Anchor.BOTTOM_RIGHT).setMargin(0f, 0f, 1f, 0f));
+        header.setHeight(AVATAR);
 
         this.experience = new HudBar(factory, inner, 0xFF009600, null, XP_ORB);
         this.health = new HudBar(factory, inner, 0xFFBB1313, HEART_BACK, HEART);
@@ -127,7 +135,7 @@ final class OriginHud implements Screen {
         this.air = new HudBar(factory, inner, 0xFF0094FF, null, AIR);
         this.mount = new HudBar(factory, inner, 0xFFEF7E4A, null, MOUNT);
         final StackPanel user = factory.stackPanel().setSpacing(1f)
-            .add(header.setMargin(0f, 0f, 0f, 2f))
+            .add(header.setMargin(0f, 0f, 0f, 2f).setAlignment(HorizontalAlignment.STRETCH, VerticalAlignment.TOP))
             .add(this.experience.component())
             .add(this.health.component())
             .add(this.armor.component())
@@ -393,6 +401,11 @@ final class OriginHud implements Screen {
         }
         this.name.setText(Text.of(player.getDisplayName().getString()).color(WHITE));
         this.level.setText(Text.of("Lv. " + player.experienceLevel).color(WHITE));
+        final String money = ServerHudData.money();
+        this.money.setVisible(money != null);
+        if (money != null) {
+            this.money.setText(Text.of(money).color(GOLD));
+        }
 
         final int needed = player.getXpNeededForNextLevel();
         this.experience.set((int) (player.experienceProgress * needed), needed);
@@ -410,7 +423,7 @@ final class OriginHud implements Screen {
                 left += stack.getMaxDamage() - stack.getDamageValue();
             }
         }
-        this.armor.setVisible(most > 0);
+        // Always shown, as on 1.12: 0/0 without armor
         this.armor.set(left, most);
 
         this.hunger.set(player.getFoodData().getFoodLevel(), 20f);

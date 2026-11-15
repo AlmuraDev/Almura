@@ -14,6 +14,7 @@ import org.inspirenxe.strata.api.control.display.Label;
 import org.inspirenxe.strata.api.layout.AnchorPanel;
 import org.inspirenxe.strata.api.layout.Anchor;
 import org.inspirenxe.strata.api.text.Text;
+import org.inspirenxe.strata.api.text.TextStyle;
 import org.inspirenxe.strata.api.theme.SpriteId;
 import org.jspecify.annotations.Nullable;
 
@@ -48,7 +49,8 @@ final class HudBar {
         track.setSize(this.trackWidth, TRACK_HEIGHT);
         this.fill = factory.image(WHITE).setTint(color).setScaling(Image.Scaling.STRETCH);
         this.fill.setSize(this.trackWidth - 2f, TRACK_HEIGHT - 2f);
-        this.value = factory.label("").setTextScale(0.8f);
+        // Its numbers without a shadow, as 1.12 drew them
+        this.value = factory.label("").setTextScale(0.8f).setStyle(TextStyle.DEFAULT.withShadow(false));
 
         this.panel = factory.anchorPanel();
         this.panel.setSize(width, HEIGHT);
