@@ -8,6 +8,8 @@
 package com.almuradev.almura;
 
 import com.almuradev.almura.content.AlmuraContent;
+import com.almuradev.almura.core.database.AlmuraServerConfig;
+import com.almuradev.almura.feature.bank.server.ServerBank;
 import com.almuradev.almura.feature.economy.Economy;
 import com.almuradev.almura.feature.guide.server.ServerGuide;
 import com.almuradev.almura.feature.hud.server.ServerHud;
@@ -16,6 +18,7 @@ import com.almuradev.almura.network.AlmuraNetwork;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,5 +43,8 @@ public final class Almura {
         Economy.install();
         NeoForge.EVENT_BUS.register(new ServerNotifications());
         NeoForge.EVENT_BUS.register(new ServerGuide());
+        // The bank, on Almura's database (config/almura/server.toml) and the server's economy
+        container.registerConfig(ModConfig.Type.LOCAL, AlmuraServerConfig.SPEC, AlmuraServerConfig.FILE);
+        NeoForge.EVENT_BUS.register(new ServerBank());
     }
 }

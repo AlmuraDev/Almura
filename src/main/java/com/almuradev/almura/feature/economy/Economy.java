@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.economy;
 
 import com.almuradev.almura.feature.economy.server.SpongeEconomy;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Hooks Almura up to the server's economy when there is one to hook up to: Sponge's (SpongeNeo with an economy plugin such as
@@ -18,10 +19,26 @@ public final class Economy {
     private Economy() {
     }
 
+    private static final boolean SPONGE = spongePresent();
+
     public static void install() {
-        if (spongePresent()) {
+        if (SPONGE) {
             SpongeEconomy.install();
         }
+    }
+
+    /**
+     * @return whether the server has the Sponge API (SpongeNeo), whose economy Almura's features use
+     */
+    public static boolean available() {
+        return SPONGE;
+    }
+
+    /**
+     * @return the server's economy accounts, or null without an economy (no Sponge, or no economy plugin)
+     */
+    public static @Nullable EconomyAccounts accounts() {
+        return SPONGE ? SpongeEconomy.accounts() : null;
     }
 
     private static boolean spongePresent() {

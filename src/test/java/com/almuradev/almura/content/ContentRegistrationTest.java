@@ -77,10 +77,12 @@ final class ContentRegistrationTest {
         // Normal, horizontal, log, flower, stair and single slab blocks (a double slab is its single's double state), and crops
         final long blocks = 3 + 764 + 22 + 99 + 128 + 110 + 42 + 25 + 69;
         final long crops = 85;
-        assertEquals(blocks + crops, count("almura", BuiltInRegistries.BLOCK.keySet()), "blocks");
+        // And Almura's Coin Exchange
+        final long coinExchange = 1;
+        assertEquals(blocks + crops + coinExchange, count("almura", BuiltInRegistries.BLOCK.keySet()), "blocks");
         // Normal, food, hoe, sickle and seed items, and an item for each block but the crops (their item is their seed)
-        // and Almura's three cruets, harvesting sack, Farmer's Almanac and Skills Handbook
-        assertEquals(186 + 413 + 5 + 5 + 85 + blocks + 3 + 3, count("almura", BuiltInRegistries.ITEM.keySet()), "items");
+        // and Almura's three cruets, harvesting sack, Farmer's Almanac, Skills Handbook and Coin Exchange
+        assertEquals(186 + 413 + 5 + 5 + 85 + blocks + 3 + 3 + coinExchange, count("almura", BuiltInRegistries.ITEM.keySet()), "items");
         final Item cruet = BuiltInRegistries.ITEM.getValue(Cruets.EMPTY);
         for (final Identifier filled : new Identifier[] {Cruets.WATER, Cruets.MILK}) {
             final var remainder = BuiltInRegistries.ITEM.getValue(filled).getCraftingRemainder();

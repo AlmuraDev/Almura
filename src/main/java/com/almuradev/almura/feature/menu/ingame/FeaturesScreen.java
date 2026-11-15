@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.menu.ingame;
 
+import com.almuradev.almura.feature.bank.client.ClientBank;
 import com.almuradev.almura.feature.guide.client.ClientGuide;
 import com.almuradev.almura.feature.menu.InGameScreens;
 import com.almuradev.almura.feature.notification.history.NotificationHistoryScreen;
@@ -56,7 +57,9 @@ final class FeaturesScreen implements Screen {
             .add(later(factory, "Titles", BUTTON_WIDTH))
             .add(later(factory, "Accessories", BUTTON_WIDTH))
             .add(later(factory, "Memberships", BUTTON_WIDTH))
-            .add(later(factory, "Banking", BUTTON_WIDTH));
+            .add(centred(factory.button(Text.of("Banking"))
+                .setSize(BUTTON_WIDTH, BUTTON_HEIGHT)
+                .onEvent(Button.PRESSED, event -> ClientBank.requestOpen())));
         // The server only sends skills when it runs the Skills plugin
         if (!ClientSkills.skills().isEmpty()) {
             column.add(later(factory, "Skills", BUTTON_WIDTH));

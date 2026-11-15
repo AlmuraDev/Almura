@@ -59,6 +59,11 @@ dependencies {
     compileOnly("org.inspirenxe:strata-core:${strata_version}")
     localRuntime("org.inspirenxe:strata-minecraft-neoforge:${strata_version}")
 
+    // Almura's database (banking, and later exchanges and stores), as 3.5's: H2 in a file by default, or PostgreSQL. Both drivers ride in
+    // the jar
+    jarJar(implementation("com.h2database:h2:${h2_version}"))
+    jarJar(implementation("org.postgresql:postgresql:${postgresql_version}"))
+
     // The content loader's reading and converting is tested against the 4.0 content (runs/content-4.0) without starting the game
     testImplementation(platform('org.junit:junit-bom:5.11.4'))
     testImplementation('org.junit.jupiter:junit-jupiter')

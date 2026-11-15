@@ -24,6 +24,8 @@ target
 *.db
 *.sql
 *.sqlite
+# Except the tables Almura makes in its database
+!src/main/resources/almura/database/*.sql
 
 # Packages #
 ############

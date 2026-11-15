@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.economy.server;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.feature.economy.EconomyAccounts;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerMoney;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.minecraft.server.MinecraftServer;
@@ -23,8 +24,10 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.economy.EconomyTransactionEvent;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.EconomyService;
+import org.spongepowered.api.service.economy.transaction.ResultType;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.plugin.PluginContainer;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.invoke.MethodHandles;
 import java.math.BigDecimal;
@@ -47,6 +50,16 @@ public final class SpongeEconomy {
      */
     public static void install() {
         NeoForge.EVENT_BUS.register(new Hooks());
+    }
+
+    /**
+     * @return the economy's accounts, or null without an economy service
+     */
+    public static @Nullable EconomyAccounts accounts() {
+        if (!Sponge.isServerAvailable()) {
+            return null;
+        }
+        return Sponge.server().serviceProvider().economyService().map(SpongeAccounts::new).orElse(null);
     }
 
     /**
@@ -110,6 +123,42 @@ public final class SpongeEconomy {
                     send(player);
                 }
             });
+        }
+    }
+
+    /**
+     * The economy's accounts in its default currency, as 3.5's bank used them: a player's own, or a virtual one by name.
+     */
+    // Sponge's Account is named in full: inside this record Account is Almura's (EconomyAccounts.Account)
+    private record SpongeAccounts(EconomyService service) implements EconomyAccounts {
+
+        @Override
+        public @Nullable BigDecimal balance(final Account account) {
+            return this.find(account).map(found -> found.balance(this.service.defaultCurrency())).orElse(null);
+        }
+
+        @Override
+        public boolean transfer(final Account from, final Account to, final BigDecimal amount) {
+            final Optional<org.spongepowered.api.service.economy.account.Account> source = this.find(from);
+            final Optional<org.spongepowered.api.service.economy.account.Account> target = this.find(to);
+            return source.isPresent() && target.isPresent()
+                && source.get().transfer(target.get(), this.service.defaultCurrency(), amount).result() == ResultType.SUCCESS;
+        }
+
+        @Override
+        public boolean deposit(final Account to, final BigDecimal amount) {
+            return this.find(to).map(found -> found.deposit(this.service.defaultCurrency(), amount).result() == ResultType.SUCCESS)
+                .orElse(false);
+        }
+
+        private Optional<org.spongepowered.api.service.economy.account.Account> find(final Account account) {
+            if (account.player() != null) {
+                return this.service.findOrCreateAccount(account.player()).map(org.spongepowered.api.service.economy.account.Account.class::cast);
+            }
+            if (account.name() == null) {
+                return Optional.empty();
+            }
+            return this.service.findOrCreateAccount(account.name());
         }
     }
 }

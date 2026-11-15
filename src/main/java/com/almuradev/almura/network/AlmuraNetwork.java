@@ -10,6 +10,8 @@ package com.almuradev.almura.network;
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.feature.almanac.network.ClientboundAlmanacCrops;
 import com.almuradev.almura.feature.almanac.network.ClientboundAlmanacField;
+import com.almuradev.almura.feature.bank.network.BankMessages;
+import com.almuradev.almura.feature.bank.server.ServerBank;
 import com.almuradev.almura.feature.guide.network.GuideMessages;
 import com.almuradev.almura.feature.guide.server.ServerGuide;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerMoney;
@@ -60,6 +62,8 @@ public final class AlmuraNetwork {
         registrar.playToClient(GuideMessages.ClientboundListing.TYPE, GuideMessages.ClientboundListing.CODEC);
         registrar.playToClient(GuideMessages.ClientboundPage.TYPE, GuideMessages.ClientboundPage.CODEC);
         registrar.playToClient(GuideMessages.ClientboundChangeResult.TYPE, GuideMessages.ClientboundChangeResult.CODEC);
+        registrar.playToClient(BankMessages.ClientboundState.TYPE, BankMessages.ClientboundState.CODEC);
+        registrar.playToClient(BankMessages.ClientboundHistory.TYPE, BankMessages.ClientboundHistory.CODEC);
         // To the server
         registrar.playToServer(GuideMessages.ServerboundOpen.TYPE, GuideMessages.ServerboundOpen.CODEC, (payload, context) ->
             ServerGuide.open((ServerPlayer) context.player()));
@@ -69,5 +73,7 @@ public final class AlmuraNetwork {
             ServerGuide.change((ServerPlayer) context.player(), payload));
         registrar.playToServer(GuideMessages.ServerboundMove.TYPE, GuideMessages.ServerboundMove.CODEC, (payload, context) ->
             ServerGuide.move((ServerPlayer) context.player(), payload.id(), payload.up()));
+        registrar.playToServer(BankMessages.ServerboundAction.TYPE, BankMessages.ServerboundAction.CODEC, (payload, context) ->
+            ServerBank.handle((ServerPlayer) context.player(), payload));
     }
 }

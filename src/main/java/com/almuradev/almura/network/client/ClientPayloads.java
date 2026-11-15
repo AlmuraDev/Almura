@@ -10,6 +10,8 @@ package com.almuradev.almura.network.client;
 import com.almuradev.almura.feature.almanac.client.AlmanacScreens;
 import com.almuradev.almura.feature.almanac.network.ClientboundAlmanacCrops;
 import com.almuradev.almura.feature.almanac.network.ClientboundAlmanacField;
+import com.almuradev.almura.feature.bank.client.ClientBank;
+import com.almuradev.almura.feature.bank.network.BankMessages;
 import com.almuradev.almura.feature.guide.client.ClientGuide;
 import com.almuradev.almura.feature.guide.network.GuideMessages;
 import com.almuradev.almura.feature.hud.ServerHudData;
@@ -48,5 +50,7 @@ public final class ClientPayloads {
         event.register(GuideMessages.ClientboundListing.TYPE, (payload, context) -> ClientGuide.onListing(payload));
         event.register(GuideMessages.ClientboundPage.TYPE, (payload, context) -> ClientGuide.onPage(payload));
         event.register(GuideMessages.ClientboundChangeResult.TYPE, (payload, context) -> ClientGuide.onChangeResult(payload));
+        event.register(BankMessages.ClientboundState.TYPE, (payload, context) -> ClientBank.onState(payload));
+        event.register(BankMessages.ClientboundHistory.TYPE, (payload, context) -> ClientBank.onHistory(payload));
     }
 }

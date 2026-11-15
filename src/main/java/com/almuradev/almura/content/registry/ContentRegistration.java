@@ -22,6 +22,7 @@ import com.almuradev.almura.content.def.ContentDefs.SaplingDef;
 import com.almuradev.almura.content.def.ContentDefs.SeedDef;
 import com.almuradev.almura.content.def.ContentDefs.TreeDef;
 import com.almuradev.almura.feature.almanac.FarmersAlmanac;
+import com.almuradev.almura.feature.bank.CoinExchange;
 import com.almuradev.almura.feature.cruet.Cruets;
 import com.almuradev.almura.feature.handbook.SkillsHandbook;
 import com.almuradev.almura.feature.harvestsack.HarvestingSack;
@@ -136,6 +137,8 @@ public final class ContentRegistration {
                 helper.register(Identifier.parse(def.id()), block);
                 this.registeredBlocks.put(def.id(), block);
             }
+            // Almura's Coin Exchange: cashes in coins, opens the bank
+            CoinExchange.registerBlock(helper);
         });
         event.register(Registries.ITEM, helper -> {
             // Almura's cruets: content items are handed back in them
@@ -145,6 +148,7 @@ public final class ContentRegistration {
             // Almura's Farmer's Almanac and Skills Handbook
             FarmersAlmanac.register(helper, this::addToTab);
             SkillsHandbook.register(helper, this::addToTab);
+            CoinExchange.registerItem(helper, this::addToTab);
             for (final ItemDef def : this.ordered()) {
                 if (def.kind().equals("slab")) {
                     // A slab's item is its block's
