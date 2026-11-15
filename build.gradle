@@ -69,6 +69,19 @@ dependencies {
 // Almura's 4.0 content: the 3.0 content with its mistakes fixed (tools/content-4.0/fix_content.py makes it), or -PalmuraContent=<folder>
 def almuraContent = project.file(project.findProperty('almuraContent') ?: 'runs/content-4.0').absolutePath
 
+// On Windows, maximize the dev client's window once it opens (-PnoMaximize to leave it as it is).
+// prepareClientRun runs before both ./gradlew runClient and the IDE's client run.
+tasks.matching { it.name == 'prepareClientRun' }.configureEach {
+    def script = project.file('tools/dev/maximize-client.ps1')
+    def maximize = System.getProperty('os.name').toLowerCase().contains('windows') && !project.hasProperty('noMaximize')
+    doLast {
+        if (maximize) {
+            new ProcessBuilder('powershell', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-WindowStyle', 'Hidden',
+                    '-File', script.absolutePath).start()
+        }
+    }
+}
+
 tasks.named('test', Test) {
     useJUnitPlatform()
     // The content to test against, when it has been copied into the dev run
