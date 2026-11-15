@@ -76,7 +76,8 @@ final class AlmuraOptionsScreen implements Screen {
             .add(laterCheck(factory, "Display Entity Names", true))
             .add(laterCheck(factory, "Display Entity Healthbars", true))
             .add(laterCheck(factory, "Disable Offhand Torch Placement", false))
-            .add(laterCheck(factory, "Display Guide upon Login", true))
+            .add(check(factory, "Display Guide upon Login", AlmuraClientConfig.DISPLAY_GUIDE_ON_LOGIN))
+            .add(check(factory, "Flickering Lights", AlmuraClientConfig.FLICKERING_LIGHTS))
             .add(laterCheck(factory, "Enable/Disable Extended View", false));
 
         // The right column: the HUD's opacity, then the render distances to come

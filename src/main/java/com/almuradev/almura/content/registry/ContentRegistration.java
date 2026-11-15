@@ -176,6 +176,12 @@ public final class ContentRegistration {
             ContentContainers.blockEntityType = new net.minecraft.world.level.block.entity.BlockEntityType<>(
                 ContentContainers.ContainerBlockEntity::new, containerBlocks);
             helper.register(Identifier.fromNamespaceAndPath(Almura.ID, "container"), ContentContainers.blockEntityType);
+            // The flickering lights' markers
+            final java.util.Set<Block> flickering = new java.util.HashSet<>();
+            this.registeredBlocks.values().stream().filter(block -> block instanceof ContentBlocks.FlickeringHorizontal).forEach(flickering::add);
+            FlickerLights.blockEntityType = new net.minecraft.world.level.block.entity.BlockEntityType<>(
+                FlickerLights.FlickerLightBlockEntity::new, flickering);
+            helper.register(Identifier.fromNamespaceAndPath(Almura.ID, "flicker_light"), FlickerLights.blockEntityType);
         });
         event.register(Registries.MENU, helper -> {
             ContentContainers.menuType = ContentContainers.newMenuType(false);

@@ -81,6 +81,18 @@ final class ContentRegistrationTest {
             "barley is a land crop");
         assertTrue(BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:leaf/cherry_tree_leaf"))
             instanceof com.almuradev.almura.content.registry.ContentLeaves, "leaves are leaves");
+        // The 13 flickering lights mark themselves with a block entity, so the client can make them flicker
+        assertTrue(BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:horizontal/lighting/hanging_lamp_flicker"))
+            instanceof net.minecraft.world.level.block.EntityBlock, "a flickering light has a block entity");
+        assertTrue(!(BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:horizontal/agriculture/pipe"))
+            instanceof net.minecraft.world.level.block.EntityBlock), "a pipe doesn't");
+        assertTrue(BuiltInRegistries.BLOCK_ENTITY_TYPE.containsKey(Identifier.fromNamespaceAndPath("almura", "flicker_light")), "flicker light marker");
+        // Leaves burn as the content says (flammability 30, fire_spread_speed 60), as 3.5 gave them to Forge
+        final Block almond = BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:leaf/almond_tree_leaf"));
+        assertEquals(30, almond.getFlammability(almond.defaultBlockState(), net.minecraft.world.level.EmptyBlockGetter.INSTANCE,
+            net.minecraft.core.BlockPos.ZERO, net.minecraft.core.Direction.UP), "leaf flammability");
+        assertEquals(60, almond.getFireSpreadSpeed(almond.defaultBlockState(), net.minecraft.world.level.EmptyBlockGetter.INSTANCE,
+            net.minecraft.core.BlockPos.ZERO, net.minecraft.core.Direction.UP), "leaf fire spread speed");
         assertTrue(BuiltInRegistries.BLOCK.getValue(Identifier.parse("almura:sapling/cherry_tree_sapling"))
             instanceof com.almuradev.almura.content.registry.ContentSapling, "saplings are saplings");
         assertTrue(com.almuradev.almura.content.registry.ContentTrees.tree("almura:cherry_tree") != null, "saplings know their trees");

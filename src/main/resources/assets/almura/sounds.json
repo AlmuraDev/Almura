@@ -1,0 +1,12 @@
+{
+  "light.flicker": {
+    "category": "block",
+    "subtitle": "almura.subtitle.light.flicker",
+    "sounds": [
+      {
+        "name": "minecraft:random/fizz",
+        "volume": 0.6
+      }
+    ]
+  }
+}

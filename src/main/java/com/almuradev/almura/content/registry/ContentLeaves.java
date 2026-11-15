@@ -39,12 +39,34 @@ import org.jspecify.annotations.Nullable;
 public final class ContentLeaves extends LeavesBlock {
 
     private final LeafDef def;
+    private final int flammability, fireSpreadSpeed;
     private @Nullable Block spread;
     private boolean spreadResolved;
 
-    ContentLeaves(final LeafDef def, final Properties properties) {
+    ContentLeaves(final LeafDef def, final Properties properties, final int flammability, final int fireSpreadSpeed) {
         super(AmbientLeavesBlockSoundPlayer.noAmbientSound(), properties);
         this.def = def;
+        this.flammability = flammability;
+        this.fireSpreadSpeed = fireSpreadSpeed;
+    }
+
+    /**
+     * How readily fire burns the leaf away: the content's {@code flammability}, as 3.5 gave it to Forge (0 for leaves that set none, which
+     * don't burn, as on 3.5).
+     */
+    @Override
+    public int getFlammability(final BlockState state, final net.minecraft.world.level.BlockGetter level, final net.minecraft.core.BlockPos pos,
+        final net.minecraft.core.Direction direction) {
+        return this.flammability;
+    }
+
+    /**
+     * How readily fire spreads to the leaf: the content's {@code fire_spread_speed}.
+     */
+    @Override
+    public int getFireSpreadSpeed(final BlockState state, final net.minecraft.world.level.BlockGetter level, final net.minecraft.core.BlockPos pos,
+        final net.minecraft.core.Direction direction) {
+        return this.fireSpreadSpeed;
     }
 
     public LeafDef def() {

@@ -640,7 +640,8 @@ public final class ContentParser {
         }
         return new StateDef((float) number(json, "hardness", Double.NaN), (float) number(json, "resistance", Double.NaN),
             json.has("opaque") ? bool(json, "opaque", true) : null, light == null ? 0f : (float) number(light, "emission", 0), shape, collision,
-            noCollision, string(json, "block_face_shape"), drops, rotatePlacement(json.get("rotate_placement")), bool(json, "drip", false));
+            noCollision, string(json, "block_face_shape"), drops, rotatePlacement(json.get("rotate_placement")), bool(json, "drip", false),
+            integer(json, "flammability", 0), integer(json, "fire_spread_speed", 0), bool(json, "flicker", false));
     }
 
     /**

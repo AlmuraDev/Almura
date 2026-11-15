@@ -34,6 +34,7 @@ public final class AlmuraClientConfig {
     public static final ModConfigSpec.BooleanValue DISPLAY_GUIDE_ON_LOGIN;
     public static final ModConfigSpec.BooleanValue DISPLAY_OTHER_PLAYER_GUIDES;
     public static final ModConfigSpec.BooleanValue HIDE_GUIDE_FORMATTER_BAR;
+    public static final ModConfigSpec.BooleanValue FLICKERING_LIGHTS;
 
     static {
         final ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -59,6 +60,10 @@ public final class AlmuraClientConfig {
             .define("display-other-player-guides", false);
         HIDE_GUIDE_FORMATTER_BAR = builder.comment("Hides the guide's formatter bar for those who may change its pages")
             .define("hide-formatter-bar", false);
+        builder.pop();
+        builder.push("lighting");
+        FLICKERING_LIGHTS = builder.comment("Lets the content's flickering lights flicker (near the player, on this client only)")
+            .define("flickering-lights", true);
         builder.pop();
         SPEC = builder.build();
     }

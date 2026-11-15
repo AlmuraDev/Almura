@@ -77,6 +77,8 @@ public final class AlmuraClient {
         Huds.register(modBus);
         // The content's item tooltips
         NeoForge.EVENT_BUS.register(new ContentTooltips());
+        // The content's flickering lights flicker on this client
+        com.almuradev.almura.feature.lighting.client.ClientFlickerLights.install();
         // Almura's messages from the server
         ClientPayloads.register(modBus);
         NeoForge.EVENT_BUS.register(new ServerHudData.Resetter());

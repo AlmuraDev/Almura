@@ -67,5 +67,6 @@
   "item.almura.normal.tool.farmers_almanac": "Farmer's Almanac",
   "item.almura.normal.tool.farmers_almanac.tooltip": "Displays useful information on farming",
   "item.almura.normal.tool.skills_handbook": "Skills Handbook",
-  "item.almura.normal.tool.skills_handbook.tooltip": "Shows what each skill needs and rewards"
+  "item.almura.normal.tool.skills_handbook.tooltip": "Shows what each skill needs and rewards",
+  "almura.subtitle.light.flicker": "Light flickers"
 }

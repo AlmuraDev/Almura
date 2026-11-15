@@ -68,7 +68,8 @@ public final class ContentBlocks {
         final VoxelShape shape = shape(state.shape());
         final VoxelShape collision = state.noCollision() ? Shapes.empty() : state.collision() != null ? shape(state.collision()) : shape;
         return switch (def.kind()) {
-            case "horizontal" -> new Horizontal(properties, shape, collision, state.rotatePlacement(), state.drip());
+            case "horizontal" -> state.flicker() ? new FlickeringHorizontal(properties, shape, collision, state.rotatePlacement(), state.drip())
+                : new Horizontal(properties, shape, collision, state.rotatePlacement(), state.drip());
             case "log" -> new RotatedPillarBlock(properties);
             case "stair" -> new StairBlock(stairBase, properties);
             case "slab" -> new SlabBlock(properties);
@@ -106,7 +107,7 @@ public final class ContentBlocks {
         if (Float.isNaN(def.state().hardness())) {
             properties.strength(0.2f, Float.isNaN(def.state().resistance()) ? 0.2f : def.state().resistance() * RESISTANCE_SCALE);
         }
-        return new ContentLeaves(leaf, properties);
+        return new ContentLeaves(leaf, properties, def.state().flammability(), def.state().fireSpreadSpeed());
     }
 
     /**
@@ -267,7 +268,7 @@ public final class ContentBlocks {
      * As 3.5's pipes: one with {@code rotate_placement} placed against the side of a block (such as the end of another pipe) turns to
      * connect to it instead (on a floor or ceiling it faces the player as usual), and one with {@code drip} drips water from its underside.
      */
-    static final class Horizontal extends HorizontalDirectionalBlock {
+    static class Horizontal extends HorizontalDirectionalBlock {
 
         private final Map<Direction, VoxelShape> shapes, collisions;
         private final @Nullable String rotatePlacement;
@@ -353,6 +354,28 @@ public final class ContentBlocks {
         @Override
         protected VoxelShape getCollisionShape(final BlockState state, final BlockGetter level, final BlockPos pos, final CollisionContext context) {
             return this.collisions.get(state.getValue(FACING));
+        }
+    }
+
+    /**
+     * A light with power trouble ({@code flicker}), as 3.5's: its block entity tells the client where it is, and in a client's world the
+     * light it casts is the flicker's ({@link FlickerLights}); everywhere else, the server included, it is steady.
+     */
+    static final class FlickeringHorizontal extends Horizontal implements net.minecraft.world.level.block.EntityBlock {
+
+        FlickeringHorizontal(final BlockBehaviour.Properties properties, final VoxelShape north, final VoxelShape collisionNorth,
+            final @Nullable String rotatePlacement, final boolean drip) {
+            super(properties, north, collisionNorth, rotatePlacement, drip);
+        }
+
+        @Override
+        public net.minecraft.world.level.block.entity.@Nullable BlockEntity newBlockEntity(final BlockPos pos, final BlockState state) {
+            return FlickerLights.blockEntityType == null ? null : new FlickerLights.FlickerLightBlockEntity(pos, state);
+        }
+
+        @Override
+        public int getLightEmission(final BlockState state, final BlockGetter level, final BlockPos pos) {
+            return FlickerLights.lightValue(level, pos, super.getLightEmission(state, level, pos));
         }
     }
 }

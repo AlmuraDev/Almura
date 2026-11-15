@@ -98,10 +98,13 @@ public final class ContentDefs {
      * @param rotatePlacement how a horizontal block placed against the side of another block turns ({@code rotate_placement}, as 3.5's
      *     pipes): {@code across}, {@code toward} or {@code corner}; null to face whoever placed it
      * @param drip whether water drips from the bottom of the block, as from water above stone (3.5's ceiling pipes)
+     * @param flammability how readily fire burns the block away ({@code flammability}; 0 for none), as 1.12 Forge's
+     * @param fireSpreadSpeed how readily fire spreads to the block ({@code fire_spread_speed}; 0 for none)
+     * @param flicker whether the light flickers ({@code flicker}: 3.5's lights with power trouble)
      */
     public record StateDef(float hardness, float resistance, @Nullable Boolean opaque, float lightEmission, @Nullable Box shape,
         @Nullable Box collision, boolean noCollision, @Nullable String blockFaceShape, List<DropDef> drops, @Nullable String rotatePlacement,
-        boolean drip) {
+        boolean drip, int flammability, int fireSpreadSpeed, boolean flicker) {
     }
 
     public record Box(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
