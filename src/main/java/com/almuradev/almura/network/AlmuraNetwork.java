@@ -14,6 +14,8 @@ import com.almuradev.almura.feature.almanac.network.ClientboundAlmanacCrops;
 import com.almuradev.almura.feature.almanac.network.ClientboundAlmanacField;
 import com.almuradev.almura.feature.bank.network.BankMessages;
 import com.almuradev.almura.feature.bank.server.ServerBank;
+import com.almuradev.almura.feature.death.network.DeathMessages;
+import com.almuradev.almura.feature.death.server.ServerDeath;
 import com.almuradev.almura.feature.exchange.network.ExchangeMessages;
 import com.almuradev.almura.feature.exchange.server.ServerExchange;
 import com.almuradev.almura.feature.guide.network.GuideMessages;
@@ -68,6 +70,7 @@ public final class AlmuraNetwork {
     private static void onRegisterPayloads(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar(Almura.ID).versioned(VERSION);
         // To the client
+        registrar.playToClient(DeathMessages.ClientboundDied.TYPE, DeathMessages.ClientboundDied.CODEC);
         registrar.playToClient(ClientboundPopupNotification.TYPE, ClientboundPopupNotification.CODEC);
         registrar.playToClient(ClientboundWorldName.TYPE, ClientboundWorldName.CODEC);
         registrar.playToClient(ClientboundServerTps.TYPE, ClientboundServerTps.CODEC);
@@ -103,6 +106,8 @@ public final class AlmuraNetwork {
         registrar.playToClient(AccessoryMessages.ClientboundOpen.TYPE, AccessoryMessages.ClientboundOpen.CODEC);
         registrar.playToClient(AccessoryMessages.ClientboundWorn.TYPE, AccessoryMessages.ClientboundWorn.CODEC);
         // To the server
+        registrar.playToServer(DeathMessages.ServerboundRevive.TYPE, DeathMessages.ServerboundRevive.CODEC, (payload, context) ->
+            ServerDeath.revive((ServerPlayer) context.player()));
         registrar.playToServer(GuideMessages.ServerboundOpen.TYPE, GuideMessages.ServerboundOpen.CODEC, (payload, context) ->
             ServerGuide.open((ServerPlayer) context.player()));
         registrar.playToServer(GuideMessages.ServerboundPage.TYPE, GuideMessages.ServerboundPage.CODEC, (payload, context) ->

@@ -17,6 +17,7 @@ import com.almuradev.almura.core.client.config.AlmuraClientConfig;
 import com.almuradev.almura.feature.accessory.client.ClientAccessories;
 import com.almuradev.almura.feature.cache.Caches;
 import com.almuradev.almura.feature.cache.client.CacheRenderer;
+import com.almuradev.almura.feature.death.client.ClientDeath;
 import com.almuradev.almura.feature.harvestsack.HarvestingSack;
 import com.almuradev.almura.feature.healthbar.client.EntityLabels;
 import com.almuradev.almura.feature.hud.Huds;
@@ -122,6 +123,7 @@ public final class AlmuraClient {
         NeoForge.EVENT_BUS.register(new TitleTags());
         NeoForge.EVENT_BUS.register(new ClientTitles.Resetter());
         NeoForge.EVENT_BUS.register(new ClientNicks.Hooks());
+        NeoForge.EVENT_BUS.register(new ClientDeath.Hooks());
         NeoForge.EVENT_BUS.register(new PlayerPreview.Drawer());
         // Dev runs pass -Dalmura.dev.maximize=true (see build.gradle) to open the window maximized
         if (Boolean.getBoolean("almura.dev.maximize")) {

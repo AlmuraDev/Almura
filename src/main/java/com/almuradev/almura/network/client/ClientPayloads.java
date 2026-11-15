@@ -14,6 +14,8 @@ import com.almuradev.almura.feature.almanac.network.ClientboundAlmanacCrops;
 import com.almuradev.almura.feature.almanac.network.ClientboundAlmanacField;
 import com.almuradev.almura.feature.bank.client.ClientBank;
 import com.almuradev.almura.feature.bank.network.BankMessages;
+import com.almuradev.almura.feature.death.client.ClientDeath;
+import com.almuradev.almura.feature.death.network.DeathMessages;
 import com.almuradev.almura.feature.exchange.client.ClientExchange;
 import com.almuradev.almura.feature.exchange.network.ExchangeMessages;
 import com.almuradev.almura.feature.guide.client.ClientGuide;
@@ -77,6 +79,7 @@ public final class ClientPayloads {
         event.register(NickMessages.ClientboundOpen.TYPE, (payload, context) -> ClientNicks.onOpen(payload));
         event.register(MembershipMessages.ClientboundOpen.TYPE, (payload, context) -> ClientMemberships.onOpen(payload));
         event.register(MembershipMessages.ClientboundApplied.TYPE, (payload, context) -> ClientMemberships.onApplied(payload));
+        event.register(DeathMessages.ClientboundDied.TYPE, (payload, context) -> ClientDeath.onDied(payload));
         event.register(AccessoryMessages.ClientboundOpen.TYPE, (payload, context) -> ClientAccessories.onOpen(payload));
         event.register(AccessoryMessages.ClientboundWorn.TYPE, (payload, context) -> ClientAccessories.onWorn(payload));
         event.register(ClientboundSkills.TYPE, (payload, context) -> ClientSkills.setSkills(payload.skills()));

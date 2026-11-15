@@ -12,6 +12,7 @@ import com.almuradev.almura.core.database.AlmuraServerConfig;
 import com.almuradev.almura.feature.accessory.server.ServerAccessories;
 import com.almuradev.almura.feature.bank.server.ServerBank;
 import com.almuradev.almura.feature.cache.Caches;
+import com.almuradev.almura.feature.death.server.ServerDeath;
 import com.almuradev.almura.feature.economy.Economy;
 import com.almuradev.almura.feature.exchange.server.ServerExchange;
 import com.almuradev.almura.feature.guide.server.ServerGuide;
@@ -71,5 +72,7 @@ public final class Almura {
         // Exchanges and stores, on the same database and economy
         NeoForge.EVENT_BUS.register(new ServerExchange());
         NeoForge.EVENT_BUS.register(new ServerStore());
+        // The death penalty: part of the wallet dropped as coins, the death screen and Revive
+        NeoForge.EVENT_BUS.register(new ServerDeath());
     }
 }

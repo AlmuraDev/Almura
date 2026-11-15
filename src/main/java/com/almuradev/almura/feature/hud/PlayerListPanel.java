@@ -8,6 +8,7 @@
 package com.almuradev.almura.feature.hud;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.feature.nick.client.ClientNicks;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Optionull;
 import net.minecraft.client.Minecraft;
@@ -184,9 +185,13 @@ final class PlayerListPanel {
     }
 
     /**
-     * The name the server shows the player by (a nickname) when it isn't just their username.
+     * The player's Almura nickname, as on their name tag; without one, the name the server shows them by when it isn't just their username.
      */
     private static Component nickname(final PlayerInfo player) {
+        final String nickname = ClientNicks.nicknameFor(player.getProfile().id());
+        if (nickname != null && !nickname.isEmpty()) {
+            return Component.literal(nickname);
+        }
         final Component shown = player.getTabListDisplayName();
         if (shown == null || shown.getString().equals(player.getProfile().name())) {
             return NO_VALUE;
