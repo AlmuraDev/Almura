@@ -9,8 +9,10 @@ package com.almuradev.almura.feature.almanac;
 
 import com.almuradev.almura.Almura;
 import com.almuradev.almura.content.registry.ContentCrop;
+import com.almuradev.almura.feature.almanac.network.ClientboundAlmanacCrops.CropLevels;
 import com.almuradev.almura.feature.almanac.network.ClientboundAlmanacCrops;
 import com.almuradev.almura.feature.almanac.network.ClientboundAlmanacField;
+import com.almuradev.almura.feature.skills.server.ServerSkills;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -29,9 +31,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.FarmlandBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -40,6 +45,9 @@ import net.neoforged.neoforge.server.permission.events.PermissionGatherEvent;
 import net.neoforged.neoforge.server.permission.nodes.PermissionNode;
 import net.neoforged.neoforge.server.permission.nodes.PermissionTypes;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.BiConsumer;
 
 /**
@@ -123,7 +131,44 @@ public final class FarmersAlmanac {
         final ServerLevel level = player.level();
         final BlockPos pos = player.blockPosition();
         final String biomeId = level.getBiome(pos).unwrapKey().map(key -> key.identifier().toString()).orElse("");
-        return new ClientboundAlmanacCrops(biomeId, ContentCrop.temperature(level, pos));
+        if (!ServerSkills.available()) {
+            return new ClientboundAlmanacCrops(biomeId, ContentCrop.temperature(level, pos), false, -1, List.of());
+        }
+        // As 3.5: each crop's farming levels to plant and to harvest, from the Skills plugin's rules
+        final List<CropLevels> levels = new ArrayList<>();
+        for (final Block block : BuiltInRegistries.BLOCK) {
+            if (block instanceof ContentCrop) {
+                levels.add(cropLevels(block, block));
+            }
+        }
+        // Minecraft's own, by the block planted: melons and pumpkins are harvested as another block
+        for (final Block[] crop : VANILLA_CROPS) {
+            levels.add(cropLevels(crop[0], crop[1]));
+        }
+        return new ClientboundAlmanacCrops(biomeId, ContentCrop.temperature(level, pos), true, ServerSkills.level(player, "farming"), levels);
+    }
+
+    // Minecraft's crops the Almanac lists: the block planted, and the block harvested
+    private static final Block[][] VANILLA_CROPS = {
+        {Blocks.WHEAT, Blocks.WHEAT}, {Blocks.CARROTS, Blocks.CARROTS}, {Blocks.POTATOES, Blocks.POTATOES},
+        {Blocks.BEETROOTS, Blocks.BEETROOTS}, {Blocks.MELON_STEM, Blocks.MELON}, {Blocks.PUMPKIN_STEM, Blocks.PUMPKIN},
+        {Blocks.NETHER_WART, Blocks.NETHER_WART}, {Blocks.COCOA, Blocks.COCOA}, {Blocks.SUGAR_CANE, Blocks.SUGAR_CANE}};
+
+    private static CropLevels cropLevels(final Block planted, final Block harvested) {
+        final int[] levels = ServerSkills.cropLevels(planted.defaultBlockState(), ripe(harvested.defaultBlockState()));
+        return new CropLevels(BuiltInRegistries.BLOCK.getKey(planted).toString(), levels[0], levels[1]);
+    }
+
+    /**
+     * @return the state at its oldest age, if it has one (a ripe crop is what is harvested)
+     */
+    private static BlockState ripe(final BlockState state) {
+        for (final Property<?> property : state.getProperties()) {
+            if (property instanceof final IntegerProperty age && "age".equals(age.getName())) {
+                return state.setValue(age, Collections.max(age.getPossibleValues()));
+            }
+        }
+        return state;
     }
 
     public static final class AlmanacItem extends Item {

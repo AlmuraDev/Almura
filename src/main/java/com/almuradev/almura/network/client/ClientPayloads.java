@@ -16,6 +16,8 @@ import com.almuradev.almura.feature.exchange.client.ClientExchange;
 import com.almuradev.almura.feature.exchange.network.ExchangeMessages;
 import com.almuradev.almura.feature.guide.client.ClientGuide;
 import com.almuradev.almura.feature.guide.network.GuideMessages;
+import com.almuradev.almura.feature.handbook.client.ClientHandbook;
+import com.almuradev.almura.feature.handbook.network.ClientboundHandbook;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerMoney;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerWorlds;
 import com.almuradev.almura.feature.hud.network.ClientboundServerTps;
@@ -58,6 +60,7 @@ public final class ClientPayloads {
         event.register(GuideMessages.ClientboundListing.TYPE, (payload, context) -> ClientGuide.onListing(payload));
         event.register(GuideMessages.ClientboundPage.TYPE, (payload, context) -> ClientGuide.onPage(payload));
         event.register(GuideMessages.ClientboundChangeResult.TYPE, (payload, context) -> ClientGuide.onChangeResult(payload));
+        event.register(ClientboundHandbook.TYPE, (payload, context) -> ClientHandbook.open(payload));
         event.register(ClientboundSkills.TYPE, (payload, context) -> ClientSkills.setSkills(payload.skills()));
         event.register(BankMessages.ClientboundState.TYPE, (payload, context) -> ClientBank.onState(payload));
         event.register(FeaturesMessages.ClientboundOpen.TYPE, (payload, context) -> FeaturesMenu.onOpen(payload));

@@ -1,0 +1,16 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "misc",
+    "key": {
+        "A": "minecraft:spruce_planks",
+        "B": "minecraft:chest"
+    },
+    "pattern": [
+        "A A",
+        " B ",
+        "A A"
+    ],
+    "result": {
+        "id": "almura:storage/spruce_storage_crate"
+    }
+}

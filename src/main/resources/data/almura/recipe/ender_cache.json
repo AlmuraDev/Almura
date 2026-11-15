@@ -1,0 +1,16 @@
+{
+    "type": "almura:cache_upgrade",
+    "category": "misc",
+    "key": {
+        "A": "minecraft:purple_shulker_box",
+        "B": "almura:cache/nether"
+    },
+    "pattern": [
+        "AAA",
+        "ABA",
+        "AAA"
+    ],
+    "result": {
+        "id": "almura:cache/ender"
+    }
+}

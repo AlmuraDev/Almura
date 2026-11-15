@@ -10,6 +10,7 @@ package com.almuradev.almura;
 import com.almuradev.almura.content.AlmuraContent;
 import com.almuradev.almura.core.database.AlmuraServerConfig;
 import com.almuradev.almura.feature.bank.server.ServerBank;
+import com.almuradev.almura.feature.cache.Caches;
 import com.almuradev.almura.feature.economy.Economy;
 import com.almuradev.almura.feature.exchange.server.ServerExchange;
 import com.almuradev.almura.feature.guide.server.ServerGuide;
@@ -41,6 +42,8 @@ public final class Almura {
         // Blocks, items and creative tabs from the content folders, as on 1.12
         AlmuraContent.register(modBus);
         AlmuraNetwork.register(modBus);
+        // Hoppers and pipes reach the caches
+        modBus.addListener(Caches::onRegisterCapabilities);
         // What the server does for Almura's players: the HUD's data, notifications
         NeoForge.EVENT_BUS.register(new ServerHud());
         // The server's economy (Sponge's, such as EconomyLite's) for the HUD's money, when there is one

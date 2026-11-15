@@ -1,0 +1,16 @@
+{
+    "type": "almura:cache_upgrade",
+    "category": "misc",
+    "key": {
+        "A": "minecraft:gold_block",
+        "B": "almura:cache/iron"
+    },
+    "pattern": [
+        "AAA",
+        "ABA",
+        "AAA"
+    ],
+    "result": {
+        "id": "almura:cache/gold"
+    }
+}

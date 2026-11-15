@@ -198,5 +198,15 @@
   "almura.feature.store.itemfinder.inventory": "Inventory",
   "almura.feature.store.text.soldout": "Sold Out!",
   "almura.feature.store.text.no_items_for_sale": "This shop is not selling items at this time.",
-  "almura.feature.store.text.no_items_for_purchase": "This shop is not buying items at this time."
+  "almura.feature.store.text.no_items_for_purchase": "This shop is not buying items at this time.",
+  "block.almura.cache.wood": "Wood Cache",
+  "block.almura.cache.iron": "Iron Cache",
+  "block.almura.cache.gold": "Gold Cache",
+  "block.almura.cache.diamond": "Diamond Cache",
+  "block.almura.cache.nether": "Nether Cache",
+  "block.almura.cache.ender": "Ender Cache",
+  "block.almura.storage.dock_chest": "Dock Chest",
+  "block.almura.storage.oak_storage_crate": "Oak Storage Crate",
+  "block.almura.storage.spruce_storage_crate": "Spruce Storage Crate",
+  "block.almura.storage.birch_storage_crate": "Birch Storage Crate"
 }

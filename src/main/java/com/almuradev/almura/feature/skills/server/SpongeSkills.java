@@ -53,9 +53,6 @@ import java.util.UUID;
  */
 public final class SpongeSkills {
 
-    /** The skills shown to players, in display order, as 3.5's. */
-    public static final String[] SKILLS = {"crafting", "digger", "farming", "mining", "woodcutting"};
-
     // Experience changes on every block broken, so updates wait a little and go together
     private static final int UPDATE_DELAY_TICKS = 10;
     // Skills loads the player's experience after they join
@@ -94,8 +91,8 @@ public final class SpongeSkills {
             return entries;
         }
         final SkillService service = Skills.service();
-        final Optional<SkillHolder> holder = holder(service, player);
-        for (final String id : SKILLS) {
+        final Optional<SkillHolder> holder = holder(player);
+        for (final String id : ServerSkills.SKILLS) {
             final SkillType type = service.skillType(id).orElse(null);
             if (type == null) {
                 continue;
@@ -116,9 +113,34 @@ public final class SpongeSkills {
     /**
      * The player's skills in the world they are in, or the world it shares skills from (the Nether shares the Overworld's).
      */
-    private static Optional<SkillHolder> holder(final SkillService service, final ServerPlayer player) {
+    static Optional<SkillHolder> holder(final ServerPlayer player) {
+        if (!Skills.isAvailable()) {
+            return Optional.empty();
+        }
         final ResourceKey world = ResourceKey.resolve(player.level().dimension().identifier().toString());
-        return service.containerFor(world).flatMap(container -> container.holder(player.getUUID()));
+        return Skills.service().containerFor(world).flatMap(container -> container.holder(player.getUUID()));
+    }
+
+    /**
+     * @return whether the Skills plugin is enabled
+     */
+    static boolean available() {
+        return Skills.isAvailable();
+    }
+
+    /**
+     * @return the player's level in the skill, or -1 if Skills doesn't know it
+     */
+    static int level(final ServerPlayer player, final String skillId) {
+        if (!Skills.isAvailable()) {
+            return -1;
+        }
+        final SkillType type = Skills.service().skillType(skillId).orElse(null);
+        if (type == null) {
+            return -1;
+        }
+        return holder(player).flatMap(found -> found.skill(type)).map(Skill::level)
+            .map(level -> Math.max(1, Math.min(type.maxLevel(), level))).orElse(-1);
     }
 
     /**

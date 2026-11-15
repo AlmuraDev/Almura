@@ -1,0 +1,19 @@
+{
+    "variants": {
+        "facing=north": {
+            "model": "almura:block/cache/nether"
+        },
+        "facing=east": {
+            "model": "almura:block/cache/nether",
+            "y": 90
+        },
+        "facing=south": {
+            "model": "almura:block/cache/nether",
+            "y": 180
+        },
+        "facing=west": {
+            "model": "almura:block/cache/nether",
+            "y": 270
+        }
+    }
+}

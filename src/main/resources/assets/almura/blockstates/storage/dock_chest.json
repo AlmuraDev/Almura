@@ -1,0 +1,19 @@
+{
+    "variants": {
+        "facing=north": {
+            "model": "almura:block/storage/dock_chest"
+        },
+        "facing=east": {
+            "model": "almura:block/storage/dock_chest",
+            "y": 90
+        },
+        "facing=south": {
+            "model": "almura:block/storage/dock_chest",
+            "y": 180
+        },
+        "facing=west": {
+            "model": "almura:block/storage/dock_chest",
+            "y": 270
+        }
+    }
+}

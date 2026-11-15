@@ -1,0 +1,19 @@
+{
+    "variants": {
+        "facing=north": {
+            "model": "almura:block/cache/gold"
+        },
+        "facing=east": {
+            "model": "almura:block/cache/gold",
+            "y": 90
+        },
+        "facing=south": {
+            "model": "almura:block/cache/gold",
+            "y": 180
+        },
+        "facing=west": {
+            "model": "almura:block/cache/gold",
+            "y": 270
+        }
+    }
+}

@@ -16,6 +16,7 @@ import com.almuradev.almura.feature.exchange.network.ExchangeMessages;
 import com.almuradev.almura.feature.exchange.server.ServerExchange;
 import com.almuradev.almura.feature.guide.network.GuideMessages;
 import com.almuradev.almura.feature.guide.server.ServerGuide;
+import com.almuradev.almura.feature.handbook.network.ClientboundHandbook;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerMoney;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerWorlds;
 import com.almuradev.almura.feature.hud.network.ClientboundServerTps;
@@ -82,6 +83,7 @@ public final class AlmuraNetwork {
         registrar.playToClient(StoreMessages.ClientboundItems.TYPE, StoreMessages.ClientboundItems.CODEC);
         registrar.playToClient(FeaturesMessages.ClientboundOpen.TYPE, FeaturesMessages.ClientboundOpen.CODEC);
         registrar.playToClient(ClientboundSkills.TYPE, ClientboundSkills.CODEC);
+        registrar.playToClient(ClientboundHandbook.TYPE, ClientboundHandbook.CODEC);
         // To the server
         registrar.playToServer(GuideMessages.ServerboundOpen.TYPE, GuideMessages.ServerboundOpen.CODEC, (payload, context) ->
             ServerGuide.open((ServerPlayer) context.player()));

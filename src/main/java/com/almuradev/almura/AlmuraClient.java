@@ -14,21 +14,23 @@ import com.almuradev.almura.content.registry.ContentContainers;
 import com.almuradev.almura.content.registry.FlickerLights;
 import com.almuradev.almura.core.client.AlmuraFontPack;
 import com.almuradev.almura.core.client.config.AlmuraClientConfig;
+import com.almuradev.almura.feature.cache.Caches;
+import com.almuradev.almura.feature.cache.client.CacheRenderer;
 import com.almuradev.almura.feature.harvestsack.HarvestingSack;
 import com.almuradev.almura.feature.hud.Huds;
 import com.almuradev.almura.feature.hud.ServerHudData;
 import com.almuradev.almura.feature.lighting.client.ClientFlickerLights;
 import com.almuradev.almura.feature.lighting.client.FlickerLightRenderer;
 import com.almuradev.almura.feature.menu.Disconnected;
+import com.almuradev.almura.feature.menu.figure.AlmuraFigureRenderer;
+import com.almuradev.almura.feature.menu.figure.AlmuraFigureRenderState;
+import com.almuradev.almura.feature.menu.figure.FigureSlot;
 import com.almuradev.almura.feature.menu.GameMenu;
+import com.almuradev.almura.feature.menu.ingame.FeaturesMenu;
 import com.almuradev.almura.feature.menu.MainMenuManager;
+import com.almuradev.almura.feature.menu.options.AlmuraOptions;
 import com.almuradev.almura.feature.menu.ServerStatus;
 import com.almuradev.almura.feature.menu.WorldLoading;
-import com.almuradev.almura.feature.menu.figure.AlmuraFigureRenderState;
-import com.almuradev.almura.feature.menu.figure.AlmuraFigureRenderer;
-import com.almuradev.almura.feature.menu.figure.FigureSlot;
-import com.almuradev.almura.feature.menu.ingame.FeaturesMenu;
-import com.almuradev.almura.feature.menu.options.AlmuraOptions;
 import com.almuradev.almura.network.client.ClientPayloads;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
@@ -62,6 +64,8 @@ public final class AlmuraClient {
         AlmuraFontPack.register(modBus);
         // The storage barrel's label
         modBus.addListener((final EntityRenderersEvent.RegisterRenderers event) -> {
+            // A cache shows what it holds on its front
+            event.registerBlockEntityRenderer(Caches.blockEntityType(), CacheRenderer::new);
             if (ContentContainers.blockEntityType() != null) {
                 event.registerBlockEntityRenderer(ContentContainers.blockEntityType(),
                     StorageBarrelRenderer::new);

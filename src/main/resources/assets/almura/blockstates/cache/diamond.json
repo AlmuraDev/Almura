@@ -1,0 +1,19 @@
+{
+    "variants": {
+        "facing=north": {
+            "model": "almura:block/cache/diamond"
+        },
+        "facing=east": {
+            "model": "almura:block/cache/diamond",
+            "y": 90
+        },
+        "facing=south": {
+            "model": "almura:block/cache/diamond",
+            "y": 180
+        },
+        "facing=west": {
+            "model": "almura:block/cache/diamond",
+            "y": 270
+        }
+    }
+}

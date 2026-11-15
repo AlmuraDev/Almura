@@ -1,0 +1,16 @@
+{
+    "type": "almura:cache_upgrade",
+    "category": "misc",
+    "key": {
+        "A": "minecraft:nether_star",
+        "B": "almura:cache/diamond"
+    },
+    "pattern": [
+        "AAA",
+        "ABA",
+        "AAA"
+    ],
+    "result": {
+        "id": "almura:cache/nether"
+    }
+}

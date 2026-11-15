@@ -11,6 +11,7 @@ import com.almuradev.almura.Almura;
 import com.almuradev.almura.content.def.ContentDefs.CropStageDef;
 import com.almuradev.almura.content.def.ContentDefs.DropDef;
 import com.almuradev.almura.content.registry.ContentCrop;
+import com.almuradev.almura.feature.skills.server.ServerSkills;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
@@ -75,6 +76,9 @@ import java.util.function.BiConsumer;
  * A pick is a real player break of the crop ({@code ServerPlayerGameMode.destroyBlock}), so protection mods and plugins can deny it and
  * break listeners see a harvest. Its drops are taken out of the break, and at the end of the tick, once the break is final, they go into
  * the sack and the crop is put back; if the break was undone, they are discarded, as they would never have dropped.
+ * <p>
+ * With the Skills plugin, the break is a break to it (its break rules gate and pay it), and the drops, which never reach it, are put
+ * through its gather rules as Skills would: those the player's level is too low for are lost, the rest pay their experience and money.
  */
 public final class HarvestingSack {
 
@@ -231,7 +235,10 @@ public final class HarvestingSack {
             player.connection.send(new ClientboundLevelEventPacket(LevelEvent.PARTICLES_DESTROY_BLOCK, pending.pos,
                 Block.getId(pending.ripe), false));
         }
-        for (final ItemStack drop : pending.drops) {
+        // As Skills treats a crop's drops (they never reach it, being taken into the sack): what the player's level is too low for is lost, and
+        // the rest pay their experience and money
+        final List<ItemStack> drops = player == null ? pending.drops : ServerSkills.harvested(player, pending.drops);
+        for (final ItemStack drop : drops) {
             final ItemStack left = player == null ? drop : intoSack(player, pending.hand, drop);
             if (!left.isEmpty()) {
                 Block.popResource(level, pending.pos, left);

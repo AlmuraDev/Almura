@@ -23,9 +23,11 @@ import com.almuradev.almura.content.def.ContentDefs.SeedDef;
 import com.almuradev.almura.content.def.ContentDefs.TreeDef;
 import com.almuradev.almura.feature.almanac.FarmersAlmanac;
 import com.almuradev.almura.feature.bank.CoinExchange;
+import com.almuradev.almura.feature.cache.Caches;
 import com.almuradev.almura.feature.cruet.Cruets;
 import com.almuradev.almura.feature.handbook.SkillsHandbook;
 import com.almuradev.almura.feature.harvestsack.HarvestingSack;
+import com.almuradev.almura.feature.storage.StorageCrates;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -115,6 +117,8 @@ public final class ContentRegistration {
     public void onRegister(final RegisterEvent event) {
         event.register(Registries.CONSUME_EFFECT_TYPE, helper -> helper.register(Identifier.fromNamespaceAndPath(Almura.ID, "heal"),
             HealConsumeEffect.TYPE));
+        // The caches' upgrade recipes
+        event.register(Registries.RECIPE_SERIALIZER, Caches::registerRecipeSerializer);
         event.register(Registries.BLOCK, helper -> {
             // Stairs after the blocks they're made of; double slabs are their single slab's double state in 26.3
             final List<BlockDef> ordered = new ArrayList<>(this.blocks.stream().filter(def -> !def.kind().equals("stair")).toList());
@@ -139,6 +143,9 @@ public final class ContentRegistration {
             }
             // Almura's Coin Exchange: cashes in coins, opens the bank
             CoinExchange.registerBlock(helper);
+            // Almura's caches and storage crates
+            Caches.registerBlocks(helper);
+            StorageCrates.registerBlocks(helper);
         });
         event.register(Registries.ITEM, helper -> {
             // Almura's cruets: content items are handed back in them
@@ -149,6 +156,8 @@ public final class ContentRegistration {
             FarmersAlmanac.register(helper, this::addToTab);
             SkillsHandbook.register(helper, this::addToTab);
             CoinExchange.registerItem(helper, this::addToTab);
+            Caches.registerItems(helper, this::addToTab);
+            StorageCrates.registerItems(helper, this::addToTab);
             for (final ItemDef def : this.ordered()) {
                 if (def.kind().equals("slab")) {
                     // A slab's item is its block's
@@ -182,6 +191,8 @@ public final class ContentRegistration {
             }
         });
         event.register(Registries.BLOCK_ENTITY_TYPE, helper -> {
+            Caches.registerBlockEntityType(helper);
+            StorageCrates.registerBlockEntityType(helper);
             final Set<Block> containerBlocks = new HashSet<>();
             this.registeredBlocks.values().stream().filter(block -> block instanceof ContentContainers.ContainerBlock).forEach(containerBlocks::add);
             ContentContainers.blockEntityType = new BlockEntityType<>(

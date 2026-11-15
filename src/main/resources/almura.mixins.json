@@ -4,6 +4,7 @@
   "mixins": [
     "BiomeAccessor",
     "FarmlandBlockMixin",
+    "ShapedRecipeAccessor",
     "SimpleBlockFeatureMixin",
     "TreeFeatureMixin"
   ],

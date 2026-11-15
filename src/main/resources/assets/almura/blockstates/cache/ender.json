@@ -1,0 +1,19 @@
+{
+    "variants": {
+        "facing=north": {
+            "model": "almura:block/cache/ender"
+        },
+        "facing=east": {
+            "model": "almura:block/cache/ender",
+            "y": 90
+        },
+        "facing=south": {
+            "model": "almura:block/cache/ender",
+            "y": 180
+        },
+        "facing=west": {
+            "model": "almura:block/cache/ender",
+            "y": 270
+        }
+    }
+}
