@@ -11,10 +11,12 @@ import com.almuradev.almura.feature.bank.client.ClientBank;
 import com.almuradev.almura.feature.exchange.client.ClientExchange;
 import com.almuradev.almura.feature.guide.client.ClientGuide;
 import com.almuradev.almura.feature.menu.InGameScreens;
+import com.almuradev.almura.feature.nick.client.ClientNicks;
 import com.almuradev.almura.feature.notification.history.NotificationHistoryScreen;
 import com.almuradev.almura.feature.skills.client.ClientSkills;
 import com.almuradev.almura.feature.skills.client.SkillsScreen;
 import com.almuradev.almura.feature.store.client.ClientStore;
+import com.almuradev.almura.feature.title.client.ClientTitles;
 import net.minecraft.client.Minecraft;
 import org.inspirenxe.strata.api.ComponentFactory;
 import org.inspirenxe.strata.api.component.Component;
@@ -56,8 +58,10 @@ final class FeaturesScreen implements Screen {
                 .setSize(BUTTON_WIDTH, BUTTON_HEIGHT)
                 .onEvent(Button.PRESSED, event -> ClientGuide.requestOpen())))
             .add(later(factory, "Claim Management", BUTTON_WIDTH))
-            .add(later(factory, "Nicknames", BUTTON_WIDTH))
-            .add(later(factory, "Titles", BUTTON_WIDTH))
+            .add(centred(factory.button(Text.of("Nicknames")).setSize(BUTTON_WIDTH, BUTTON_HEIGHT)
+                .onEvent(Button.PRESSED, event -> ClientNicks.requestOpen())))
+            .add(centred(factory.button(Text.of("Titles")).setSize(BUTTON_WIDTH, BUTTON_HEIGHT)
+                .onEvent(Button.PRESSED, event -> ClientTitles.requestOpen())))
             .add(later(factory, "Accessories", BUTTON_WIDTH))
             .add(later(factory, "Memberships", BUTTON_WIDTH))
             .add(centred(factory.button(Text.of("Banking"))

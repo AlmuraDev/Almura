@@ -23,10 +23,14 @@ import com.almuradev.almura.feature.hud.network.ClientboundServerTps;
 import com.almuradev.almura.feature.hud.network.ClientboundWorldName;
 import com.almuradev.almura.feature.menu.ingame.network.FeaturesMessages;
 import com.almuradev.almura.feature.menu.ingame.server.ServerFeatures;
+import com.almuradev.almura.feature.nick.network.NickMessages;
+import com.almuradev.almura.feature.nick.server.ServerNicks;
 import com.almuradev.almura.feature.notification.network.ClientboundPopupNotification;
 import com.almuradev.almura.feature.skills.network.ClientboundSkills;
 import com.almuradev.almura.feature.store.network.StoreMessages;
 import com.almuradev.almura.feature.store.server.ServerStore;
+import com.almuradev.almura.feature.title.network.TitleMessages;
+import com.almuradev.almura.feature.title.server.ServerTitles;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
@@ -84,6 +88,12 @@ public final class AlmuraNetwork {
         registrar.playToClient(FeaturesMessages.ClientboundOpen.TYPE, FeaturesMessages.ClientboundOpen.CODEC);
         registrar.playToClient(ClientboundSkills.TYPE, ClientboundSkills.CODEC);
         registrar.playToClient(ClientboundHandbook.TYPE, ClientboundHandbook.CODEC);
+        registrar.playToClient(TitleMessages.ClientboundRegistry.TYPE, TitleMessages.ClientboundRegistry.CODEC);
+        registrar.playToClient(TitleMessages.ClientboundAvailable.TYPE, TitleMessages.ClientboundAvailable.CODEC);
+        registrar.playToClient(TitleMessages.ClientboundSelected.TYPE, TitleMessages.ClientboundSelected.CODEC);
+        registrar.playToClient(TitleMessages.ClientboundOpen.TYPE, TitleMessages.ClientboundOpen.CODEC);
+        registrar.playToClient(NickMessages.ClientboundNames.TYPE, NickMessages.ClientboundNames.CODEC);
+        registrar.playToClient(NickMessages.ClientboundOpen.TYPE, NickMessages.ClientboundOpen.CODEC);
         // To the server
         registrar.playToServer(GuideMessages.ServerboundOpen.TYPE, GuideMessages.ServerboundOpen.CODEC, (payload, context) ->
             ServerGuide.open((ServerPlayer) context.player()));
@@ -123,5 +133,15 @@ public final class AlmuraNetwork {
             ServerStore.handleTransaction((ServerPlayer) context.player(), payload));
         registrar.playToServer(FeaturesMessages.ServerboundOpen.TYPE, FeaturesMessages.ServerboundOpen.CODEC, (payload, context) ->
             ServerFeatures.open((ServerPlayer) context.player()));
+        registrar.playToServer(TitleMessages.ServerboundOpen.TYPE, TitleMessages.ServerboundOpen.CODEC, (payload, context) ->
+            ServerTitles.open((ServerPlayer) context.player()));
+        registrar.playToServer(TitleMessages.ServerboundSelect.TYPE, TitleMessages.ServerboundSelect.CODEC, (payload, context) ->
+            ServerTitles.select((ServerPlayer) context.player(), payload.id()));
+        registrar.playToServer(TitleMessages.ServerboundModify.TYPE, TitleMessages.ServerboundModify.CODEC, (payload, context) ->
+            ServerTitles.modify((ServerPlayer) context.player(), payload));
+        registrar.playToServer(NickMessages.ServerboundOpen.TYPE, NickMessages.ServerboundOpen.CODEC, (payload, context) ->
+            ServerNicks.open((ServerPlayer) context.player()));
+        registrar.playToServer(NickMessages.ServerboundChange.TYPE, NickMessages.ServerboundChange.CODEC, (payload, context) ->
+            ServerNicks.change((ServerPlayer) context.player(), payload.nickname()));
     }
 }

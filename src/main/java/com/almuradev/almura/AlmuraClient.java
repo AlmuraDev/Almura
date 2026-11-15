@@ -31,6 +31,10 @@ import com.almuradev.almura.feature.menu.MainMenuManager;
 import com.almuradev.almura.feature.menu.options.AlmuraOptions;
 import com.almuradev.almura.feature.menu.ServerStatus;
 import com.almuradev.almura.feature.menu.WorldLoading;
+import com.almuradev.almura.feature.nick.client.ClientNicks;
+import com.almuradev.almura.feature.title.client.ClientTitles;
+import com.almuradev.almura.feature.title.client.PlayerPreview;
+import com.almuradev.almura.feature.title.client.TitleTags;
 import com.almuradev.almura.network.client.ClientPayloads;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
@@ -101,6 +105,11 @@ public final class AlmuraClient {
         // Almura's messages from the server
         ClientPayloads.register(modBus);
         NeoForge.EVENT_BUS.register(new ServerHudData.Resetter());
+        // Titles over players' names, nicknames on them, and the Titles and Nicknames windows' player
+        NeoForge.EVENT_BUS.register(new TitleTags());
+        NeoForge.EVENT_BUS.register(new ClientTitles.Resetter());
+        NeoForge.EVENT_BUS.register(new ClientNicks.Hooks());
+        NeoForge.EVENT_BUS.register(new PlayerPreview.Drawer());
         // Dev runs pass -Dalmura.dev.maximize=true (see build.gradle) to open the window maximized
         if (Boolean.getBoolean("almura.dev.maximize")) {
             NeoForge.EVENT_BUS.addListener(AlmuraClient::maximizeOnFirstTick);

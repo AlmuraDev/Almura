@@ -16,9 +16,11 @@ import com.almuradev.almura.feature.exchange.server.ServerExchange;
 import com.almuradev.almura.feature.guide.server.ServerGuide;
 import com.almuradev.almura.feature.hud.server.ServerHud;
 import com.almuradev.almura.feature.menu.ingame.server.ServerFeatures;
+import com.almuradev.almura.feature.nick.server.ServerNicks;
 import com.almuradev.almura.feature.notification.server.ServerNotifications;
 import com.almuradev.almura.feature.skills.server.ServerSkills;
 import com.almuradev.almura.feature.store.server.ServerStore;
+import com.almuradev.almura.feature.title.server.ServerTitles;
 import com.almuradev.almura.network.AlmuraNetwork;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -57,6 +59,9 @@ public final class Almura {
         NeoForge.EVENT_BUS.register(new ServerBank());
         // The server's Skills plugin, for the HUD and the Features menu's Skills, when it has one
         ServerSkills.install();
+        // Titles and nicknames (Nucleus), above players' names
+        NeoForge.EVENT_BUS.register(new ServerTitles());
+        ServerNicks.install();
         // Exchanges and stores, on the same database and economy
         NeoForge.EVENT_BUS.register(new ServerExchange());
         NeoForge.EVENT_BUS.register(new ServerStore());
