@@ -9,6 +9,7 @@ package com.almuradev.almura;
 
 import com.almuradev.almura.content.AlmuraContent;
 import com.almuradev.almura.core.database.AlmuraServerConfig;
+import com.almuradev.almura.feature.accessory.server.ServerAccessories;
 import com.almuradev.almura.feature.bank.server.ServerBank;
 import com.almuradev.almura.feature.cache.Caches;
 import com.almuradev.almura.feature.economy.Economy;
@@ -65,6 +66,8 @@ public final class Almura {
         ServerNicks.install();
         // Memberships: ranks bought with money or skills (LuckPerms' members track)
         NeoForge.EVENT_BUS.register(new ServerMemberships());
+        // Accessories players wear, seen by everyone
+        NeoForge.EVENT_BUS.register(new ServerAccessories());
         // Exchanges and stores, on the same database and economy
         NeoForge.EVENT_BUS.register(new ServerExchange());
         NeoForge.EVENT_BUS.register(new ServerStore());

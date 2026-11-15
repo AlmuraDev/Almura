@@ -24,7 +24,7 @@ import org.jspecify.annotations.Nullable;
 public final class TitleTags {
 
     // Vanilla's line height for name tags: 9 pixels, 1.15 apart, at 0.025 of a block a pixel
-    private static final float LINE = 9.0F * 1.15F * 0.025F;
+    static final float LINE = 9.0F * 1.15F * 0.025F;
 
     @SubscribeEvent
     public void onRenderNameTag(final RenderNameTagEvent.DoRender event) {

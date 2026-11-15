@@ -7,6 +7,8 @@
  */
 package com.almuradev.almura.feature.title.client;
 
+import com.almuradev.almura.feature.accessory.client.ClientAccessories;
+import com.almuradev.almura.feature.menu.StrataGraphics;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.player.LocalPlayer;
@@ -17,12 +19,13 @@ import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EntityAttachment;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import org.inspirenxe.strata.api.ComponentFactory;
+import org.inspirenxe.strata.api.event.input.InputEvents;
 import org.inspirenxe.strata.api.geometry.Rect;
+import org.inspirenxe.strata.api.input.MouseButton;
 import org.inspirenxe.strata.api.layout.Spacer;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -37,12 +40,18 @@ import java.util.function.Supplier;
  */
 public final class PlayerPreview {
 
+    // Where vanilla puts the name over its attachment, and a little room over the title, in blocks
+    private static final double NAME_ABOVE = 0.5, LABEL_PAD = 0.05;
+    // How far a drag of one pixel turns the figure
+    private static final float DEGREES_PER_PIXEL = 1.5F;
     // Spaces painted since the screen last drew
     private static final List<PlayerPreview> PAINTED = new ArrayList<>();
 
     private final Spacer space;
     private final int size;
     private final Supplier<Component> name;
+    // How far the figure is turned, in degrees: dragged with the left button, 0 facing the viewer
+    private float yaw;
 
     private PlayerPreview(final Spacer space, final int size, final Supplier<Component> name) {
         this.space = space;
@@ -60,7 +69,22 @@ public final class PlayerPreview {
         final Supplier<Component> name) {
         final Spacer space = factory.spacer(width, height);
         final PlayerPreview preview = new PlayerPreview(space, size, name);
-        space.onEvent(org.inspirenxe.strata.api.component.Component.PAINTED, event -> PAINTED.add(preview));
+        // Drawn as Strata paints its space, so what Strata paints after (tooltips) goes over it; else over the screen, as before
+        space.onEvent(org.inspirenxe.strata.api.component.Component.PAINTED, event -> {
+            final GuiGraphicsExtractor graphics = StrataGraphics.of(event.painter());
+            if (graphics != null) {
+                preview.draw(graphics);
+            } else {
+                PAINTED.add(preview);
+            }
+        });
+        // Dragged left or right to turn the figure all the way round, as 3.5's accessory preview
+        space.setHitTestVisible(true);
+        space.onEvent(InputEvents.DRAG, event -> {
+            if (event.button() == MouseButton.LEFT) {
+                preview.yaw = (preview.yaw - event.deltaX() * DEGREES_PER_PIXEL) % 360.0F;
+            }
+        });
         return space;
     }
 
@@ -77,13 +101,13 @@ public final class PlayerPreview {
             final GuiGraphicsExtractor graphics = event.getGuiGraphics();
             graphics.nextStratum();
             for (final PlayerPreview preview : List.copyOf(PAINTED)) {
-                preview.draw(graphics, event.getMouseX(), event.getMouseY());
+                preview.draw(graphics);
             }
             PAINTED.clear();
         }
     }
 
-    private void draw(final GuiGraphicsExtractor graphics, final float mouseX, final float mouseY) {
+    private void draw(final GuiGraphicsExtractor graphics) {
         final LocalPlayer player = Minecraft.getInstance().player;
         final Rect bounds = this.space.bounds();
         if (player == null || bounds.width() <= 0f || bounds.height() <= 0f) {
@@ -91,17 +115,14 @@ public final class PlayerPreview {
         }
         final int x0 = Math.round(bounds.x()), y0 = Math.round(bounds.y());
         final int x1 = Math.round(bounds.x() + bounds.width()), y1 = Math.round(bounds.y() + bounds.height());
-        // As vanilla's inventory: turned towards the mouse
-        final float xAngle = (float) Math.atan(((x0 + x1) / 2.0F - mouseX) / 40.0F);
-        final float yAngle = (float) Math.atan(((y0 + y1) / 2.0F - mouseY) / 40.0F);
+        // Turned as far as it has been dragged; level, so it can be seen from all round
         final Quaternionf rotation = new Quaternionf().rotateZ((float) Math.PI);
-        final Quaternionf xRotation = new Quaternionf().rotateX(yAngle * 20.0F * (float) (Math.PI / 180.0));
-        rotation.mul(xRotation);
+        final Quaternionf xRotation = new Quaternionf();
         final EntityRenderState state = renderState(player);
         if (state instanceof final LivingEntityRenderState living) {
-            living.bodyRot = 180.0F + xAngle * 20.0F;
-            living.yRot = xAngle * 20.0F;
-            living.xRot = living.pose != Pose.FALL_FLYING ? -yAngle * 20.0F : 0.0F;
+            living.bodyRot = 180.0F + this.yaw;
+            living.yRot = 0.0F;
+            living.xRot = 0.0F;
             living.boundingBoxWidth = living.boundingBoxWidth / living.scale;
             living.boundingBoxHeight = living.boundingBoxHeight / living.scale;
             living.scale = 1.0F;
@@ -112,8 +133,11 @@ public final class PlayerPreview {
         if (state.nameTagAttachment == null) {
             state.nameTagAttachment = new Vec3(0.0, player.getBbHeight() + 0.5, 0.0);
         }
-        // A larger offset draws the figure lower in its box
-        final Vector3f translation = new Vector3f(0.0F, state.boundingBoxHeight / 2.0F + 0.2F, 0.0F);
+        // The figure and its labels centred together: the labels reach the top of the title line, over the name (raised over a tall
+        // accessory); a larger offset draws the figure lower in its space
+        final double labelsTop = state.nameTagAttachment.y + ClientAccessories.labelLift(state) + NAME_ABOVE + TitleTags.LINE + LABEL_PAD;
+        final float above = (float) Math.max(0.0, labelsTop - state.boundingBoxHeight);
+        final Vector3f translation = new Vector3f(0.0F, (state.boundingBoxHeight + above) / 2.0F, 0.0F);
         graphics.entity(state, this.size, translation, rotation, xRotation, x0, y0, x1, y1);
     }
 

@@ -7,6 +7,8 @@
  */
 package com.almuradev.almura.network.client;
 
+import com.almuradev.almura.feature.accessory.client.ClientAccessories;
+import com.almuradev.almura.feature.accessory.network.AccessoryMessages;
 import com.almuradev.almura.feature.almanac.client.AlmanacScreens;
 import com.almuradev.almura.feature.almanac.network.ClientboundAlmanacCrops;
 import com.almuradev.almura.feature.almanac.network.ClientboundAlmanacField;
@@ -75,6 +77,8 @@ public final class ClientPayloads {
         event.register(NickMessages.ClientboundOpen.TYPE, (payload, context) -> ClientNicks.onOpen(payload));
         event.register(MembershipMessages.ClientboundOpen.TYPE, (payload, context) -> ClientMemberships.onOpen(payload));
         event.register(MembershipMessages.ClientboundApplied.TYPE, (payload, context) -> ClientMemberships.onApplied(payload));
+        event.register(AccessoryMessages.ClientboundOpen.TYPE, (payload, context) -> ClientAccessories.onOpen(payload));
+        event.register(AccessoryMessages.ClientboundWorn.TYPE, (payload, context) -> ClientAccessories.onWorn(payload));
         event.register(ClientboundSkills.TYPE, (payload, context) -> ClientSkills.setSkills(payload.skills()));
         event.register(BankMessages.ClientboundState.TYPE, (payload, context) -> ClientBank.onState(payload));
         event.register(FeaturesMessages.ClientboundOpen.TYPE, (payload, context) -> FeaturesMenu.onOpen(payload));

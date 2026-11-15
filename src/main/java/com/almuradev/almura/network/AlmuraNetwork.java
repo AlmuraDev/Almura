@@ -8,6 +8,8 @@
 package com.almuradev.almura.network;
 
 import com.almuradev.almura.Almura;
+import com.almuradev.almura.feature.accessory.network.AccessoryMessages;
+import com.almuradev.almura.feature.accessory.server.ServerAccessories;
 import com.almuradev.almura.feature.almanac.network.ClientboundAlmanacCrops;
 import com.almuradev.almura.feature.almanac.network.ClientboundAlmanacField;
 import com.almuradev.almura.feature.bank.network.BankMessages;
@@ -98,6 +100,8 @@ public final class AlmuraNetwork {
         registrar.playToClient(NickMessages.ClientboundOpen.TYPE, NickMessages.ClientboundOpen.CODEC);
         registrar.playToClient(MembershipMessages.ClientboundOpen.TYPE, MembershipMessages.ClientboundOpen.CODEC);
         registrar.playToClient(MembershipMessages.ClientboundApplied.TYPE, MembershipMessages.ClientboundApplied.CODEC);
+        registrar.playToClient(AccessoryMessages.ClientboundOpen.TYPE, AccessoryMessages.ClientboundOpen.CODEC);
+        registrar.playToClient(AccessoryMessages.ClientboundWorn.TYPE, AccessoryMessages.ClientboundWorn.CODEC);
         // To the server
         registrar.playToServer(GuideMessages.ServerboundOpen.TYPE, GuideMessages.ServerboundOpen.CODEC, (payload, context) ->
             ServerGuide.open((ServerPlayer) context.player()));
@@ -151,5 +155,9 @@ public final class AlmuraNetwork {
             ServerMemberships.open((ServerPlayer) context.player()));
         registrar.playToServer(MembershipMessages.ServerboundUpgrade.TYPE, MembershipMessages.ServerboundUpgrade.CODEC, (payload, context) ->
             ServerMemberships.upgrade((ServerPlayer) context.player(), payload.level(), payload.bySkills()));
+        registrar.playToServer(AccessoryMessages.ServerboundOpen.TYPE, AccessoryMessages.ServerboundOpen.CODEC, (payload, context) ->
+            ServerAccessories.open((ServerPlayer) context.player()));
+        registrar.playToServer(AccessoryMessages.ServerboundSelect.TYPE, AccessoryMessages.ServerboundSelect.CODEC, (payload, context) ->
+            ServerAccessories.select((ServerPlayer) context.player(), payload.accessory(), payload.variant()));
     }
 }

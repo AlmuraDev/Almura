@@ -14,6 +14,7 @@ import com.almuradev.almura.content.registry.ContentContainers;
 import com.almuradev.almura.content.registry.FlickerLights;
 import com.almuradev.almura.core.client.AlmuraFontPack;
 import com.almuradev.almura.core.client.config.AlmuraClientConfig;
+import com.almuradev.almura.feature.accessory.client.ClientAccessories;
 import com.almuradev.almura.feature.cache.Caches;
 import com.almuradev.almura.feature.cache.client.CacheRenderer;
 import com.almuradev.almura.feature.harvestsack.HarvestingSack;
@@ -67,6 +68,9 @@ public final class AlmuraClient {
         modBus.addListener(AlmuraClient::onClientSetup);
         // The health bars' health, kept on living entities' render states
         modBus.addListener(EntityLabels::onRegisterRenderStateModifiers);
+        // Accessories: on players' render states, drawn as a layer of the player renderer
+        modBus.addListener(ClientAccessories::onRegisterRenderStateModifiers);
+        modBus.addListener(ClientAccessories::onAddLayers);
         modBus.addListener(AlmuraClient::onRegisterPictureInPictureRenderers);
         // Almura's lettering, above any resource pack's
         AlmuraFontPack.register(modBus);
@@ -109,6 +113,8 @@ public final class AlmuraClient {
         // Almura's messages from the server
         ClientPayloads.register(modBus);
         NeoForge.EVENT_BUS.register(new ServerHudData.Resetter());
+        NeoForge.EVENT_BUS.register(new ClientAccessories.Resetter());
+        NeoForge.EVENT_BUS.register(new ClientAccessories.Labels());
         // Names and health bars over players, monsters and animals, and the off-hand torch option
         NeoForge.EVENT_BUS.register(new EntityLabels());
         NeoForge.EVENT_BUS.register(new OffhandTorches());

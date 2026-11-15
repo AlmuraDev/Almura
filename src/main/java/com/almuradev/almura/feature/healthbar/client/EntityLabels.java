@@ -90,7 +90,7 @@ public final class EntityLabels {
     /**
      * Before the title line: the health bar under the name, and the name (and title) left out when names are off.
      */
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public void onDoRender(final RenderNameTagEvent.DoRender event) {
         final EntityRenderState state = event.getEntityRenderState();
         if (state.nameTag == null || state.nameTagAttachment == null || event.getContent() != state.nameTag) {
