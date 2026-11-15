@@ -39,10 +39,12 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import org.lwjgl.sdl.SDLVideo;
 
 /**
  * Almura's client entry point. NeoForge only constructs it on the client, so the screens, renderers and other client-only code start from here
@@ -95,6 +97,10 @@ public final class AlmuraClient {
         // Almura's messages from the server
         ClientPayloads.register(modBus);
         NeoForge.EVENT_BUS.register(new ServerHudData.Resetter());
+        // Dev runs pass -Dalmura.dev.maximize=true (see build.gradle) to open the window maximized
+        if (Boolean.getBoolean("almura.dev.maximize")) {
+            NeoForge.EVENT_BUS.addListener(AlmuraClient::maximizeOnFirstTick);
+        }
         FeaturesMenu.register(modBus);
     }
 
@@ -106,6 +112,16 @@ public final class AlmuraClient {
                 options.onboardingAccessibilityFinished();
             }
         });
+    }
+
+    private static boolean maximized;
+
+    // SDL window calls must run on the render thread (setup work runs on a worker and deadlocks), so wait for the first tick
+    private static void maximizeOnFirstTick(final ClientTickEvent.Post event) {
+        if (!maximized) {
+            maximized = true;
+            SDLVideo.SDL_MaximizeWindow(Minecraft.getInstance().getWindow().handle());
+        }
     }
 
     private static void onRegisterPictureInPictureRenderers(final RegisterPictureInPictureRenderersEvent event) {
