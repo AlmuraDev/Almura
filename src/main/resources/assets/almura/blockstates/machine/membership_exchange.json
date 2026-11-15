@@ -1,0 +1,19 @@
+{
+    "variants": {
+        "facing=north": {
+            "model": "almura:block/machine/membership_exchange"
+        },
+        "facing=east": {
+            "model": "almura:block/machine/membership_exchange",
+            "y": 90
+        },
+        "facing=south": {
+            "model": "almura:block/machine/membership_exchange",
+            "y": 180
+        },
+        "facing=west": {
+            "model": "almura:block/machine/membership_exchange",
+            "y": 270
+        }
+    }
+}

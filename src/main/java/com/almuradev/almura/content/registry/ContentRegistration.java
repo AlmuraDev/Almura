@@ -27,6 +27,7 @@ import com.almuradev.almura.feature.cache.Caches;
 import com.almuradev.almura.feature.cruet.Cruets;
 import com.almuradev.almura.feature.handbook.SkillsHandbook;
 import com.almuradev.almura.feature.harvestsack.HarvestingSack;
+import com.almuradev.almura.feature.membership.MembershipExchange;
 import com.almuradev.almura.feature.storage.StorageCrates;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -143,6 +144,7 @@ public final class ContentRegistration {
             }
             // Almura's Coin Exchange: cashes in coins, opens the bank
             CoinExchange.registerBlock(helper);
+            MembershipExchange.registerBlock(helper);
             // Almura's caches and storage crates
             Caches.registerBlocks(helper);
             StorageCrates.registerBlocks(helper);
@@ -156,6 +158,7 @@ public final class ContentRegistration {
             FarmersAlmanac.register(helper, this::addToTab);
             SkillsHandbook.register(helper, this::addToTab);
             CoinExchange.registerItem(helper, this::addToTab);
+            MembershipExchange.registerItem(helper, this::addToTab);
             Caches.registerItems(helper, this::addToTab);
             StorageCrates.registerItems(helper, this::addToTab);
             for (final ItemDef def : this.ordered()) {

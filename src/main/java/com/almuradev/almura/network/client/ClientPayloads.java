@@ -23,6 +23,8 @@ import com.almuradev.almura.feature.hud.network.ClientboundPlayerWorlds;
 import com.almuradev.almura.feature.hud.network.ClientboundServerTps;
 import com.almuradev.almura.feature.hud.network.ClientboundWorldName;
 import com.almuradev.almura.feature.hud.ServerHudData;
+import com.almuradev.almura.feature.membership.client.ClientMemberships;
+import com.almuradev.almura.feature.membership.network.MembershipMessages;
 import com.almuradev.almura.feature.menu.ingame.FeaturesMenu;
 import com.almuradev.almura.feature.menu.ingame.network.FeaturesMessages;
 import com.almuradev.almura.feature.nick.client.ClientNicks;
@@ -71,6 +73,8 @@ public final class ClientPayloads {
         event.register(TitleMessages.ClientboundOpen.TYPE, (payload, context) -> ClientTitles.onOpen(payload));
         event.register(NickMessages.ClientboundNames.TYPE, (payload, context) -> ClientNicks.onNames(payload));
         event.register(NickMessages.ClientboundOpen.TYPE, (payload, context) -> ClientNicks.onOpen(payload));
+        event.register(MembershipMessages.ClientboundOpen.TYPE, (payload, context) -> ClientMemberships.onOpen(payload));
+        event.register(MembershipMessages.ClientboundApplied.TYPE, (payload, context) -> ClientMemberships.onApplied(payload));
         event.register(ClientboundSkills.TYPE, (payload, context) -> ClientSkills.setSkills(payload.skills()));
         event.register(BankMessages.ClientboundState.TYPE, (payload, context) -> ClientBank.onState(payload));
         event.register(FeaturesMessages.ClientboundOpen.TYPE, (payload, context) -> FeaturesMenu.onOpen(payload));

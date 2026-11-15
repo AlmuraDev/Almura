@@ -15,6 +15,7 @@ import com.almuradev.almura.feature.economy.Economy;
 import com.almuradev.almura.feature.exchange.server.ServerExchange;
 import com.almuradev.almura.feature.guide.server.ServerGuide;
 import com.almuradev.almura.feature.hud.server.ServerHud;
+import com.almuradev.almura.feature.membership.server.ServerMemberships;
 import com.almuradev.almura.feature.menu.ingame.server.ServerFeatures;
 import com.almuradev.almura.feature.nick.server.ServerNicks;
 import com.almuradev.almura.feature.notification.server.ServerNotifications;
@@ -62,6 +63,8 @@ public final class Almura {
         // Titles and nicknames (Nucleus), above players' names
         NeoForge.EVENT_BUS.register(new ServerTitles());
         ServerNicks.install();
+        // Memberships: ranks bought with money or skills (LuckPerms' members track)
+        NeoForge.EVENT_BUS.register(new ServerMemberships());
         // Exchanges and stores, on the same database and economy
         NeoForge.EVENT_BUS.register(new ServerExchange());
         NeoForge.EVENT_BUS.register(new ServerStore());

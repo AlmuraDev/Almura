@@ -61,6 +61,25 @@ public final class ServerSkills {
     }
 
     /**
+     * @return the player's levels in every skill added up (the memberships' skills total), or -1 if any isn't known, as 3.5's
+     *     {@code getTotalSkillLevel}
+     */
+    public static int totalLevel(final ServerPlayer player) {
+        if (!available()) {
+            return -1;
+        }
+        int total = 0;
+        for (final String skill : skills()) {
+            final int level = level(player, skill);
+            if (level < 0) {
+                return -1;
+            }
+            total += level;
+        }
+        return total;
+    }
+
+    /**
      * @return every rule that needs a level or gives experience, for the Skills Handbook
      */
     public static List<HandbookRule> handbookRules() {

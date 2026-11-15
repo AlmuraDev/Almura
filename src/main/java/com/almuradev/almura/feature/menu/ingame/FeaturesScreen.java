@@ -10,6 +10,7 @@ package com.almuradev.almura.feature.menu.ingame;
 import com.almuradev.almura.feature.bank.client.ClientBank;
 import com.almuradev.almura.feature.exchange.client.ClientExchange;
 import com.almuradev.almura.feature.guide.client.ClientGuide;
+import com.almuradev.almura.feature.membership.client.ClientMemberships;
 import com.almuradev.almura.feature.menu.InGameScreens;
 import com.almuradev.almura.feature.nick.client.ClientNicks;
 import com.almuradev.almura.feature.notification.history.NotificationHistoryScreen;
@@ -63,7 +64,8 @@ final class FeaturesScreen implements Screen {
             .add(centred(factory.button(Text.of("Titles")).setSize(BUTTON_WIDTH, BUTTON_HEIGHT)
                 .onEvent(Button.PRESSED, event -> ClientTitles.requestOpen())))
             .add(later(factory, "Accessories", BUTTON_WIDTH))
-            .add(later(factory, "Memberships", BUTTON_WIDTH))
+            .add(centred(factory.button(Text.of("Memberships")).setSize(BUTTON_WIDTH, BUTTON_HEIGHT)
+                .onEvent(Button.PRESSED, event -> ClientMemberships.requestOpen())))
             .add(centred(factory.button(Text.of("Banking"))
                 .setSize(BUTTON_WIDTH, BUTTON_HEIGHT)
                 .onEvent(Button.PRESSED, event -> ClientBank.requestOpen())));

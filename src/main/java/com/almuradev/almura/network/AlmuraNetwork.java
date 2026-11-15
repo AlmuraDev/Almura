@@ -21,6 +21,8 @@ import com.almuradev.almura.feature.hud.network.ClientboundPlayerMoney;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerWorlds;
 import com.almuradev.almura.feature.hud.network.ClientboundServerTps;
 import com.almuradev.almura.feature.hud.network.ClientboundWorldName;
+import com.almuradev.almura.feature.membership.network.MembershipMessages;
+import com.almuradev.almura.feature.membership.server.ServerMemberships;
 import com.almuradev.almura.feature.menu.ingame.network.FeaturesMessages;
 import com.almuradev.almura.feature.menu.ingame.server.ServerFeatures;
 import com.almuradev.almura.feature.nick.network.NickMessages;
@@ -94,6 +96,8 @@ public final class AlmuraNetwork {
         registrar.playToClient(TitleMessages.ClientboundOpen.TYPE, TitleMessages.ClientboundOpen.CODEC);
         registrar.playToClient(NickMessages.ClientboundNames.TYPE, NickMessages.ClientboundNames.CODEC);
         registrar.playToClient(NickMessages.ClientboundOpen.TYPE, NickMessages.ClientboundOpen.CODEC);
+        registrar.playToClient(MembershipMessages.ClientboundOpen.TYPE, MembershipMessages.ClientboundOpen.CODEC);
+        registrar.playToClient(MembershipMessages.ClientboundApplied.TYPE, MembershipMessages.ClientboundApplied.CODEC);
         // To the server
         registrar.playToServer(GuideMessages.ServerboundOpen.TYPE, GuideMessages.ServerboundOpen.CODEC, (payload, context) ->
             ServerGuide.open((ServerPlayer) context.player()));
@@ -143,5 +147,9 @@ public final class AlmuraNetwork {
             ServerNicks.open((ServerPlayer) context.player()));
         registrar.playToServer(NickMessages.ServerboundChange.TYPE, NickMessages.ServerboundChange.CODEC, (payload, context) ->
             ServerNicks.change((ServerPlayer) context.player(), payload.nickname()));
+        registrar.playToServer(MembershipMessages.ServerboundOpen.TYPE, MembershipMessages.ServerboundOpen.CODEC, (payload, context) ->
+            ServerMemberships.open((ServerPlayer) context.player()));
+        registrar.playToServer(MembershipMessages.ServerboundUpgrade.TYPE, MembershipMessages.ServerboundUpgrade.CODEC, (payload, context) ->
+            ServerMemberships.upgrade((ServerPlayer) context.player(), payload.level(), payload.bySkills()));
     }
 }
