@@ -15,6 +15,8 @@ import com.almuradev.almura.content.registry.FlickerLights;
 import com.almuradev.almura.core.client.AlmuraFontPack;
 import com.almuradev.almura.core.client.config.AlmuraClientConfig;
 import com.almuradev.almura.feature.accessory.client.ClientAccessories;
+import com.almuradev.almura.feature.almanac.client.CropStageRenderer;
+import com.almuradev.almura.feature.almanac.client.CropStageRenderState;
 import com.almuradev.almura.feature.cache.Caches;
 import com.almuradev.almura.feature.cache.client.CacheRenderer;
 import com.almuradev.almura.feature.death.client.ClientDeath;
@@ -155,5 +157,7 @@ public final class AlmuraClient {
     private static void onRegisterPictureInPictureRenderers(final RegisterPictureInPictureRenderersEvent event) {
         // The animated Dockter_Almura figure of the title screen
         event.register(AlmuraFigureRenderState.class, AlmuraFigureRenderer::new);
+        // The Farmer's Almanac's crop growth stages
+        event.register(CropStageRenderState.class, CropStageRenderer::new);
     }
 }

@@ -30,6 +30,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import org.inspirenxe.strata.api.ComponentFactory;
+import org.inspirenxe.strata.api.control.attribute.item.Activatable;
 import org.inspirenxe.strata.api.component.Component;
 import org.inspirenxe.strata.api.control.button.Button;
 import org.inspirenxe.strata.api.control.collection.ListView;
@@ -62,8 +63,8 @@ import java.util.Map;
  * it. The ground temperature where the player stands is at the bottom, with Close.
  * <p>
  * When the server runs the Skills plugin, as on 3.5, each crop also shows the farming level to plant and to harvest it (green when the player
- * has it, red when not), and the list sorts by the Crop or Farming Lv heading's click. 3.5 also opened a crop's growth stages, drawn as 3D
- * models, on a double click (not ported yet).
+ * has it, red when not), and the list sorts by the Crop or Farming Lv heading's click. Double clicking a crop opens its growth stages, drawn
+ * as 3D models ({@link AlmanacStagesScreen}).
  */
 final class AlmanacCropsScreen implements Screen {
 
@@ -117,6 +118,10 @@ final class AlmanacCropsScreen implements Screen {
 
         final ListView<Entry> list = factory.<Entry>listView(entry -> this.row(factory, entry));
         list.setRowHeight(ROW_HEIGHT);
+        // A double click shows the crop's growth stages, as 3.5's
+        list.onEvent(Activatable.ACTIVATED, event -> list.selected()
+            .filter(entry -> entry.plant != null)
+            .ifPresent(entry -> AlmanacStagesScreen.open(entry.name, entry.plant)));
         this.list = list;
 
         final Component<?> count = factory.label(Text.of("Crops: ").color(WHITE).append(Text.of(Integer.toString(entries.size())).color(GRAY)));
@@ -246,7 +251,9 @@ final class AlmanacCropsScreen implements Screen {
             tooltip = Text.concat(tooltip, Text.of("\nFarming level to plant: ").color(GRAY), this.level(plant),
                 Text.of("\nFarming level to harvest: ").color(GRAY), this.level(harvest));
         }
-        return row.setAnchor(Anchor.FILL).setAlignment(HorizontalAlignment.STRETCH, VerticalAlignment.STRETCH).setTooltip(tooltip);
+        // The double click hint last, under the levels
+        return row.setAnchor(Anchor.FILL).setAlignment(HorizontalAlignment.STRETCH, VerticalAlignment.STRETCH)
+            .setTooltip(withStages(tooltip, entry.plant));
     }
 
     /**
@@ -275,7 +282,7 @@ final class AlmanacCropsScreen implements Screen {
                 : Text.of(TWO.format(temperature.min()) + "-" + TWO.format(temperature.max())).color(temperature.contains(ground) ? GREEN : RED),
             Text.of("\nHarvesting sack: ").color(GRAY),
             crop.def().sackResetAge() >= 0 ? Text.of("Yes").color(GREEN) : Text.of("No").color(RED));
-        return new Entry(BuiltInRegistries.BLOCK.getKey(crop).toString(), name, icon, tooltip);
+        return new Entry(BuiltInRegistries.BLOCK.getKey(crop).toString(), name, icon, tooltip, crop);
     }
 
     private static Entry vanilla(final String id, final String name, final Item seed, final boolean needsLight, final @Nullable String note) {
@@ -287,10 +294,19 @@ final class AlmanacCropsScreen implements Screen {
         if (note != null) {
             parts.add(Text.of("\n" + note).color(YELLOW));
         }
-        return new Entry(id, name, new ItemStack(seed), Text.concat(parts));
+        final Block plant = BuiltInRegistries.BLOCK.getOptional(Identifier.tryParse(id)).orElse(null);
+        return new Entry(id, name, new ItemStack(seed), Text.concat(parts), plant);
     }
 
-    // A crop: its planted block's id (its levels are known by), name, seed and tooltip
-    private record Entry(String id, String name, ItemStack seed, Text tooltip) {
+    /**
+     * @return the tooltip, saying a double click shows the growth stages when the planted block has them
+     */
+    private static Text withStages(final Text tooltip, final @Nullable Block plant) {
+        return AlmanacStagesScreen.age(plant) == null ? tooltip
+            : Text.concat(tooltip, Text.of("\nDouble click to see its growth stages").color(DARK_GRAY));
+    }
+
+    // A crop: its planted block's id (its levels are known by), name, seed, tooltip and planted block (whose stages a double click shows)
+    private record Entry(String id, String name, ItemStack seed, Text tooltip, @Nullable Block plant) {
     }
 }
