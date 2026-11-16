@@ -26,6 +26,9 @@ import com.almuradev.almura.feature.hud.Huds;
 import com.almuradev.almura.feature.hud.ServerHudData;
 import com.almuradev.almura.feature.lighting.client.ClientFlickerLights;
 import com.almuradev.almura.feature.lighting.client.FlickerLightRenderer;
+import com.almuradev.almura.feature.machine.Machines;
+import com.almuradev.almura.feature.machine.client.ProcessingScreen;
+import com.almuradev.almura.feature.machine.client.SpinningPartRenderer;
 import com.almuradev.almura.feature.menu.Disconnected;
 import com.almuradev.almura.feature.menu.figure.AlmuraFigureRenderer;
 import com.almuradev.almura.feature.menu.figure.AlmuraFigureRenderState;
@@ -75,6 +78,8 @@ public final class AlmuraClient {
         modBus.addListener(ClientAccessories::onRegisterRenderStateModifiers);
         modBus.addListener(ClientAccessories::onAddLayers);
         modBus.addListener(AlmuraClient::onRegisterPictureInPictureRenderers);
+        // The kitchen machines' spinning parts, which no block state names
+        modBus.addListener(SpinningPartRenderer::onRegisterStandalone);
         // Almura's lettering, above any resource pack's
         AlmuraFontPack.register(modBus);
         // The storage barrel's label
@@ -90,6 +95,8 @@ public final class AlmuraClient {
                 event.registerBlockEntityRenderer(FlickerLights.blockEntityType(),
                     FlickerLightRenderer::new);
             }
+            // The kitchen machines' blade and cutting plate
+            event.registerBlockEntityRenderer(Machines.blockEntityType(), SpinningPartRenderer::new);
         });
         // The content's containers show a chest's screen
         modBus.addListener((final RegisterMenuScreensEvent event) -> {
@@ -100,6 +107,10 @@ public final class AlmuraClient {
                 if (HarvestingSack.menuType() != null) {
                     event.register(HarvestingSack.menuType(), ContainerScreen::new);
                 }
+            }
+            // Almura's machines show 3.5's machine screen
+            if (Machines.menuTypeOrNull() != null) {
+                event.register(Machines.menuType(), ProcessingScreen::new);
             }
         });
         NeoForge.EVENT_BUS.register(new MainMenuManager());

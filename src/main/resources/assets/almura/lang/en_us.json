@@ -209,5 +209,12 @@
   "block.almura.storage.oak_storage_crate": "Oak Storage Crate",
   "block.almura.storage.spruce_storage_crate": "Spruce Storage Crate",
   "block.almura.storage.birch_storage_crate": "Birch Storage Crate",
-  "block.almura.machine.membership_exchange": "Membership Exchange"
+  "block.almura.machine.membership_exchange": "Membership Exchange",
+  "block.almura.machine.seed_processor": "Seed Processor",
+  "block.almura.machine.kitchen_slicer": "Kitchen Slicer & Shredder",
+  "block.almura.machine.kitchen_grinder": "Kitchen Grinder",
+  "gui.almura.machine.no_power_required": "No power required",
+  "gui.almura.machine.progress": "Progress: %s%%",
+  "gui.almura.machine.start": "Start",
+  "gui.almura.machine.stop": "Stop"
 }

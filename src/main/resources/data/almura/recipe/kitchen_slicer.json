@@ -1,0 +1,18 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "misc",
+    "key": {
+        "I": "minecraft:iron_ingot",
+        "K": "almura:normal/tool/knife",
+        "P": "minecraft:piston",
+        "R": "minecraft:redstone"
+    },
+    "pattern": [
+        "IKI",
+        "IPI",
+        "IRI"
+    ],
+    "result": {
+        "id": "almura:machine/kitchen_slicer"
+    }
+}

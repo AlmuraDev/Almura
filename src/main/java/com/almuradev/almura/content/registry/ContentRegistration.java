@@ -27,6 +27,7 @@ import com.almuradev.almura.feature.cache.Caches;
 import com.almuradev.almura.feature.cruet.Cruets;
 import com.almuradev.almura.feature.handbook.SkillsHandbook;
 import com.almuradev.almura.feature.harvestsack.HarvestingSack;
+import com.almuradev.almura.feature.machine.Machines;
 import com.almuradev.almura.feature.membership.MembershipExchange;
 import com.almuradev.almura.feature.storage.StorageCrates;
 import net.minecraft.core.Holder;
@@ -116,6 +117,8 @@ public final class ContentRegistration {
 
     @SubscribeEvent
     public void onRegister(final RegisterEvent event) {
+        // The wear of the content's crafting tools (knife, grater, grinder), which stack as on 1.12
+        ContentToolItem.registerComponent(event);
         event.register(Registries.CONSUME_EFFECT_TYPE, helper -> helper.register(Identifier.fromNamespaceAndPath(Almura.ID, "heal"),
             HealConsumeEffect.TYPE));
         // The caches' upgrade recipes
@@ -148,6 +151,8 @@ public final class ContentRegistration {
             // Almura's caches and storage crates
             Caches.registerBlocks(helper);
             StorageCrates.registerBlocks(helper);
+            // Almura's machines: the seed processor, kitchen slicer and kitchen grinder
+            Machines.registerBlocks(helper);
         });
         event.register(Registries.ITEM, helper -> {
             // Almura's cruets: content items are handed back in them
@@ -161,6 +166,7 @@ public final class ContentRegistration {
             MembershipExchange.registerItem(helper, this::addToTab);
             Caches.registerItems(helper, this::addToTab);
             StorageCrates.registerItems(helper, this::addToTab);
+            Machines.registerItems(helper, this::addToTab);
             for (final ItemDef def : this.ordered()) {
                 if (def.kind().equals("slab")) {
                     // A slab's item is its block's
@@ -196,6 +202,7 @@ public final class ContentRegistration {
         event.register(Registries.BLOCK_ENTITY_TYPE, helper -> {
             Caches.registerBlockEntityType(helper);
             StorageCrates.registerBlockEntityType(helper);
+            Machines.registerBlockEntityType(helper);
             final Set<Block> containerBlocks = new HashSet<>();
             this.registeredBlocks.values().stream().filter(block -> block instanceof ContentContainers.ContainerBlock).forEach(containerBlocks::add);
             ContentContainers.blockEntityType = new BlockEntityType<>(
@@ -214,6 +221,7 @@ public final class ContentRegistration {
             helper.register(Identifier.fromNamespaceAndPath(Almura.ID, "container"), ContentContainers.menuType);
             helper.register(Identifier.fromNamespaceAndPath(Almura.ID, "storage_barrel"), ContentContainers.storageBarrelMenuType);
             HarvestingSack.registerMenu(helper);
+            Machines.registerMenu(helper);
             this.storageBarrelItems();
         });
         event.register(Registries.CREATIVE_MODE_TAB, helper -> {
@@ -318,7 +326,10 @@ public final class ContentRegistration {
         if (def.maxStackSize() > 0) {
             properties.stacksTo(Math.min(99, def.maxStackSize()));
         }
-        if (def.durability() > 0) {
+        // A hoe or sickle wears as vanilla's tools do; any other item with durability is a crafting tool, worn by Almura's own count so
+        // that it still stacks (see ContentToolItem)
+        final boolean craftingTool = def.durability() > 0 && !def.kind().equals("tool_hoe") && !def.kind().equals("tool_sickle");
+        if (def.durability() > 0 && !craftingTool) {
             properties.durability(def.durability());
         }
         if (def.food() != null) {
@@ -343,7 +354,7 @@ public final class ContentRegistration {
                 .ifPresentOrElse(container -> properties.usingConvertsTo(container.value()),
                     () -> Almura.LOGGER.warn("Content item {} is handed back in {}, which doesn't exist", def.id(), def.container()));
         }
-        return new Item(properties);
+        return craftingTool ? new ContentToolItem(properties, def.durability(), def.containerDamage()) : new Item(properties);
     }
 
     /**

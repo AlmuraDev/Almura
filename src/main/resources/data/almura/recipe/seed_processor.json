@@ -1,0 +1,19 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "misc",
+    "key": {
+        "I": "minecraft:iron_ingot",
+        "H": "minecraft:hopper",
+        "S": "minecraft:shears",
+        "F": "minecraft:furnace",
+        "R": "minecraft:redstone"
+    },
+    "pattern": [
+        "IHI",
+        "SFS",
+        "IRI"
+    ],
+    "result": {
+        "id": "almura:machine/seed_processor"
+    }
+}

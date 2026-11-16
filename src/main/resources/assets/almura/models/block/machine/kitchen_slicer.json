@@ -1,0 +1,9 @@
+{
+    "parent": "minecraft:block/block",
+    "loader": "neoforge:obj",
+    "model": "almura:models/block/machine/kitchen_slicer.obj",
+    "textures": {
+        "almura:block/machine/kitchen_slicer": "almura:block/machine/kitchen_slicer",
+        "particle": "almura:block/machine/kitchen_slicer"
+    }
+}

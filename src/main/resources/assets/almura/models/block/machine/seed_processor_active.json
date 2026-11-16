@@ -1,0 +1,8 @@
+{
+    "parent": "almura:block/machine/seed_processor",
+    "textures": {
+        "north": "almura:block/machine/seed_processor_front_active",
+        "east": "almura:block/machine/seed_processor_side_active",
+        "west": "almura:block/machine/seed_processor_side_active"
+    }
+}

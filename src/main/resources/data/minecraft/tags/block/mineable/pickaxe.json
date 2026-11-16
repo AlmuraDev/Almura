@@ -1,0 +1,8 @@
+{
+    "replace": false,
+    "values": [
+        "almura:machine/kitchen_slicer",
+        "almura:machine/kitchen_grinder",
+        "almura:machine/seed_processor"
+    ]
+}

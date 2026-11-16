@@ -22,6 +22,9 @@ What it fixes (see FIXES.md for each file):
   7. Wild crops in the grass mix named at an age that isn't their ripe one: their ripe one.
   8. Crop hydration asking farmland for "level" (farmland's is "moisture"; 1.12 ignored the unknown property, so any farmland
      watered the crop): the property removed, keeping the behaviour players had.
+  9. Recipes making more of an item than its max_stack_size (1.12 handed the oversized stack over; 26.3 refuses to make it, so the
+     recipe made nothing): as many as it stacks to. Items with durability stack to 64 in 4.0 as they did on 1.12 (the loader keeps their
+     wear itself), so their recipes are left as they are.
 
 It changes text in place where it can, so the files keep their comments and layout.
 """
@@ -432,6 +435,45 @@ def fix_hydration(content, fixes):
                             'meant, give them "moisture" with the range instead.')
 
 
+# 9. Recipe results past the stack size ------------------------------------------------------------------------------------------
+
+RESULT_COUNT = re.compile(r'("result"\s*:\s*\{[^{}]*?"item"\s*:\s*"([a-z0-9_]+:[a-z0-9_/.-]+)"[^{}]*?"count"\s*:\s*)(\d+)')
+
+
+def stack_sizes(content):
+    """Items that stack to fewer than 64: their max_stack_size."""
+    sizes = {}
+    for namespace in content.namespaces():
+        for identifier, path in content.content_files(namespace, 'item'):
+            try:
+                item = lenient_json(read(path))
+            except ValueError:
+                continue
+            if 0 < (item.get('max_stack_size') or 0) < 64:
+                sizes[identifier] = item['max_stack_size']
+    return sizes
+
+
+def fix_recipe_counts(content, fixes):
+    sizes = stack_sizes(content)
+    for namespace in content.namespaces():
+        for path in sorted(content.ns(namespace).glob('content/**/_recipes/*.json')):
+            text = read(path)
+            changed = []
+
+            def limit(match):
+                size = sizes.get(match.group(2))
+                if size is None or int(match.group(3)) <= size:
+                    return match.group(0)
+                changed.append(f'{match.group(2)} {match.group(3)} → {size}')
+                return f'{match.group(1)}{size}'
+
+            text = RESULT_COUNT.sub(limit, text)
+            if changed:
+                write(path, text)
+                fixes.add('Recipe results past the stack size', f'`{path.relative_to(content.assets).as_posix()}`: ' + ', '.join(changed))
+
+
 # ----------------------------------------------------------------------------------------------------------------------------------
 
 def known_decisions(content, fixes):
@@ -473,6 +515,7 @@ def main():
     fix_effects(content, fixes)
     fix_wild_crops(content, fixes)
     fix_hydration(content, fixes)
+    fix_recipe_counts(content, fixes)
     known_decisions(content, fixes)
     fixes.write(out / 'FIXES.md', source)
     for section, lines in fixes.done.items():

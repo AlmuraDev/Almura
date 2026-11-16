@@ -1,0 +1,9 @@
+{
+    "parent": "minecraft:block/block",
+    "loader": "neoforge:obj",
+    "model": "almura:models/block/machine/kitchen_grinder.obj",
+    "textures": {
+        "almura:block/machine/kitchen_grinder": "almura:block/machine/kitchen_grinder",
+        "particle": "almura:block/machine/kitchen_grinder"
+    }
+}
