@@ -175,6 +175,7 @@ final class LegacyWorldConverter {
             }
         }
         final Map<Long, CompoundTag> blockheadsAt = new HashMap<>();
+        final Map<Long, CompoundTag> machinesAt = new HashMap<>();
         final List<Cache> caches = new ArrayList<>();
         final Map<Long, String> storage = new HashMap<>();
         final ListTag tileEntities = new ListTag();
@@ -200,6 +201,15 @@ final class LegacyWorldConverter {
                 tileEntities.add(this.crateAsChest(tileEntity));
                 storage.put(pack(x, y, z), type);
                 this.report.tileEntities.merge("almura:storage as " + type, 1, Integer::sum);
+            } else if (MACHINES.contains(id)) {
+                // 3.5's machines each had their own block entity; 4.0's share one. Their items go through the game's upgrade as a chest's
+                if (placedAt.containsKey(pack(x, y, z))) {
+                    tileEntities.add(itemsAsChest(tileEntity, tileEntity.getCompoundOrEmpty("Inventory")));
+                    machinesAt.put(pack(x, y, z), tileEntity);
+                    this.report.tileEntities.merge(id, 1, Integer::sum);
+                } else {
+                    this.report.droppedTileEntities.merge(id, 1, Integer::sum);
+                }
             } else if (this.blockheads.handles(id)) {
                 if (placedAt.containsKey(pack(x, y, z))) {
                     tileEntities.add(BlockheadsConversion.asChest(tileEntity));
@@ -283,6 +293,13 @@ final class LegacyWorldConverter {
             Tag tag = upgradedTag;
             if (tag instanceof final CompoundTag chest) {
                 final long at = pack(chest.getIntOr("x", 0), chest.getIntOr("y", 0), chest.getIntOr("z", 0));
+                final CompoundTag machine = machinesAt.get(at);
+                if (machine != null) {
+                    chest.putString("id", "almura:processing_machine");
+                    chest.putInt("Progress", machine.getIntOr("Progress", 0));
+                    chest.putInt("Selected", machine.getIntOr("Selected", 0));
+                    chest.putBoolean("Started", machine.getBooleanOr("Started", false));
+                }
                 final CompoundTag legacy = blockheadsAt.get(at);
                 if (legacy != null) {
                     tag = BlockheadsConversion.finish(chest, legacy, placedAt.get(at));
@@ -330,6 +347,33 @@ final class LegacyWorldConverter {
         this.report.chunks++;
         this.report.statuses.merge(upgraded.getStringOr("Status", "?"), 1, Integer::sum);
         return upgraded;
+    }
+
+    // 3.5's machines' block entities, by their 3.5 ids
+    private static final Set<String> MACHINES = Set.of("almura:machine/seed_processor", "almura:machine/kitchen_slicer",
+        "almura:machine/kitchen_grinder");
+
+    /**
+     * A 1.12 tile entity whose items Forge kept in an item handler ({@code Size}, {@code Items}), as a 1.12 chest, so the game's upgrade
+     * upgrades the items.
+     */
+    static CompoundTag itemsAsChest(final CompoundTag tileEntity, final CompoundTag handler) {
+        final CompoundTag chest = new CompoundTag();
+        chest.putString("id", "minecraft:chest");
+        chest.putInt("x", tileEntity.getIntOr("x", 0));
+        chest.putInt("y", tileEntity.getIntOr("y", 0));
+        chest.putInt("z", tileEntity.getIntOr("z", 0));
+        final ListTag items = new ListTag();
+        for (final Tag tag : handler.getListOrEmpty("Items")) {
+            if (tag instanceof final CompoundTag slot) {
+                final CompoundTag item = slot.copy();
+                stripForge(item);
+                item.putByte("Slot", (byte) slot.getIntOr("Slot", slot.getByteOr("Slot", (byte) 0)));
+                items.add(item);
+            }
+        }
+        chest.put("Items", items);
+        return chest;
     }
 
     private static long pack(final int x, final int y, final int z) {
