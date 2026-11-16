@@ -16,6 +16,7 @@ import com.almuradev.almura.feature.death.server.ServerDeath;
 import com.almuradev.almura.feature.economy.Economy;
 import com.almuradev.almura.feature.exchange.server.ServerExchange;
 import com.almuradev.almura.feature.guide.server.ServerGuide;
+import com.almuradev.almura.feature.hud.server.ServerBiomeNames;
 import com.almuradev.almura.feature.hud.server.ServerHud;
 import com.almuradev.almura.feature.membership.server.ServerMemberships;
 import com.almuradev.almura.feature.menu.ingame.server.ServerFeatures;
@@ -51,6 +52,8 @@ public final class Almura {
         modBus.addListener(Caches::onRegisterCapabilities);
         // What the server does for Almura's players: the HUD's data, notifications
         NeoForge.EVENT_BUS.register(new ServerHud());
+        // TerrainControl's biome names for the HUD, when it is installed
+        NeoForge.EVENT_BUS.register(new ServerBiomeNames());
         // The server's economy (Sponge's, such as EconomyLite's) for the HUD's money, when there is one
         Economy.install();
         NeoForge.EVENT_BUS.register(new ServerNotifications());

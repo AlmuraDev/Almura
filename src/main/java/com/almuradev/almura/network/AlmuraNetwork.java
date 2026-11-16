@@ -21,6 +21,7 @@ import com.almuradev.almura.feature.exchange.server.ServerExchange;
 import com.almuradev.almura.feature.guide.network.GuideMessages;
 import com.almuradev.almura.feature.guide.server.ServerGuide;
 import com.almuradev.almura.feature.handbook.network.ClientboundHandbook;
+import com.almuradev.almura.feature.hud.network.ClientboundBiomeNames;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerMoney;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerWorlds;
 import com.almuradev.almura.feature.hud.network.ClientboundServerTps;
@@ -76,6 +77,7 @@ public final class AlmuraNetwork {
         registrar.playToClient(ClientboundServerTps.TYPE, ClientboundServerTps.CODEC);
         registrar.playToClient(ClientboundPlayerWorlds.TYPE, ClientboundPlayerWorlds.CODEC);
         registrar.playToClient(ClientboundPlayerMoney.TYPE, ClientboundPlayerMoney.CODEC);
+        registrar.playToClient(ClientboundBiomeNames.TYPE, ClientboundBiomeNames.CODEC);
         registrar.playToClient(ClientboundAlmanacField.TYPE, ClientboundAlmanacField.CODEC);
         registrar.playToClient(ClientboundAlmanacCrops.TYPE, ClientboundAlmanacCrops.CODEC);
         registrar.playToClient(GuideMessages.ClientboundListing.TYPE, GuideMessages.ClientboundListing.CODEC);

@@ -9,6 +9,8 @@ package com.almuradev.almura.feature.cache;
 
 import net.neoforged.neoforge.transfer.StacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.level.storage.ValueInput;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 import java.util.function.IntSupplier;
@@ -30,6 +32,17 @@ public final class CacheHandler extends StacksResourceHandler<CacheStack, ItemRe
 
     public CacheStack stack() {
         return this.stacks.getFirst();
+    }
+
+    /**
+     * Loads the slot, always one: saved data with none (or more) is read as its first stack, or empty, rather than breaking the cache.
+     */
+    @Override
+    public void deserialize(final ValueInput input) {
+        super.deserialize(input);
+        if (this.stacks.size() != 1) {
+            this.setStacks(NonNullList.of(CacheStack.EMPTY, this.stacks.isEmpty() ? CacheStack.EMPTY : this.stacks.getFirst()));
+        }
     }
 
     public int limit() {

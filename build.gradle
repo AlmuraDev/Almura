@@ -64,6 +64,9 @@ dependencies {
     compileOnly(files('libs/skills-api-2.0.0.jar'))
     // Nucleus' API (its 4.0 for SpongeAPI 21: nicknames), taken from its jar as it isn't published; the plugin brings it at run time
     compileOnly(files('libs/nucleus-api-4.0.0.jar'))
+    // TerrainControl's API (its 4.0 for 26.3: biome names, which only the server knows), taken from its jar; TerrainControl brings it at
+    // run time, and Almura only touches it when TerrainControl is installed
+    compileOnly(files('libs/terraincontrol-api-4.0.0.jar'))
 
     // LuckPerms' API, for permissions only known while the server runs (a store's, an exchange's); LuckPerms brings it at run time
     compileOnly("net.luckperms:api:${luckperms_api_version}")
@@ -77,6 +80,8 @@ dependencies {
     testImplementation(platform('org.junit:junit-bom:5.11.4'))
     testImplementation('org.junit.jupiter:junit-jupiter')
     testRuntimeOnly('org.junit.platform:junit-platform-launcher')
+    // Mods a 3.5 world's conversion brings forward (see LegacyWorldConversionTest), put in runs/convert-mods by hand; none by default
+    testRuntimeOnly(fileTree(dir: 'runs/convert-mods', include: '*.jar'))
     testImplementation('com.google.code.gson:gson:2.11.0')
 }
 
@@ -90,6 +95,17 @@ tasks.named('test', Test) {
     // Absolute, as the game started in the tests runs elsewhere
     systemProperty('almura.test.artifacts', project.file('build/moddev/artifacts').absolutePath)
     systemProperty('almura.test.build', project.file('build').absolutePath)
+    // A 3.5 world to convert, when asked (see LegacyWorldConversionTest)
+    if (project.findProperty('almura.convert.level') != null) {
+        // The game's upgrade of old chunks needs room
+        maxHeapSize = '6g'
+    }
+    ['level', 'regions', 'out', 'dimension', 'tcWorld', 'only'].each { key ->
+        def value = project.findProperty("almura.convert.${key}")
+        if (value != null) {
+            systemProperty("almura.convert.${key}", value)
+        }
+    }
     // And for the game started in the tests: load the content from there
     systemProperty('almura.content', almuraContent)
     testLogging {

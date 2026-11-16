@@ -31,6 +31,8 @@ public final class ServerHudData {
     // The player's money, from a server with an economy: its currency's symbol and the balance
     private static @Nullable String moneySymbol;
     private static double money;
+    // Names of the biomes the client has no translation for (TerrainControl's), by biome id
+    private static final Map<String, String> biomeNames = new HashMap<>();
 
     private ServerHudData() {
     }
@@ -91,7 +93,19 @@ public final class ServerHudData {
         playerWorldsKnown = true;
     }
 
+    /**
+     * @return the biome's name as the server gave it, or null when it gave none (the biome's translation is then used)
+     */
+    public static @Nullable String biomeName(final String biome) {
+        return biomeNames.get(biome);
+    }
+
+    public static void addBiomeNames(final Map<String, String> names) {
+        biomeNames.putAll(names);
+    }
+
     private static void forget() {
+        biomeNames.clear();
         worldName = null;
         tps = null;
         playerWorlds.clear();

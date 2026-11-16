@@ -22,6 +22,7 @@ import com.almuradev.almura.feature.guide.client.ClientGuide;
 import com.almuradev.almura.feature.guide.network.GuideMessages;
 import com.almuradev.almura.feature.handbook.client.ClientHandbook;
 import com.almuradev.almura.feature.handbook.network.ClientboundHandbook;
+import com.almuradev.almura.feature.hud.network.ClientboundBiomeNames;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerMoney;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerWorlds;
 import com.almuradev.almura.feature.hud.network.ClientboundServerTps;
@@ -64,6 +65,7 @@ public final class ClientPayloads {
         event.register(ClientboundWorldName.TYPE, (payload, context) -> ServerHudData.setWorldName(payload.name()));
         event.register(ClientboundServerTps.TYPE, (payload, context) -> ServerHudData.setTps(payload.tps()));
         event.register(ClientboundPlayerWorlds.TYPE, (payload, context) -> ServerHudData.updatePlayerWorlds(payload.replace(), payload.worlds()));
+        event.register(ClientboundBiomeNames.TYPE, (payload, context) -> ServerHudData.addBiomeNames(payload.names()));
         event.register(ClientboundPlayerMoney.TYPE, (payload, context) -> ServerHudData.setMoney(payload.symbol(), payload.balance()));
         event.register(ClientboundAlmanacField.TYPE, (payload, context) -> AlmanacScreens.openField(payload));
         event.register(ClientboundAlmanacCrops.TYPE, (payload, context) -> AlmanacScreens.openCrops(payload));

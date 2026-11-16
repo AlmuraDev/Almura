@@ -108,7 +108,11 @@ final class InformationDebugPanel {
                 final Holder<Biome> biome = level.getBiome(pos);
                 final Optional<Identifier> id = biome.unwrapKey().map(key -> key.identifier());
                 this.lines.property("Biome Reg", id.map(Identifier::toString).orElse("[unregistered]"));
-                this.lines.property("Biome Name", id.map(key -> Component.translatable(key.toLanguageKey("biome")).getString()).orElse("-"));
+                // The name the server gave (TerrainControl's biomes, which the client has no translation for), else the biome's translation
+                this.lines.property("Biome Name", id.map(key -> {
+                    final String sent = ServerHudData.biomeName(key.toString());
+                    return sent != null ? sent : Component.translatable(key.toLanguageKey("biome")).getString();
+                }).orElse("-"));
                 this.lines.property("Biome ID", String.valueOf(level.registryAccess().lookupOrThrow(Registries.BIOME).getId(biome.value())));
                 this.lines.property("Temperature", String.valueOf(biome.value().getBaseTemperature()));
                 this.lines.property("Rainfall", String.valueOf(biome.value().getModifiedClimateSettings().downfall()));
