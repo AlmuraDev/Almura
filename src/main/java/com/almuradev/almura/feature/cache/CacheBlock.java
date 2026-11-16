@@ -11,6 +11,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.TickTask;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Inventory;
@@ -197,7 +200,17 @@ public final class CacheBlock extends HorizontalDirectionalBlock implements Enti
 
     @Override
     protected void attack(final BlockState state, final Level level, final BlockPos pos, final Player player) {
-        if (level.isClientSide() || !(level.getBlockEntity(pos) instanceof final CacheBlockEntity cache)) {
+        if (!(level instanceof final ServerLevel serverLevel)) {
+            return;
+        }
+        // Handed over on the next tick, not while the click's packet is being handled: Sponge tracks that packet's changes and warns of
+        // an inventory change it wasn't told of
+        final MinecraftServer server = serverLevel.getServer();
+        server.schedule(new TickTask(server.getTickCount(), () -> withdraw(level, pos, player)));
+    }
+
+    private static void withdraw(final Level level, final BlockPos pos, final Player player) {
+        if (player.isRemoved() || !(level.getBlockEntity(pos) instanceof final CacheBlockEntity cache)) {
             return;
         }
         final CacheStack stack = cache.stack();
