@@ -474,6 +474,8 @@ final class OriginHud implements Screen {
                 Text.of(ping + "ms").color(ping <= 50 ? GREEN : ping <= 150 ? YELLOW : RED)));
         }
 
+        // Vanilla's clock, which shows the time of day in every world with a sun (Almura's assets/minecraft/items/clock.json; vanilla's
+        // only did in the overworld and spun elsewhere, as in TerrainControl's worlds)
         if (this.clock.visual().isEmpty()) {
             this.clock.setVisual(MinecraftVisuals.item(new ItemStack(Items.CLOCK)));
         }
