@@ -36,6 +36,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -433,7 +434,7 @@ public final class ContentPackBuilder {
                 particle = texture;
             }
         }
-        // As 3.5's OBJ reader did: the particles show the part of the sheet the model's last face uses, not the whole sheet
+        // The particles show the part of the sheet the model is mostly made of (not the whole sheet, nor 3.5's last face, often a detail)
         final String cut = mtl == null ? null : this.objParticle(namespace, objPath, base, mtl);
         if (cut != null) {
             particle = cut;
@@ -481,20 +482,27 @@ public final class ContentPackBuilder {
     }
 
     /**
-     * The OBJ's particle texture, as 3.5's OBJ reader made it: the part of its texture sheet between the UVs of the first and third corners
-     * of its last face, here cut out and scaled to 16x16 ({@code textures/block/obj_particle/...}).
+     * The OBJ's particle texture: the part of its texture sheet under the largest face of the material that covers most of the model,
+     * cut out and scaled to 16x16 ({@code textures/block/obj_particle/...}). 3.5's OBJ reader took its last face, which is often a detail
+     * (the Tile Topped Bar's corner broke yellow); what the block is mostly made of shows what it is.
      *
-     * @return The texture's id, or null if the face or its texture can't be found
+     * @return The texture's id, or null if no face or its texture can be found
      */
     private @Nullable String objParticle(final String namespace, final String objPath, final String base, final Path mtl) {
         final Path models = this.source.namespace(namespace).resolve("models");
+        final List<float[]> vertices = new ArrayList<>();
         final List<float[]> uvs = new ArrayList<>();
-        String material = null, faceMaterial = null;
-        String[] face = null;
+        final List<Face> faces = new ArrayList<>();
+        String material = null;
         try {
             for (final String line : Files.readAllLines(models.resolve(objPath), StandardCharsets.UTF_8)) {
                 final String[] parts = line.trim().split("\\s+");
                 switch (parts[0]) {
+                    case "v" -> {
+                        if (parts.length >= 4) {
+                            vertices.add(new float[] {Float.parseFloat(parts[1]), Float.parseFloat(parts[2]), Float.parseFloat(parts[3])});
+                        }
+                    }
                     case "vt" -> {
                         if (parts.length >= 3) {
                             uvs.add(new float[] {Float.parseFloat(parts[1]), Float.parseFloat(parts[2])});
@@ -502,9 +510,11 @@ public final class ContentPackBuilder {
                     }
                     case "usemtl" -> material = parts.length >= 2 ? parts[1] : null;
                     case "f" -> {
-                        if (parts.length >= 4) {
-                            face = parts;
-                            faceMaterial = material;
+                        if (parts.length >= 4 && material != null) {
+                            final Face face = face(vertices, uvs, parts, material);
+                            if (face != null) {
+                                faces.add(face);
+                            }
                         }
                     }
                     default -> { }
@@ -513,18 +523,70 @@ public final class ContentPackBuilder {
         } catch (final IOException | NumberFormatException e) {
             return null;
         }
-        if (face == null || faceMaterial == null) {
+        // The material covering the most surface, and its largest face
+        final Map<String, Double> covered = new HashMap<>();
+        for (final Face face : faces) {
+            covered.merge(face.material, face.area, Double::sum);
+        }
+        final String main = covered.entrySet().stream().max(Map.Entry.comparingByValue()).map(Map.Entry::getKey).orElse(null);
+        final Face largest = faces.stream().filter(face -> face.material.equals(main)).max(Comparator.comparingDouble(face -> face.area))
+            .orElse(null);
+        if (largest == null) {
             return null;
         }
-        final float[] first = uv(uvs, face[1]), third = uv(uvs, face[3]);
-        final String texture = this.materialMap(mtl, faceMaterial);
-        if (first == null || third == null || texture == null || !this.textureExists(texture)) {
+        final String texture = this.materialMap(mtl, largest.material);
+        if (texture == null || !this.textureExists(texture)) {
             return null;
         }
         final Path image = this.source.namespace(namespace(texture)).resolve("textures").resolve(path(texture) + ".png");
         final String id = namespace + ":block/obj_particle/" + base;
-        this.pack.putGenerated("assets/" + namespace + "/textures/block/obj_particle/" + base + ".png", () -> cut(image, first, third));
+        this.pack.putGenerated("assets/" + namespace + "/textures/block/obj_particle/" + base + ".png",
+            () -> cut(image, largest.uvMin, largest.uvMax));
         return id;
+    }
+
+    /** A face of an OBJ: its material, its area in the model and the part of the texture sheet its corners span. */
+    private record Face(String material, double area, float[] uvMin, float[] uvMax) {
+    }
+
+    /** A face ({@code f v/vt/vn ...}), or null when its corners have no texture coordinates or positions. */
+    private static @Nullable Face face(final List<float[]> vertices, final List<float[]> uvs, final String[] parts, final String material) {
+        final List<float[]> corners = new ArrayList<>();
+        final float[] min = {Float.MAX_VALUE, Float.MAX_VALUE}, max = {-Float.MAX_VALUE, -Float.MAX_VALUE};
+        for (int i = 1; i < parts.length; i++) {
+            final float[] uv = uv(uvs, parts[i]);
+            final float[] position = vertex(vertices, parts[i]);
+            if (uv == null || position == null) {
+                return null;
+            }
+            corners.add(position);
+            min[0] = Math.min(min[0], uv[0]);
+            min[1] = Math.min(min[1], uv[1]);
+            max[0] = Math.max(max[0], uv[0]);
+            max[1] = Math.max(max[1], uv[1]);
+        }
+        // The polygon's area, as a fan of triangles from its first corner
+        double area = 0;
+        final float[] a = corners.get(0);
+        for (int i = 1; i + 1 < corners.size(); i++) {
+            final float[] b = corners.get(i), c = corners.get(i + 1);
+            final double ux = b[0] - a[0], uy = b[1] - a[1], uz = b[2] - a[2];
+            final double vx = c[0] - a[0], vy = c[1] - a[1], vz = c[2] - a[2];
+            final double cx = uy * vz - uz * vy, cy = uz * vx - ux * vz, cz = ux * vy - uy * vx;
+            area += Math.sqrt(cx * cx + cy * cy + cz * cz) / 2;
+        }
+        return new Face(material, area, min, max);
+    }
+
+    /** The position of a face corner ({@code v/vt/vn}, the v counted from 1, or back from the end when negative). */
+    private static float @Nullable [] vertex(final List<float[]> vertices, final String corner) {
+        final String index = corner.split("/")[0];
+        try {
+            final int at = Integer.parseInt(index) < 0 ? vertices.size() + Integer.parseInt(index) : Integer.parseInt(index) - 1;
+            return at >= 0 && at < vertices.size() ? vertices.get(at) : null;
+        } catch (final NumberFormatException e) {
+            return null;
+        }
     }
 
     /** The UV of a face corner ({@code v/vt/vn}, the vt counted from 1, or back from the end when negative). */

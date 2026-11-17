@@ -90,13 +90,12 @@ mod loading (no window, no server) and check the registries and that 26.3 reads 
   so on), kept in `convert/LegacyItems`.
 * 1.12 texture names (`minecraft:blocks/planks_oak`) were renamed (`minecraft:block/oak_planks`); `convert/LegacyTextures` maps them.
 * The Forge `forge:default-block` transform no longer exists; vanilla's block display is used.
+* OBJ break particles: each OBJ block's particle is cut from its texture sheet under the largest face of the material covering most of
+  the model, scaled to 16x16 (`ContentPackBuilder.objParticle`). 3.5 used the model's last face, often a detail (the Tile Topped Bar
+  corner broke yellow).
 
 ## To clean up later
 
-- OBJ break particles. Each OBJ block's particle is cut from its texture sheet as 3.5 chose it: the patch under the first and
-  third corners of the model's last face, scaled to 16x16 (`ContentPackBuilder.objParticle`). That's better than the whole sheet,
-  but the last face is often a detail (the Tile Topped Bar corner breaks yellow). Pick a face that shows what the block is made of,
-  such as the largest face or the top, or let the content name its particle texture.
 - The Agriculture tab icon (an OBJ tool) shows tiny in its slot; OBJ items need slot and hand positions of their own.
 - Seeds from grass: 3.5's hook asked Forge for a grass seed first, and Forge's list always held wheat, so its Almura seed roll never
   ran. 4.0 does what that code meant: one break in eight, when vanilla's wheat seed didn't drop, picks a random Almura seed and drops
