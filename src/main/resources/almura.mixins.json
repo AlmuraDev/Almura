@@ -4,12 +4,14 @@
   "mixins": [
     "BiomeAccessor",
     "FarmlandBlockMixin",
+    "ServerGamePacketListenerImplMixin",
     "ServerLevelMixin",
     "ShapedRecipeAccessor",
     "SimpleBlockFeatureMixin",
     "TreeFeatureMixin"
   ],
   "client": [
+    "client.AbstractSignEditScreenMixin",
     "client.AbstractSignRendererMixin",
     "client.BlockEntityRenderDispatcherMixin",
     "client.ConnectScreenAccessor",
