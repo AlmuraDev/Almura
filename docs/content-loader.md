@@ -90,6 +90,9 @@ mod loading (no window, no server) and check the registries and that 26.3 reads 
   so on), kept in `convert/LegacyItems`.
 * 1.12 texture names (`minecraft:blocks/planks_oak`) were renamed (`minecraft:block/oak_planks`); `convert/LegacyTextures` maps them.
 * The Forge `forge:default-block` transform no longer exists; vanilla's block display is used.
+* Tools that wear out in recipes (the knife, grater and grinder: `container` damage on their recipes) can't both wear out and stack
+  on 26.3, and 3.5's stacked to 64. They are `ContentToolItem`s: the wear is kept in Almura's own item data ("Uses left: N / 256"),
+  so tools worn alike stack, and each craft hands back one with one more use taken.
 * OBJ break particles: each OBJ block's particle is cut from its texture sheet under the largest face of the material covering most of
   the model, scaled to 16x16 (`ContentPackBuilder.objParticle`). 3.5 used the model's last face, often a detail (the Tile Topped Bar
   corner broke yellow).
@@ -108,7 +111,9 @@ mod loading (no window, no server) and check the registries and that 26.3 reads 
   there; twice a chunk (flowers, then grass) the grass mix may be scattered and vanilla then places no flowers (or grass) there; ores
   are vanilla ore features (marble and salt: 5 veins of 10 a chunk, height 0 to 63, in stone). Overworld biomes only. 1.12's biome
   names are mapped to 26.3's (`swampland` is `swamp`, `roofed_forest` is `dark_forest`, the hills and "mutated" biomes are what they
-  became). The `terraincontrol` entries match nothing until there is a TerrainControl.
+  became). TerrainControl's biomes are named `terraincontrol:<world>/<biome>`, so entries naming the `terraincontrol` namespace match
+  them, but generation is only added to biomes tagged `#minecraft:is_overworld` (`data/almura/neoforge/biome_modifier/`): a
+  TerrainControl biome gets it only if TerrainControl tags it so.
 - Wild crops: the grass mix holds ripe crops. On 1.12 a crop could only stand on farmland, so 3.5 most likely never placed them; 4.0
   lets a ripe crop stand on grass, so they appear in the wild. Seeds still plant only on their soil.
 - Double grass and double flowers in the grass mix are placed whole (both halves); 1.12 placed only the lower half, which fell.
@@ -123,13 +128,15 @@ mod loading (no window, no server) and check the registries and that 26.3 reads 
   recipe are the content's. Right click a ripe crop with `sack_harvest` (11) to pick it: a real player break (protection can deny
   it), its drops into the sack, the crop back at its `reset_age` (in its water for an aquatic one). Right click anything but a crop,
   the ground or a plant to open it: a single chest of 27 slots taking only what those crops drop, kept on the sack
-  (`minecraft:container`). 3.5 also posted Sponge's drop event for Skills' XP; Skills isn't on 4.0 yet.
+  (`minecraft:container`). With the Skills plugin on the server, what it picks counts for farming XP, as 3.5's drop event did
+  (`ServerSkills.harvested`).
 - The Farmer's Almanac and Skills Handbook (`almura:normal/tool/farmers_almanac`, `skills_handbook`; `feature/almanac`,
   `feature/handbook`): Almura's own items, with 3.5's models and textures in the jar (the content has none); their recipes are
   the content's. The almanac (permission `almura.item.farmers_almanac`, everyone's by default) shows a field spot's needs and
-  conditions on farmland, a crop or a pipe, and the list of every crop otherwise, as 3.5's. Not yet: the Skills farming levels
-  (no Skills on 4.0) and a crop's growth stages drawn as 3D models (Strata has no block model visual yet). The handbook reads the
-  Skills plugin, so on 4.0 it says the server has no skills, as 3.5 did on a server without it.
+  conditions on farmland, a crop or a pipe, and the list of every crop otherwise, as 3.5's. With the Skills plugin on the server
+  the list shows each crop's farming levels to plant and harvest (green when the player has them), and double clicking a crop
+  shows its growth stages as 3D models (`AlmanacStagesScreen`). The handbook reads the Skills plugin's rules; without Skills it says
+  the server has no skills, as 3.5 did.
 - Agriculture pipes (`horizontal/agriculture`, 10): as 3.5's. `rotate_placement` turns one placed against the side of a block
   (the end of another pipe) to connect: `true`/`across` continues out from it (straight pipes, end caps), `toward` points the
   branch into it (T pipes), `corner` puts one arm into it and the other toward the player's side; on a floor or ceiling it faces
@@ -139,3 +146,10 @@ mod loading (no window, no server) and check the registries and that 26.3 reads 
   3.5's; their models and the recipes using them are the content's. The glass cruet takes up water as a bucket does and is filled with
   milk from a cow; the water cruet pours; recipes hand the glass cruet back. Almura's pumpkin pie (with a milk cruet) replaces vanilla's
   (`data/minecraft/recipe/pumpkin_pie.json`). 3.5's fluid handler (pipes and tanks filling and emptying cruets) isn't ported.
+- The kitchen slicer, kitchen grinder and seed processor (`feature/machine`): Almura's own blocks, as 3.5's machines, with their
+  blockstates, models, textures, loot and recipes in the jar (not the content); what they process are the content's items.
+- Fruit trees (`tree` with fruit leaves, 17 of them; the citrus log is shared by grapefruit, lemon, lime and orange): cutting the
+  log of one fells the whole tree, as 3.5's tree feller (`feature/treefeller`, reading the content's trees through `ContentTrees`).
+  3.5 also kept the feller out of other players' claims; that waits on GriefDefender.
+- Content fixes: `tools/content-4.0/fix_content.py` makes the 4.0 content (into `runs/content-4.0`, and
+  `H:\Almura 3.0\ContentLoader\4.0\fs_2` kept the same); a fix to the content goes there, never into the loader.
