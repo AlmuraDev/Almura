@@ -8,6 +8,8 @@ version = "${version}"
 displayName = "${mod_name}"
 authors = "${mod_authors}"
 description = '''${mod_description}'''
+# The mod list's icon: the Almura logo (the figure over "Almura Reborn"), on a square
+iconFile = "almura_icon.png"
 
 [[mixins]]
 config = "almura.mixins.json"
