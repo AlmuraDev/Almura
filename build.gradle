@@ -67,6 +67,9 @@ dependencies {
     // TerrainControl's API (its 4.0 for 26.3: biome names, which only the server knows), taken from its jar; TerrainControl brings it at
     // run time, and Almura only touches it when TerrainControl is installed
     compileOnly(files('libs/terraincontrol-api-4.0.0.jar'))
+    // WorldEdit's WorldEditCUI protocol (the worldedit:cui payload), taken from WorldEdit 7.4.6's jar; WorldEdit brings it at run time, and
+    // Almura only touches it when it's installed on the client
+    compileOnly(files('libs/worldeditcui-protocol-neoforge-mc26.3-4.0.3.jar'))
 
     // LuckPerms' API, for permissions only known while the server runs (a store's, an exchange's); LuckPerms brings it at run time
     compileOnly("net.luckperms:api:${luckperms_api_version}")

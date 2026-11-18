@@ -43,6 +43,8 @@ import com.almuradev.almura.feature.store.client.ClientStore;
 import com.almuradev.almura.feature.store.network.StoreMessages;
 import com.almuradev.almura.feature.title.client.ClientTitles;
 import com.almuradev.almura.feature.title.network.TitleMessages;
+import com.almuradev.almura.feature.worldload.client.ClientWorldLoad;
+import com.almuradev.almura.feature.worldload.network.ClientboundWorldLoad;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 
@@ -66,6 +68,7 @@ public final class ClientPayloads {
         event.register(ClientboundServerTps.TYPE, (payload, context) -> ServerHudData.setTps(payload.tps()));
         event.register(ClientboundPlayerWorlds.TYPE, (payload, context) -> ServerHudData.updatePlayerWorlds(payload.replace(), payload.worlds()));
         event.register(ClientboundBiomeNames.TYPE, (payload, context) -> ServerHudData.addBiomeNames(payload.names()));
+        event.register(ClientboundWorldLoad.TYPE, (payload, context) -> ClientWorldLoad.handle(payload));
         event.register(ClientboundPlayerMoney.TYPE, (payload, context) -> ServerHudData.setMoney(payload.symbol(), payload.balance()));
         event.register(ClientboundAlmanacField.TYPE, (payload, context) -> AlmanacScreens.openField(payload));
         event.register(ClientboundAlmanacCrops.TYPE, (payload, context) -> AlmanacScreens.openCrops(payload));

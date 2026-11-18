@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "almura:food/food/corn",
+      "required": false
+    },
+    {
+      "id": "almura:food/food/soybean",
+      "required": false
+    },
+    {
+      "id": "almura:normal/crop/alfalfa_item",
+      "required": false
+    }
+  ]
+}

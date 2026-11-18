@@ -1,0 +1,11 @@
+{
+  "type": "almura:replace_drop",
+  "condition": {
+    "type": "neoforge:loot_table_id",
+    "loot_table_id": "minecraft:gameplay/fishing/fish"
+  },
+  "replaces": "#minecraft:fishes",
+  "with": "almura:normal/ingredient/clam",
+  "count": 1,
+  "chance": 0.13043478260869565
+}

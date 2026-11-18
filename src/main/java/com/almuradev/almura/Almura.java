@@ -10,6 +10,8 @@ package com.almuradev.almura;
 import com.almuradev.almura.content.AlmuraContent;
 import com.almuradev.almura.core.database.AlmuraServerConfig;
 import com.almuradev.almura.feature.accessory.server.ServerAccessories;
+import com.almuradev.almura.feature.animal.ReplaceDropModifier;
+import com.almuradev.almura.feature.animal.ServerAnimals;
 import com.almuradev.almura.feature.bank.server.ServerBank;
 import com.almuradev.almura.feature.cache.Caches;
 import com.almuradev.almura.feature.death.server.ServerDeath;
@@ -25,6 +27,8 @@ import com.almuradev.almura.feature.notification.server.ServerNotifications;
 import com.almuradev.almura.feature.skills.server.ServerSkills;
 import com.almuradev.almura.feature.store.server.ServerStore;
 import com.almuradev.almura.feature.title.server.ServerTitles;
+import com.almuradev.almura.feature.treefeller.ServerTreeFeller;
+import com.almuradev.almura.feature.worldload.server.ServerWorldLoad;
 import com.almuradev.almura.network.AlmuraNetwork;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -52,8 +56,16 @@ public final class Almura {
         modBus.addListener(Caches::onRegisterCapabilities);
         // What the server does for Almura's players: the HUD's data, notifications
         NeoForge.EVENT_BUS.register(new ServerHud());
+        // Cutting a fruit tree's log fells the whole tree, as on 3.5
+        NeoForge.EVENT_BUS.register(new ServerTreeFeller());
+        // Almura's farm animals: breeding names and litters, feeding the young, grazing, and harvests that tire, as on 3.5
+        NeoForge.EVENT_BUS.register(new ServerAnimals());
+        // The loot modifier swapping drops (clams in the catch, sunflower seeds)
+        ReplaceDropModifier.register(modBus);
         // TerrainControl's biome names for the HUD, when it is installed
         NeoForge.EVENT_BUS.register(new ServerBiomeNames());
+        // Tells players when the server loads a world after it is up
+        NeoForge.EVENT_BUS.register(new ServerWorldLoad());
         // The server's economy (Sponge's, such as EconomyLite's) for the HUD's money, when there is one
         Economy.install();
         NeoForge.EVENT_BUS.register(new ServerNotifications());

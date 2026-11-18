@@ -38,6 +38,7 @@ import com.almuradev.almura.feature.store.network.StoreMessages;
 import com.almuradev.almura.feature.store.server.ServerStore;
 import com.almuradev.almura.feature.title.network.TitleMessages;
 import com.almuradev.almura.feature.title.server.ServerTitles;
+import com.almuradev.almura.feature.worldload.network.ClientboundWorldLoad;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
@@ -78,6 +79,7 @@ public final class AlmuraNetwork {
         registrar.playToClient(ClientboundPlayerWorlds.TYPE, ClientboundPlayerWorlds.CODEC);
         registrar.playToClient(ClientboundPlayerMoney.TYPE, ClientboundPlayerMoney.CODEC);
         registrar.playToClient(ClientboundBiomeNames.TYPE, ClientboundBiomeNames.CODEC);
+        registrar.playToClient(ClientboundWorldLoad.TYPE, ClientboundWorldLoad.CODEC);
         registrar.playToClient(ClientboundAlmanacField.TYPE, ClientboundAlmanacField.CODEC);
         registrar.playToClient(ClientboundAlmanacCrops.TYPE, ClientboundAlmanacCrops.CODEC);
         registrar.playToClient(GuideMessages.ClientboundListing.TYPE, GuideMessages.ClientboundListing.CODEC);

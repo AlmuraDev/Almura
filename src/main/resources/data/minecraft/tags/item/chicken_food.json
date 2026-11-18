@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "almura:food/food/corn",
+      "required": false
+    },
+    {
+      "id": "almura:food/food/soybean",
+      "required": false
+    }
+  ]
+}

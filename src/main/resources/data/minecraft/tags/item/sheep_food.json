@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "almura:normal/ingredient/oat",
+      "required": false
+    },
+    {
+      "id": "almura:normal/crop/alfalfa_item",
+      "required": false
+    }
+  ]
+}

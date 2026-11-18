@@ -158,7 +158,8 @@ final class LegacyWorldConversionTest {
             }
             Files.deleteIfExists(scratch);
         }
-        final String report = "World: " + world + " -> " + dimension + " in " + regionOut + "\nRegions: " + regionsDone + "\n" + converter.report;
+        final String report = "World: " + world + " -> " + dimension + " in " + regionOut + "\nRegions: " + regionsDone + "\n" + converter.report
+            + "\nFurniture stand-ins (no 26.3 match): " + converter.cfm.substituted;
         System.out.println(report);
         Files.writeString(backup.resolve("conversion-report.txt"), report);
         System.out.println("Report and 4.0's replaced files: " + backup);

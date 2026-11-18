@@ -22,6 +22,7 @@ import com.almuradev.almura.content.def.ContentDefs.SaplingDef;
 import com.almuradev.almura.content.def.ContentDefs.SeedDef;
 import com.almuradev.almura.content.def.ContentDefs.TreeDef;
 import com.almuradev.almura.feature.almanac.FarmersAlmanac;
+import com.almuradev.almura.feature.armor.LightedHelmet;
 import com.almuradev.almura.feature.bank.CoinExchange;
 import com.almuradev.almura.feature.cache.Caches;
 import com.almuradev.almura.feature.cruet.Cruets;
@@ -167,6 +168,8 @@ public final class ContentRegistration {
             Caches.registerItems(helper, this::addToTab);
             StorageCrates.registerItems(helper, this::addToTab);
             Machines.registerItems(helper, this::addToTab);
+            // Almura's hand coded armor: the lighted helmet
+            LightedHelmet.registerItems(helper, this::addToTab);
             for (final ItemDef def : this.ordered()) {
                 if (def.kind().equals("slab")) {
                     // A slab's item is its block's

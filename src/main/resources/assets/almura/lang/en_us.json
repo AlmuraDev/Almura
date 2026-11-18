@@ -216,5 +216,6 @@
   "gui.almura.machine.no_power_required": "No power required",
   "gui.almura.machine.progress": "Progress: %s%%",
   "gui.almura.machine.start": "Start",
-  "gui.almura.machine.stop": "Stop"
+  "gui.almura.machine.stop": "Stop",
+  "item.almura.armor.lighted_helmet": "Lighted Helmet"
 }

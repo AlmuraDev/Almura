@@ -29,6 +29,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +53,13 @@ public final class ContentTrees {
 
     public static @Nullable TreeDef tree(final String id) {
         return TREES.get(id);
+    }
+
+    /**
+     * @return every tree the content defines
+     */
+    public static Collection<TreeDef> all() {
+        return Collections.unmodifiableCollection(TREES.values());
     }
 
     /**

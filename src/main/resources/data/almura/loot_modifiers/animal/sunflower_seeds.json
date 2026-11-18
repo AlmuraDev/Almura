@@ -1,0 +1,11 @@
+{
+  "type": "almura:replace_drop",
+  "condition": {
+    "type": "neoforge:loot_table_id",
+    "loot_table_id": "minecraft:blocks/sunflower"
+  },
+  "replaces": "minecraft:sunflower",
+  "with": "almura:food/food/sunflowerseed",
+  "count": 16,
+  "chance": 1.0
+}

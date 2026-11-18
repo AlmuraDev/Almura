@@ -15,6 +15,7 @@ import com.almuradev.almura.content.registry.FlickerLights;
 import com.almuradev.almura.core.client.AlmuraFontPack;
 import com.almuradev.almura.core.client.config.AlmuraClientConfig;
 import com.almuradev.almura.feature.accessory.client.ClientAccessories;
+import com.almuradev.almura.feature.armor.client.HelmetLights;
 import com.almuradev.almura.feature.almanac.client.CropStageRenderer;
 import com.almuradev.almura.feature.almanac.client.CropStageRenderState;
 import com.almuradev.almura.feature.cache.Caches;
@@ -44,6 +45,8 @@ import com.almuradev.almura.feature.offhand.client.OffhandTorches;
 import com.almuradev.almura.feature.title.client.ClientTitles;
 import com.almuradev.almura.feature.title.client.PlayerPreview;
 import com.almuradev.almura.feature.title.client.TitleTags;
+import com.almuradev.almura.feature.worldedit.client.ClientWorldEditSelection;
+import com.almuradev.almura.feature.worldload.client.ClientWorldLoad;
 import com.almuradev.almura.network.client.ClientPayloads;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
@@ -132,12 +135,17 @@ public final class AlmuraClient {
         // Names and health bars over players, monsters and animals, and the off-hand torch option
         NeoForge.EVENT_BUS.register(new EntityLabels());
         NeoForge.EVENT_BUS.register(new OffhandTorches());
+        // The lighted helmet's light, drawn by the client alone
+        NeoForge.EVENT_BUS.register(new HelmetLights());
         // Titles over players' names, nicknames on them, and the Titles and Nicknames windows' player
         NeoForge.EVENT_BUS.register(new TitleTags());
         NeoForge.EVENT_BUS.register(new ClientTitles.Resetter());
         NeoForge.EVENT_BUS.register(new ClientNicks.Hooks());
         NeoForge.EVENT_BUS.register(new ClientDeath.Hooks());
+        NeoForge.EVENT_BUS.register(new ClientWorldLoad.Hooks());
         NeoForge.EVENT_BUS.register(new PlayerPreview.Drawer());
+        // The player's WorldEdit selection, drawn in the world when the server has WorldEdit
+        ClientWorldEditSelection.register(modBus);
         // Dev runs pass -Dalmura.dev.maximize=true (see build.gradle) to open the window maximized
         if (Boolean.getBoolean("almura.dev.maximize")) {
             NeoForge.EVENT_BUS.addListener(AlmuraClient::maximizeOnFirstTick);

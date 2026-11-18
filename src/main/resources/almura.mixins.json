@@ -4,6 +4,7 @@
   "mixins": [
     "BiomeAccessor",
     "FarmlandBlockMixin",
+    "ServerLevelMixin",
     "ShapedRecipeAccessor",
     "SimpleBlockFeatureMixin",
     "TreeFeatureMixin"
@@ -15,9 +16,11 @@
     "client.DebugScreenOverlayMixin",
     "client.DisconnectedScreenAccessor",
     "client.EntityRenderDispatcherMixin",
+    "client.EntityRendererMixin",
     "client.HudAccessor",
     "client.JoinMultiplayerScreenAccessor",
     "client.LevelLoadingScreenAccessor",
+    "client.LightCoordsUtilMixin",
     "client.OptionsScreenMixin"
   ],
   "injectors": {

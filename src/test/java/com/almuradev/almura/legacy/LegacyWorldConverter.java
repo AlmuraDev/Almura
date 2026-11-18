@@ -11,6 +11,7 @@ import com.mojang.datafixers.DataFixer;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.SharedConstants;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -89,6 +90,7 @@ final class LegacyWorldConverter {
     // Entities already converted, by UUID: 3.5's saves sometimes held one twice
     private final Set<UUID> entityIds = new HashSet<>();
     private final BlockheadsConversion blockheads = new BlockheadsConversion();
+    final CfmConversion cfm = new CfmConversion();
     final Report report = new Report();
 
     /**
@@ -112,6 +114,9 @@ final class LegacyWorldConverter {
         final int version = NbtUtils.getDataVersion(chunk, 1343);
         final CompoundTag level = chunk.getCompoundOrEmpty("Level");
         final List<Placed> placed = new ArrayList<>();
+        // Blocks whose shape 1.12 worked out from their neighbours each time it drew them (furniture connections), for the game to work
+        // out again as the chunk first loads: x, y, z in the chunk
+        final List<int[]> reshape = new ArrayList<>();
         final int chunkX = level.getIntOr("xPos", 0), chunkZ = level.getIntOr("zPos", 0);
         // Tile entities by where they are, for blocks whose 1.12 tile entity held some of their state (Blockheads' colours)
         final Map<Long, CompoundTag> tileEntityAt = new HashMap<>();
@@ -148,6 +153,9 @@ final class LegacyWorldConverter {
                 }
                 if (!state.isAir()) {
                     placed.add(new Placed(i & 15, sectionY * 16 + (i >> 8), (i >> 4) & 15, state));
+                    if (this.cfm.handles(name) && CfmConversion.refreshes(name)) {
+                        reshape.add(new int[] {i & 15, sectionY * 16 + (i >> 8), (i >> 4) & 15});
+                    }
                 }
             }
             section.putByteArray("Blocks", blocks);
@@ -176,6 +184,7 @@ final class LegacyWorldConverter {
         }
         final Map<Long, CompoundTag> blockheadsAt = new HashMap<>();
         final Map<Long, CompoundTag> machinesAt = new HashMap<>();
+        final Map<Long, CompoundTag> furnitureAt = new HashMap<>();
         final List<Cache> caches = new ArrayList<>();
         final Map<Long, String> storage = new HashMap<>();
         final ListTag tileEntities = new ListTag();
@@ -214,6 +223,16 @@ final class LegacyWorldConverter {
                 if (placedAt.containsKey(pack(x, y, z))) {
                     tileEntities.add(BlockheadsConversion.asChest(tileEntity));
                     blockheadsAt.put(pack(x, y, z), tileEntity);
+                    this.report.tileEntities.merge(id, 1, Integer::sum);
+                } else {
+                    this.report.droppedTileEntities.merge(id, 1, Integer::sum);
+                }
+            } else if (this.cfm.handlesTileEntity(id)) {
+                // MrCrayfish's furniture: its items go through the game's upgrade as a chest's, then into 26.3's block entity
+                final BlockState block = placedAt.get(pack(x, y, z));
+                if (block != null && BuiltInRegistries.BLOCK.getKey(block.getBlock()).getNamespace().equals("cfm")) {
+                    tileEntities.add(itemsAsChest(tileEntity, tileEntity));
+                    furnitureAt.put(pack(x, y, z), tileEntity);
                     this.report.tileEntities.merge(id, 1, Integer::sum);
                 } else {
                     this.report.droppedTileEntities.merge(id, 1, Integer::sum);
@@ -289,10 +308,20 @@ final class LegacyWorldConverter {
 
         // Crates and containers named as 4.0 names them; items of mods 4.0 doesn't have left out of every container
         final ListTag blockEntities = new ListTag();
+        final Set<Long> furnished = new HashSet<>();
         for (final Tag upgradedTag : upgraded.getListOrEmpty("block_entities")) {
             Tag tag = upgradedTag;
             if (tag instanceof final CompoundTag chest) {
                 final long at = pack(chest.getIntOr("x", 0), chest.getIntOr("y", 0), chest.getIntOr("z", 0));
+                final CompoundTag furniture = furnitureAt.get(at);
+                if (furniture != null) {
+                    furnished.add(at);
+                    tag = CfmConversion.finish(chest, furniture, placedAt.get(at),
+                        new BlockPos(chest.getIntOr("x", 0), chest.getIntOr("y", 0), chest.getIntOr("z", 0)));
+                    if (tag == null) {
+                        continue;
+                    }
+                }
                 final CompoundTag machine = machinesAt.get(at);
                 if (machine != null) {
                     chest.putString("id", "almura:processing_machine");
@@ -320,6 +349,16 @@ final class LegacyWorldConverter {
         for (final Cache cache : caches) {
             blockEntities.add(cache.tag);
         }
+        // Furniture whose 1.12 block kept nothing gets its 26.3 block entity, so what ticks or draws from one has it from the start
+        for (final Placed block : placed) {
+            final int x = chunkX * 16 + block.x, z = chunkZ * 16 + block.z;
+            if (BuiltInRegistries.BLOCK.getKey(block.state.getBlock()).getNamespace().equals("cfm") && !furnished.contains(pack(x, block.y, z))) {
+                final CompoundTag blockEntity = CfmConversion.finish(null, null, block.state, new BlockPos(x, block.y, z));
+                if (blockEntity != null) {
+                    blockEntities.add(blockEntity);
+                }
+            }
+        }
         blockEntities.forEach(LegacyWorldConverter::knownEnchantmentsOnly);
 
         // Entities: items on the ground of mods 4.0 doesn't have go, item frames holding one are emptied, and trades for them dropped
@@ -340,6 +379,29 @@ final class LegacyWorldConverter {
         }
         upgraded.put("entities", upgradedEntities);
         upgraded.put("block_entities", blockEntities);
+
+        // The furniture's shapes worked out again from their neighbours as the chunk first loads (the game's upgrade data, by section)
+        if (!reshape.isEmpty()) {
+            final CompoundTag upgradeData = upgraded.getCompoundOrEmpty("UpgradeData");
+            final CompoundTag indices = upgradeData.getCompoundOrEmpty("Indices");
+            final Map<Integer, List<Integer>> bySection = new TreeMap<>();
+            for (final int[] at : reshape) {
+                bySection.computeIfAbsent(at[1] >> 4, y -> new ArrayList<>()).add((at[1] & 15) << 8 | at[2] << 4 | at[0]);
+            }
+            bySection.forEach((section, added) -> {
+                final String key = String.valueOf(section);
+                final int[] existing = indices.getIntArray(key).orElse(new int[0]);
+                final int[] merged = new int[existing.length + added.size()];
+                System.arraycopy(existing, 0, merged, 0, existing.length);
+                for (int i = 0; i < added.size(); i++) {
+                    merged[existing.length + i] = added.get(i);
+                }
+                indices.putIntArray(key, merged);
+            });
+            upgradeData.put("Indices", indices);
+            upgraded.put("UpgradeData", upgradeData);
+            this.report.reshaped += reshape.size();
+        }
 
         // TerrainControl's biomes back, where most of a 4x4 column is one
         this.placeBiomes(sections, columnBiomes);
@@ -467,6 +529,15 @@ final class LegacyWorldConverter {
      * @return the 26.3 state for a 3.5 block and its metadata: Almura's, by its name in 4.0; other mods' ores as stone, the rest as air
      */
     private BlockState state(final String name, final int meta, final @Nullable CompoundTag tileEntity) {
+        if (this.cfm.handles(name)) {
+            final BlockState state = this.cfm.state(name, meta, tileEntity);
+            if (state == null) {
+                this.report.unmapped.merge(name + " (not in the furniture port yet)", 1, Integer::sum);
+                return Blocks.AIR.defaultBlockState();
+            }
+            this.report.converted.merge(name, 1, Integer::sum);
+            return state;
+        }
         if (this.blockheads.handles(name)) {
             final BlockState state = this.blockheads.state(name, meta, tileEntity);
             if (state == null) {
@@ -761,7 +832,7 @@ final class LegacyWorldConverter {
      */
     static final class Report {
 
-        int chunks, unplaced, cacheItems, crateItems, biomeCells;
+        int chunks, unplaced, cacheItems, crateItems, biomeCells, reshaped;
         @Nullable String crateSample;
         final Map<String, Integer> converted = new TreeMap<>(), unmapped = new TreeMap<>(), replaced = new TreeMap<>();
         final Map<String, Integer> placed = new TreeMap<>(), tileEntities = new TreeMap<>(), droppedTileEntities = new TreeMap<>();
@@ -783,7 +854,8 @@ final class LegacyWorldConverter {
                 .append("\nItems lost (4.0 has none): ").append(this.lostItems)
                 .append("\nTile entities left out: ").append(this.droppedTileEntities)
                 .append("\nEntities left out: ").append(this.droppedEntities)
-                .append("\nCustom biome cells: ").append(this.biomeCells);
+                .append("\nCustom biome cells: ").append(this.biomeCells)
+                .append("\nFurniture reshaped from its neighbours on first load: ").append(this.reshaped);
             return out.toString();
         }
     }
