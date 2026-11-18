@@ -24,6 +24,7 @@ import com.almuradev.almura.feature.membership.server.ServerMemberships;
 import com.almuradev.almura.feature.menu.ingame.server.ServerFeatures;
 import com.almuradev.almura.feature.nick.server.ServerNicks;
 import com.almuradev.almura.feature.notification.server.ServerNotifications;
+import com.almuradev.almura.feature.permission.server.SingleplayerOperator;
 import com.almuradev.almura.feature.skills.server.ServerSkills;
 import com.almuradev.almura.feature.store.server.ServerStore;
 import com.almuradev.almura.feature.title.server.ServerTitles;
@@ -67,6 +68,8 @@ public final class Almura {
         NeoForge.EVENT_BUS.register(new ServerBiomeNames());
         // Tells players when the server loads a world after it is up
         NeoForge.EVENT_BUS.register(new ServerWorldLoad());
+        // The owner of a singleplayer world gets every permission
+        NeoForge.EVENT_BUS.register(new SingleplayerOperator());
         // WorldEdit asks LuckPerms for its permissions, as it asked Sponge on 3.5
         if (WorldEditPermissions.wanted()) {
             NeoForge.EVENT_BUS.register(new WorldEditPermissions());
