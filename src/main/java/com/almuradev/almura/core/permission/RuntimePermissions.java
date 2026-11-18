@@ -9,6 +9,7 @@ package com.almuradev.almura.core.permission;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.permissions.Permissions;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Permissions only known while the server runs, such as a store's or an exchange's, which NeoForge's permission system can't take: its nodes
@@ -36,6 +37,13 @@ public final class RuntimePermissions {
             }
         }
         return player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER);
+    }
+
+    /**
+     * LuckPerms' own answer for the permission, or null if it has nothing set for it or isn't installed.
+     */
+    public static @Nullable Boolean luckPerms(final ServerPlayer player, final String permission) {
+        return LUCKPERMS ? LuckPermsCheck.check(player.getUUID(), permission) : null;
     }
 
     private static boolean luckPermsPresent() {

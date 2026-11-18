@@ -28,6 +28,7 @@ import com.almuradev.almura.feature.skills.server.ServerSkills;
 import com.almuradev.almura.feature.store.server.ServerStore;
 import com.almuradev.almura.feature.title.server.ServerTitles;
 import com.almuradev.almura.feature.treefeller.ServerTreeFeller;
+import com.almuradev.almura.feature.worldedit.server.WorldEditPermissions;
 import com.almuradev.almura.feature.worldload.server.ServerWorldLoad;
 import com.almuradev.almura.network.AlmuraNetwork;
 import net.neoforged.bus.api.IEventBus;
@@ -66,6 +67,10 @@ public final class Almura {
         NeoForge.EVENT_BUS.register(new ServerBiomeNames());
         // Tells players when the server loads a world after it is up
         NeoForge.EVENT_BUS.register(new ServerWorldLoad());
+        // WorldEdit asks LuckPerms for its permissions, as it asked Sponge on 3.5
+        if (WorldEditPermissions.wanted()) {
+            NeoForge.EVENT_BUS.register(new WorldEditPermissions());
+        }
         // The server's economy (Sponge's, such as EconomyLite's) for the HUD's money, when there is one
         Economy.install();
         NeoForge.EVENT_BUS.register(new ServerNotifications());
