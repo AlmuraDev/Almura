@@ -21,7 +21,6 @@ import org.inspirenxe.strata.api.control.button.CheckBox;
 import org.inspirenxe.strata.api.control.button.CheckState;
 import org.inspirenxe.strata.api.control.button.CycleButton;
 import org.inspirenxe.strata.api.control.field.Slider;
-import org.inspirenxe.strata.api.control.window.MessageBox;
 import org.inspirenxe.strata.api.control.window.Window;
 import org.inspirenxe.strata.api.layout.Anchor;
 import org.inspirenxe.strata.api.layout.AnchorPanel;
@@ -39,13 +38,13 @@ import java.util.List;
 
 /**
  * Almura's options, as 1.12's, in an Almura window: the HUD and what it shows, gameplay, names and health bars over players, monsters and
- * animals, and the render distances of chests, sign text, item frames and caches. Load Optimized Defaults sets vanilla's options for speed.
+ * animals, and the render distances of chests, sign text, item frames and caches.
  * Opened from vanilla's options ("Almura...") and the mod list's Config button; Done and the window's x go back there.
  */
 final class AlmuraOptionsScreen implements Screen {
 
     private static final float COLUMN_WIDTH = 200f, COLUMN_GAP = 6f, SECTION_GAP = 6f, ROW_GAP = 3f, CONTROL_HEIGHT = 16f, SECTION_PADDING = 4f;
-    private static final float DONE_WIDTH = 50f, DEFAULTS_WIDTH = 140f, MARGIN = 10f;
+    private static final float DONE_WIDTH = 50f, MARGIN = 10f;
     // The window's padding at its sides (3 each, the Almura theme's)
     private static final float WINDOW_SIDES = 6f;
     private static final int HEADING = 0xFFFFAA00;
@@ -53,7 +52,6 @@ final class AlmuraOptionsScreen implements Screen {
     private static final Border BOX_BORDER = Border.of(0xB9FFFFFF, 1f);
 
     private @Nullable Slider opacity;
-    private @Nullable CheckBox locationWidget;
 
     @Override
     public Text title() {
@@ -79,12 +77,12 @@ final class AlmuraOptionsScreen implements Screen {
         opacity.onEvent(Slider.COMMITTED, event -> AlmuraClientConfig.set(AlmuraClientConfig.ORIGIN_HUD_OPACITY, (int) Math.round(event.value())));
         this.opacity = opacity;
         this.updateOpacity();
-        this.locationWidget = check(factory, "Location Widget", AlmuraClientConfig.DISPLAY_LOCATION_WIDGET,
+        final CheckBox locationWidget = check(factory, "Location Widget", AlmuraClientConfig.DISPLAY_LOCATION_WIDGET,
             "The coordinates and clock at the top right");
         final Component<?> hudSection = section(factory, "HUD",
             hud, opacity,
             check(factory, "World & Compass Widget", AlmuraClientConfig.DISPLAY_WORLD_COMPASS_WIDGET, "The world name and compass at the top middle"),
-            this.locationWidget,
+            locationWidget,
             check(factory, "FPS / TPS", AlmuraClientConfig.DISPLAY_PERFORMANCE_STATS, "Shown under the coordinates of the location widget"),
             check(factory, "Numeric HUD Values", AlmuraClientConfig.DISPLAY_NUMERIC_HUD_VALUES, "The numbers on the HUD's bars"));
 
@@ -114,14 +112,10 @@ final class AlmuraOptionsScreen implements Screen {
         final StackPanel right = column(factory).add(labelsSection).add(distancesSection);
         final StackPanel columns = factory.stackPanel(Orientation.HORIZONTAL).setSpacing(COLUMN_GAP).add(left).add(right);
 
-        // ---- The bottom row: Load Optimized Defaults at the left, Done at the right
-        final Button defaults = factory.button(Text.of("Load Optimized Defaults")).setSize(DEFAULTS_WIDTH, CONTROL_HEIGHT)
-            .setTooltip(Text.of("Sets Minecraft's video options for speed, as Almura recommends"))
-            .onEvent(Button.PRESSED, event -> this.confirmDefaults(factory));
+        // ---- The bottom row: Done at the right
         final Button done = factory.button(Text.translatable("gui.done")).setSize(DONE_WIDTH, CONTROL_HEIGHT)
             .onEvent(Button.PRESSED, event -> close());
         final AnchorPanel bottom = factory.anchorPanel()
-            .add(defaults.setAnchor(Anchor.MIDDLE_LEFT))
             .add(done.setAnchor(Anchor.MIDDLE_RIGHT));
         bottom.setHeight(CONTROL_HEIGHT);
 
@@ -144,20 +138,6 @@ final class AlmuraOptionsScreen implements Screen {
 
     private static void close() {
         Minecraft.getInstance().gui.screen().onClose();
-    }
-
-    private void confirmDefaults(final ComponentFactory factory) {
-        factory.overlays().dialog(factory.messageBox("Load Optimized Defaults",
-                "Set Minecraft's video options for speed (fast graphics, no clouds, render distance 10, GUI scale 3...)?", MessageBox.Buttons.YES_NO)
-            .onEvent(MessageBox.ANSWERED, event -> {
-                if (event.value().equals(MessageBox.Result.YES)) {
-                    OptimizedDefaults.apply();
-                    if (this.locationWidget != null) {
-                        this.locationWidget.setState(AlmuraClientConfig.get(AlmuraClientConfig.DISPLAY_LOCATION_WIDGET)
-                            ? CheckState.CHECKED : CheckState.UNCHECKED);
-                    }
-                }
-            }));
     }
 
     /**
