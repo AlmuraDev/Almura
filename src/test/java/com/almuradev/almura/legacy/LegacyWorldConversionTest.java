@@ -9,6 +9,10 @@ package com.almuradev.almura.legacy;
 
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
@@ -39,6 +43,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -57,7 +62,8 @@ import java.util.regex.Pattern;
  * </ul>
  * The 3.5 regions are read from copies, as the game opens region files for writing; 3.5's world is never changed.
  * <p>
- * {@code -Palmura.convert.players=true} (with or without {@code world}) converts 3.5's players too: see {@link #convertPlayers}.
+ * {@code -Palmura.convert.players=true} (with or without {@code world}) converts 3.5's players too: see {@link #convertPlayers}; with
+ * {@code -Palmura.convert.offlineCopies=true} each player whose name 3.5 knew is also written under their offline-mode UUID.
  */
 final class LegacyWorldConversionTest {
 
@@ -245,31 +251,68 @@ final class LegacyWorldConversionTest {
             }
         }
 
+        // For an offline-mode server: 3.5's player names (its usercache.json), to write each player again under their offline UUID
+        final boolean offlineCopies = Boolean.parseBoolean(System.getProperty("almura.convert.offlineCopies", "false"));
+        final Map<String, String> names = offlineCopies ? playerNames(legacy.getParent().resolve("usercache.json")) : Map.of();
+
         final LegacyWorldConverter converter = new LegacyWorldConverter(Map.of(), Map.of(), Identifier.withDefaultNamespace("overworld"));
-        int done = 0;
+        int done = 0, copies = 0;
         try (var files = Files.list(playerData)) {
             for (final Path file : files.filter(f -> f.getFileName().toString().endsWith(".dat")).sorted().toList()) {
                 final String name = file.getFileName().toString();
                 final CompoundTag player = NbtIo.readCompressed(file, NbtAccounter.unlimitedHeap());
                 final String dimension = converted.get(player.getIntOr("Dimension", 0));
                 final CompoundTag upgraded = converter.convertPlayer(player, dimension, spawnDimension, spawn);
-                if (trial == null) {
-                    for (final String existing : List.of(name, name + "_old")) {
-                        final Path old = dataOut.resolve(existing);
-                        if (Files.isRegularFile(old)) {
-                            Files.move(old, backup.resolve(existing), StandardCopyOption.REPLACE_EXISTING);
-                        }
-                    }
-                }
-                NbtIo.writeCompressed(upgraded, dataOut.resolve(name));
+                writePlayer(upgraded, dataOut, name, trial == null ? backup : null);
                 done++;
+
+                final String playerName = names.get(name.substring(0, name.length() - 4));
+                if (playerName != null) {
+                    final UUID offline = UUIDUtil.createOfflinePlayerUUID(playerName);
+                    final CompoundTag copy = upgraded.copy();
+                    copy.putIntArray("UUID", UUIDUtil.uuidToIntArray(offline));
+                    writePlayer(copy, dataOut, offline + ".dat", trial == null ? backup : null);
+                    copies++;
+                }
             }
         }
-        final String report = "Players: " + done + " from " + playerData + " into " + dataOut + "\nWorlds kept: " + converted + "\nSpawn: "
+        final String report = "Players: " + done + " from " + playerData + " into " + dataOut
+            + (offlineCopies ? "\nOffline-mode copies (by 3.5's names): " + copies : "") + "\nWorlds kept: " + converted + "\nSpawn: "
             + spawnDimension + " " + spawn[0] + " " + spawn[1] + " " + spawn[2] + "\n" + converter.report.players();
         System.out.println(report);
         Files.writeString(backup.resolve("conversion-report.txt"), report);
         System.out.println("Report and 4.0's replaced player files: " + backup);
+    }
+
+    /**
+     * Writes a converted player as {@code <data>/<file>}; the 4.0 file it replaces (and its {@code _old}) is first moved to the backup, if
+     * given.
+     */
+    private static void writePlayer(final CompoundTag player, final Path data, final String file, final @Nullable Path backup) throws IOException {
+        if (backup != null) {
+            for (final String existing : List.of(file, file + "_old")) {
+                final Path old = data.resolve(existing);
+                if (Files.isRegularFile(old)) {
+                    Files.move(old, backup.resolve(existing), StandardCopyOption.REPLACE_EXISTING);
+                }
+            }
+        }
+        NbtIo.writeCompressed(player, data.resolve(file));
+    }
+
+    /**
+     * 3.5's player names by UUID, from its usercache.json (the players who joined in its last months).
+     */
+    private static Map<String, String> playerNames(final Path userCache) throws IOException {
+        final Map<String, String> names = new HashMap<>();
+        if (!Files.isRegularFile(userCache)) {
+            throw new IOException("No 3.5 usercache.json at " + userCache + " for the offline-mode copies");
+        }
+        for (final JsonElement entry : JsonParser.parseString(Files.readString(userCache)).getAsJsonArray()) {
+            final JsonObject user = entry.getAsJsonObject();
+            names.put(user.get("uuid").getAsString(), user.get("name").getAsString());
+        }
+        return names;
     }
 
     /**
