@@ -103,7 +103,7 @@ tasks.named('test', Test) {
         // The game's upgrade of old chunks needs room
         maxHeapSize = '6g'
     }
-    ['from', 'world', 'to', 'out', 'dimension', 'tcWorld', 'only'].each { key ->
+    ['from', 'world', 'to', 'out', 'dimension', 'tcWorld', 'only', 'players'].each { key ->
         def value = project.findProperty("almura.convert.${key}")
         if (value != null) {
             systemProperty("almura.convert.${key}", value)
@@ -184,7 +184,7 @@ neoForge {
 //   ./gradlew convertWorld -Palmura.convert.from=C:/spongesrv/Dakara -Palmura.convert.world=Orilla -Palmura.convert.to="C:/NeoSpongeSrv/Almura Test"
 tasks.register('convertWorld') {
     group = 'almura'
-    description = 'Converts a 3.5 world into a 4.0 world (-Palmura.convert.from, .world, .to or .out)'
+    description = 'Converts a 3.5 world into a 4.0 world (-Palmura.convert.from, .world and/or .players=true, .to or .out)'
     dependsOn tasks.named('test')
 }
 gradle.taskGraph.whenReady { graph ->

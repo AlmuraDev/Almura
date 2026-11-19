@@ -15,6 +15,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.LongArrayTag;
 import net.minecraft.nbt.NbtOps;
@@ -412,6 +413,91 @@ final class LegacyWorldConverter {
         this.report.chunks++;
         this.report.statuses.merge(upgraded.getStringOr("Status", "?"), 1, Integer::sum);
         return upgraded;
+    }
+
+    // ---- Players
+
+    // 1.12's respawn points (beds, per-dimension spawns) and what the player rode, which belong to 3.5's worlds
+    private static final List<String> PLAYER_PLACES = List.of("SpawnX", "SpawnY", "SpawnZ", "SpawnForced", "SpawnDimension", "Spawns",
+        "HasSpawnDimensionSet", "RootVehicle");
+
+    /**
+     * A 3.5 player (its playerdata file) as 26.3 keeps it, through the game's own upgrade: inventory, ender chest, experience, health and
+     * hunger. Iron Backpacks' equipped backpack (a 1.12 capability) goes into the inventory, or else the ender chest. Items 4.0 doesn't
+     * have are left out; 1.12's respawn points are dropped (they were in 3.5's worlds).
+     *
+     * @param dimension the 4.0 dimension the player stays where they were in, or null to put them at the spawn
+     * @param spawnDimension the 4.0 world's spawn dimension
+     * @param spawn the 4.0 world's spawn block
+     */
+    CompoundTag convertPlayer(final CompoundTag player, final @Nullable String dimension, final String spawnDimension, final int[] spawn) {
+        final CompoundTag equipped = player.getCompoundOrEmpty("ForgeCaps").getCompoundOrEmpty("ironbackpacks:equipped_backpack").copy();
+        if (!equipped.getStringOr("id", "minecraft:air").equals("minecraft:air") && equipped.getByteOr("Count", (byte) 0) > 0) {
+            this.placeEquipped(player, equipped);
+        }
+        stripForge(player);
+        PLAYER_PLACES.forEach(player::remove);
+
+        final CompoundTag upgraded = DataFixTypes.PLAYER.update(this.fixer, player, NbtUtils.getDataVersion(player, 1343), this.target);
+        this.ironBackpacks.convertAll(upgraded, this::legacyItem);
+        this.knownItemsOnly(upgraded.getList("Inventory"));
+        this.knownItemsOnly(upgraded.getList("EnderItems"));
+        upgraded.getCompound("equipment").ifPresent(equipment -> {
+            for (final String slot : Set.copyOf(equipment.keySet())) {
+                if (equipment.get(slot) instanceof final CompoundTag item && !this.known(item)) {
+                    equipment.remove(slot);
+                }
+            }
+        });
+        knownEnchantmentsOnly(upgraded);
+
+        if (dimension != null) {
+            upgraded.putString("Dimension", dimension);
+            this.report.playersInPlace++;
+        } else {
+            upgraded.putString("Dimension", spawnDimension);
+            final ListTag pos = new ListTag();
+            pos.add(DoubleTag.valueOf(spawn[0] + 0.5));
+            pos.add(DoubleTag.valueOf(spawn[1]));
+            pos.add(DoubleTag.valueOf(spawn[2] + 0.5));
+            upgraded.put("Pos", pos);
+            final ListTag motion = new ListTag();
+            for (int i = 0; i < 3; i++) {
+                motion.add(DoubleTag.valueOf(0.0));
+            }
+            upgraded.put("Motion", motion);
+            upgraded.putDouble("fall_distance", 0.0);
+            this.report.playersAtSpawn++;
+        }
+        NbtUtils.addDataVersion(upgraded, this.target);
+        return upgraded;
+    }
+
+    /**
+     * Puts 1.12's equipped backpack into the first empty slot of the player's inventory (0-35), else of their ender chest; with no room,
+     * it is counted as lost.
+     */
+    private void placeEquipped(final CompoundTag player, final CompoundTag backpack) {
+        for (final String list : List.of("Inventory", "EnderItems")) {
+            final ListTag items = player.getListOrEmpty(list);
+            final Set<Integer> used = new HashSet<>();
+            for (final Tag tag : items) {
+                if (tag instanceof final CompoundTag item) {
+                    used.add((int) item.getByteOr("Slot", (byte) -1));
+                }
+            }
+            final int size = list.equals("Inventory") ? 36 : 27;
+            for (int slot = 0; slot < size; slot++) {
+                if (!used.contains(slot)) {
+                    backpack.putByte("Slot", (byte) slot);
+                    items.add(backpack);
+                    player.put(list, items);
+                    this.report.equippedBackpacks++;
+                    return;
+                }
+            }
+        }
+        this.report.lostItems.merge(backpack.getStringOr("id", "?") + " (equipped, no room)", 1, Integer::sum);
     }
 
     // 3.5's machines' block entities, by their 3.5 ids
@@ -858,11 +944,23 @@ final class LegacyWorldConverter {
         int chunks, unplaced, cacheItems, crateItems, biomeCells, reshaped;
         // Iron Backpacks' items converted (IronBackpacksConversion)
         int backpacks, backpackUpgrades;
+        // Players: kept where they were, put at the spawn, and 1.12 equipped backpacks moved into their inventory
+        int playersInPlace, playersAtSpawn, equippedBackpacks;
         @Nullable String crateSample;
         final Map<String, Integer> converted = new TreeMap<>(), unmapped = new TreeMap<>(), replaced = new TreeMap<>();
         final Map<String, Integer> placed = new TreeMap<>(), tileEntities = new TreeMap<>(), droppedTileEntities = new TreeMap<>();
         final Map<String, Integer> droppedEntities = new TreeMap<>(), lostItems = new TreeMap<>(), statuses = new TreeMap<>();
         final Map<String, String> guessed = new TreeMap<>();
+
+        /**
+         * The report of a players conversion (the chunk counts mean nothing there).
+         */
+        String players() {
+            return "Players kept where they were: " + this.playersInPlace + ", put at the spawn: " + this.playersAtSpawn
+                + "\nIron Backpacks converted: " + this.backpacks + " backpacks, " + this.backpackUpgrades + " upgrades"
+                + ", equipped moved into players' inventories: " + this.equippedBackpacks
+                + "\nItems lost (4.0 has none): " + this.lostItems;
+        }
 
         @Override
         public String toString() {
@@ -877,6 +975,7 @@ final class LegacyWorldConverter {
                 .append("\nAlmura tile entities: ").append(this.tileEntities).append(", cache items kept: ").append(this.cacheItems)
                 .append(", crate stacks: ").append(this.crateItems).append(", crate sample: ").append(this.crateSample)
                 .append("\nIron Backpacks converted: ").append(this.backpacks).append(" backpacks, ").append(this.backpackUpgrades).append(" upgrades")
+                .append(", equipped moved into players' inventories: ").append(this.equippedBackpacks)
                 .append("\nItems lost (4.0 has none): ").append(this.lostItems)
                 .append("\nTile entities left out: ").append(this.droppedTileEntities)
                 .append("\nEntities left out: ").append(this.droppedEntities)

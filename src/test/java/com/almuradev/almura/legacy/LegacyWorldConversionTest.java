@@ -56,6 +56,8 @@ import java.util.regex.Pattern;
  *   config (its custom biomes' numbers), by default {@code <from>/../config/TerrainControl/worlds/<world>/WorldConfig.ini}.</li>
  * </ul>
  * The 3.5 regions are read from copies, as the game opens region files for writing; 3.5's world is never changed.
+ * <p>
+ * {@code -Palmura.convert.players=true} (with or without {@code world}) converts 3.5's players too: see {@link #convertPlayers}.
  */
 final class LegacyWorldConversionTest {
 
@@ -68,7 +70,20 @@ final class LegacyWorldConversionTest {
         final String from = System.getProperty("almura.convert.from");
         assumeTrue(from != null, "No world to convert");
         final Path legacy = Path.of(from).toAbsolutePath();
-        final String world = Objects.requireNonNull(System.getProperty("almura.convert.world"), "-Palmura.convert.world is needed");
+        final String world = System.getProperty("almura.convert.world");
+        final boolean players = Boolean.parseBoolean(System.getProperty("almura.convert.players", "false"));
+        if (world == null && !players) {
+            throw new IOException("-Palmura.convert.world (a world's regions) or -Palmura.convert.players=true (3.5's players) is needed");
+        }
+        if (world != null) {
+            convertWorld(legacy, world);
+        }
+        if (players) {
+            convertPlayers(legacy);
+        }
+    }
+
+    private static void convertWorld(final Path legacy, final String world) throws IOException {
         final Path regions = legacy.resolve(world).resolve("region");
         final Identifier dimension = Identifier.parse(System.getProperty("almura.convert.dimension",
             "terraincontrol:" + world.toLowerCase(Locale.ROOT)));
@@ -163,6 +178,98 @@ final class LegacyWorldConversionTest {
         System.out.println(report);
         Files.writeString(backup.resolve("conversion-report.txt"), report);
         System.out.println("Report and 4.0's replaced files: " + backup);
+    }
+
+    /**
+     * 3.5's players ({@code <from>/playerdata}, by their Mojang UUIDs) into the 4.0 world's {@code players/data}. A player in a 3.5 world
+     * already converted into 4.0 (its {@code terraincontrol:<world>} dimension has regions) stays where they were; everyone else starts at
+     * the 4.0 world's spawn. A player's 4.0 file is first moved to {@code <to>/../almura-convert-backups/<time>/players/}. With {@code out}
+     * (a trial) the players are written to {@code <out>/players/data}, the spawn and converted worlds read from {@code to} if given.
+     */
+    private static void convertPlayers(final Path legacy) throws IOException {
+        final Path playerData = legacy.resolve("playerdata");
+        if (!Files.isDirectory(playerData)) {
+            throw new IOException("No 3.5 players at " + playerData);
+        }
+        final String to = System.getProperty("almura.convert.to");
+        final @Nullable Path target = to == null ? null : Path.of(to).toAbsolutePath();
+        final String trial = System.getProperty("almura.convert.out");
+        if (target == null && trial == null) {
+            throw new IOException("-Palmura.convert.to (the 4.0 world) or -Palmura.convert.out (a trial folder) is needed");
+        }
+        if (target != null && !Files.isRegularFile(target.resolve("level.dat"))) {
+            throw new IOException(target + " isn't a world folder (no level.dat)");
+        }
+        final Path dataOut;
+        final Path backup;
+        if (trial != null) {
+            dataOut = Path.of(trial).resolve("players").resolve("data");
+            backup = Path.of(trial).resolve("players");
+        } else {
+            requireClosed(target);
+            dataOut = target.resolve("players").resolve("data");
+            backup = target.getParent().resolve("almura-convert-backups").resolve(LocalDateTime.now().format(STAMP)).resolve("players");
+        }
+        Files.createDirectories(dataOut);
+        Files.createDirectories(backup);
+
+        // The 4.0 world's spawn
+        String spawnDimension = "minecraft:overworld";
+        int[] spawn = {0, 100, 0};
+        if (target != null) {
+            final CompoundTag spawnTag = NbtIo.readCompressed(target.resolve("level.dat"), NbtAccounter.unlimitedHeap())
+                .getCompoundOrEmpty("Data").getCompoundOrEmpty("spawn");
+            spawnDimension = spawnTag.getStringOr("dimension", spawnDimension);
+            spawn = spawnTag.getIntArray("pos").filter(pos -> pos.length == 3).orElse(spawn);
+        }
+
+        // 3.5's worlds by the dimension number Sponge gave them (in each world's level_sponge.dat), as 4.0 dimensions already converted
+        final Map<Integer, String> converted = new HashMap<>();
+        try (var folders = Files.list(legacy)) {
+            for (final Path folder : folders.filter(Files::isDirectory).toList()) {
+                final Path sponge = folder.resolve("level_sponge.dat");
+                if (!Files.isRegularFile(sponge) || target == null) {
+                    continue;
+                }
+                final int id = NbtIo.readCompressed(sponge, NbtAccounter.unlimitedHeap()).getCompoundOrEmpty("SpongeData").getIntOr("dimensionId",
+                    Integer.MIN_VALUE);
+                final String name = folder.getFileName().toString().toLowerCase(Locale.ROOT);
+                final Path regions = target.resolve("dimensions").resolve("terraincontrol").resolve(name).resolve("region");
+                if (id != Integer.MIN_VALUE && Files.isDirectory(regions)) {
+                    try (var files = Files.list(regions)) {
+                        if (files.anyMatch(f -> f.getFileName().toString().endsWith(".mca"))) {
+                            converted.put(id, "terraincontrol:" + name);
+                        }
+                    }
+                }
+            }
+        }
+
+        final LegacyWorldConverter converter = new LegacyWorldConverter(Map.of(), Map.of(), Identifier.withDefaultNamespace("overworld"));
+        int done = 0;
+        try (var files = Files.list(playerData)) {
+            for (final Path file : files.filter(f -> f.getFileName().toString().endsWith(".dat")).sorted().toList()) {
+                final String name = file.getFileName().toString();
+                final CompoundTag player = NbtIo.readCompressed(file, NbtAccounter.unlimitedHeap());
+                final String dimension = converted.get(player.getIntOr("Dimension", 0));
+                final CompoundTag upgraded = converter.convertPlayer(player, dimension, spawnDimension, spawn);
+                if (trial == null) {
+                    for (final String existing : List.of(name, name + "_old")) {
+                        final Path old = dataOut.resolve(existing);
+                        if (Files.isRegularFile(old)) {
+                            Files.move(old, backup.resolve(existing), StandardCopyOption.REPLACE_EXISTING);
+                        }
+                    }
+                }
+                NbtIo.writeCompressed(upgraded, dataOut.resolve(name));
+                done++;
+            }
+        }
+        final String report = "Players: " + done + " from " + playerData + " into " + dataOut + "\nWorlds kept: " + converted + "\nSpawn: "
+            + spawnDimension + " " + spawn[0] + " " + spawn[1] + " " + spawn[2] + "\n" + converter.report.players();
+        System.out.println(report);
+        Files.writeString(backup.resolve("conversion-report.txt"), report);
+        System.out.println("Report and 4.0's replaced player files: " + backup);
     }
 
     /**
