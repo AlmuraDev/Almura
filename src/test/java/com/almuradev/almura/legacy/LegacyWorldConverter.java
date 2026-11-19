@@ -92,6 +92,7 @@ final class LegacyWorldConverter {
     private final BlockheadsConversion blockheads = new BlockheadsConversion();
     final CfmConversion cfm = new CfmConversion();
     final Report report = new Report();
+    private final IronBackpacksConversion ironBackpacks = new IronBackpacksConversion(this.report);
 
     /**
      * @param blockNames 3.5's block numbers, from its level.dat
@@ -343,6 +344,7 @@ final class LegacyWorldConverter {
                 if (type != null) {
                     blockEntity.putString("id", type);
                 }
+                this.ironBackpacks.convertAll(blockEntity, this::legacyItem);
                 this.knownItemsOnly(blockEntity);
             }
         }
@@ -363,6 +365,7 @@ final class LegacyWorldConverter {
 
         // Entities: items on the ground of mods 4.0 doesn't have go, item frames holding one are emptied, and trades for them dropped
         final ListTag upgradedEntities = upgraded.getListOrEmpty("entities");
+        upgradedEntities.forEach(tag -> this.ironBackpacks.convertAll(tag, this::legacyItem));
         upgradedEntities.removeIf(tag -> tag instanceof final CompoundTag entity && entity.getStringOr("id", "").equals("minecraft:item")
             && !this.known(entity.getCompoundOrEmpty("Item")));
         for (final Tag tag : upgradedEntities) {
@@ -698,6 +701,26 @@ final class LegacyWorldConverter {
     }
 
     /**
+     * A 3.5 item kept inside another (in an Iron Backpack), with its count, as 26.3 keeps it, through the game's own upgrade; null (and
+     * counted as lost) when 4.0 has no such item. A backpack in it is converted too.
+     */
+    private @Nullable CompoundTag legacyItem(final CompoundTag legacy) {
+        final CompoundTag stack = legacy.copy();
+        stripForge(stack);
+        final Tag upgraded = this.fixer.update(References.ITEM_STACK, new Dynamic<>(NbtOps.INSTANCE, (Tag) stack), 1343, this.target).getValue();
+        if (!(upgraded instanceof final CompoundTag item)) {
+            this.report.lostItems.merge(legacy.getStringOr("id", "?"), 1, Integer::sum);
+            return null;
+        }
+        this.ironBackpacks.convertAll(item, this::legacyItem);
+        if (!BuiltInRegistries.ITEM.containsKey(Identifier.parse(item.getStringOr("id", "minecraft:air")))) {
+            this.report.lostItems.merge(legacy.getStringOr("id", "?"), 1, Integer::sum);
+            return null;
+        }
+        return item;
+    }
+
+    /**
      * A storage crate as a 1.12 chest, so the game's upgrade upgrades its items; it is named a crate again after.
      */
     private CompoundTag crateAsChest(final CompoundTag tileEntity) {
@@ -833,6 +856,8 @@ final class LegacyWorldConverter {
     static final class Report {
 
         int chunks, unplaced, cacheItems, crateItems, biomeCells, reshaped;
+        // Iron Backpacks' items converted (IronBackpacksConversion)
+        int backpacks, backpackUpgrades;
         @Nullable String crateSample;
         final Map<String, Integer> converted = new TreeMap<>(), unmapped = new TreeMap<>(), replaced = new TreeMap<>();
         final Map<String, Integer> placed = new TreeMap<>(), tileEntities = new TreeMap<>(), droppedTileEntities = new TreeMap<>();
@@ -851,6 +876,7 @@ final class LegacyWorldConverter {
                 .append("\nOther mods' blocks replaced: ").append(this.replaced)
                 .append("\nAlmura tile entities: ").append(this.tileEntities).append(", cache items kept: ").append(this.cacheItems)
                 .append(", crate stacks: ").append(this.crateItems).append(", crate sample: ").append(this.crateSample)
+                .append("\nIron Backpacks converted: ").append(this.backpacks).append(" backpacks, ").append(this.backpackUpgrades).append(" upgrades")
                 .append("\nItems lost (4.0 has none): ").append(this.lostItems)
                 .append("\nTile entities left out: ").append(this.droppedTileEntities)
                 .append("\nEntities left out: ").append(this.droppedEntities)
