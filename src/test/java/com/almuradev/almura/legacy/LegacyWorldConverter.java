@@ -94,6 +94,8 @@ final class LegacyWorldConverter {
     final CfmConversion cfm = new CfmConversion();
     final Report report = new Report();
     private final IronBackpacksConversion ironBackpacks = new IronBackpacksConversion(this.report);
+    private final BuildcraftConversion buildcraft = new BuildcraftConversion();
+    private final IronChestConversion ironChests = new IronChestConversion();
 
     /**
      * @param blockNames 3.5's block numbers, from its level.dat
@@ -187,6 +189,10 @@ final class LegacyWorldConverter {
         final Map<Long, CompoundTag> blockheadsAt = new HashMap<>();
         final Map<Long, CompoundTag> machinesAt = new HashMap<>();
         final Map<Long, CompoundTag> furnitureAt = new HashMap<>();
+        // BuildCraft's tile entities, as 1.12 saved them (its port reads them so), for after the game's upgrade
+        final List<CompoundTag> buildcraftTiles = new ArrayList<>();
+        // Iron Chests' 1.12 tile entities by where they are, for their 26.3 block entity after the game's upgrade
+        final Map<Long, CompoundTag> ironChestsAt = new HashMap<>();
         final List<Cache> caches = new ArrayList<>();
         final Map<Long, String> storage = new HashMap<>();
         final ListTag tileEntities = new ListTag();
@@ -235,6 +241,28 @@ final class LegacyWorldConverter {
                 if (block != null && BuiltInRegistries.BLOCK.getKey(block.getBlock()).getNamespace().equals("cfm")) {
                     tileEntities.add(itemsAsChest(tileEntity, tileEntity));
                     furnitureAt.put(pack(x, y, z), tileEntity);
+                    this.report.tileEntities.merge(id, 1, Integer::sum);
+                } else {
+                    this.report.droppedTileEntities.merge(id, 1, Integer::sum);
+                }
+            } else if (this.ironChests.handlesTileEntity(id)) {
+                // Its items go through the game's upgrade as a chest's, then into 26.3's block entity
+                final BlockState block = placedAt.get(pack(x, y, z));
+                if (block != null && BuiltInRegistries.BLOCK.getKey(block.getBlock()).getNamespace().equals("ironchest")) {
+                    tileEntities.add(itemsAsChest(tileEntity, tileEntity));
+                    ironChestsAt.put(pack(x, y, z), tileEntity);
+                    this.report.tileEntities.merge(id, 1, Integer::sum);
+                } else {
+                    this.report.droppedTileEntities.merge(id, 1, Integer::sum);
+                }
+            } else if (this.buildcraft.handlesTileEntity(id)) {
+                final BlockState block = placedAt.get(pack(x, y, z));
+                if (block != null && BuiltInRegistries.BLOCK.getKey(block.getBlock()).getNamespace().startsWith("buildcraft")) {
+                    final CompoundTag kept = tileEntity.copy();
+                    stripForge(kept);
+                    // Its items as 26.3's now, so the port doesn't upgrade them as the chunk loads
+                    BuildcraftConversion.upgradeItems(kept, this::legacyItem);
+                    buildcraftTiles.add(kept);
                     this.report.tileEntities.merge(id, 1, Integer::sum);
                 } else {
                     this.report.droppedTileEntities.merge(id, 1, Integer::sum);
@@ -324,6 +352,10 @@ final class LegacyWorldConverter {
                         continue;
                     }
                 }
+                final CompoundTag ironChest = ironChestsAt.get(at);
+                if (ironChest != null) {
+                    IronChestConversion.finish(chest, ironChest, placedAt.get(at));
+                }
                 final CompoundTag machine = machinesAt.get(at);
                 if (machine != null) {
                     chest.putString("id", "almura:processing_machine");
@@ -363,6 +395,8 @@ final class LegacyWorldConverter {
             }
         }
         blockEntities.forEach(LegacyWorldConverter::knownEnchantmentsOnly);
+        // BuildCraft's as they were: the port upgrades their items and fluids itself as they load
+        blockEntities.addAll(buildcraftTiles);
 
         // Entities: items on the ground of mods 4.0 doesn't have go, item frames holding one are emptied, and trades for them dropped
         final ListTag upgradedEntities = upgraded.getListOrEmpty("entities");
@@ -636,8 +670,27 @@ final class LegacyWorldConverter {
             this.report.converted.merge(name, 1, Integer::sum);
             return state;
         }
+        if (this.ironChests.handles(name)) {
+            final BlockState state = this.ironChests.state(name, meta, tileEntity);
+            if (state == null) {
+                this.report.unmapped.merge(name + " (not in Iron Chests 26.3)", 1, Integer::sum);
+                return Blocks.AIR.defaultBlockState();
+            }
+            this.report.converted.merge(name, 1, Integer::sum);
+            return state;
+        }
+        if (this.buildcraft.handles(name)) {
+            final BlockState state = this.buildcraft.state(name, meta);
+            if (state == null) {
+                this.report.unmapped.merge(name + " (not in the BuildCraft port)", 1, Integer::sum);
+                return Blocks.AIR.defaultBlockState();
+            }
+            this.report.converted.merge(name, 1, Integer::sum);
+            return state;
+        }
         if (!name.startsWith("almura:")) {
-            final boolean ore = name.contains("ore") || name.equals("ic2:resource");
+            // By the block's own name, not its mod's (buildcraftcore isn't an ore)
+            final boolean ore = name.substring(name.indexOf(':') + 1).contains("ore") || name.equals("ic2:resource");
             this.report.replaced.merge(name + (ore ? " -> stone" : " -> air"), 1, Integer::sum);
             return ore ? Blocks.STONE.defaultBlockState() : Blocks.AIR.defaultBlockState();
         }
