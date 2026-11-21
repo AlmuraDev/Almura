@@ -22,6 +22,8 @@ import com.almuradev.almura.feature.hud.server.ServerBiomeNames;
 import com.almuradev.almura.feature.hud.server.ServerHud;
 import com.almuradev.almura.feature.membership.server.ServerMemberships;
 import com.almuradev.almura.feature.menu.ingame.server.ServerFeatures;
+import com.almuradev.almura.feature.moc.MocDrops;
+import com.almuradev.almura.feature.moc.MocFishing;
 import com.almuradev.almura.feature.nick.server.ServerNicks;
 import com.almuradev.almura.feature.notification.server.ServerNotifications;
 import com.almuradev.almura.feature.permission.server.SingleplayerOperator;
@@ -34,6 +36,7 @@ import com.almuradev.almura.feature.worldload.server.ServerWorldLoad;
 import com.almuradev.almura.network.AlmuraNetwork;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
@@ -70,6 +73,11 @@ public final class Almura {
         NeoForge.EVENT_BUS.register(new ServerWorldLoad());
         // The owner of a singleplayer world gets every permission
         NeoForge.EVENT_BUS.register(new SingleplayerOperator());
+        // Mo' Creatures' drops made Almura's, and its fish caught with a rod, when it's installed
+        if (ModList.get().isLoaded("mocreatures")) {
+            NeoForge.EVENT_BUS.register(new MocDrops());
+            NeoForge.EVENT_BUS.register(new MocFishing());
+        }
         // WorldEdit asks LuckPerms for its permissions, as it asked Sponge on 3.5
         if (WorldEditPermissions.wanted()) {
             NeoForge.EVENT_BUS.register(new WorldEditPermissions());

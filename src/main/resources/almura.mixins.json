@@ -4,6 +4,7 @@
   "mixins": [
     "BiomeAccessor",
     "FarmlandBlockMixin",
+    "FishingHookInvoker",
     "ServerGamePacketListenerImplMixin",
     "ServerLevelMixin",
     "ShapedRecipeAccessor",
