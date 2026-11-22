@@ -116,7 +116,8 @@ final class LegacyWorldConverter {
     }
 
     CompoundTag convert(final CompoundTag chunk) {
-        final int version = NbtUtils.getDataVersion(chunk, 1343);
+        // A chunk last saved before 1.9 has no DataVersion: as vanilla, every fix since then applies (old entity names, item ids, signs)
+        final int version = NbtUtils.getDataVersion(chunk, 99);
         final CompoundTag level = chunk.getCompoundOrEmpty("Level");
         final List<Placed> placed = new ArrayList<>();
         // Blocks whose shape 1.12 worked out from their neighbours each time it drew them (furniture connections), for the game to work
@@ -304,7 +305,8 @@ final class LegacyWorldConverter {
                 final UUID uuid = new UUID(entity.getLongOr("UUIDMost", 0L), entity.getLongOr("UUIDLeast", 0L));
                 if (uuid.getMostSignificantBits() != 0L && !this.entityIds.add(uuid)) {
                     this.report.droppedEntities.merge(id + " (twice)", 1, Integer::sum);
-                } else if (id.startsWith("minecraft:") && !id.equals("minecraft:falling_block")) {
+                } else if ((id.startsWith("minecraft:") || isOldVanillaEntity(id)) && !id.equals("minecraft:falling_block")
+                    && !id.equals("FallingSand")) {
                     stripForge(entity);
                     entities.add(entity);
                 } else {
@@ -738,6 +740,13 @@ final class LegacyWorldConverter {
         if (BuiltInRegistries.BLOCK.containsKey(id)) {
             return BuiltInRegistries.BLOCK.getValue(id).defaultBlockState();
         }
+        // 4.0 has no double slab blocks: a 1.12 double slab is its single slab's double state (see withMeta)
+        if (renamed.endsWith("_double_slab")) {
+            final Identifier single = Identifier.parse(renamed.substring(0, renamed.length() - "_double_slab".length()) + "_slab");
+            if (BuiltInRegistries.BLOCK.containsKey(single)) {
+                return BuiltInRegistries.BLOCK.getValue(single).defaultBlockState();
+            }
+        }
         // Moved to another folder: the one block of that name
         final String last = renamed.substring(renamed.lastIndexOf('/') + 1);
         Block found = null;
@@ -768,6 +777,9 @@ final class LegacyWorldConverter {
             return set(state, "half", (meta & 4) != 0 ? "top" : "bottom");
         }
         if (path.startsWith("slab/")) {
+            if (path.endsWith("_double_slab")) {
+                return set(state, "type", "double");
+            }
             return set(state, "type", meta == 0 ? "bottom" : "top");
         }
         if (path.startsWith("log/")) {
@@ -810,6 +822,14 @@ final class LegacyWorldConverter {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
+    /**
+     * Vanilla's entity names before 1.11 ("Chicken", "MinecartChest"): no namespace, and not another mod's ("MoCreatures.Bear"). The
+     * game's upgrade renames them, for chunks old enough to have them.
+     */
+    private static boolean isOldVanillaEntity(final String id) {
+        return !id.isEmpty() && id.indexOf(':') < 0 && id.indexOf('.') < 0;
+    }
+
     private static BlockState set(final BlockState state, final String name, final String value) {
         final Property property = state.getBlock().getStateDefinition().getProperty(name);
         if (property == null) {
