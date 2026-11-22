@@ -96,6 +96,7 @@ final class LegacyWorldConverter {
     private final IronBackpacksConversion ironBackpacks = new IronBackpacksConversion(this.report);
     private final BuildcraftConversion buildcraft = new BuildcraftConversion();
     private final IronChestConversion ironChests = new IronChestConversion();
+    final SgcraftConversion sgcraft = new SgcraftConversion();
 
     /**
      * @param blockNames 3.5's block numbers, from its level.dat
@@ -127,8 +128,14 @@ final class LegacyWorldConverter {
         for (final Tag tag : level.getListOrEmpty("TileEntities")) {
             if (tag instanceof final CompoundTag tileEntity) {
                 tileEntityAt.put(pack(tileEntity.getIntOr("x", 0), tileEntity.getIntOr("y", 0), tileEntity.getIntOr("z", 0)), tileEntity);
+                // SGCraft's items in any container named as 26.3 names them, for the game's upgrade (its own tile entities' come after)
+                if (!this.sgcraft.handlesTileEntity(tileEntity.getStringOr("id", ""))) {
+                    this.sgcraft.preItems(tileEntity, this.sgcraft.legacyDimension());
+                }
             }
         }
+        this.sgcraft.preItems(level.get("Entities"), this.sgcraft.legacyDimension());
+        this.sgcraft.chunk(chunkX, chunkZ);
 
         // Almura's blocks (and other mods') out, remembered as 26.3 states
         for (final Tag sectionTag : level.getListOrEmpty("Sections")) {
@@ -193,6 +200,8 @@ final class LegacyWorldConverter {
         final List<CompoundTag> buildcraftTiles = new ArrayList<>();
         // Iron Chests' 1.12 tile entities by where they are, for their 26.3 block entity after the game's upgrade
         final Map<Long, CompoundTag> ironChestsAt = new HashMap<>();
+        // SGCraft's 26.3 block entities, made from its 1.12 tile entities (their items through legacyItem), for after the game's upgrade
+        final List<CompoundTag> sgcraftBlockEntities = new ArrayList<>();
         final List<Cache> caches = new ArrayList<>();
         final Map<Long, String> storage = new HashMap<>();
         final ListTag tileEntities = new ListTag();
@@ -263,6 +272,17 @@ final class LegacyWorldConverter {
                     // Its items as 26.3's now, so the port doesn't upgrade them as the chunk loads
                     BuildcraftConversion.upgradeItems(kept, this::legacyItem);
                     buildcraftTiles.add(kept);
+                    this.report.tileEntities.merge(id, 1, Integer::sum);
+                } else {
+                    this.report.droppedTileEntities.merge(id, 1, Integer::sum);
+                }
+            } else if (this.sgcraft.handlesTileEntity(id)) {
+                final BlockState block = placedAt.get(pack(x, y, z));
+                if (block != null && BuiltInRegistries.BLOCK.getKey(block.getBlock()).getNamespace().equals("sgcraft")) {
+                    final CompoundTag blockEntity = this.sgcraft.blockEntity(tileEntity, block, this::legacyItem);
+                    if (blockEntity != null) {
+                        sgcraftBlockEntities.add(blockEntity);
+                    }
                     this.report.tileEntities.merge(id, 1, Integer::sum);
                 } else {
                     this.report.droppedTileEntities.merge(id, 1, Integer::sum);
@@ -378,12 +398,14 @@ final class LegacyWorldConverter {
                     blockEntity.putString("id", type);
                 }
                 this.ironBackpacks.convertAll(blockEntity, this::legacyItem);
+                this.sgcraft.postItems(blockEntity);
                 this.knownItemsOnly(blockEntity);
             }
         }
         for (final Cache cache : caches) {
             blockEntities.add(cache.tag);
         }
+        blockEntities.addAll(sgcraftBlockEntities);
         // Furniture whose 1.12 block kept nothing gets its 26.3 block entity, so what ticks or draws from one has it from the start
         for (final Placed block : placed) {
             final int x = chunkX * 16 + block.x, z = chunkZ * 16 + block.z;
@@ -401,6 +423,7 @@ final class LegacyWorldConverter {
         // Entities: items on the ground of mods 4.0 doesn't have go, item frames holding one are emptied, and trades for them dropped
         final ListTag upgradedEntities = upgraded.getListOrEmpty("entities");
         upgradedEntities.forEach(tag -> this.ironBackpacks.convertAll(tag, this::legacyItem));
+        upgradedEntities.forEach(this.sgcraft::postItems);
         upgradedEntities.removeIf(tag -> tag instanceof final CompoundTag entity && entity.getStringOr("id", "").equals("minecraft:item")
             && !this.known(entity.getCompoundOrEmpty("Item")));
         for (final Tag tag : upgradedEntities) {
@@ -471,8 +494,10 @@ final class LegacyWorldConverter {
         }
         stripForge(player);
         PLAYER_PLACES.forEach(player::remove);
+        this.sgcraft.preItems(player, player.getIntOr("Dimension", 0));
 
         final CompoundTag upgraded = DataFixTypes.PLAYER.update(this.fixer, player, NbtUtils.getDataVersion(player, 1343), this.target);
+        this.sgcraft.postItems(upgraded);
         this.ironBackpacks.convertAll(upgraded, this::legacyItem);
         this.knownItemsOnly(upgraded.getList("Inventory"));
         this.knownItemsOnly(upgraded.getList("EnderItems"));
@@ -652,6 +677,10 @@ final class LegacyWorldConverter {
      * @return the 26.3 state for a 3.5 block and its metadata: Almura's, by its name in 4.0; other mods' ores as stone, the rest as air
      */
     private BlockState state(final String name, final int meta, final @Nullable CompoundTag tileEntity) {
+        if (this.sgcraft.handles(name)) {
+            this.report.converted.merge(name, 1, Integer::sum);
+            return this.sgcraft.state(name, meta, tileEntity);
+        }
         if (this.cfm.handles(name)) {
             final BlockState state = this.cfm.state(name, meta, tileEntity);
             if (state == null) {
@@ -830,12 +859,14 @@ final class LegacyWorldConverter {
         stack.putString("id", legacy.getStringOr("id", "minecraft:air"));
         stack.putByte("Count", (byte) 1);
         stack.putShort("Damage", legacy.getShortOr("Damage", (short) 0));
-        legacy.getCompound("tag").ifPresent(tag -> stack.put("tag", tag));
+        legacy.getCompound("tag").ifPresent(tag -> stack.put("tag", tag.copy()));
+        this.sgcraft.preItems(stack, this.sgcraft.legacyDimension());
         final Tag upgraded = this.fixer.update(References.ITEM_STACK, new Dynamic<>(NbtOps.INSTANCE, (Tag) stack), 1343, this.target).getValue();
         if (!(upgraded instanceof final CompoundTag item) || !BuiltInRegistries.ITEM.containsKey(Identifier.parse(item.getStringOr("id", "minecraft:air")))) {
             this.report.lostItems.merge(legacy.getStringOr("id", "?"), 1, Integer::sum);
             return null;
         }
+        this.sgcraft.postItems(item);
         return item;
     }
 
@@ -846,11 +877,13 @@ final class LegacyWorldConverter {
     private @Nullable CompoundTag legacyItem(final CompoundTag legacy) {
         final CompoundTag stack = legacy.copy();
         stripForge(stack);
+        this.sgcraft.preItems(stack, this.sgcraft.legacyDimension());
         final Tag upgraded = this.fixer.update(References.ITEM_STACK, new Dynamic<>(NbtOps.INSTANCE, (Tag) stack), 1343, this.target).getValue();
         if (!(upgraded instanceof final CompoundTag item)) {
             this.report.lostItems.merge(legacy.getStringOr("id", "?"), 1, Integer::sum);
             return null;
         }
+        this.sgcraft.postItems(item);
         this.ironBackpacks.convertAll(item, this::legacyItem);
         if (!BuiltInRegistries.ITEM.containsKey(Identifier.parse(item.getStringOr("id", "minecraft:air")))) {
             this.report.lostItems.merge(legacy.getStringOr("id", "?"), 1, Integer::sum);

@@ -103,7 +103,7 @@ tasks.named('test', Test) {
         // The game's upgrade of old chunks needs room
         maxHeapSize = '6g'
     }
-    ['from', 'world', 'to', 'out', 'dimension', 'tcWorld', 'only', 'players', 'offlineCopies'].each { key ->
+    ['from', 'world', 'to', 'out', 'dimension', 'tcWorld', 'only', 'players', 'offlineCopies', 'sgcraftFrom'].each { key ->
         def value = project.findProperty("almura.convert.${key}")
         if (value != null) {
             systemProperty("almura.convert.${key}", value)
