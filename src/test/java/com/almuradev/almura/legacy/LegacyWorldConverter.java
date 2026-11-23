@@ -894,7 +894,7 @@ final class LegacyWorldConverter {
      * A 3.5 item kept inside another (in an Iron Backpack), with its count, as 26.3 keeps it, through the game's own upgrade; null (and
      * counted as lost) when 4.0 has no such item. A backpack in it is converted too.
      */
-    private @Nullable CompoundTag legacyItem(final CompoundTag legacy) {
+    @Nullable CompoundTag legacyItem(final CompoundTag legacy) {
         final CompoundTag stack = legacy.copy();
         stripForge(stack);
         this.sgcraft.preItems(stack, this.sgcraft.legacyDimension());

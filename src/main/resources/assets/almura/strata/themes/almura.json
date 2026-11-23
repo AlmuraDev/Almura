@@ -13,7 +13,13 @@
     "button.default": { "nine_slice": "almura:theme/button", "border": 3 },
     "button.selected": { "nine_slice": "almura:theme/button", "border": 3, "tint": "#FFA0A0A0" },
     "button.selected.hovered": { "nine_slice": "almura:theme/button_highlighted", "border": 3, "tint": "#FFC0C0C0" },
-    "button.selected.disabled": { "nine_slice": "almura:theme/button_disabled", "border": 1 }
+    "button.selected.disabled": { "nine_slice": "almura:theme/button_disabled", "border": 1 },
+    "combobox.normal": { "nine_slice": "almura:theme/button", "border": 3 },
+    "combobox.hovered": { "nine_slice": "almura:theme/button_highlighted", "border": 3 },
+    "combobox.disabled": { "nine_slice": "almura:theme/button_disabled", "border": 1 },
+    "picker.button": { "nine_slice": "almura:theme/button", "border": 3 },
+    "picker.button.hovered": { "nine_slice": "almura:theme/button_highlighted", "border": 3 },
+    "picker.button.disabled": { "nine_slice": "almura:theme/button_disabled", "border": 1 }
   },
   "text": {
     "window.title.text": { "color": "#FFFFFFFF", "shadow": false, "bold": false }

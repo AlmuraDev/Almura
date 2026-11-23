@@ -39,6 +39,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -88,14 +90,19 @@ final class LegacyWorldConversionTest {
         final Path legacy = Path.of(from).toAbsolutePath();
         final String world = System.getProperty("almura.convert.world");
         final boolean players = Boolean.parseBoolean(System.getProperty("almura.convert.players", "false"));
-        if (world == null && !players) {
-            throw new IOException("-Palmura.convert.world (a world's regions) or -Palmura.convert.players=true (3.5's players) is needed");
+        final boolean markets = Boolean.parseBoolean(System.getProperty("almura.convert.markets", "false"));
+        if (world == null && !players && !markets) {
+            throw new IOException("-Palmura.convert.world (a world's regions), -Palmura.convert.players=true (3.5's players) or "
+                + "-Palmura.convert.markets=true (3.5's stores and exchanges) is needed");
         }
         if (world != null) {
             convertWorld(legacy, world);
         }
         if (players) {
             convertPlayers(legacy);
+        }
+        if (markets) {
+            convertMarkets(legacy);
         }
     }
 
@@ -221,6 +228,63 @@ final class LegacyWorldConversionTest {
      * the 4.0 world's spawn. A player's 4.0 file is first moved to {@code <to>/../almura-convert-backups/<time>/players/}. With {@code out}
      * (a trial) the players are written to {@code <out>/players/data}, the spawn and converted worlds read from {@code to} if given.
      */
+    /**
+     * 3.5's stores and exchanges ({@code <from>/../config/almura/h2.mv.db}) into the 4.0 server's database
+     * ({@code <to>/../config/almura/database/almura.mv.db}), backed up first; with {@code -Palmura.convert.out} into a copy of it there
+     * instead. H2 1.4 is read from {@code -Palmura.convert.h2Legacy}, by default Gradle's cached h2-1.4.196.jar. See
+     * {@link LegacyMarketConversion}.
+     */
+    private static void convertMarkets(final Path legacy) throws IOException {
+        final Path legacyDatabase = legacy.getParent().resolve("config").resolve("almura").resolve("h2.mv.db");
+        if (!Files.isRegularFile(legacyDatabase)) {
+            throw new IOException("No 3.5 database at " + legacyDatabase);
+        }
+        final Path target = Path.of(Objects.requireNonNull(System.getProperty("almura.convert.to"),
+            "-Palmura.convert.to (the 4.0 world, beside the server's config) is needed")).toAbsolutePath();
+        final Path currentDatabase = target.getParent().resolve("config").resolve("almura").resolve("database").resolve("almura.mv.db");
+        if (!Files.isRegularFile(currentDatabase)) {
+            throw new IOException("No 4.0 database at " + currentDatabase + " (start the server once first)");
+        }
+        final String trial = System.getProperty("almura.convert.out");
+        final Path writeTo;
+        final Path reportFolder;
+        if (trial != null) {
+            reportFolder = Path.of(trial).resolve("markets");
+            Files.createDirectories(reportFolder);
+            writeTo = reportFolder.resolve("almura.mv.db");
+            Files.copy(currentDatabase, writeTo, StandardCopyOption.REPLACE_EXISTING);
+        } else {
+            requireClosed(target);
+            reportFolder = target.getParent().resolve("almura-convert-backups").resolve(LocalDateTime.now().format(STAMP)).resolve("markets");
+            LegacyMarketConversion.backup(currentDatabase, reportFolder);
+            writeTo = currentDatabase;
+        }
+        final String jar = System.getProperty("almura.convert.h2Legacy");
+        final Path h2Jar = jar != null ? Path.of(jar) : legacyH2Jar();
+        final Path scratch = Files.createTempDirectory("almura-markets");
+        final Path copy = scratch.resolve("h2.mv.db");
+        Files.copy(legacyDatabase, copy);
+        final LegacyMarketConversion markets = new LegacyMarketConversion(
+            new LegacyWorldConverter(Map.of(), Map.of(), Identifier.withDefaultNamespace("overworld")));
+        try (Connection from = LegacyMarketConversion.openLegacy(h2Jar, copy); Connection to = LegacyMarketConversion.openCurrent(writeTo)) {
+            markets.convert(from, to);
+        } catch (final SQLException e) {
+            throw new IOException("Couldn't convert the stores and exchanges", e);
+        }
+        final String report = "Markets: " + legacyDatabase + " -> " + writeTo + "\n" + markets.report();
+        System.out.println(report);
+        Files.writeString(reportFolder.resolve("conversion-report.txt"), report);
+    }
+
+    // Gradle's cached H2 1.4, which opens 3.5's database
+    private static Path legacyH2Jar() throws IOException {
+        final Path cache = Path.of(System.getProperty("user.home"), ".gradle", "caches", "modules-2", "files-2.1", "com.h2database", "h2");
+        try (var found = Files.walk(cache)) {
+            return found.filter(path -> path.getFileName().toString().matches("h2-1\\.4\\.\\d+\\.jar")).findFirst()
+                .orElseThrow(() -> new IOException("No H2 1.4 jar under " + cache + "; give one with -Palmura.convert.h2Legacy"));
+        }
+    }
+
     private static void convertPlayers(final Path legacy) throws IOException {
         final Path playerData = legacy.resolve("playerdata");
         if (!Files.isDirectory(playerData)) {
