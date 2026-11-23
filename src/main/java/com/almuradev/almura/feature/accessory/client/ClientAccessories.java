@@ -22,6 +22,7 @@ import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.PlayerModelType;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -136,6 +137,10 @@ public final class ClientAccessories {
                 float pixels = 0F;
                 for (final AccessoryType type : accessories.keySet()) {
                     pixels = Math.max(pixels, type.heightAboveHead());
+                }
+                // A helmet lifts what sits on the head by a pixel
+                if (pixels > 0F && AccessoryLayer.isArmor(entity.getItemBySlot(EquipmentSlot.HEAD), EquipmentSlot.HEAD)) {
+                    pixels += 1F;
                 }
                 // How far the labels go up; applied as they are drawn (onDoRender), when the name tag's place is known
                 state.setRenderData(LIFT, pixels > 0F ? pixels / 16.0F * state.scale : null);
