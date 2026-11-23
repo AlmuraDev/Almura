@@ -97,6 +97,7 @@ final class LegacyWorldConverter {
     private final BuildcraftConversion buildcraft = new BuildcraftConversion();
     private final IronChestConversion ironChests = new IronChestConversion();
     final SgcraftConversion sgcraft = new SgcraftConversion();
+    private final CarpentersBlocksConversion carpenters = new CarpentersBlocksConversion(this.report);
 
     /**
      * @param blockNames 3.5's block numbers, from its level.dat
@@ -203,6 +204,8 @@ final class LegacyWorldConverter {
         final Map<Long, CompoundTag> ironChestsAt = new HashMap<>();
         // SGCraft's 26.3 block entities, made from its 1.12 tile entities (their items through legacyItem), for after the game's upgrade
         final List<CompoundTag> sgcraftBlockEntities = new ArrayList<>();
+        // Carpenter's Blocks' 26.3 block entities, made from its 1.12 tile entities (their items through legacyItem)
+        final List<CompoundTag> carpentersBlockEntities = new ArrayList<>();
         final List<Cache> caches = new ArrayList<>();
         final Map<Long, String> storage = new HashMap<>();
         final ListTag tileEntities = new ListTag();
@@ -288,6 +291,14 @@ final class LegacyWorldConverter {
                 } else {
                     this.report.droppedTileEntities.merge(id, 1, Integer::sum);
                 }
+            } else if (this.carpenters.handlesTileEntity(id)) {
+                final BlockState block = placedAt.get(pack(x, y, z));
+                if (block != null && BuiltInRegistries.BLOCK.getKey(block.getBlock()).getNamespace().equals("carpentersblocks")) {
+                    carpentersBlockEntities.add(this.carpenters.blockEntity(tileEntity, this::legacyItem));
+                    this.report.tileEntities.merge(id, 1, Integer::sum);
+                } else {
+                    this.report.droppedTileEntities.merge(id, 1, Integer::sum);
+                }
             } else if (VANILLA_TILE_ENTITIES.contains(id.startsWith("minecraft:") ? id.substring(10) : id)) {
                 stripForge(tileEntity);
                 tileEntities.add(tileEntity);
@@ -305,6 +316,11 @@ final class LegacyWorldConverter {
                 final UUID uuid = new UUID(entity.getLongOr("UUIDMost", 0L), entity.getLongOr("UUIDLeast", 0L));
                 if (uuid.getMostSignificantBits() != 0L && !this.entityIds.add(uuid)) {
                     this.report.droppedEntities.merge(id + " (twice)", 1, Integer::sum);
+                } else if (this.carpenters.handlesEntity(id)) {
+                    // Carpenter's Tiles: the port reads their 1.12 data
+                    stripForge(entity);
+                    entities.add(entity);
+                    this.report.tileEntities.merge(id, 1, Integer::sum);
                 } else if ((id.startsWith("minecraft:") || isOldVanillaEntity(id)) && !id.equals("minecraft:falling_block")
                     && !id.equals("FallingSand")) {
                     stripForge(entity);
@@ -400,6 +416,7 @@ final class LegacyWorldConverter {
                     blockEntity.putString("id", type);
                 }
                 this.ironBackpacks.convertAll(blockEntity, this::legacyItem);
+                this.carpenters.convertAll(blockEntity);
                 this.sgcraft.postItems(blockEntity);
                 this.knownItemsOnly(blockEntity);
             }
@@ -408,6 +425,7 @@ final class LegacyWorldConverter {
             blockEntities.add(cache.tag);
         }
         blockEntities.addAll(sgcraftBlockEntities);
+        blockEntities.addAll(carpentersBlockEntities);
         // Furniture whose 1.12 block kept nothing gets its 26.3 block entity, so what ticks or draws from one has it from the start
         for (final Placed block : placed) {
             final int x = chunkX * 16 + block.x, z = chunkZ * 16 + block.z;
@@ -425,6 +443,7 @@ final class LegacyWorldConverter {
         // Entities: items on the ground of mods 4.0 doesn't have go, item frames holding one are emptied, and trades for them dropped
         final ListTag upgradedEntities = upgraded.getListOrEmpty("entities");
         upgradedEntities.forEach(tag -> this.ironBackpacks.convertAll(tag, this::legacyItem));
+        upgradedEntities.forEach(this.carpenters::convertAll);
         upgradedEntities.forEach(this.sgcraft::postItems);
         upgradedEntities.removeIf(tag -> tag instanceof final CompoundTag entity && entity.getStringOr("id", "").equals("minecraft:item")
             && !this.known(entity.getCompoundOrEmpty("Item")));
@@ -501,6 +520,7 @@ final class LegacyWorldConverter {
         final CompoundTag upgraded = DataFixTypes.PLAYER.update(this.fixer, player, NbtUtils.getDataVersion(player, 1343), this.target);
         this.sgcraft.postItems(upgraded);
         this.ironBackpacks.convertAll(upgraded, this::legacyItem);
+        this.carpenters.convertAll(upgraded);
         this.knownItemsOnly(upgraded.getList("Inventory"));
         this.knownItemsOnly(upgraded.getList("EnderItems"));
         upgraded.getCompound("equipment").ifPresent(equipment -> {
@@ -696,6 +716,15 @@ final class LegacyWorldConverter {
             final BlockState state = this.blockheads.state(name, meta, tileEntity);
             if (state == null) {
                 this.report.unmapped.merge(name, 1, Integer::sum);
+                return Blocks.AIR.defaultBlockState();
+            }
+            this.report.converted.merge(name, 1, Integer::sum);
+            return state;
+        }
+        if (this.carpenters.handles(name)) {
+            final BlockState state = this.carpenters.state(name, tileEntity);
+            if (state == null) {
+                this.report.unmapped.merge(name + " (not in Carpenter's Blocks 26.3)", 1, Integer::sum);
                 return Blocks.AIR.defaultBlockState();
             }
             this.report.converted.merge(name, 1, Integer::sum);
@@ -1050,6 +1079,8 @@ final class LegacyWorldConverter {
         int chunks, unplaced, cacheItems, crateItems, biomeCells, reshaped;
         // Iron Backpacks' items converted (IronBackpacksConversion)
         int backpacks, backpackUpgrades;
+        // Carpenter's slope items given their slope back (CarpentersBlocksConversion)
+        int carpentersSlopes;
         // Players: kept where they were, put at the spawn, and 1.12 equipped backpacks moved into their inventory
         int playersInPlace, playersAtSpawn, equippedBackpacks;
         @Nullable String crateSample;
@@ -1082,6 +1113,7 @@ final class LegacyWorldConverter {
                 .append(", crate stacks: ").append(this.crateItems).append(", crate sample: ").append(this.crateSample)
                 .append("\nIron Backpacks converted: ").append(this.backpacks).append(" backpacks, ").append(this.backpackUpgrades).append(" upgrades")
                 .append(", equipped moved into players' inventories: ").append(this.equippedBackpacks)
+                .append("\nCarpenter's slope items given their slope: ").append(this.carpentersSlopes)
                 .append("\nItems lost (4.0 has none): ").append(this.lostItems)
                 .append("\nTile entities left out: ").append(this.droppedTileEntities)
                 .append("\nEntities left out: ").append(this.droppedEntities)
