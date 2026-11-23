@@ -72,7 +72,7 @@ final class OriginHud implements Screen {
     private static final SpriteId MOUNT = SpriteId.of("minecraft", "hud/heart/vehicle_full");
 
     // The top right panel's lines: 1 apart (10 from line to line), and its text 2 further in from the sides, as on 1.12
-    private static final float DETAILS_LINE_GAP = 1f, DETAILS_INSET = 2f;
+    private static final float DETAILS_LINE = 9f, DETAILS_LINE_GAP = 1f, DETAILS_INSET = 2f;
     private static final float USER_WIDTH = 124f, PADDING = 3f, AVATAR = 16f, COMPASS_MIN_WIDTH = 50f, COMPASS_MARGIN = 7f;
     private static final int WHITE = 0xFFFFFFFF, GOLD = 0xFFFFAA00, GRAY = 0xFFAAAAAA, DARK_GRAY = 0xFF555555, GREEN = 0xFF55FF55,
         YELLOW = 0xFFFFFF55, RED = 0xFFFF5555;
@@ -177,21 +177,27 @@ final class OriginHud implements Screen {
         this.y = plain(factory.label(""));
         this.z = plain(factory.label(""));
         this.performance = plain(factory.label(""));
-        final StackPanel lines = factory.stackPanel().setSpacing(DETAILS_LINE_GAP)
-            .add(this.x).add(this.y).add(this.z).add(this.performance);
+        final StackPanel coordinates = factory.stackPanel().setSpacing(DETAILS_LINE_GAP)
+            .add(this.x).add(this.y).add(this.z);
         this.clock = factory.image();
         this.clock.setImageSize(16f, 16f).setSize(16f, 16f);
         // Players online and the server's most, with 3.5's avatar, left of the clock: on a server, or in a world opened to LAN
         this.playerCount = plain(factory.label(""));
         this.playerCountIcon = factory.image(PLAYER_COUNT).setImageSize(16f, 16f).setScaling(Image.Scaling.FIT);
         this.playerCountIcon.setSize(16f, 16f);
-        final StackPanel count = factory.stackPanel(Orientation.HORIZONTAL).setSpacing(2f)
+        final StackPanel icons = factory.stackPanel(Orientation.HORIZONTAL).setSpacing(2f)
             .add(this.playerCount.setAlignment(HorizontalAlignment.RIGHT, VerticalAlignment.MIDDLE))
-            .add(this.playerCountIcon.setAlignment(HorizontalAlignment.RIGHT, VerticalAlignment.TOP));
-        final StackPanel details = factory.stackPanel(Orientation.HORIZONTAL).setSpacing(6f)
-            .add(lines)
-            .add(count.setAlignment(HorizontalAlignment.RIGHT, VerticalAlignment.TOP))
+            .add(this.playerCountIcon.setAlignment(HorizontalAlignment.RIGHT, VerticalAlignment.TOP).setMargin(0f, 0f, 4f, 0f))
             .add(this.clock.setAlignment(HorizontalAlignment.RIGHT, VerticalAlignment.TOP));
+        // The coordinates with the icons in the top right corner over them, as 1.12 drew them, as wide as the lines below make the
+        // panel (the icons don't widen it): three lines of 9 with a gap between each
+        final AnchorPanel top = factory.anchorPanel()
+            .add(coordinates.setAnchor(Anchor.TOP_LEFT))
+            .add(icons.setAnchor(Anchor.TOP_RIGHT));
+        top.setHeight(3f * DETAILS_LINE + 2f * DETAILS_LINE_GAP);
+        final StackPanel details = factory.stackPanel().setSpacing(DETAILS_LINE_GAP)
+            .add(top.setAlignment(HorizontalAlignment.STRETCH, VerticalAlignment.TOP))
+            .add(this.performance);
         this.detailsPanel = panel(factory, details);
         // Further in than the other panels, as on 1.12
         details.setMargin(PADDING + DETAILS_INSET, PADDING + 1f, PADDING + DETAILS_INSET, PADDING + 1f);

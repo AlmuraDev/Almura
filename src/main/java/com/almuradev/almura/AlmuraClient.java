@@ -41,6 +41,7 @@ import com.almuradev.almura.feature.menu.options.AlmuraOptions;
 import com.almuradev.almura.feature.menu.ServerStatus;
 import com.almuradev.almura.feature.menu.WorldLoading;
 import com.almuradev.almura.feature.nick.client.ClientNicks;
+import com.almuradev.almura.feature.notification.client.HiddenToasts;
 import com.almuradev.almura.feature.offhand.client.OffhandTorches;
 import com.almuradev.almura.feature.title.client.ClientTitles;
 import com.almuradev.almura.feature.title.client.PlayerPreview;
@@ -143,6 +144,8 @@ public final class AlmuraClient {
         NeoForge.EVENT_BUS.register(new ClientNicks.Hooks());
         NeoForge.EVENT_BUS.register(new ClientDeath.Hooks());
         NeoForge.EVENT_BUS.register(new ClientWorldLoad.Hooks());
+        // No "Chat messages can't be verified" toast on joining a server that can't verify chat
+        NeoForge.EVENT_BUS.register(new HiddenToasts());
         NeoForge.EVENT_BUS.register(new PlayerPreview.Drawer());
         // The player's WorldEdit selection, drawn in the world when the server has WorldEdit
         ClientWorldEditSelection.register(modBus);
