@@ -103,7 +103,8 @@ public final class AlmuraContent {
             return pack;
         }, () -> {
             // Built once the registries are whole, so recipes naming unknown items are left out rather than failing to load
-            final ContentPackBuilder builder = new ContentPackBuilder(source).crops(crops).generation(treeGeneration, grassGeneration, oreGeneration);
+            final ContentPackBuilder builder = new ContentPackBuilder(source).crops(crops).generation(treeGeneration, grassGeneration, oreGeneration)
+                .names(groups);
             final ContentPack pack = builder.buildData(blocks, items, id -> BuiltInRegistries.ITEM.containsKey(Identifier.parse(id)));
             builder.problems().forEach(problem -> Almura.LOGGER.debug("Content data: {}", problem));
             Almura.LOGGER.info("Built Almura's content data: {} files ({} problems, see the debug log)", pack.paths().size(),

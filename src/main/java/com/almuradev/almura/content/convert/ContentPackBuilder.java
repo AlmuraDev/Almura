@@ -123,6 +123,15 @@ public final class ContentPackBuilder {
     }
 
     /**
+     * Adds the English names ({@code lang/en_us.json}) to the server's half as well. A dedicated server reads every pack's English file for
+     * the names it shows and searches (an exchange's search and sort by name), and without it Almura's content would go by its keys.
+     */
+    public ContentPackBuilder names(final List<ItemGroupDef> groups) {
+        this.language(groups);
+        return this;
+    }
+
+    /**
      * Builds the server's half of the pack: loot tables, tool tags and recipes.
      *
      * @param knownItem whether an item id exists, for recipes: one using an unknown item is left out
