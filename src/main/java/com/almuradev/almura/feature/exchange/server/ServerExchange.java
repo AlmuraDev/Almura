@@ -42,6 +42,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.permissions.Permissions;
 import net.minecraft.server.players.NameAndId;
@@ -684,6 +685,17 @@ public final class ServerExchange {
      * unlisted items back. The inventory is changed first; what the database refuses is given back.
      */
     public static void moveItems(final ServerPlayer player, final ServerboundMoveItems message) {
+        // Carried out on the next tick, not while the exchange's message is being handled: Sponge sees inventory changes made then as
+        // part of the player's tick, warns of them and fires no inventory event (as the store and the cache)
+        final MinecraftServer server = player.level().getServer();
+        server.schedule(new TickTask(server.getTickCount(), () -> {
+            if (!player.isRemoved()) {
+                moveItemsNow(player, message);
+            }
+        }));
+    }
+
+    private static void moveItemsNow(final ServerPlayer player, final ServerboundMoveItems message) {
         final Exchange exchange = loadedExchange(player, message.id());
         if (exchange == null || message.moves().isEmpty()) {
             return;
@@ -787,6 +799,17 @@ public final class ServerExchange {
      * own), and the items come once the database has the purchase.
      */
     public static void buy(final ServerPlayer player, final ServerboundBuy message) {
+        // Carried out on the next tick, not while the exchange's message is being handled: Sponge sees inventory changes made then as
+        // part of the player's tick, warns of them and fires no inventory event (as the store and the cache)
+        final MinecraftServer server = player.level().getServer();
+        server.schedule(new TickTask(server.getTickCount(), () -> {
+            if (!player.isRemoved()) {
+                buyNow(player, message);
+            }
+        }));
+    }
+
+    private static void buyNow(final ServerPlayer player, final ServerboundBuy message) {
         final Exchange exchange = loadedExchange(player, message.id());
         if (exchange == null) {
             return;

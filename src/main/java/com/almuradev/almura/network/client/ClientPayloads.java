@@ -28,12 +28,14 @@ import com.almuradev.almura.feature.hud.network.ClientboundPlayerWorlds;
 import com.almuradev.almura.feature.hud.network.ClientboundServerTps;
 import com.almuradev.almura.feature.hud.network.ClientboundWorldName;
 import com.almuradev.almura.feature.hud.ServerHudData;
+import com.almuradev.almura.feature.hud.network.ClientboundPlayerCount;
 import com.almuradev.almura.feature.membership.client.ClientMemberships;
 import com.almuradev.almura.feature.membership.network.MembershipMessages;
 import com.almuradev.almura.feature.menu.ingame.FeaturesMenu;
 import com.almuradev.almura.feature.menu.ingame.network.FeaturesMessages;
 import com.almuradev.almura.feature.nick.client.ClientNicks;
 import com.almuradev.almura.feature.nick.network.NickMessages;
+import com.almuradev.almura.feature.notification.NotificationText;
 import com.almuradev.almura.feature.notification.client.ClientNotifications;
 import com.almuradev.almura.feature.notification.network.ClientboundPopupNotification;
 import com.almuradev.almura.feature.notification.PopupNotification;
@@ -63,9 +65,11 @@ public final class ClientPayloads {
 
     private static void onRegisterHandlers(final RegisterClientPayloadHandlersEvent event) {
         event.register(ClientboundPopupNotification.TYPE, (payload, context) ->
-            ClientNotifications.show(new PopupNotification(payload.title(), payload.message(), payload.secondsToLive())));
+            ClientNotifications.show(new PopupNotification(NotificationText.translate(payload.title()),
+                NotificationText.translate(payload.message()), payload.secondsToLive())));
         event.register(ClientboundWorldName.TYPE, (payload, context) -> ServerHudData.setWorldName(payload.name()));
         event.register(ClientboundServerTps.TYPE, (payload, context) -> ServerHudData.setTps(payload.tps()));
+        event.register(ClientboundPlayerCount.TYPE, (payload, context) -> ServerHudData.setPlayerCount(payload.online(), payload.max()));
         event.register(ClientboundPlayerWorlds.TYPE, (payload, context) -> ServerHudData.updatePlayerWorlds(payload.replace(), payload.worlds()));
         event.register(ClientboundBiomeNames.TYPE, (payload, context) -> ServerHudData.addBiomeNames(payload.names()));
         event.register(ClientboundWorldLoad.TYPE, (payload, context) -> ClientWorldLoad.handle(payload));

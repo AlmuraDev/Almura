@@ -12,6 +12,7 @@ import com.almuradev.almura.core.database.AlmuraDatabase;
 import com.almuradev.almura.feature.economy.Economy;
 import com.almuradev.almura.feature.economy.EconomyAccounts;
 import com.almuradev.almura.feature.economy.EconomyAccounts.Account;
+import com.almuradev.almura.feature.notification.NotificationText;
 import com.almuradev.almura.feature.notification.server.ServerNotifications;
 import com.almuradev.almura.feature.store.StoreNumbers;
 import com.almuradev.almura.feature.store.StoreSide;
@@ -38,6 +39,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.permissions.Permissions;
 import net.minecraft.server.players.NameAndId;
@@ -560,6 +562,17 @@ public final class ServerStore {
     // ---- Buying and selling
 
     public static void handleTransaction(final ServerPlayer player, final ServerboundTransaction message) {
+        // Carried out on the next tick, not while the store's message is being handled: Sponge sees inventory changes made then as part
+        // of the player's tick, warns of them and fires no inventory event (the cache does the same, see CacheBlock.attack)
+        final MinecraftServer server = player.level().getServer();
+        server.schedule(new TickTask(server.getTickCount(), () -> {
+            if (!player.isRemoved()) {
+                transact(player, message);
+            }
+        }));
+    }
+
+    private static void transact(final ServerPlayer player, final ServerboundTransaction message) {
         if (unavailable(player)) {
             return;
         }
@@ -587,7 +600,8 @@ public final class ServerStore {
         }
         final BigDecimal total = listing.price.multiply(BigDecimal.valueOf(quantity));
         final Account wallet = Account.player(player.getUUID());
-        final String itemName = listing.stack.getHoverName().getString();
+        // Translated by the client: the server only knows the name's key
+        final String itemName = NotificationText.item(listing.stack);
         if (message.side() == StoreSide.BUY) {
             final BigDecimal balance = economy.balance(wallet);
             if (balance == null) {

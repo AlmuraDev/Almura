@@ -7,6 +7,7 @@
  */
 package com.almuradev.almura.feature.hud.server;
 
+import com.almuradev.almura.feature.hud.network.ClientboundPlayerCount;
 import com.almuradev.almura.feature.hud.network.ClientboundPlayerWorlds;
 import com.almuradev.almura.feature.hud.network.ClientboundServerTps;
 import com.almuradev.almura.feature.hud.network.ClientboundWorldName;
@@ -38,6 +39,8 @@ public final class ServerHud {
         }
         final MinecraftServer server = player.level().getServer();
         PacketDistributor.sendToPlayer(player, new ClientboundWorldName(worldName(player)), new ClientboundServerTps(tps(server)));
+        // Everyone learns the new count, the joining player the server's
+        PacketDistributor.sendToAllPlayers(playerCount(server));
         // The joining player learns everyone's world; everyone else, the joining player's
         final Map<UUID, String> worlds = new HashMap<>();
         for (final ServerPlayer online : server.getPlayerList().getPlayers()) {
@@ -78,9 +81,13 @@ public final class ServerHud {
         if (now - this.lastTps >= TPS_EVERY_NANOS) {
             this.lastTps = now;
             if (event.getServer().getPlayerCount() > 0) {
-                PacketDistributor.sendToAllPlayers(new ClientboundServerTps(tps(event.getServer())));
+                PacketDistributor.sendToAllPlayers(new ClientboundServerTps(tps(event.getServer())), playerCount(event.getServer()));
             }
         }
+    }
+
+    private static ClientboundPlayerCount playerCount(final MinecraftServer server) {
+        return new ClientboundPlayerCount(server.getPlayerCount(), server.getMaxPlayers());
     }
 
     private static void worldChanged(final ServerPlayer player) {

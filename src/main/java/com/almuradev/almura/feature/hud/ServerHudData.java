@@ -26,6 +26,8 @@ public final class ServerHudData {
 
     private static @Nullable String worldName;
     private static @Nullable Double tps;
+    // Players online and the most the server takes, or -1 until a server says
+    private static int onlinePlayers = -1, maxPlayers = -1;
     private static final Map<UUID, String> playerWorlds = new HashMap<>();
     private static boolean playerWorldsKnown;
     // The player's money, from a server with an economy: its currency's symbol and the balance
@@ -51,6 +53,18 @@ public final class ServerHudData {
 
     public static void setTps(final double value) {
         tps = value;
+    }
+
+    /**
+     * @return players online and the server's most, or null until the server has said
+     */
+    public static int @Nullable [] playerCount() {
+        return onlinePlayers < 0 ? null : new int[] {onlinePlayers, maxPlayers};
+    }
+
+    public static void setPlayerCount(final int online, final int max) {
+        onlinePlayers = online;
+        maxPlayers = max;
     }
 
     /**
@@ -108,6 +122,8 @@ public final class ServerHudData {
         biomeNames.clear();
         worldName = null;
         tps = null;
+        onlinePlayers = -1;
+        maxPlayers = -1;
         playerWorlds.clear();
         playerWorldsKnown = false;
         moneySymbol = null;

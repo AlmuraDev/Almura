@@ -61,6 +61,8 @@ final class OriginHud implements Screen {
     private static final SpriteId PANEL = SpriteId.of(Almura.ID, "hud/panel");
     private static final SpriteId XP_ORB = SpriteId.of(Almura.ID, "hud/xp_orb");
     private static final SpriteId STAMINA = SpriteId.of(Almura.ID, "hud/stamina");
+    // 3.5's generic avatar, beside the player count
+    private static final SpriteId PLAYER_COUNT = SpriteId.of(Almura.ID, "hud/player_count");
     private static final SpriteId HEART_BACK = SpriteId.of("minecraft", "hud/heart/container");
     private static final SpriteId HEART = SpriteId.of("minecraft", "hud/heart/full");
     private static final SpriteId ARMOR = SpriteId.of("minecraft", "hud/armor_full");
@@ -103,9 +105,10 @@ final class OriginHud implements Screen {
     private float shownOpacity = -1f;
     private @Nullable Image avatar;
     private @Nullable GameProfile avatarProfile;
-    private @Nullable Label name, level, money, worldName, compass, x, y, z, performance, ping;
+    private @Nullable Label name, level, money, worldName, compass, x, y, z, performance;
     private @Nullable HudBar experience, health, armor, hunger, stamina, air, mount;
-    private @Nullable Image clock;
+    private @Nullable Image clock, playerCountIcon;
+    private @Nullable Label playerCount;
 
     @Override
     public Component<?> build(final ComponentFactory factory) {
@@ -174,13 +177,20 @@ final class OriginHud implements Screen {
         this.y = plain(factory.label(""));
         this.z = plain(factory.label(""));
         this.performance = plain(factory.label(""));
-        this.ping = plain(factory.label(""));
         final StackPanel lines = factory.stackPanel().setSpacing(DETAILS_LINE_GAP)
-            .add(this.x).add(this.y).add(this.z).add(this.performance).add(this.ping);
+            .add(this.x).add(this.y).add(this.z).add(this.performance);
         this.clock = factory.image();
         this.clock.setImageSize(16f, 16f).setSize(16f, 16f);
+        // Players online and the server's most, with 3.5's avatar, left of the clock: on a server, or in a world opened to LAN
+        this.playerCount = plain(factory.label(""));
+        this.playerCountIcon = factory.image(PLAYER_COUNT).setImageSize(16f, 16f).setScaling(Image.Scaling.FIT);
+        this.playerCountIcon.setSize(16f, 16f);
+        final StackPanel count = factory.stackPanel(Orientation.HORIZONTAL).setSpacing(2f)
+            .add(this.playerCount.setAlignment(HorizontalAlignment.RIGHT, VerticalAlignment.MIDDLE))
+            .add(this.playerCountIcon.setAlignment(HorizontalAlignment.RIGHT, VerticalAlignment.TOP));
         final StackPanel details = factory.stackPanel(Orientation.HORIZONTAL).setSpacing(6f)
             .add(lines)
+            .add(count.setAlignment(HorizontalAlignment.RIGHT, VerticalAlignment.TOP))
             .add(this.clock.setAlignment(HorizontalAlignment.RIGHT, VerticalAlignment.TOP));
         this.detailsPanel = panel(factory, details);
         // Further in than the other panels, as on 1.12
@@ -461,23 +471,46 @@ final class OriginHud implements Screen {
         this.y.setText(coordinate("Y", view.getY()));
         this.z.setText(coordinate("Z", view.getZ()));
 
-        this.performance.setText(Text.concat(
-            Text.of("FPS: ").color(GOLD), Text.of(Minecraft.getInstance().getFps() + "  ").color(WHITE), Text.of("TPS: ").color(GOLD), this.tps()));
-
-        // The round trip to the server, playing on one; the server tells each player theirs
+        Text performance = Text.concat(
+            Text.of("FPS: ").color(GOLD), Text.of(Minecraft.getInstance().getFps() + "  ").color(WHITE), Text.of("TPS: ").color(GOLD), this.tps());
+        // The round trip to the server, playing on one (the server tells each player theirs), on the same line
         final PlayerInfo info = Minecraft.getInstance().isLocalServer() || Minecraft.getInstance().getConnection() == null ? null
             : Minecraft.getInstance().getConnection().getPlayerInfo(Minecraft.getInstance().player.getUUID());
-        this.ping.setVisible(info != null);
         if (info != null) {
             final int ping = info.getLatency();
-            this.ping.setText(Text.concat(Text.of("Ping: ").color(GOLD),
-                Text.of(ping + "ms").color(ping <= 50 ? GREEN : ping <= 150 ? YELLOW : RED)));
+            performance = Text.concat(performance, Text.of("  Ping: ").color(GOLD),
+                Text.of(ping + "ms").color(ping <= 50 ? GREEN : ping <= 150 ? YELLOW : RED));
         }
+        this.performance.setText(performance);
+
+        this.refreshPlayerCount();
 
         // Vanilla's clock, which shows the time of day in every world with a sun (Almura's assets/minecraft/items/clock.json; vanilla's
         // only did in the overworld and spun elsewhere, as in TerrainControl's worlds)
         if (this.clock.visual().isEmpty()) {
             this.clock.setVisual(MinecraftVisuals.item(new ItemStack(Items.CLOCK)));
+        }
+    }
+
+    /**
+     * The player count, as 3.5's: shown playing on a server (as it says) or in a world of this computer opened to LAN (read from the
+     * game's own server), hidden in a world played alone.
+     */
+    private void refreshPlayerCount() {
+        final IntegratedServer local = Minecraft.getInstance().getSingleplayerServer();
+        int[] count = null;
+        if (local != null) {
+            if (local.isPublished()) {
+                count = new int[] {local.getPlayerCount(), local.getMaxPlayers()};
+            }
+        } else {
+            count = ServerHudData.playerCount();
+        }
+        final boolean shown = count != null;
+        this.playerCount.setVisible(shown);
+        this.playerCountIcon.setVisible(shown);
+        if (shown) {
+            this.playerCount.setText(Text.of(count[0] + "/" + count[1]).color(WHITE));
         }
     }
 
