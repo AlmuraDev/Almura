@@ -12,32 +12,42 @@ import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nullable;
 
+/**
+ * The server's biomes for one chunk on the client.
+ *
+ * <p>Read from the chunk render worker threads as well as the main thread. The config of each column is
+ * looked up once here; the temperature noise of each column is worked out on first use and kept (any
+ * thread may fill it in, and they all get the same value).</p>
+ */
 @SideOnly(Side.CLIENT)
 public final class BiomeChunk {
 
     private final int[] biomeArray;
-    private final Map<Integer, BiomeConfig> configs;
+    private final BiomeConfig[] columnConfigs = new BiomeConfig[256];
+    private final float[] columnNoise = new float[256];
 
     BiomeChunk(final BiomeClientFeature registry, final int[] biomeArray) {
         this.biomeArray = biomeArray;
-        this.configs = new HashMap<>(256);
 
-        for (final int biomeId : this.biomeArray) {
-            if (!this.configs.containsKey(biomeId)) {
-                this.configs.put(biomeId, registry.getBiomeConfig(biomeId));
+        final Map<Integer, BiomeConfig> configs = new HashMap<>();
+        for (int index = 0; index < 256; index++) {
+            final int biomeId = this.biomeArray[index];
+            if (!configs.containsKey(biomeId)) {
+                configs.put(biomeId, registry.getBiomeConfig(biomeId));
             }
+            this.columnConfigs[index] = configs.get(biomeId);
         }
+        Arrays.fill(this.columnNoise, Float.NaN);
     }
 
     public String getBiomeRegistryName(final BlockPos pos, Biome fallback) {
-        final int biomeId = this.getBiomeId(pos);
-
-        final BiomeConfig config = this.configs.get(biomeId);
+        final BiomeConfig config = this.getConfig(pos);
         if (config == null) {
             return fallback.getRegistryName().toString();
         }
@@ -46,9 +56,7 @@ public final class BiomeChunk {
     }
 
     public String getBiomeName(final BlockPos pos, Biome fallback) {
-        final int biomeId = this.getBiomeId(pos);
-
-        final BiomeConfig config = this.configs.get(biomeId);
+        final BiomeConfig config = this.getConfig(pos);
         if (config == null) {
             return fallback.getBiomeName();
         }
@@ -57,20 +65,16 @@ public final class BiomeChunk {
     }
 
     public float getTemperature(final BlockPos pos, Biome fallback) {
-        final int biomeId = this.getBiomeId(pos);
-
-        final BiomeConfig config = this.configs.get(biomeId);
+        final BiomeConfig config = this.getConfig(pos);
         if (config == null) {
             return fallback.getTemperature(pos);
         }
 
-        return BiomeUtil.getScaledTemperature(config, pos);
+        return this.getScaledTemperature(config, pos);
     }
 
     public float getRainfall(final BlockPos pos, Biome fallback) {
-        final int biomeId = this.getBiomeId(pos);
-
-        final BiomeConfig config = this.configs.get(biomeId);
+        final BiomeConfig config = this.getConfig(pos);
         if (config == null) {
             return fallback.getRainfall();
         }
@@ -79,9 +83,7 @@ public final class BiomeChunk {
     }
 
     public int getWaterColor(final BlockPos pos, Biome fallback) {
-        final int biomeId = this.getBiomeId(pos);
-
-        final BiomeConfig config = this.configs.get(biomeId);
+        final BiomeConfig config = this.getConfig(pos);
         if (config == null) {
             return fallback.getWaterColor();
         }
@@ -94,12 +96,26 @@ public final class BiomeChunk {
      */
     @Nullable
     public BiomeConfig getConfig(final BlockPos pos) {
-        return this.configs.get(this.getBiomeId(pos));
+        return this.columnConfigs[index(pos)];
     }
 
-    private int getBiomeId(final BlockPos pos) {
-        int i = pos.getX() & 15;
-        int j = pos.getZ() & 15;
-        return this.biomeArray[j << 4 | i];
+    /**
+     * Same as {@link BiomeUtil#getScaledTemperature(BiomeConfig, BlockPos)}, with the column's noise kept.
+     */
+    public float getScaledTemperature(final BiomeConfig config, final BlockPos pos) {
+        if (pos.getY() <= 64) {
+            return config.getDefaultTemperature();
+        }
+        final int index = index(pos);
+        float noise = this.columnNoise[index];
+        if (Float.isNaN(noise)) {
+            noise = BiomeUtil.getTemperatureNoise(pos.getX(), pos.getZ());
+            this.columnNoise[index] = noise;
+        }
+        return BiomeUtil.getScaledTemperature(config, pos.getY(), noise);
+    }
+
+    private static int index(final BlockPos pos) {
+        return (pos.getZ() & 15) << 4 | (pos.getX() & 15);
     }
 }

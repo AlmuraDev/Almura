@@ -29,10 +29,23 @@ public final class BiomeUtil {
 
     public static float getScaledTemperature(BiomeConfig biomeConfig, BlockPos pos) {
         if (pos.getY() > 64) {
-            float f = (float) (BiomeAccessor.accessor$getTemperatureNoise().getValue((double) ((float) pos.getX() / 8.0F), (double) ((float) pos.getZ() / 8.0F)) * 4.0D);
-            return biomeConfig.getDefaultTemperature() - (f + (float) pos.getY() - 64.0F) * 0.05F / 30.0F;
+            return getScaledTemperature(biomeConfig, pos.getY(), getTemperatureNoise(pos.getX(), pos.getZ()));
         } else {
             return biomeConfig.getDefaultTemperature();
         }
+    }
+
+    /**
+     * @return The temperature noise of a column, which only depends on its x and z
+     */
+    static float getTemperatureNoise(final int x, final int z) {
+        return (float) (BiomeAccessor.accessor$getTemperatureNoise().getValue((double) ((float) x / 8.0F), (double) ((float) z / 8.0F)) * 4.0D);
+    }
+
+    /**
+     * @return The temperature above y 64, given the column's {@link #getTemperatureNoise(int, int) noise}
+     */
+    static float getScaledTemperature(final BiomeConfig biomeConfig, final int y, final float noise) {
+        return biomeConfig.getDefaultTemperature() - (noise + (float) y - 64.0F) * 0.05F / 30.0F;
     }
 }

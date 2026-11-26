@@ -37,9 +37,11 @@ public final class BiomeColors {
     @Nullable
     public static BiomeConfig getTerrainControlConfig(final BlockPos pos) {
         final BiomeChunk chunk = BiomeUtil.getChunk(pos);
-        if (chunk == null) {
-            return null;
-        }
+        return chunk == null ? null : getTerrainControlConfig(chunk, pos);
+    }
+
+    @Nullable
+    private static BiomeConfig getTerrainControlConfig(final BiomeChunk chunk, final BlockPos pos) {
         final BiomeConfig config = chunk.getConfig(pos);
         if (config == null || !config.hasTerrainControlColors()) {
             return null;
@@ -49,11 +51,15 @@ public final class BiomeColors {
 
     @Nullable
     public static Integer getGrassColor(final Biome biome, final BlockPos pos) {
-        final BiomeConfig config = getTerrainControlConfig(pos);
+        final BiomeChunk chunk = BiomeUtil.getChunk(pos);
+        if (chunk == null) {
+            return null;
+        }
+        final BiomeConfig config = getTerrainControlConfig(chunk, pos);
         if (config == null) {
             return null;
         }
-        final double temperature = MathHelper.clamp(BiomeUtil.getScaledTemperature(config, pos), 0.0F, 1.0F);
+        final double temperature = MathHelper.clamp(chunk.getScaledTemperature(config, pos), 0.0F, 1.0F);
         final double rainfall = MathHelper.clamp(config.getRainfall(), 0.0F, 1.0F);
         final int climateColor = biome.getModdedBiomeGrassColor(ColorizerGrass.getGrassColor(temperature, rainfall));
         return applyColor(climateColor, config.getGrassColor(), config.isGrassColorMultiplier());
@@ -61,11 +67,15 @@ public final class BiomeColors {
 
     @Nullable
     public static Integer getFoliageColor(final Biome biome, final BlockPos pos) {
-        final BiomeConfig config = getTerrainControlConfig(pos);
+        final BiomeChunk chunk = BiomeUtil.getChunk(pos);
+        if (chunk == null) {
+            return null;
+        }
+        final BiomeConfig config = getTerrainControlConfig(chunk, pos);
         if (config == null) {
             return null;
         }
-        final double temperature = MathHelper.clamp(BiomeUtil.getScaledTemperature(config, pos), 0.0F, 1.0F);
+        final double temperature = MathHelper.clamp(chunk.getScaledTemperature(config, pos), 0.0F, 1.0F);
         final double rainfall = MathHelper.clamp(config.getRainfall(), 0.0F, 1.0F);
         final int climateColor = biome.getModdedBiomeFoliageColor(ColorizerFoliage.getFoliageColor(temperature, rainfall));
         return applyColor(climateColor, config.getFoliageColor(), config.isFoliageColorMultiplier());
