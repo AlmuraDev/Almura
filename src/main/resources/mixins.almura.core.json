@@ -24,6 +24,7 @@
         "client.gui.MixinGuiIngame",
         "client.gui.MixinGuiOptions",
         "client.gui.MixinUIComponent",
+        "client.renderer.MixinRenderGlobal_ChunkUpdates",
         "client.renderer.tileentity.MixinRenderItemFrame",
         "client.renderer.tileentity.MixinTileEntitySignRenderer",
         "client.renderer.tileentity.MixinTileEntityChestRenderer",
