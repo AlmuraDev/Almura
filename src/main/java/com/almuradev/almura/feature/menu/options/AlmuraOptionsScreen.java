@@ -84,7 +84,8 @@ final class AlmuraOptionsScreen implements Screen {
             check(factory, "World & Compass Widget", AlmuraClientConfig.DISPLAY_WORLD_COMPASS_WIDGET, "The world name and compass at the top middle"),
             locationWidget,
             check(factory, "FPS / TPS", AlmuraClientConfig.DISPLAY_PERFORMANCE_STATS, "Shown under the coordinates of the location widget"),
-            check(factory, "Numeric HUD Values", AlmuraClientConfig.DISPLAY_NUMERIC_HUD_VALUES, "The numbers on the HUD's bars"));
+            check(factory, "Numeric HUD Values", AlmuraClientConfig.DISPLAY_NUMERIC_HUD_VALUES, "The numbers on the HUD's bars"),
+            check(factory, "Locator Bar", AlmuraClientConfig.DISPLAY_LOCATOR_BAR, "The bar above the hotbar pointing to nearby players"));
 
         // ---- Gameplay
         final Component<?> gameplaySection = section(factory, "Gameplay",

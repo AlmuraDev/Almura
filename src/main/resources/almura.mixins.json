@@ -21,6 +21,7 @@
     "client.EntityRenderDispatcherMixin",
     "client.EntityRendererMixin",
     "client.HudAccessor",
+    "client.HudMixin",
     "client.JoinMultiplayerScreenAccessor",
     "client.LevelLoadingScreenAccessor",
     "client.LightCoordsUtilMixin",

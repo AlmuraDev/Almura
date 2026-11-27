@@ -294,7 +294,8 @@ public final class ServerExchange {
     // ---- Commands
 
     /**
-     * {@code /almura exchange} (or {@code axs}) {@code manage [player]} and {@code open <id> [player]}, as 3.5's.
+     * {@code /almura exchange} (or {@code axs}) {@code manage [player]} and {@code open [player] <id>}, as 3.5's (whose NPCs and command
+     * blocks name the player first, as the store's command does).
      */
     @SubscribeEvent
     public void onRegisterCommands(final RegisterCommandsEvent event) {
@@ -309,10 +310,12 @@ public final class ServerExchange {
                 .executes(context -> manage(context, context.getSource().getPlayerOrException()))
                 .then(Commands.argument("player", EntityArgument.player())
                     .executes(context -> manage(context, EntityArgument.getPlayer(context, "player")))))
+            // The id alone is registered first: given one word, both branches read it and the first that can run is taken
             .then(Commands.literal("open").requires(source -> allowed(source, OPEN))
                 .then(Commands.argument("id", StringArgumentType.string())
-                    .executes(context -> open(context, context.getSource().getPlayerOrException()))
-                    .then(Commands.argument("player", EntityArgument.player())
+                    .executes(context -> open(context, context.getSource().getPlayerOrException())))
+                .then(Commands.argument("player", EntityArgument.player())
+                    .then(Commands.argument("id", StringArgumentType.string())
                         .executes(context -> open(context, EntityArgument.getPlayer(context, "player"))))));
     }
 

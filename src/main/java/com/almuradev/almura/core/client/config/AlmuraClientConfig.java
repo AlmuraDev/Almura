@@ -32,6 +32,7 @@ public final class AlmuraClientConfig {
     public static final ModConfigSpec.BooleanValue DISPLAY_LOCATION_WIDGET;
     public static final ModConfigSpec.BooleanValue DISPLAY_PERFORMANCE_STATS;
     public static final ModConfigSpec.BooleanValue DISPLAY_NUMERIC_HUD_VALUES;
+    public static final ModConfigSpec.BooleanValue DISPLAY_LOCATOR_BAR;
     public static final ModConfigSpec.BooleanValue ENHANCED_DEBUG;
     public static final ModConfigSpec.BooleanValue DISPLAY_GUIDE_ON_LOGIN;
     public static final ModConfigSpec.BooleanValue DISPLAY_OTHER_PLAYER_GUIDES;
@@ -63,6 +64,8 @@ public final class AlmuraClientConfig {
             .define("display-performance-stats", true);
         DISPLAY_NUMERIC_HUD_VALUES = builder.comment("Shows the numbers on the Origin HUD's bars")
             .define("display-numeric-hud-values", true);
+        DISPLAY_LOCATOR_BAR = builder.comment("Shows vanilla's locator bar (the directions of nearby players) above the hotbar; off shows the experience bar there instead")
+            .define("display-locator-bar", true);
         ENHANCED_DEBUG = builder.comment("Shows Almura's debug panels in place of vanilla's debug text while the debug screen (F3) is open")
             .define("enhanced-debug", true);
         HUD_SKILLS = builder.comment("The skills shown in the bottom right of the Origin HUD (chosen in the Features menu's Skills), as 3.5's")
