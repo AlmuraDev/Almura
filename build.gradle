@@ -25,13 +25,13 @@ repositories {
             includeGroup('org.inspirenxe')
         }
     }
+    // SpongeAPI from the local Maven folder first (a copy of the cached snapshot), so a build never fails while Sponge's repository is
+    // down; delete ~/.m2/repository/org/spongepowered/spongeapi/21.0.0-SNAPSHOT to take the snapshot from Sponge again
     exclusiveContent {
-        forRepository {
-            maven {
-                name = 'Sponge'
-                url = uri('https://repo.spongepowered.org/repository/maven-public/')
-            }
-        }
+        forRepositories(mavenLocal(), maven {
+            name = 'Sponge'
+            url = uri('https://repo.spongepowered.org/repository/maven-public/')
+        })
         filter {
             includeGroup('org.spongepowered')
         }
@@ -198,9 +198,10 @@ gradle.taskGraph.whenReady { graph ->
     }
 }
 
-// A cached -SNAPSHOT is trusted for a day by default; check for a newer Strata on every build
+// Cached -SNAPSHOTs (SpongeAPI, Strata) are trusted for 30 days, so a build doesn't fail when a snapshot repository is down.
+// Build with --refresh-dependencies to pick up a newer snapshot sooner.
 configurations.configureEach {
-    resolutionStrategy.cacheChangingModulesFor(0, 'seconds')
+    resolutionStrategy.cacheChangingModulesFor(30, 'days')
 }
 
 tasks.withType(JavaCompile).configureEach {
