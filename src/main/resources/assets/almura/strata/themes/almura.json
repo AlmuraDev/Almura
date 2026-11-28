@@ -26,6 +26,10 @@
   },
   "insets": {
     "window.title.padding": [4, 3, 4, 3],
-    "window.padding": [3, 4, 3, 3]
+    "window.padding": [3, 4, 3, 3],
+    "list.padding": [0, 0, 0, 0]
+  },
+  "metrics": {
+    "list.row.width": 0
   }
 }
